@@ -10,6 +10,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => (v.startsWith("--") && a.push([v.slice(2), arr[i + 1]]), a), []));
 const FPS = +(args.fps || 30);
 const OUT = path.resolve(ROOT, args.out || "out/empira-video-silent.mp4");
+const AR = args.ar || "9x16", VW = AR === "16x9" ? 1920 : 1080, VH = AR === "16x9" ? 1080 : 1920;
+const URL_Q = `index.html?render&ar=${AR}`;
 
 const MIME = { ".html": "text/html", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".wav": "audio/wav", ".js": "text/javascript" };
 const server = http.createServer((req, res) => {
@@ -19,9 +21,9 @@ const server = http.createServer((req, res) => {
 const port = server.address().port;
 
 const browser = await chromium.launch({ args: ["--force-color-profile=srgb", "--disable-lcd-text"] });
-const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+const page = await browser.newPage({ viewport: { width: VW, height: VH }, deviceScaleFactor: 1 });
 page.on("pageerror", e => console.error("PAGE ERROR", e.message));
-await page.goto(`http://localhost:${port}/index.html?render`);
+await page.goto(`http://localhost:${port}/${URL_Q}`);
 await page.evaluate(() => window.ready);
 const stage = await page.$("#stage");
 
@@ -29,7 +31,7 @@ if (args.stills) {
   fs.mkdirSync(path.join(ROOT, "out/stills"), { recursive: true });
   for (const t of args.stills.split(",").map(Number)) {
     await page.evaluate(t => window.seek(t), t);
-    await stage.screenshot({ path: path.join(ROOT, `out/stills/t${t.toFixed(2).padStart(5, "0")}.png`) });
+    await stage.screenshot({ path: path.join(ROOT, `out/stills/${AR}-t${t.toFixed(2).padStart(5, "0")}.png`) });
   }
 } else {
   // rendu parallèle : N pages (processus de rendu distincts), chacune encode un segment, puis concaténation
@@ -38,8 +40,8 @@ if (args.stills) {
   const tmp = path.join(ROOT, "out/.chunks"); fs.mkdirSync(tmp, { recursive: true });
   let done = 0;
   const work = async (w) => {
-    const pg = w === 0 ? page : await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
-    if (w) { pg.on("pageerror", e => console.error("PAGE ERROR", e.message)); await pg.goto(`http://localhost:${port}/index.html?render`); await pg.evaluate(() => window.ready); }
+    const pg = w === 0 ? page : await browser.newPage({ viewport: { width: VW, height: VH }, deviceScaleFactor: 1 });
+    if (w) { pg.on("pageerror", e => console.error("PAGE ERROR", e.message)); await pg.goto(`http://localhost:${port}/${URL_Q}`); await pg.evaluate(() => window.ready); }
     const st = await pg.$("#stage"), a = w * per, b = Math.min(n, a + per), file = path.join(tmp, `c${w}.mp4`);
     const ff = spawn("ffmpeg", ["-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-",
       "-c:v", "libx264", "-preset", "medium", "-crf", "13", "-pix_fmt", "yuv420p", file], { stdio: ["pipe", "ignore", "ignore"] });

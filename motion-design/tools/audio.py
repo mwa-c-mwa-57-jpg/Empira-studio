@@ -217,47 +217,56 @@ def blip(f=1800, g=0.05):
     t = tt(0.18)
     return (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(2 * np.pi * f * 1.5 * t)) * np.exp(-t * 28) * np.minimum(1, t / 0.002) * g
 
-# A — naissance de l'étincelle, accroche, plongée dans l'objectif
+# A — naissance de l'étincelle, accroche, plongée dans l'objectif du téléphone
 place(sb, shimmer(2.0, 1400, 0.09), 0.38)
 t = tt(1.2); place(sb, np.sin(2 * np.pi * (60 + 40 * np.exp(-t * 6)) * t) * np.exp(-t * 3) * 0.22, 0.38)
-t = tt(1.9); place(sb, bp(rng.standard_normal(len(t)), 4000, 11000) * np.sin(np.pi * t / 1.9) ** 2 * 0.018, 0.4)  # trait qui se dessine
-for tm, f in ((0.6, 2200), (1.7, 2900), (4.45, 2600), (10.35, 2600), (16.25, 2600)):
+t = tt(1.9); place(sb, bp(rng.standard_normal(len(t)), 4000, 11000) * np.sin(np.pi * t / 1.9) ** 2 * 0.018, 0.4)
+for tm, f in ((0.6, 2200), (1.6, 2900), (4.35, 2600), (10.3, 2600), (14.55, 2600), (17.75, 2600)):
     place(sb, tick(f, 0.07), tm)
-place(sb, swell(1.25, 0.32, 200, 7000), 2.9)                 # aspiration vers l'objectif
-place(sb, shimmer(1.4, 1800, 0.09, 12), 3.4, pan=0.1)        # reflet dans la lentille
-place(sb, soft_hit(0.42), 4.12)                              # traversée
+place(sb, swell(1.25, 0.32, 200, 7000), 2.9)
+place(sb, shimmer(1.4, 1800, 0.09, 12), 3.4, pan=0.1)
+place(sb, soft_hit(0.42), 4.12)
 place(sb, whoosh(0.9, 2000, 9000, 0.07, 0.4, -0.4), 4.0)
-# B — matériel
-place(sb, shutter(0.4), 5.13, pan=-0.25)                     # déclencheur caméra
-for tm, f in ((5.3, 1700), (7.05, 1900), (8.55, 2100)):     # légendes
+# B — setup : téléphone, micro, carte son, ring light
+place(sb, shutter(0.3), 5.05, pan=-0.2)                      # « clic » d'enregistrement
+for tm, f in ((5.2, 1700), (6.55, 1900), (7.75, 2000), (8.8, 2200)):
     place(sb, blip(f, 0.045), tm, pan=0.3)
-place(sb, whoosh(0.9, 300, 3500, 0.15, -0.5, 0.6), 5.9)     # vers le micro
-t = tt(0.5); place(sb, np.sin(2 * np.pi * 85 * t) * np.exp(-t * 14) * 0.22, 6.68)   # micro : « pop » grave
-place(sb, whoosh(1.1, 2500, 9000, 0.03, -0.3, 0.3), 6.6)     # reflet sur la grille
-place(sb, whoosh(0.75, 300, 3500, 0.15, -0.5, 0.6), 7.38)   # vers la ring light
-# allumage ring light : grésillement + clics puis bourdonnement
-t = tt(0.42); flick = (np.sin(2 * np.pi * 15 * t) > 0.2).astype(float)
-buzz = (saw(100, t) * 0.5 + hp(rng.standard_normal(len(t)), 3000) * 0.3) * flick * 0.08
-place(sb, buzz, 8.05, pan=0.2)
-for k in range(6): place(sb, tick(3200 + 300 * k, 0.05), 8.05 + k * 0.067, pan=0.2)
-t = tt(1.6); place(sb, (np.sin(2 * np.pi * 100 * t) + .4 * np.sin(2 * np.pi * 200 * t)) * np.minimum(1, t / .2) * np.exp(-t * 1.2) * .05, 8.45, pan=0.2)
-place(sb, shimmer(1.8, 1800, 0.08), 8.45, pan=0.2)
-# traversée de la lumière → coucher de soleil
+place(sb, whoosh(0.85, 300, 3500, 0.15, -0.5, 0.6), 5.5)     # vers le micro
+t = tt(0.5); place(sb, np.sin(2 * np.pi * 85 * t) * np.exp(-t * 14) * 0.22, 6.3)
+place(sb, whoosh(1.1, 2500, 9000, 0.03, -0.3, 0.3), 6.1)
+place(sb, whoosh(0.75, 300, 3500, 0.15, 0.6, -0.5), 6.85)   # vers la carte son
+t = tt(0.35); fad = bp(rng.standard_normal(len(t)), 900, 3000) * np.sin(np.pi * t / 0.35) * 0.05
+place(sb, fad, 7.55, pan=-0.2)                               # curseur qui glisse
+place(sb, tick(2400, 0.06), 7.9, pan=-0.2)                   # bouton « ON »
+place(sb, whoosh(0.6, 300, 3500, 0.14, -0.5, 0.6), 7.95)    # vers la ring light
+t = tt(0.35); flick = (np.sin(2 * np.pi * 15 * t) > 0.2).astype(float)
+place(sb, (saw(100, t) * 0.5 + hp(rng.standard_normal(len(t)), 3000) * 0.3) * flick * 0.08, 8.5, pan=0.2)
+for k in range(5): place(sb, tick(3200 + 300 * k, 0.05), 8.5 + k * 0.067, pan=0.2)
+t = tt(1.4); place(sb, (np.sin(2 * np.pi * 100 * t) + .4 * np.sin(2 * np.pi * 200 * t)) * np.minimum(1, t / .2) * np.exp(-t * 1.2) * .05, 8.85, pan=0.2)
+place(sb, shimmer(1.6, 1800, 0.08), 8.85, pan=0.2)
 place(sb, swell(1.0, 0.3, 300, 9000), 9.0)
 place(sb, shimmer(2.4, 1600, 0.1, 16), 9.7)
 place(sb, soft_hit(0.3), 10.0)
-# C — étapes de l'accompagnement : pings ascendants
-for i, nm in enumerate(["D5", "F5", "G5", "A5", "D6"]):
-    place(sb, ping(note(nm), 1.6, 0.11 if i < 4 else 0.14), 11 + i, pan=-0.4 + i * 0.2)
-place(sb, shimmer(1.8, 1500, 0.07), 15.0, pan=0.4)
-place(sb, whoosh(1.2, 300, 3000, 0.13, -0.6, 0.6), 15.3)   # vers la foule
-# D — calendrier : 12 ticks (croches)
+# C — coaching : pings ascendants
+for i, (tm, nm) in enumerate(zip((10.75, 11.5, 12.25, 13.0, 13.75), ["D5", "F5", "G5", "A5", "D6"])):
+    place(sb, ping(note(nm), 1.6, 0.11 if i < 4 else 0.14), tm, pan=-0.4 + i * 0.2)
+place(sb, shimmer(1.8, 1500, 0.07), 13.75, pan=0.2)
+# D — gaming
+place(sb, swell(0.7, 0.16, 400, 6000), 14.0)
+place(sb, whoosh(2.2, 3000, 9000, 0.025, -0.4, 0.4), 15.0)   # reflet sur la manette
+t = tt(0.09)
+for k, nm in enumerate(["D5", "F5", "A5", "D6", "F6"]):       # petit « power-up » rétro au LIVE
+    sq = np.sign(np.sin(2 * np.pi * note(nm) * t)) * np.exp(-t * 18) * 0.022
+    place(sb, sq, 15.25 + k * 0.06, pan=0.15)
+place(sb, blip(2600, 0.05), 15.3, pan=0.15)
+# E — événements : 12 ticks en doubles croches
+place(sb, whoosh(1.0, 300, 3200, 0.12, -0.6, 0.6), 17.15)
 for i, nm in enumerate(["D6", "E6", "F6", "A6", "D6", "E6", "F6", "A6", "C7", "A6", "F6", "D7"]):
-    place(sb, tick(note(nm), 0.055), 16.75 + 0.25 * i, pan=-0.5 + i / 11)
-    place(sb, ping(note(nm), 0.5, 0.025), 16.75 + 0.25 * i, pan=-0.5 + i / 11)
-place(sb, swell(1.1, 0.28, 300, 9000), 19.15)                # la lumière de scène nous avale
-place(sb, shimmer(1.6, 1300, 0.08, 14), 20.2)                # bokeh
-# E — la crête du Cervin se trace, puis se transforme en A
+    place(sb, tick(note(nm), 0.05), 18.25 + 0.125 * i, pan=-0.5 + i / 11)
+    place(sb, ping(note(nm), 0.4, 0.02), 18.25 + 0.125 * i, pan=-0.5 + i / 11)
+place(sb, swell(1.1, 0.28, 300, 9000), 19.15)
+place(sb, shimmer(1.6, 1300, 0.08, 14), 20.2)
+# F — la crête du Cervin se trace, puis se transforme en A
 t = tt(1.3); sp = np.zeros(len(t))
 for k in range(26):
     st = k * 0.05; f = 2400 * 2 ** (k / 26)
@@ -280,7 +289,8 @@ place(sb, whoosh(1.0, 1500, 8000, 0.05, -0.6, 0.6), 22.45)
 place(sb, whoosh(0.9, 1500, 8000, 0.04, 0.0, 0.0), 23.25)
 for k, nm in enumerate(["A5", "D6", "F6"]):
     place(sb, ping(note(nm), 1.2, 0.05), 24.1 + k * 0.42, pan=-0.5 + k * 0.5)
-place(sb, ping(note("D6"), 2.0, 0.06), 27.0)
+for k, nm in enumerate(["A5", "D6", "A6"]):                      # CTA TikTok
+    place(sb, ping(note(nm), 1.6, 0.05), 26.2 + k * 0.25, pan=-0.3 + k * 0.3)
 sfx = reverb(sb, 2.2, 0.28)
 
 # ============================ MIX & EXPORT ============================

@@ -28,8 +28,9 @@ def smoothstep(a, b, x):
     t = np.clip((x - a) / (b - a), 0, 1)
     return t * t * (3 - 2 * t)
 
-def grade(name, amount=0.7, black=0.03, gamma=1.0, sat=0.6, warm=0.08, maxw=3200, key=None, exposure=1.0, crop=None):
+def grade(name, amount=0.7, black=0.03, gamma=1.0, sat=0.6, warm=0.08, maxw=3200, key=None, exposure=1.0, crop=None, pre=None):
     im = Image.open(os.path.join(SRC, name + ".jpg")).convert("RGB")
+    if pre: im = pre(im)
     if crop: im = im.crop(crop)
     if max(im.size) > maxw:
         im.thumbnail((maxw, maxw), Image.LANCZOS)
@@ -55,6 +56,21 @@ def grade(name, amount=0.7, black=0.03, gamma=1.0, sat=0.6, warm=0.08, maxw=3200
 # --- réglages par photo ---
 grade("lens", amount=0.55, black=0.02, sat=0.8, maxw=4058)
 grade("camera", amount=0.55, black=0.04, sat=0.5, gamma=1.1)
+
+def remove_logo(im):
+    """efface le logo de marque au dos du téléphone (inpainting)"""
+    import cv2
+    a = np.asarray(im)[..., ::-1].copy(); H, W = a.shape[:2]
+    m = np.zeros((H, W), np.uint8)
+    cv2.ellipse(m, (int(W * 0.442), int(H * 0.492)), (int(W * 0.046), int(H * 0.031)), -18, 0, 360, 255, -1)
+    a = cv2.inpaint(a, m, 25, cv2.INPAINT_TELEA)
+    a = cv2.GaussianBlur(a, (0, 0), 1.2) * (m[..., None] > 0) + a * (m[..., None] == 0)
+    return Image.fromarray(a.astype(np.uint8)[..., ::-1])
+grade("phlens", amount=0.6, black=0.04, sat=0.6, gamma=1.15)
+grade("phone", amount=0.65, black=0.06, sat=0.5, gamma=1.2, pre=remove_logo)
+grade("mixer", amount=0.72, black=0.06, sat=0.5, gamma=1.6, exposure=0.8)
+grade("gaming", amount=0.78, black=0.02, sat=0.6, exposure=1.2)
+grade("pad", amount=0.75, black=0.02, sat=0.5, exposure=1.5, gamma=0.9)
 grade("mic", amount=0.8, black=0.03, gamma=1.05, maxw=3000)
 grade("ring", amount=0.45, black=0.02, sat=0.4, maxw=3200)
 grade("walk", amount=0.5, black=0.03, sat=0.7)
