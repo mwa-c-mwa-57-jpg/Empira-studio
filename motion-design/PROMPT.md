@@ -1,60 +1,57 @@
-# Prompt : pub motion design Empira Agency (30 s)
+# Prompt : pub Empira Agency « L'Ascension » (30 s)
 
-À utiliser tel quel sur une plateforme de motion design ou de vidéo IA (HeyGen, Runway, Kling, Canva, Jitter, etc.), ou à confier à un motion designer.
-Joindre les fichiers du logo (versions PNG transparentes) au prompt.
+À utiliser sur une plateforme de motion design ou de vidéo IA (HeyGen, Runway, Kling, Veo, Canva, etc.), ou à confier à un motion designer.
+Joindre les fichiers du logo (versions PNG transparentes) et, si possible, les photos de référence de `CREDITS.md`.
 
 ---
 
 ## Version complète (FR)
 
-**Rôle** : tu es un motion designer senior spécialisé en publicités premium pour marques de luxe.
+**Rôle** : tu es un réalisateur et motion designer senior, spécialisé dans les publicités premium de marques de luxe (style Rolex, Cartier, Apple).
 
-**Objectif** : créer une publicité motion design de **30 secondes** pour **Empira Agency**, une agence qui accompagne les **créateurs de contenu**. Le visuel doit être calé pour une **voix off** (script ci-dessous) et donner envie de rejoindre l'agence.
+**Objectif** : une publicité cinématographique de **30 secondes** pour **Empira Agency**, l'agence qui accompagne les **créateurs de contenu**. Elle présente trois services : l'**achat de matériel**, un **accompagnement du début jusqu'à l'objectif**, et des **événements chaque mois**. Elle doit être calée pour une voix off.
 
-**Concept : « L'Ascension »** : **un seul plan-séquence, sans aucune coupe**. Une fine **ligne dorée lumineuse**, avec une étincelle à sa tête, trace le parcours du créateur. **La caméra suit l'étincelle en continu** dans une seule grande scène sombre (travelling latéral, légères montées, zooms doux, profondeur avec parallaxe). Chaque service « pousse » le long de la ligne au moment où l'étincelle passe. À la fin, la ligne grimpe et dessine le **« A » du logo** : c'est le sommet.
+**Concept : « L'Ascension »**, en **un seul plan-séquence, sans aucune coupe**. Une caméra virtuelle **vole en 3D** à travers de **vraies photos** suspendues dans un vide noir et doré, avec une vraie **parallaxe** et de la profondeur de champ. On passe d'un univers à l'autre en **traversant la lumière** : on plonge dans un objectif, on traverse la lumière d'une ring light, on est avalé par un projecteur de scène. Une **étincelle dorée** et sa ligne lumineuse guident l'œil du début à la fin. La métaphore est celle de la montagne : le créateur gravit les étapes jusqu'au sommet, et ce sommet devient le **« A » du logo**.
 
-**Interdits** : pas de transitions gadget (glitch, zoom-blur, wipe, cube 3D, flash arc-en-ciel), pas de coupes, pas de clipart, pas de couleurs hors charte. Mouvements fluides avec easing doux (ease-in-out), jamais saccadés.
+**Interdits** : pas de transitions gadget (glitch, cube 3D, wipe, zoom-blur criard), pas de coupe sèche, pas d'icônes plates ni de clipart. Uniquement de vraies images, avec des mouvements fluides en ease-in-out.
 
-### Charte graphique (tirée du logo)
-- Fond : noir chaud `#070605`, halos ambrés très subtils, vignettage, léger grain film.
-- Or (dégradé diagonal, clair en haut à gauche → foncé en bas à droite) : `#F6D58E` → `#E3AC4E` → `#C98A2E` → `#9A5A0C`.
-- Texte principal : blanc cassé `#F4EFE6` ; texte secondaire : `#B9AE9C`.
-- Typo : **Montserrat** (Light 300 pour les titres, Medium 500 pour les labels en capitales très espacées, environ 0,4 em). Les mots-clés passent en dégradé or.
-- Détails premium : poussière d'or en suspension sur plusieurs plans de profondeur, courbes de niveau (relief de montagne) à peine visibles en arrière-plan, glow doux sur les éléments dorés.
-- Animation du texte : chaque mot apparaît en montant légèrement, du flou au net (environ 0,8 s, décalage de 0,07 s entre les mots).
+### Charte & étalonnage
+- **Étalonnage noir & or** appliqué à toutes les photos : noirs profonds, hautes lumières dorées `#F6D58E` → `#E3AC4E` → `#C98A2E` → `#9A5A0C`, désaturation partielle. Les photos d'origines différentes doivent sembler venir d'un même film.
+- Textes : **Montserrat** (Light 300 pour les titres, Medium 500 pour les labels en capitales espacées d'environ 0,45 em), blanc cassé `#F6F1E7`, mots-clés en dégradé or. Apparition mot par mot, du flou au net.
+- Habillage cinéma : **bandes noires 2.25:1** pendant tout le film, qui s'ouvrent en plein cadre sur le logo. Grain film, vignettage, poussière d'or en volume (bokeh au premier plan), **reflets anamorphiques** horizontaux sur les sources lumineuses, voiles de lumière chaude pendant les mouvements.
 
 ### Déroulé (tempo 120 BPM : 1 mesure = 2 s)
-| Temps | Visuel | Texte à l'écran |
-|---|---|---|
-| 0–4 s | Fondu depuis le noir. L'étincelle naît au centre et trace la ligne, qui souligne l'accroche. | « Tu crées du contenu ? » / « **Passe au niveau supérieur.** » (or) |
-| 4–10 s | Travelling vers la droite. Au passage de l'étincelle, 3 icônes se dessinent au trait doré : **caméra** (flash du déclencheur), **micro** (ondes sonores), **ring light** (elle s'allume). | « 01 — ÉQUIPEMENT » · « Équipe-toi **comme un pro.** » · légendes CAMÉRA / MICRO / LUMIÈRE · « On t'accompagne dans l'achat de ton matériel. » |
-| 10–16 s | La ligne monte en diagonale (croissance) ; la caméra s'incline très légèrement. 5 jalons s'allument un par un, avec une onde de « ping ». Le dernier est une étoile. | « 02 — ACCOMPAGNEMENT » · « De tes débuts **à tes objectifs.** » · LANCEMENT · STRATÉGIE · CRÉATION · CROISSANCE · **OBJECTIF ATTEINT** · « Un suivi sur-mesure, étape par étape. » |
-| 16–20 s | La ligne repasse à l'horizontale sous un **calendrier de 12 cartes** (JAN → DÉC). Chaque mois s'illumine d'une étoile dorée au passage de l'étincelle, un mois par croche. | « 03 — ÉVÉNEMENTS » · « Un événement **chaque mois.** » · « Rencontre d'autres créateurs et développe ton réseau. » |
-| 20–22 s | L'étincelle accélère, puis **grimpe et trace les contours du grand « A »** du logo jusqu'à son sommet. La musique monte. | — |
-| 22 s | **IMPACT** sur le temps fort : le « A » se remplit d'or, flash chaud, onde de choc circulaire, micro-secousse caméra. Puis un reflet lumineux balaie le A. | — |
-| 22–27 s | La caméra recule et révèle le logo complet : « EMPIRA » (balayage de gauche à droite), puis « AGENCY » avec ses filets dorés (du centre vers l'extérieur), puis le slogan. | « DÉVELOPPER • ACCOMPAGNER • INFLUENCER » |
-| 27–30 s | Lente poussée caméra sur le logo, CTA, fondu au noir. | « REJOINS L'AVENTURE » |
+| Temps | Plan |
+|---|---|
+| 0–4 s | Noir. Une étincelle s'allume et souligne « Tu crées du contenu ? » puis « **Passe au niveau supérieur.** ». Derrière le texte, un **objectif photo** sort de l'ombre. La caméra traverse le texte, l'étincelle plonge au centre de la lentille, qui s'embrase (reflet anamorphique), et **on passe à travers le verre**. |
+| 4–10 s | **« 01 — ÉQUIPEMENT · Équipe-toi comme un pro. »** Travelling entre trois objets réels flottant dans le noir : une **caméra sur trépied** (flash du déclencheur, légende CAMÉRA), un **micro de studio** (reflet qui glisse sur la grille, légende MICRO), une **ring light** éteinte qui **s'allume en grésillant** (légende LUMIÈRE). Sous-titre : « On t'accompagne dans l'achat de ton matériel. » La caméra fonce dans la lumière de la ring light, jusqu'au blanc doré. |
+| 10–16 s | On ressort dans un **coucher de soleil doré**, en panorama : un créateur en silhouette **marche**, **grimpe**, puis se tient **au sommet**, la main tendue vers la lumière. Une ligne dorée suit la crête et allume 5 jalons : LANCEMENT · STRATÉGIE · CRÉATION · CROISSANCE · **OBJECTIF ATTEINT** (une étoile dans la main du personnage). **« 02 — ACCOMPAGNEMENT · De tes débuts à tes objectifs. »** « Un suivi sur-mesure, étape par étape. » |
+| 16–20 s | Le travelling continue sur une **foule de concert** baignée d'or, mains levées. Au premier plan, **12 cartes en verre** (JAN → DÉC) s'illuminent une par une d'une étoile dorée, une par croche. **« 03 — ÉVÉNEMENTS · Un événement chaque mois. »** « Rencontre d'autres créateurs et développe ton réseau. » Puis la caméra fonce dans le projecteur de scène. |
+| 20–22 s | Le blanc se dissout en **bokeh doré**, puis la mise au point révèle le **Cervin de nuit**, neige dorée sous les étoiles. L'étincelle **trace la crête** jusqu'au sommet et redescend. La crête se **transforme en contour du « A »** du logo. La musique monte. |
+| 22 s | **IMPACT** sur le temps fort : le A se remplit d'or, flash chaud, micro-secousse, les **bandes cinéma s'ouvrent**. Un reflet balaie le A. |
+| 22–27 s | La caméra s'élève dans le ciel étoilé. « EMPIRA » se révèle de gauche à droite, puis « AGENCY » avec ses filets (du centre vers l'extérieur), puis « DÉVELOPPER • ACCOMPAGNER • INFLUENCER ». |
+| 27–30 s | « REJOINS L'AVENTURE », lente dérive, fondu au noir. |
 
 ### Voix off (FR, tutoiement, ton chaleureux et confiant)
 - 0–4 s : « Tu crées du contenu ? Passe au niveau supérieur. »
 - 4–10 s : « Caméra, micro, lumière… on t'accompagne dans l'achat du matériel qu'il te faut. »
 - 10–16 s : « De tes débuts jusqu'à tes objectifs, on te suit à chaque étape, avec une stratégie sur-mesure. »
-- 16–21 s : « Et chaque mois, des événements pour rencontrer d'autres créateurs. »
+- 16–20 s : « Et chaque mois, des événements pour rencontrer d'autres créateurs. »
 - 22–30 s : « Empira Agency. Développer, accompagner, influencer. Rejoins l'aventure. »
 
 ### Son
-- Musique : cinématique, élégante, en Ré mineur, à 120 BPM. Nappes chaudes, pulsation de basse discrète, arpège léger à partir de 10 s. **Montée (riser) de 20 à 22 s**, puis **impact grave + crash + accord lumineux à 22 s**, et fin apaisée.
-- Bruitages discrets et synchronisés : scintillement à la naissance de l'étincelle, whoosh doux sur chaque déplacement de caméra, déclencheur photo (caméra), petit « pop » (micro), grésillement d'allumage (ring light), pings ascendants (jalons), petits ticks cristallins (12 mois), reflet scintillant sur le logo.
+- Musique : cinématique et élégante, en Ré mineur, à 120 BPM. Nappes chaudes, basse pulsée, arpège à partir de 10 s. **Montée de 20 à 22 s**, puis **impact grave + crash + accord lumineux à 22 s**.
+- Bruitages synchronisés : aspiration dans l'objectif puis souffle grave à la traversée, déclencheur photo, « pop » du micro, grésillement d'allumage de la ring light, montée de lumière, pings ascendants (jalons), ticks cristallins (12 mois), scintillements sur la crête et sur le logo.
 - Laisser de la place à la voix (musique environ 6 dB sous la voix).
 
 ### Livrables
-- 1920×1080 (16:9) et 1080×1920 (9:16 Reels/TikTok), 30 ou 60 i/s, MP4 H.264.
-- Une version avec musique + bruitages, une sans voix off, et les pistes audio séparées.
+- 1920×1080 (16:9) et 1080×1920 (9:16), 60 i/s (et 30 i/s avec flou de mouvement), MP4 H.264.
+- Une version sans voix off, avec les pistes musique et bruitages séparées.
 
 ---
 
 ## Version courte (EN), pour les générateurs vidéo IA (Runway, Kling, Sora, Veo…)
 
-> 30-second premium motion-design ad for "Empira Agency", a talent agency for content creators. ONE continuous camera shot, no cuts, no gimmicky transitions. Pitch-black warm background (#070605) with floating gold dust, faint topographic contour lines, soft film grain and vignette. A thin glowing gold line (gradient #F6D58E → #C98A2E → #9A5A0C) with a bright spark at its tip draws itself across the scene; the camera smoothly tracks the spark sideways and upward with gentle parallax. As the spark passes, elegant gold line-art icons draw themselves: a camera (shutter flash), a microphone (sound waves), a ring light (turns on). The line then rises diagonally, lighting up five milestone nodes, the last one a star. It levels out under a row of 12 month cards (JAN–DEC), each lighting up with a gold star. Finally, the spark accelerates, climbs and traces a large minimalist gold letter "A" (a mountain peak). Impact flash, shockwave ring, the "A" fills with brushed gold, the camera pulls back to reveal the logo "EMPIRA AGENCY" with the tagline "DÉVELOPPER • ACCOMPAGNER • INFLUENCER". Luxury, cinematic, minimal, Montserrat typography, smooth ease-in-out motion, 16:9.
+> 30-second luxury cinematic ad, ONE continuous camera move, no cuts. Black-and-gold color grade on real photography (deep blacks, golden highlights), anamorphic lens flares, floating gold dust with bokeh, film grain, 2.39:1 letterbox. A tiny golden spark draws a glowing line, then dives into the center of a camera lens; the camera flies through the glass. On the other side, real studio gear floats in darkness: a camcorder on a tripod, a studio condenser microphone with light gliding over its grille, a ring light that flickers on and floods the frame with warm light. Emerging into a golden sunset panorama: a silhouette walks, climbs, then stands on a summit reaching toward the sun while a golden line follows the ridge. The camera keeps tracking over a concert crowd bathed in gold, then flies into the stage light. Golden bokeh resolves into the Matterhorn at night under the stars; the spark traces its ridge to the summit and the ridge morphs into a minimalist golden letter "A". Impact flash, letterbox opens, logo reveal. Smooth ease-in-out motion, parallax depth, premium, awe-inspiring.
 
-*(Les générateurs IA gèrent mal le texte et les logos exacts : il vaut mieux leur faire générer seulement le décor et l'animation, puis incruster le vrai logo et les textes au montage.)*
+*(Les générateurs IA gèrent mal le texte et les logos exacts : il vaut mieux leur faire générer seulement les images et les mouvements, puis incruster le vrai logo et les textes au montage.)*

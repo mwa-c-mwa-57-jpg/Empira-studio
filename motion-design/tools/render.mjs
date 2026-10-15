@@ -11,7 +11,7 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => (
 const FPS = +(args.fps || 30);
 const OUT = path.resolve(ROOT, args.out || "out/empira-video-silent.mp4");
 
-const MIME = { ".html": "text/html", ".png": "image/png", ".woff2": "font/woff2", ".wav": "audio/wav", ".js": "text/javascript" };
+const MIME = { ".html": "text/html", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".wav": "audio/wav", ".js": "text/javascript" };
 const server = http.createServer((req, res) => {
   const p = path.join(ROOT, decodeURIComponent(req.url.split("?")[0]));
   fs.readFile(p, (err, data) => { if (err) { res.writeHead(404); res.end(); return; } res.writeHead(200, { "Content-Type": MIME[path.extname(p)] || "application/octet-stream" }); res.end(data); });
@@ -32,21 +32,30 @@ if (args.stills) {
     await stage.screenshot({ path: path.join(ROOT, `out/stills/t${t.toFixed(2).padStart(5, "0")}.png`) });
   }
 } else {
-  const from = +(args.from || 0), to = +(args.to || 30);
-  const ff = spawn("ffmpeg", ["-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "png", "-i", "-",
-    "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-pix_fmt", "yuv420p", "-movflags", "+faststart", OUT], { stdio: ["pipe", "ignore", "inherit"] });
-  const n = Math.round((to - from) * FPS);
-  const t0 = Date.now();
-  for (let i = 0; i < n; i++) {
-    const t = from + i / FPS;
-    await page.evaluate(t => window.seek(t), t);
-    const buf = await stage.screenshot({ type: "png" });
-    if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once("drain", r));
-    if (i % 60 === 0) process.stdout.write(`frame ${i}/${n}  ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);
-  }
-  ff.stdin.end();
-  await new Promise(r => ff.on("close", r));
-  console.log("OK →", OUT);
+  // rendu parallèle : N pages (processus de rendu distincts), chacune encode un segment, puis concaténation
+  const from = +(args.from || 0), to = +(args.to || 30), WORKERS = +(args.workers || 1);
+  const n = Math.round((to - from) * FPS), per = Math.ceil(n / WORKERS), t0 = Date.now();
+  const tmp = path.join(ROOT, "out/.chunks"); fs.mkdirSync(tmp, { recursive: true });
+  let done = 0;
+  const work = async (w) => {
+    const pg = w === 0 ? page : await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+    if (w) { pg.on("pageerror", e => console.error("PAGE ERROR", e.message)); await pg.goto(`http://localhost:${port}/index.html?render`); await pg.evaluate(() => window.ready); }
+    const st = await pg.$("#stage"), a = w * per, b = Math.min(n, a + per), file = path.join(tmp, `c${w}.mp4`);
+    const ff = spawn("ffmpeg", ["-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-",
+      "-c:v", "libx264", "-preset", "medium", "-crf", "13", "-pix_fmt", "yuv420p", file], { stdio: ["pipe", "ignore", "ignore"] });
+    for (let i = a; i < b; i++) {
+      await pg.evaluate(t => window.seek(t), from + i / FPS);
+      const buf = await st.screenshot({ type: "jpeg", quality: 96 });
+      if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once("drain", r));
+      if (++done % 60 === 0) process.stdout.write(`frame ${done}/${n}  ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);
+    }
+    ff.stdin.end(); await new Promise(r => ff.on("close", r));
+    return file;
+  };
+  const files = await Promise.all(Array.from({ length: WORKERS }, (_, w) => work(w)));
+  fs.writeFileSync(path.join(tmp, "list.txt"), files.map(f => `file '${f}'`).join("\n"));
+  await new Promise(r => spawn("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", path.join(tmp, "list.txt"), "-c", "copy", "-movflags", "+faststart", OUT], { stdio: "ignore" }).on("close", r));
+  console.log("OK →", OUT, ((Date.now() - t0) / 1000).toFixed(0) + "s");
 }
 await browser.close();
 server.close();
