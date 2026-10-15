@@ -110,7 +110,7 @@ function plane(id, src, iw, ih, w, anchor, at, o = {}) {
 }
 // uv → monde
 const uvw = (p, u, v) => [p.x + u * p.w, p.y + v * p.h, p.z];
-const FEATHER_X = "linear-gradient(90deg,transparent 0%,#000 16%,#000 84%,transparent 100%)";
+const FEATHER_X = "linear-gradient(90deg,transparent 0%,#000 27%,#000 73%,transparent 100%)";
 const FEATHER = "radial-gradient(ellipse 58% 58% at 50% 50%,#000 55%,transparent 100%)";
 
 // Ordre = profondeur (le plus lointain d'abord pour l'empilement)
@@ -247,7 +247,7 @@ text("sub", "Rencontre d'autres créateurs et développe ton réseau.", TX + 2, 
 const CALLS = [
   { name: "CAMÉRA", p: () => W_("camera", 0.47, 0.47), t0: 5.0, t1: 6.25, dir: -1 },
   { name: "MICRO", p: () => W_("mic", 0.70, 0.30), t0: 6.75, t1: 7.85 },
-  { name: "LUMIÈRE", p: () => W_("ring", 0.80, 0.48), t0: 8.25, t1: 9.35 },
+  { name: "LUMIÈRE", p: () => W_("ring", 0.74, 0.42), t0: 8.25, t1: 9.0 },
 ].map(c => { const d = document.createElement("div"); d.className = "blk call"; d.textContent = c.name; $("hud").appendChild(d); return Object.assign(c, { el: d }); });
 const MILE_EL = MILESTONES.map(m => { const d = document.createElement("div"); d.className = "blk mile" + (m.last ? " gold" : ""); d.textContent = m.name; $("hud").appendChild(d); return d; });
 
@@ -486,7 +486,7 @@ function drawFx(t, c) {
       fx.letterSpacing = (4 * a[2]).toFixed(1) + "px"; fx.fillText(MONTHS[i], a[0] + w / 2 + 2 * a[2], a[1] + 42 * a[2]); fx.letterSpacing = "0px";
       // étoile
       const cx2 = a[0] + w / 2, cy2 = a[1] + h * .64, ss = (lit > 0 ? E.outBack(clamp(lit)) : 0) * a[2];
-      if (ss > 0) { fx.save(); fx.translate(cx2, cy2); fx.rotate((lit - 1) * 1.5); fx.scale(ss, ss); fx.beginPath(); for (let k2 = 0; k2 < 8; k2++) { const a2 = -Math.PI / 2 + k2 * Math.PI / 4, rr = k2 % 2 ? 5.5 : 19; fx.lineTo(Math.cos(a2) * rr, Math.sin(a2) * rr); } fx.closePath(); fx.fillStyle = "#F6D58E"; fx.shadowColor = "rgba(240,180,80,1)"; fx.shadowBlur = 16; fx.fill(); fx.restore(); }
+      if (ss > 0) { fx.save(); fx.translate(cx2, cy2); fx.rotate((lit - 1) * 0.6); fx.scale(ss, ss); fx.beginPath(); for (let k2 = 0; k2 < 8; k2++) { const a2 = -Math.PI / 2 + k2 * Math.PI / 4, rr = k2 % 2 ? 5.5 : 19; fx.lineTo(Math.cos(a2) * rr, Math.sin(a2) * rr); } fx.closePath(); fx.fillStyle = "#F6D58E"; fx.shadowColor = "rgba(240,180,80,1)"; fx.shadowBlur = 16; fx.fill(); fx.restore(); }
       else { fx.fillStyle = "rgba(201,138,46,.5)"; fx.beginPath(); fx.arc(cx2, cy2, 3.5 * a[2], 0, 6.283); fx.fill(); }
       fx.globalAlpha = 1;
     }
