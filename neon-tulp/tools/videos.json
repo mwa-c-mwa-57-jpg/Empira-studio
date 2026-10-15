@@ -1,0 +1,431 @@
+{
+ "fontdir": "tools/fonts",
+ "jobs": [
+  {
+   "out": "assets/video/smoke.mp4",
+   "W": 960,
+   "H": 540,
+   "loop": 1.5,
+   "crf": 30,
+   "spec": [
+    {
+     "kind": "vid",
+     "src": "sources/vid/smoke_rise.mp4",
+     "start": 2,
+     "dur": 11,
+     "fx": "hue=s=0,eq=contrast=1.25:brightness=-0.03"
+    }
+   ]
+  },
+  {
+   "out": "assets/video/hero.mp4",
+   "W": 1280,
+   "H": 720,
+   "T": 0.8,
+   "loop": 0.8,
+   "crf": 29,
+   "grade": "eq=contrast=1.06:saturation=1.08,vignette=angle=0.55",
+   "spec": [
+    {
+     "kind": "vid",
+     "src": "sources/vid/canal_ams.mp4",
+     "start": 0.5,
+     "dur": 4.0,
+     "fx": "eq=brightness=-0.07:saturation=0.9,colorbalance=bs=0.12:bm=0.05:rs=-0.04"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw/canal_longexp.jpg",
+     "dur": 3.6,
+     "zoom": [
+      1.16,
+      1.0
+     ],
+     "tr": "hblur"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/coffee_beans.mp4",
+     "start": 3.0,
+     "dur": 4.0,
+     "tr": "fade"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw/leaf_close.jpg",
+     "dur": 3.4,
+     "zoom": [
+      1.0,
+      1.14
+     ],
+     "pan": [
+      0.45,
+      0.5
+     ],
+     "drift": [
+      0.08,
+      0
+     ],
+     "tr": "hblur"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/smoke_twirl.mp4",
+     "start": 4,
+     "dur": 3.6,
+     "fx": "colorchannelmixer=rr=1:gg=0.38:bb=0.62",
+     "tr": "fadeblack"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw/canal_night1.jpg",
+     "dur": 3.6,
+     "zoom": [
+      1.05,
+      1.2
+     ],
+     "pan": [
+      0.5,
+      0.32
+     ],
+     "drift": [
+      0,
+      0.1
+     ],
+     "tr": "smoothup"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/coffee_pour.mp4",
+     "start": 2,
+     "dur": 3.6,
+     "tr": "fade"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw2/neon_pub.jpg",
+     "dur": 3.4,
+     "zoom": [
+      1.14,
+      1.0
+     ],
+     "pan": [
+      0.4,
+      0.5
+     ],
+     "tr": "hblur"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/bokeh.mp4",
+     "start": 2,
+     "dur": 3.6,
+     "tr": "fade"
+    }
+   ]
+  },
+  {
+   "out": "assets/video/film.mp4",
+   "W": 1600,
+   "H": 900,
+   "T": 0.7,
+   "crf": 27,
+   "grade": "eq=contrast=1.05:saturation=1.06,vignette=angle=0.5",
+   "spec": [
+    {
+     "kind": "vid",
+     "src": "sources/vid/smoke_rise.mp4",
+     "start": 3,
+     "dur": 4.2,
+     "fx": "colorchannelmixer=rr=0.7:gg=0.75:bb=1,eq=brightness=-0.05"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/canal_ams.mp4",
+     "start": 3,
+     "dur": 4.0,
+     "tr": "fadeblack"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/coffee_man.mp4",
+     "start": 6,
+     "dur": 3.8,
+     "tr": "hblur",
+     "fx": "eq=brightness=-0.04"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw/pour_glass.jpg",
+     "dur": 3.6,
+     "zoom": [
+      1.0,
+      1.12
+     ],
+     "pan": [
+      0.5,
+      0.55
+     ],
+     "tr": "smoothleft"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw/canal_longexp.jpg",
+     "dur": 3.8,
+     "zoom": [
+      1.12,
+      1.0
+     ],
+     "tr": "fadeblack",
+     "fx": "eq=brightness=-0.05"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw/leaf_dark1.jpg",
+     "dur": 3.6,
+     "zoom": [
+      1.0,
+      1.15
+     ],
+     "pan": [
+      0.5,
+      0.45
+     ],
+     "tr": "hblur"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/smoke_twirl.mp4",
+     "start": 8,
+     "dur": 3.6,
+     "fx": "colorchannelmixer=rr=1:gg=0.38:bb=0.62",
+     "tr": "fadeblack"
+    },
+    {
+     "kind": "img",
+     "src": "sources/raw2/neon_pub.jpg",
+     "dur": 3.8,
+     "zoom": [
+      1.0,
+      1.1
+     ],
+     "pan": [
+      0.45,
+      0.5
+     ],
+     "drift": [
+      0.06,
+      0
+     ],
+     "tr": "smoothup"
+    },
+    {
+     "kind": "vid",
+     "src": "sources/vid/smoke_fade.mp4",
+     "start": 10,
+     "dur": 4.6,
+     "fx": "colorchannelmixer=rr=0.7:gg=0.75:bb=1,eq=brightness=-0.12",
+     "tr": "fadeblack"
+    }
+   ],
+   "titles": [
+    {
+     "t": [
+      0.4,
+      3.7
+     ],
+     "text": "NEON TULP",
+     "font": "archivo-x900.ttf",
+     "size": 150,
+     "color": "0xf1ede4",
+     "x": "(w-text_w)/2",
+     "y": "(h-text_h)/2-40+RISE"
+    },
+    {
+     "t": [
+      0.9,
+      3.7
+     ],
+     "text": "AMSTERDAM  ·  52.3676° N   4.9041° E",
+     "font": "archivo-c400.ttf",
+     "size": 28,
+     "color": "0xffb547",
+     "x": "(w-text_w)/2",
+     "y": "h/2+70+RISE"
+    },
+    {
+     "t": [
+      3.9,
+      6.8
+     ],
+     "text": "08:00",
+     "font": "archivo-x900.ttf",
+     "size": 190,
+     "color": "0xf1ede4",
+     "x": "90",
+     "y": "h-text_h-170+RISE"
+    },
+    {
+     "t": [
+      4.2,
+      6.8
+     ],
+     "text": "De stad wordt wakker.",
+     "font": "instrument-it.ttf",
+     "size": 64,
+     "color": "0xffd9e6",
+     "x": "96",
+     "y": "h-140+RISE"
+    },
+    {
+     "t": [
+      7.1,
+      9.9
+     ],
+     "text": "KOFFIE",
+     "font": "archivo-x900.ttf",
+     "size": 250,
+     "color": "0xf1ede4",
+     "x": "(w-text_w)/2-SLIDE",
+     "slide": -120,
+     "y": "(h-text_h)/2",
+     "opacity": 0.94
+    },
+    {
+     "t": [
+      10.2,
+      12.8
+     ],
+     "text": "Single origin.",
+     "font": "instrument-it.ttf",
+     "size": 84,
+     "color": "0xf1ede4",
+     "x": "90",
+     "y": "h-250+RISE"
+    },
+    {
+     "t": [
+      10.5,
+      12.8
+     ],
+     "text": "Langzaam gezet.",
+     "font": "instrument-it.ttf",
+     "size": 84,
+     "color": "0xff7aa8",
+     "x": "90",
+     "y": "h-150+RISE"
+    },
+    {
+     "t": [
+      13.1,
+      15.9
+     ],
+     "text": "17:00",
+     "font": "archivo-x900.ttf",
+     "size": 190,
+     "color": "0xffb547",
+     "x": "90",
+     "y": "h-text_h-170+RISE"
+    },
+    {
+     "t": [
+      13.4,
+      15.9
+     ],
+     "text": "De lampen gaan aan.",
+     "font": "instrument-it.ttf",
+     "size": 64,
+     "color": "0xf1ede4",
+     "x": "96",
+     "y": "h-140+RISE"
+    },
+    {
+     "t": [
+      16.2,
+      18.8
+     ],
+     "text": "DE KAART",
+     "font": "archivo-x900.ttf",
+     "size": 200,
+     "color": "0xf1ede4",
+     "x": "(w-text_w)/2",
+     "y": "(h-text_h)/2-50+RISE"
+    },
+    {
+     "t": [
+      16.6,
+      18.8
+     ],
+     "text": "Zorgvuldig gekozen.",
+     "font": "instrument-it.ttf",
+     "size": 64,
+     "color": "0x7af0b8",
+     "x": "(w-text_w)/2",
+     "y": "h/2+90+RISE"
+    },
+    {
+     "t": [
+      19.1,
+      21.7
+     ],
+     "text": "RUST",
+     "font": "archivo-x900.ttf",
+     "size": 320,
+     "color": "0xf1ede4",
+     "x": "(w-text_w)/2",
+     "y": "(h-text_h)/2+RISE",
+     "rise": 70
+    },
+    {
+     "t": [
+      22.0,
+      24.8
+     ],
+     "text": "GEZELLIG",
+     "font": "archivo-x900.ttf",
+     "size": 170,
+     "color": "0xf1ede4",
+     "x": "(w-text_w)/2+SLIDE",
+     "slide": -140,
+     "y": "(h-text_h)/2"
+    },
+    {
+     "t": [
+      25.1,
+      29.4
+     ],
+     "text": "NEON TULP",
+     "font": "archivo-x900.ttf",
+     "size": 150,
+     "color": "0xf1ede4",
+     "x": "(w-text_w)/2",
+     "y": "(h-text_h)/2-50+RISE"
+    },
+    {
+     "t": [
+      25.5,
+      29.4
+     ],
+     "text": "Koffie bij dag. Rust bij nacht.",
+     "font": "instrument-it.ttf",
+     "size": 60,
+     "color": "0xff7aa8",
+     "x": "(w-text_w)/2",
+     "y": "h/2+60+RISE"
+    },
+    {
+     "t": [
+      25.9,
+      29.4
+     ],
+     "text": "18+  ·  GRACHTENGORDEL  ·  AMSTERDAM",
+     "font": "archivo-c400.ttf",
+     "size": 26,
+     "color": "0xffb547",
+     "x": "(w-text_w)/2",
+     "y": "h-110"
+    }
+   ]
+  }
+ ]
+}

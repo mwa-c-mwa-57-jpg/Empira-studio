@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neon Tulp</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Neon Tulp — coffeeshop concept in Amsterdam. Specialty koffie bij dag, een rustige lounge bij nacht.">
+<meta name="theme-color" content="#0d1230">
+<script>
+  /* Set language and day/night mode before first paint (Amsterdam clock decides the mode). */
+  (function () {
+    var d = document.documentElement, mode = "nacht", lang = "en";
+    try {
+      var h = +new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hourCycle: "h23" }).format(new Date());
+      mode = h >= 8 && h < 17 ? "dag" : "nacht";
+    } catch (e) {}
+    var src = "clock";
+    try { var m = sessionStorage.getItem("nt-mode"); if (m === "dag" || m === "nacht") { mode = m; src = "user"; } } catch (e) {}
+    var nav = (navigator.language || "en").slice(0, 2).toLowerCase();
+    if (nav === "fr" || nav === "nl") lang = nav;
+    try { var l = localStorage.getItem("nt-lang"); if (l === "fr" || l === "nl" || l === "en") lang = l; } catch (e) {}
+    d.setAttribute("data-mode", mode);
+    d.setAttribute("data-mode-src", src);
+    d.setAttribute("lang", lang);
+    d.classList.add("js");
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-tulip" viewBox="0 0 64 64">
+    <path d="M18 14 L25 23 L32 10 L39 23 L46 14 V28 C46 36.5 40 42 32 42 C24 42 18 36.5 18 28 Z" />
+    <path d="M32 42 V60" />
+    <path d="M32 55 C27 54 22 50 20 44 C26 45 30 48 32 53" />
+    <path d="M32 51 C36 49 41 46 43 41 C38 41 34 44 32 48" />
+  </symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13 5h3v14h-3z" /></symbol>
+</svg>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>
+
+<!-- Loader -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__top"><span>Neon Tulp</span><span data-i18n="loader.label">Lampen aan</span></div>
+  <div class="loader__count"><span id="loaderNum">000</span><i>%</i></div>
+  <div class="loader__bar"><i id="loaderBar"></i></div>
+</div>
+
+<!-- Age gate -->
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+  <div class="gate__inner">
+    <svg class="gate__tulip" viewBox="0 0 64 64" aria-hidden="true"><use href="#i-tulip" /></svg>
+    <p class="eyebrow" data-i18n="gate.eyebrow">Coffeeshop · Amsterdam</p>
+    <h2 class="gate__title" id="gateTitle" data-i18n="gate.title">Ben je 18 jaar of ouder?</h2>
+    <p class="gate__text" data-i18n="gate.text">Neon Tulp is een coffeeshop.</p>
+    <div class="gate__actions">
+      <button class="btn btn--solid" id="gateYes" type="button" data-i18n="gate.yes">Ja, ik ben 18+</button>
+      <button class="btn btn--ghost" id="gateNo" type="button" data-i18n="gate.no">Nee</button>
+    </div>
+    <p class="gate__no" id="gateNoMsg" role="status" hidden data-i18n="gate.noMsg"></p>
+    <div class="gate__foot">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="fr">FR</button>
+      </div>
+      <span class="gate__concept" data-i18n="meta.concept">Concept</span>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Neon Tulp">
+    <svg class="brand__icon" viewBox="0 0 64 64" aria-hidden="true"><use href="#i-tulip" /></svg>
+    <span class="brand__word">Neon<em>Tulp</em></span>
+  </a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#concept" data-i18n="nav.concept">Concept</a>
+    <a href="#kaart" data-i18n="nav.kaart">De Kaart</a>
+    <a href="#film" data-i18n="nav.film">Film</a>
+    <a href="#regels" data-i18n="nav.regels">Huisregels</a>
+    <a href="#bezoek" data-i18n="nav.bezoek">Bezoek</a>
+  </nav>
+  <div class="nav__tools">
+    <span class="status" id="status"><i></i><span id="statusText">—</span></span>
+    <div class="lang lang--nav" role="group" aria-label="Language">
+      <button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="fr">FR</button>
+    </div>
+    <button class="mode" id="modeToggle" type="button" data-i18n-aria="mode.aria" aria-label="Wissel tussen dag en nacht">
+      <span class="mode__label mode__label--dag" data-i18n="mode.dag">Dag</span>
+      <span class="mode__track"><span class="mode__knob"></span></span>
+      <span class="mode__label mode__label--nacht" data-i18n="mode.nacht">Nacht</span>
+    </button>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mobileMenu">
+      <span class="burger__lines"><i></i><i></i></span><span class="burger__txt" data-i18n="nav.menu">Menu</span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <nav aria-label="Mobile">
+    <a href="#concept" data-i18n="nav.concept">Concept</a>
+    <a href="#kaart" data-i18n="nav.kaart">De Kaart</a>
+    <a href="#film" data-i18n="nav.film">Film</a>
+    <a href="#regels" data-i18n="nav.regels">Huisregels</a>
+    <a href="#bezoek" data-i18n="nav.bezoek">Bezoek</a>
+  </nav>
+  <div class="mobile-menu__foot">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="nl">NL</button><button type="button" data-lang="en">EN</button><button type="button" data-lang="fr">FR</button>
+    </div>
+    <span class="mobile-menu__clock" data-clock>Amsterdam --:--</span>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero__media">
+      <video class="hero__video" id="heroVideo" poster="assets/video/hero-poster.jpg" muted autoplay loop playsinline preload="auto">
+        <source src="assets/video/hero.mp4" type="video/mp4">
+        <source src="assets/video/hero.webm" type="video/webm">
+      </video>
+      <canvas class="hero__smoke" id="smoke" aria-hidden="true"></canvas>
+      <div class="hero__shade"></div>
+    </div>
+    <div class="hero__meta wrap">
+      <span>52.3676° N · 4.9041° E</span>
+      <span class="hero__clock"><span data-i18n="clock.label">Amsterdam</span> <b id="amsClock" data-clock-time>--:--:--</b></span>
+    </div>
+    <div class="hero__content wrap">
+      <h1 class="hero__title" aria-label="Neon Tulp">
+        <span class="hero__neon" id="heroNeon" aria-hidden="true"><span class="ch">N</span><span class="ch">E</span><span class="ch">O</span><span class="ch">N</span></span>
+        <span class="hero__tulp" aria-hidden="true"><span class="flicker">T</span>ulp</span>
+      </h1>
+      <div class="hero__bottom">
+        <div class="hero__copy">
+          <p class="hero__tag" data-i18n-html="hero.tag">Koffie bij dag. <em>Rust bij nacht.</em></p>
+          <p class="hero__sub" data-i18n="hero.sub">Een coffeeshop aan de gracht.</p>
+          <div class="hero__cta">
+            <a class="btn btn--solid magnetic" href="#kaart"><span data-i18n="hero.cta1">Bekijk de kaart</span><svg class="ico" aria-hidden="true"><use href="#i-arrow" /></svg></a>
+            <a class="btn btn--ghost magnetic" href="#film" data-cursor="play"><svg class="ico ico--fill" aria-hidden="true"><use href="#i-play" /></svg><span data-i18n="hero.cta2">Speel de film</span></a>
+          </div>
+        </div>
+        <div class="badge" aria-hidden="true">
+          <svg viewBox="0 0 200 200" class="badge__ring">
+            <defs><path id="badgeCircle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
+            <text><textPath href="#badgeCircle" id="badgeText" textLength="486" lengthAdjust="spacing">COFFEESHOP · 18+ · AMSTERDAM · GRACHTENGORDEL · </textPath></text>
+          </svg>
+          <svg class="badge__tulip" viewBox="0 0 64 64"><use href="#i-tulip" /></svg>
+        </div>
+      </div>
+    </div>
+    <a class="hero__scroll" href="#concept"><span data-i18n="hero.scroll">Scroll</span><i></i></a>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__row marquee__row--a"><div class="marquee__track" data-marquee="-1">
+      <span>Koffie</span><svg><use href="#i-tulip" /></svg><span>Wiet</span><svg><use href="#i-tulip" /></svg><span>Hasj</span><svg><use href="#i-tulip" /></svg><span>Gezelligheid</span><svg><use href="#i-tulip" /></svg><span>Vinyl</span><svg><use href="#i-tulip" /></svg><span>Grachten</span><svg><use href="#i-tulip" /></svg>
+    </div></div>
+    <div class="marquee__row marquee__row--b"><div class="marquee__track" data-marquee="1">
+      <span>Rust</span><b>·</b><span>Single origin</span><b>·</b><span>Lounge</span><b>·</b><span>18+</span><b>·</b><span>Stroopwafels</span><b>·</b><span>Lampen aan</span><b>·</b>
+    </div></div>
+  </div>
+
+  <!-- CONCEPT -->
+  <section class="concept" id="concept">
+    <video class="concept__smoke" muted autoplay loop playsinline preload="none" aria-hidden="true">
+      <source src="assets/video/smoke.mp4" type="video/mp4">
+      <source src="assets/video/smoke.webm" type="video/webm">
+    </video>
+    <div class="wrap concept__grid">
+      <p class="eyebrow" data-i18n="concept.eyebrow">Het concept</p>
+      <p class="manifesto" id="manifesto" data-i18n="concept.manifesto">Neon Tulp is een coffeeshop voor mensen die de tijd nemen.</p>
+      <div class="stack" aria-hidden="true">
+        <figure class="stack__item stack__item--a" data-depth="0.25"><img src="assets/img/tulip-red.webp" alt="" loading="lazy" decoding="async"></figure>
+        <figure class="stack__item stack__item--b" data-depth="0.6"><img src="assets/img/espresso.webp" alt="" loading="lazy" decoding="async"></figure>
+        <figure class="stack__item stack__item--c" data-depth="0.4"><img src="assets/img/leaf-close.webp" alt="" loading="lazy" decoding="async"></figure>
+      </div>
+    </div>
+    <div class="wrap facts">
+      <h2 class="facts__title" data-i18n="facts.title">De cijfers die tellen</h2>
+      <ul class="facts__list">
+        <li class="fact"><span class="fact__num"><span data-count="18">18</span><sup>+</sup></span><span class="fact__txt" data-i18n="facts.age">Minimumleeftijd.</span></li>
+        <li class="fact"><span class="fact__num"><span data-count="5">5</span><sup>g</sup></span><span class="fact__txt" data-i18n="facts.gram">Maximum per persoon per dag.</span></li>
+        <li class="fact"><span class="fact__num"><span data-count="0">0</span><sup>%</sup></span><span class="fact__txt" data-i18n="facts.alc">Alcohol.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- DAG / NACHT -->
+  <section class="dn" id="dagnacht">
+    <div class="wrap dn__head">
+      <p class="eyebrow" data-i18n="dn.eyebrow">Twee gezichten</p>
+      <h2 class="h2" data-i18n-html="dn.title">Eén adres, <em>twee sferen</em></h2>
+    </div>
+    <div class="dn__panels">
+      <article class="dn-panel" data-panel="dag">
+        <img class="dn-panel__img" src="assets/img/canal-day.webp" alt="" loading="lazy" decoding="async">
+        <div class="dn-panel__body">
+          <span class="dn-panel__time">08:00 — 17:00</span>
+          <h3 class="dn-panel__title" data-i18n="mode.dag">Dag</h3>
+          <ul>
+            <li data-i18n="dn.dag.1">Specialty koffie &amp; thee</li>
+            <li data-i18n="dn.dag.2">Verse stroopwafels</li>
+            <li data-i18n="dn.dag.3">Daglicht</li>
+          </ul>
+          <button class="btn btn--line" type="button" data-set-mode="dag"><span class="dn-panel__cta" data-mode-label="dag">Dag</span></button>
+        </div>
+      </article>
+      <article class="dn-panel" data-panel="nacht">
+        <img class="dn-panel__img" src="assets/img/canal-bridge.webp" alt="" loading="lazy" decoding="async">
+        <div class="dn-panel__body">
+          <span class="dn-panel__time">17:00 — 01:00</span>
+          <h3 class="dn-panel__title" data-i18n="mode.nacht">Nacht</h3>
+          <ul>
+            <li data-i18n="dn.nacht.1">Lounge met gedimd licht</li>
+            <li data-i18n="dn.nacht.2">Vinyl vanaf 20:00</li>
+            <li data-i18n="dn.nacht.3">De volledige kaart aan de toonbank</li>
+          </ul>
+          <button class="btn btn--line" type="button" data-set-mode="nacht"><span class="dn-panel__cta" data-mode-label="nacht">Nacht</span></button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- FILM -->
+  <section class="film" id="film">
+    <div class="film__pin">
+      <div class="film__head wrap">
+        <p class="eyebrow" data-i18n="film.eyebrow">De film</p>
+        <h2 class="h2" data-i18n-html="film.title">Een dag in <em>29 seconden</em></h2>
+        <p class="film__text" data-i18n="film.text">Gemonteerd uit vrije beelden.</p>
+      </div>
+      <div class="film__frame" id="filmFrame" data-cursor="play">
+        <video id="filmVideo" poster="assets/video/film-poster.jpg" muted loop playsinline preload="metadata">
+          <source src="assets/video/film.mp4" type="video/mp4">
+          <source src="assets/video/film.webm" type="video/webm">
+        </video>
+        <div class="film__hud" aria-hidden="true">
+          <span class="film__rec"><i></i>REC</span>
+          <span id="filmTC">00:00:00</span>
+          <span class="film__spec">NEON TULP · 29″ · 16:9</span>
+        </div>
+        <div class="film__progress" aria-hidden="true"><i id="filmBar"></i></div>
+        <button class="film__play" id="filmPlay" type="button">
+          <svg class="ico ico--fill" aria-hidden="true"><use href="#i-play" /></svg><span data-i18n="film.play">Afspelen</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY (horizontal) -->
+  <section class="gallery" id="gallery">
+    <div class="gallery__pin">
+      <div class="gallery__bgtext" aria-hidden="true">Grachtengordel</div>
+      <div class="gallery__head wrap">
+        <p class="eyebrow" data-i18n="gal.eyebrow">Na zonsondergang</p>
+        <h2 class="h2" data-i18n-html="gal.title">De stad <em>als decor</em></h2>
+        <p class="gallery__hint" data-i18n="gal.drag">Scroll om te bladeren</p>
+      </div>
+      <div class="gallery__viewport">
+        <div class="gallery__track" id="galleryTrack">
+          <figure class="g-item g-item--wide"><div class="g-item__img"><img src="assets/img/canal-bridge.webp" alt="Amsterdam bridge with light trails on the canal at night" loading="lazy" decoding="async"></div><figcaption><b>22:40</b><span data-i18n="gal.1">Lampen op het water</span></figcaption></figure>
+          <figure class="g-item g-item--tall"><div class="g-item__img"><img src="assets/img/espresso.webp" alt="Espresso pouring from a machine into a white cup" loading="lazy" decoding="async"></div><figcaption><b>08:03</b><span data-i18n="gal.2">Eerste shot</span></figcaption></figure>
+          <figure class="g-item g-item--tall g-item--low"><div class="g-item__img"><img src="assets/img/leaf-glow.webp" alt="Cannabis leaves lit against a dark background" loading="lazy" decoding="async"></div><figcaption><b>16:20</b><span data-i18n="gal.3">Het groene kabinet</span></figcaption></figure>
+          <figure class="g-item g-item--tall"><div class="g-item__img"><img src="assets/img/canal-houses.webp" alt="Canal houses reflected in the water at blue hour" loading="lazy" decoding="async"></div><figcaption><b>21:12</b><span data-i18n="gal.4">Het blauwe uur</span></figcaption></figure>
+          <figure class="g-item g-item--wide g-item--low"><div class="g-item__img"><img src="assets/img/smoke-purple.webp" alt="Purple smoke drifting on black" loading="lazy" decoding="async"></div><figcaption><b>23:55</b><span data-i18n="gal.5">Rook en neon</span></figcaption></figure>
+          <figure class="g-item g-item--sq"><div class="g-item__img"><img src="assets/img/tulip-parrot.webp" alt="Red and yellow parrot tulips" loading="lazy" decoding="async"></div><figcaption><b>10:15</b><span data-i18n="gal.6">Tulpen van de markt</span></figcaption></figure>
+          <figure class="g-item g-item--wide"><div class="g-item__img"><img src="assets/img/neon-bar.webp" alt="Teal neon sign glowing in a dark lounge" loading="lazy" decoding="async"></div><figcaption><b>00:45</b><span data-i18n="gal.7">Laatste ronde</span></figcaption></figure>
+        </div>
+      </div>
+      <div class="gallery__progress" aria-hidden="true"><i id="galleryBar"></i></div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="kaart" id="kaart">
+    <div class="wrap">
+      <div class="kaart__head">
+        <p class="eyebrow" data-i18n="kaart.eyebrow">De Kaart</p>
+        <h2 class="h2" data-i18n-html="kaart.title">Klein, eerlijk, <em>goed uitgelegd</em></h2>
+        <p class="lead" data-i18n="kaart.text">Elke maand een nieuwe selectie.</p>
+      </div>
+      <div class="tabs" role="tablist" aria-label="De Kaart" id="kaartTabs">
+        <button role="tab" type="button" id="tab-koffie" aria-controls="kaartPanel" data-tab="koffie" data-i18n="kaart.tab.koffie">Koffie</button>
+        <button role="tab" type="button" id="tab-wiet" aria-controls="kaartPanel" data-tab="wiet" data-i18n="kaart.tab.wiet">Wiet</button>
+        <button role="tab" type="button" id="tab-hasj" aria-controls="kaartPanel" data-tab="hasj" data-i18n="kaart.tab.hasj">Hasj</button>
+        <button role="tab" type="button" id="tab-bakkerij" aria-controls="kaartPanel" data-tab="bakkerij" data-i18n="kaart.tab.bakkerij">Bakkerij</button>
+        <span class="tabs__ink" aria-hidden="true"></span>
+      </div>
+      <div class="kaart__grid">
+        <div class="kaart__panel" id="kaartPanel" role="tabpanel">
+          <ul class="kaart__list" id="kaartList"></ul>
+          <p class="kaart__indicative" data-i18n="kaart.indicative">Prijzen indicatief · concept</p>
+        </div>
+        <aside class="profile" id="profile" aria-live="polite">
+          <div class="profile__img"><img id="profileImg" src="assets/img/espresso.webp" alt=""></div>
+          <div class="profile__body">
+            <p class="profile__type" id="profileType">—</p>
+            <h3 class="profile__name" id="profileName">—</h3>
+            <p class="profile__desc" id="profileDesc"></p>
+            <div class="profile__meters" id="profileMeters"></div>
+            <p class="profile__label" data-i18n="kaart.profile">Smaakprofiel</p>
+            <ul class="flavour" id="profileFlavour"></ul>
+          </div>
+        </aside>
+      </div>
+      <p class="kaart__note" data-i18n-html="kaart.note"><strong>Begin laag, ga langzaam.</strong></p>
+    </div>
+  </section>
+
+  <!-- RHYTHM CHART -->
+  <section class="ritme" id="ritme">
+    <div class="wrap ritme__grid">
+      <div class="ritme__head">
+        <p class="eyebrow" data-i18n="ritme.eyebrow">Het ritme van de dag</p>
+        <h2 class="h2" data-i18n-html="ritme.title">Wanneer is het <em>rustig?</em></h2>
+        <p class="lead" data-i18n="ritme.text">Gemiddeld aantal gasten per uur.</p>
+      </div>
+      <figure class="chart-card">
+        <div class="chart-legend" id="chartLegend">
+          <span><i class="sw sw--1"></i><span data-i18n="ritme.s1">Koffiegasten</span></span>
+          <span><i class="sw sw--2"></i><span data-i18n="ritme.s2">Loungegasten</span></span>
+        </div>
+        <div class="chart" id="crowdChart"></div>
+        <div class="chart-tip" id="chartTip" hidden></div>
+        <figcaption class="chart-note" data-i18n="ritme.note">Indicatieve cijfers voor dit concept · 42 zitplaatsen</figcaption>
+        <details class="chart-table">
+          <summary data-i18n="ritme.table">Bekijk als tabel</summary>
+          <div class="chart-table__scroll"><table id="chartTable"></table></div>
+        </details>
+      </figure>
+    </div>
+  </section>
+
+  <!-- HOUSE RULES -->
+  <section class="regels" id="regels">
+    <div class="wrap">
+      <div class="regels__head">
+        <p class="eyebrow" data-i18n="regels.eyebrow">Huisregels</p>
+        <h2 class="h2" data-i18n-html="regels.title">Zes afspraken voor <em>een goede avond</em></h2>
+      </div>
+      <ul class="rules">
+        <li class="rule">
+          <svg class="rule__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="11" width="38" height="26" rx="4"/><circle cx="17" cy="23" r="5"/><path d="M10 33c1.5-3.5 4-5 7-5s5.5 1.5 7 5M28 19h10M28 25h10M28 31h6"/></svg>
+          <h3 data-i18n="regels.1.t">18+ met ID</h3><p data-i18n="regels.1.d">Geen ID, geen toegang.</p>
+        </li>
+        <li class="rule">
+          <svg class="rule__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8v6M14 14h20l6 22H8z"/><circle cx="24" cy="8" r="3"/><text x="24" y="31" text-anchor="middle" class="rule__g">5g</text></svg>
+          <h3 data-i18n="regels.2.t">Max 5 gram</h3><p data-i18n="regels.2.d">Per persoon, per dag.</p>
+        </li>
+        <li class="rule">
+          <svg class="rule__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M16 6h16c0 10-3 16-8 16s-8-6-8-16zM24 22v14M17 40h14"/><path d="M8 42L40 6" class="rule__slash"/></svg>
+          <h3 data-i18n="regels.3.t">Geen alcohol</h3><p data-i18n="regels.3.d">En geen harddrugs.</p>
+        </li>
+        <li class="rule">
+          <svg class="rule__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="26" width="30" height="7" rx="1.5"/><path d="M30 26v7M40 26v7M44 26v7M38 22c0-4 4-4 4-8s-3-4-3-6"/><path d="M8 42L40 6" class="rule__slash"/></svg>
+          <h3 data-i18n="regels.4.t">Geen tabak binnen</h3><p data-i18n="regels.4.d">Het rookverbod geldt ook hier.</p>
+        </li>
+        <li class="rule">
+          <svg class="rule__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 34a16 16 0 0 1 32 0"/><path d="M24 34l-9-8" class="rule__needle"/><circle cx="24" cy="34" r="2.5"/><path d="M8 40h32"/></svg>
+          <h3 data-i18n="regels.5.t">Begin laag</h3><p data-i18n="regels.5.d">Ga langzaam.</p>
+        </li>
+        <li class="rule">
+          <svg class="rule__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M4 30h40M8 30c3-9 9-13 16-13s13 4 16 13"/><path d="M6 37c3 2 6 2 9 0s6-2 9 0 6 2 9 0 6-2 9 0"/><path d="M36 6a6 6 0 1 0 6 8 5 5 0 0 1-6-8z"/></svg>
+          <h3 data-i18n="regels.6.t">Rustig naar buiten</h3><p data-i18n="regels.6.d">Fluister op de brug.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section class="agenda" id="agenda">
+    <div class="wrap">
+      <div class="agenda__head">
+        <p class="eyebrow" data-i18n="agenda.eyebrow">Agenda</p>
+        <h2 class="h2" data-i18n-html="agenda.title">Deze <em>weken</em></h2>
+      </div>
+      <ul class="agenda__list" id="agendaList"></ul>
+    </div>
+  </section>
+
+  <!-- VISIT -->
+  <section class="bezoek" id="bezoek">
+    <div class="wrap bezoek__grid">
+      <div class="bezoek__info">
+        <p class="eyebrow" data-i18n="bezoek.eyebrow">Bezoek</p>
+        <h2 class="h2" data-i18n-html="bezoek.title">Kom <em>langs</em></h2>
+        <p class="bezoek__address"><span data-i18n="bezoek.address">Tulpgracht 42 · 1016 Amsterdam</span><small data-i18n="bezoek.fictional">Fictief adres · concept</small></p>
+        <p class="bezoek__line" data-i18n="bezoek.transport">Tram 13 of 17</p>
+        <p class="bezoek__line" data-i18n="bezoek.walkin">Geen reserveringen.</p>
+        <h3 class="bezoek__h3" data-i18n="bezoek.hours">Openingstijden</h3>
+        <table class="hours" id="hoursTable"></table>
+      </div>
+      <figure class="map" id="map">
+        <svg viewBox="0 0 600 520" role="img" data-i18n-aria="map.aria" aria-label="Map">
+          <rect class="map__ij" x="0" y="0" width="600" height="58" />
+          <text class="map__water-label" x="560" y="36" text-anchor="end">IJ</text>
+          <g class="map__streets" id="mapStreets"></g>
+          <g class="map__canals" id="mapCanals"></g>
+          <path class="map__amstel" d="M600 470 C540 440 520 400 470 380 C430 365 400 330 380 290 C360 250 340 200 320 150" />
+          <text class="map__water-label" x="560" y="452" text-anchor="end">Amstel</text>
+          <g class="map__cs">
+            <rect x="262" y="52" width="76" height="18" rx="2" />
+            <text x="300" y="88" text-anchor="middle">Centraal</text>
+          </g>
+          <text class="map__area" x="34" y="300">Jordaan</text>
+          <g class="map__pin" id="mapPin">
+            <circle class="map__pulse" r="10" />
+            <circle class="map__pulse map__pulse--2" r="10" />
+            <circle class="map__dot" r="7" />
+            <g class="map__flag"><rect x="14" y="-30" width="118" height="28" rx="14" /><text x="73" y="-11" text-anchor="middle" data-i18n="map.here">Neon Tulp</text></g>
+          </g>
+        </svg>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <form class="news" id="newsForm" novalidate>
+      <label class="news__label" for="newsEmail" data-i18n="footer.news">Eén mail per maand.</label>
+      <div class="news__row">
+        <input id="newsEmail" name="email" type="email" autocomplete="email" data-i18n-ph="footer.ph" placeholder="jouw@email.nl" aria-describedby="newsMsg">
+        <button class="btn btn--solid" type="submit" data-i18n="footer.btn">Aanmelden</button>
+      </div>
+      <p class="news__msg" id="newsMsg" role="status"></p>
+    </form>
+    <div class="footer__meta">
+      <p data-i18n="footer.credits">Foto's: Pexels · Video: Mixkit</p>
+      <p class="footer__legal" data-i18n="footer.legal">Neon Tulp is een fictief concept.</p>
+      <a class="footer__top" href="#top"><span data-i18n="footer.top">Terug naar boven</span> ↑</a>
+    </div>
+  </div>
+  <div class="footer__giant" aria-hidden="true"><span>Neon</span><em>Tulp</em></div>
+</footer>
+
+<div class="hover-img" id="hoverImg" aria-hidden="true"><img alt=""></div>
+
+<div class="toast" id="toast" role="status" hidden>
+  <span class="toast__dot"></span>
+  <p id="toastText"></p>
+  <button type="button" class="toast__btn" id="toastBtn"></button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/smoke.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
