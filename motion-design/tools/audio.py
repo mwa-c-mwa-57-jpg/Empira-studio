@@ -287,10 +287,9 @@ place(sb, stab, 22.0)
 place(sb, shimmer(2.2, 2000, 0.1, 14), 22.5, pan=0.2)
 place(sb, whoosh(1.0, 1500, 8000, 0.05, -0.6, 0.6), 22.45)
 place(sb, whoosh(0.9, 1500, 8000, 0.04, 0.0, 0.0), 23.25)
-for k, nm in enumerate(["A5", "D6", "F6"]):
-    place(sb, ping(note(nm), 1.2, 0.05), 24.1 + k * 0.42, pan=-0.5 + k * 0.5)
-for k, nm in enumerate(["A5", "D6", "A6"]):                      # CTA TikTok
-    place(sb, ping(note(nm), 1.6, 0.05), 26.2 + k * 0.25, pan=-0.3 + k * 0.3)
+for k, (tm, nm) in enumerate(zip((24.05, 25.05, 25.91), ["A5", "D6", "F6"])):   # calés sur « Développer, accompagner, influencer »
+    place(sb, ping(note(nm), 1.2, 0.05), tm, pan=-0.5 + k * 0.5)
+place(sb, ping(note("D6"), 1.6, 0.045), 26.12)                  # CTA TikTok (juste avant la voix)
 sfx = reverb(sb, 2.2, 0.28)
 
 # ============================ MIX & EXPORT ============================
