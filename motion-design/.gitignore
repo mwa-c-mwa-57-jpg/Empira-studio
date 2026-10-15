@@ -1,0 +1,7 @@
+node_modules/
+out/stills/
+out/*.log
+out/sheet.png
+out/spectrum.png
+out/wave.png
+out/empira-video-silent.mp4
