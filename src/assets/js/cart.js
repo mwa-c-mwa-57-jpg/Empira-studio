@@ -146,7 +146,7 @@ function mailtoOrder() {
     .map((l) => `- ${l.qty} × ${fullName(l.product)} (${price(l.product.price)})`)
     .join("\n");
   const body = `Bonjour Empira Studio,\n\nJe souhaite commander :\n${lines}\n\nTotal estimé : ${price(totals().total)}\n\nMes coordonnées :\n`;
-  const email = document.body.dataset.email || "";
+  const email = document.body.dataset.email || document.querySelector("[data-email]")?.dataset.email || "";
   return `mailto:${email}?subject=${encodeURIComponent("Commande Empira Studio")}&body=${encodeURIComponent(body)}`;
 }
 

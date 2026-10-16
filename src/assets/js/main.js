@@ -17,7 +17,9 @@ const PAGES = {
   404: () => import("./pages/notfound.js"),
 };
 
-const load = PAGES[document.body.dataset.page];
+// La page courante est déclarée sur <body data-page> (ou sur un élément [data-page] si le site est intégré ailleurs).
+const page = document.body.dataset.page || document.querySelector("[data-page]")?.dataset.page;
+const load = PAGES[page];
 if (load) {
   load()
     .then((m) => m.init())
