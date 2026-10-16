@@ -125,7 +125,7 @@ function render() {
   upsell.hidden = lines.length === 0;
   if (!upsell.dataset.ready) {
     upsell.dataset.ready = "1";
-    upsell.innerHTML = `<svg class="upsell-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg><div><strong>Besoin d'aide pour tes lives ?</strong><span>Rejoins Empira Agency sur TikTok.</span></div><a class="btn btn-ghost btn-sm" href="agency.html#rejoindre">Rejoindre</a>`;
+    upsell.innerHTML = `<svg class="upsell-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg><div><strong>Besoin d'aide pour tes lives ?</strong><span>Rejoins gratuitement Empira Agency sur TikTok.</span></div><a class="btn btn-ghost btn-sm" href="agency.html#rejoindre">Rejoindre</a>`;
   }
 }
 

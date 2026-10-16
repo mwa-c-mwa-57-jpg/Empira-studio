@@ -104,7 +104,7 @@ function productHTML(p) {
       <ul class="specs">${p.specs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
       <a class="agency-card" href="agency.html#rejoindre">
         <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg>
-        <span><strong>Besoin d'aide pour tes lives ?</strong>Rejoins Empira Agency sur TikTok : réglages, coaching et conseils.</span>
+        <span><strong>Besoin d'aide pour tes lives ?</strong>Rejoins gratuitement Empira Agency sur TikTok : réglages, coaching et conseils.</span>
       </a>
       <p class="muted">Une question avant d'acheter ? <a class="link-arrow" href="contact.html?sujet=conseil&produit=${esc(p.id)}">Demande conseil à l'équipe</a></p>
     </div>

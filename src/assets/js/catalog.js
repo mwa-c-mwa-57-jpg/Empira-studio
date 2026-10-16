@@ -24,16 +24,16 @@ export const PRODUCTS = [
   {
     id: "maono-pd200xs",
     brand: "Maono",
-    name: "Maono PD200XS",
-    kind: "Micro dynamique USB/XLR, éclairage RGB",
+    name: "Maono PD200XS + bras",
+    kind: "Micro dynamique USB/XLR, éclairage RGB, avec bras articulé",
     category: "micros",
     price: 79.9, // estimé
     badge: "Best-seller",
     image: `${IMG}maono-pd200xs.webp`,
-    short: "Le micro des streamers : son chaud, éclairage RGB et double sortie USB/XLR.",
+    short: "Le micro des streamers, livré avec son bras : son chaud, éclairage RGB et double sortie USB/XLR.",
     description:
-      "Branché en USB, il est reconnu instantanément par ton PC ou ton Mac. Le jour où tu passes à une interface audio, sa sortie XLR prend le relais. Sa capsule dynamique cardioïde garde ta voix au premier plan et ignore les bruits de la pièce. L'application Maono Link règle égaliseur, compresseur et limiteur (en mode USB).",
-    specs: ["Dynamique, directivité cardioïde", "Double sortie USB-C et XLR", "Réponse en fréquence 40 Hz – 16 kHz", "Molette gain / volume casque et mute tactile", "Éclairage RGB 9 couleurs, désactivable", "Réglages avancés via Maono Link (USB)"],
+      "Livré avec son bras articulé blanc pour le placer pile devant ta bouche. Branché en USB, il est reconnu instantanément par ton PC ou ton Mac. Le jour où tu passes à une interface audio, sa sortie XLR prend le relais. Sa capsule dynamique cardioïde garde ta voix au premier plan et ignore les bruits de la pièce. L'application Maono Link règle égaliseur, compresseur et limiteur (en mode USB).",
+    specs: ["Bras articulé blanc inclus", "Dynamique, directivité cardioïde", "Double sortie USB-C et XLR", "Réponse en fréquence 40 Hz – 16 kHz", "Molette gain / volume casque et mute tactile", "Éclairage RGB 9 couleurs, désactivable", "Réglages avancés via Maono Link (USB)"],
   },
   {
     id: "rode-podmic",

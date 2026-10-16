@@ -24,7 +24,7 @@ Les prix ci-dessous viennent des captures envoyées (prix publics constatés che
 
 | Produit | Prix sur le site | Origine |
 |---|---|---|
-| Maono PD200XS (blanc) | 79,90 € | estimé (≈ 66 à 98 € selon les revendeurs) |
+| Maono PD200XS (blanc) + bras articulé | 79,90 € | estimé, **à vérifier** (le kit avec bras peut coûter plus cher) |
 | RØDE PodMic | 74,00 € | Amazon |
 | Micro TONOR USB/XLR | 59,90 € | estimé, **modèle exact à confirmer** |
 | Maono PD100 | 33,00 € | Thomann |

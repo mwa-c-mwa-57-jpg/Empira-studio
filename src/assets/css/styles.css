@@ -2134,6 +2134,10 @@ html:has(.mobile-menu:not([hidden])) {
   gap: 24px;
   justify-items: start;
 }
+.free-note {
+  color: var(--gold);
+  font-weight: 600;
+}
 .join-steps {
   display: grid;
   gap: 12px;
