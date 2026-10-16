@@ -106,28 +106,48 @@ Le site affiche `contact@empirastudio.com` (modifiable dans `site.config.json`).
 
 ---
 
-## 5. Encaisser les paiements avec Stripe
+## 5. Encaisser les paiements : Stripe, PayPal, Alma
 
-Tant que Stripe n'est pas branché, le bouton « Paiement sécurisé » propose au client d'**envoyer sa commande par e-mail** : tu peux donc lancer le site tout de suite et vendre en attendant.
+Le site gère trois moyens de paiement. Chacun s'active **tout seul** dès que ses clés sont ajoutées dans Netlify (**Site configuration → Environment variables**), sans toucher au code. Les boutons du panier n'affichent que les moyens activés.
 
+Tant qu'aucune clé n'est configurée, le panier propose au client d'**envoyer sa commande par e-mail** : tu peux lancer le site tout de suite.
+
+| Moyen | Ce que voit le client | Variables à ajouter dans Netlify |
+|---|---|---|
+| **Stripe** | Carte bancaire, Apple Pay, Google Pay | `STRIPE_SECRET_KEY` |
+| **PayPal** | Paiement avec son compte PayPal | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_MODE` (`live` en production) |
+| **Alma** | Paiement en 3 ou 4 fois par carte, dès 50 € | `ALMA_API_KEY` |
+
+> ⚠️ Les clés secrètes ne doivent **jamais** être écrites dans le code ni envoyées par message. Elles vivent uniquement dans les variables d'environnement de Netlify. Les prix sont toujours recalculés par le serveur.
+
+### 5.1 Stripe (carte, Apple Pay, Google Pay)
 1. Crée un compte sur **stripe.com/fr** et active-le (SIRET, pièce d'identité, IBAN).
-2. Dans **Développeurs → Clés API**, copie la **clé secrète de test** (`sk_test_…`).
-3. Dans Netlify : **Site configuration → Environment variables → Add a variable** :
-   - nom : `STRIPE_SECRET_KEY`
-   - valeur : ta clé `sk_test_…`
-4. Redéploie, puis passe une commande test avec la carte `4242 4242 4242 4242` (date future, n'importe quel code).
-5. Quand tout est bon, remplace la valeur par la **clé live** (`sk_live_…`).
-6. Dans Stripe, active aussi :
-   - **Paramètres → Moyens de paiement** : Apple Pay, Google Pay (et PayPal si tu veux) ;
-   - **Paramètres → Image de marque** : ton logo Empira, couleur or `#e0b05a` ;
-   - **Paramètres → E-mails clients** : reçus de paiement automatiques ;
-   - les **notifications** de nouveaux paiements sur ton téléphone (appli Stripe).
+2. **Développeurs → Clés API** : copie la clé secrète de test (`sk_test_…`) dans `STRIPE_SECRET_KEY`.
+3. Redéploie et teste avec la carte `4242 4242 4242 4242` (date future, n'importe quel code).
+4. Remplace ensuite par la clé live (`sk_live_…`).
+5. Dans **Paramètres → Moyens de paiement**, active Apple Pay et Google Pay. Bon à savoir : tu peux aussi y activer **PayPal** et **Klarna** directement chez Stripe ; ils apparaîtront sur la page de paiement Stripe sans autre configuration.
+6. **Paramètres → Image de marque** : ton logo Empira et la couleur or `#e0b05a`. **E-mails clients** : active les reçus.
 
-**Frais** : de l'ordre de 1,5 % + 0,25 € par paiement avec une carte européenne (voir stripe.com/fr/pricing). Pas d'abonnement.
+Frais indicatifs : de l'ordre de 1,5 % + 0,25 € par paiement avec une carte européenne (voir stripe.com/fr/pricing).
 
-**Où voir les commandes ?** Dans le tableau de bord Stripe → **Paiements** : nom, adresse de livraison, téléphone et produits achetés y figurent.
+### 5.2 PayPal
+1. Crée un **compte PayPal Business** puis connecte-toi sur **developer.paypal.com**.
+2. **Apps & Credentials** : en mode *Sandbox*, crée une application et copie le *Client ID* et le *Secret* dans `PAYPAL_CLIENT_ID` et `PAYPAL_CLIENT_SECRET`.
+3. Teste avec un compte acheteur fictif (onglet *Sandbox accounts*).
+4. Pour la production : bascule sur *Live*, crée l'application live, remplace les deux clés et ajoute `PAYPAL_MODE` = `live`.
 
-> ⚠️ La clé secrète ne doit **jamais** être écrite dans le code ni envoyée par message. Elle vit uniquement dans les variables d'environnement de Netlify.
+Le client valide son paiement chez PayPal, puis le site encaisse la commande et affiche la confirmation. Si le client revient deux fois sur la page de retour, il n'est pas débité deux fois.
+
+### 5.3 Alma (paiement en 3 ou 4 fois)
+1. Demande l'ouverture d'un compte marchand sur **almapay.com**.
+2. Dans ton tableau de bord Alma (**Paramètres → Clés API**), copie la clé de test (`sk_test_…`) dans `ALMA_API_KEY`. Le site utilise automatiquement le bac à sable avec une clé de test, et la production avec une clé `sk_live_…`.
+3. Le montant minimum affiché dans le panier est de 50 € : aligne-le sur ton contrat Alma dans `PAYMENTS` (fichier `src/assets/js/catalog.js`).
+4. Au retour du client, le site vérifie auprès d'Alma que le paiement est bien accepté avant d'afficher la confirmation.
+
+Alma affiche lui-même l'échéancier et les éventuels frais au client avant validation, avec les mentions légales du paiement fractionné.
+
+### Où voir les commandes ?
+Chaque paiement apparaît dans le tableau de bord du prestataire utilisé (Stripe, PayPal ou Alma), avec le nom du client, son adresse de livraison et les produits achetés. Active les notifications de paiement sur ton téléphone dans chacune des applications.
 
 ---
 
@@ -140,14 +160,14 @@ Tant que Stripe n'est pas branché, le bouton « Paiement sécurisé » propose 
 | **Anti-intégration (X-Frame-Options, frame-ancestors)** | Qu'un site pirate affiche le tien dans une fenêtre piégée |
 | **Prix recalculés côté serveur** | Qu'un petit malin modifie le prix dans son navigateur avant de payer |
 | **Paiement hébergé par Stripe (PCI-DSS niveau 1)** | Aucune donnée de carte ne passe par ton site : rien à voler |
-| **Clé Stripe en variable d'environnement** | Fuite de la clé via le code source |
+| **Clés Stripe, PayPal et Alma en variables d'environnement** | Fuite des clés via le code source |
 | **Contrôle d'origine, limites de taille et de quantité sur l'API** | Abus de la fonction de paiement depuis un autre site |
 | **Piège à robots + filtre anti-spam sur les formulaires** | Spam |
 | **Aucune base de données ni espace d'administration en ligne** | Il n'y a rien à pirater : pas de mot de passe admin, pas de WordPress à mettre à jour |
 | **Polices et vidéos hébergées sur le site** | Fuite des données des visiteurs vers Google ou d'autres tiers (RGPD) |
 
 **Ce qu'il te reste à faire** (le plus important) :
-1. Active la **double authentification** sur GitHub, Netlify, Stripe, GoDaddy et ta boîte e-mail. C'est là que se trouvent les vraies clés du site.
+1. Active la **double authentification** sur GitHub, Netlify, Stripe, PayPal, Alma, GoDaddy, TikTok et ta boîte e-mail. C'est là que se trouvent les vraies clés du site.
 2. Utilise un **gestionnaire de mots de passe** (Bitwarden, 1Password…).
 3. Après la mise en ligne, teste le site sur **securityheaders.com** : la note attendue est **A+**.
 
@@ -173,7 +193,7 @@ Avant d'encaisser le premier euro :
 |---|---|
 | Changer un prix, ajouter ou retirer un produit | `src/assets/js/catalog.js` (le prix payé est relu ici, impossible de tricher). Pour une variante (coloris, longueur), duplique le produit avec un nouvel `id` et le même `group` |
 | Changer les frais et le seuil de livraison offerte | `SHIPPING` dans `src/assets/js/catalog.js` |
-| Changer l'e-mail, le téléphone, les réseaux sociaux, le domaine | `site.config.json` |
+| Changer l'e-mail, le téléphone, les réseaux sociaux, le domaine | `site.config.json` (`tiktok` = lien de ton compte TikTok, `tiktokHandle` = ton pseudo sans @) |
 | Modifier un texte | `src/pages/*.html` |
 | Remplacer une image produit | `src/assets/img/products/` (photos détourées PNG/WebP de 800 × 800 px idéalement, puis mettre à jour le chemin dans `catalog.js`) |
 | Remplacer une vidéo | `src/assets/video/` : garde les mêmes noms (`stream-loop.mp4`, `brand-reel.mp4`), format MP4 H.264, sans son, moins de 5 Mo, plus une image `-poster.jpg` |
@@ -196,7 +216,7 @@ Une fois en ligne, chaque modification envoyée sur GitHub est publiée automati
 |---|---|
 | Nom de domaine `.com` (déjà payé jusqu'en 2029 si c'est le tien) | ≈ 15-25 €/an au renouvellement |
 | Hébergement Netlify | 0 € pour démarrer |
-| Paiements Stripe | ≈ 1,5 % + 0,25 € par vente, sans abonnement |
+| Paiements | Commission par vente, selon Stripe, PayPal ou Alma, sans abonnement |
 | Adresse e-mail pro | 0 à 7 €/mois selon le service |
 | Médiateur de la consommation | Abonnement annuel, selon l'organisme |
 

@@ -57,28 +57,18 @@ function videoToggle() {
   sync();
 }
 
-// Pré-remplit le formulaire quand on arrive depuis le configurateur ou une formule.
+// Pré-remplit le formulaire quand on arrive depuis le configurateur.
 function prefill() {
   const params = new URLSearchParams(location.search);
   const form = $("form[name='agency']");
   if (!form) return;
-  const formule = params.get("formule");
-  if (formule) {
-    const input = form.querySelector(`input[name="formule"][value="${CSS.escape(formule)}"]`);
-    if (input) input.checked = true;
-  }
   const sel = getSelection(params.get("selection"));
   const profil = (params.get("profil") || "").replace(/[^a-z-]/g, "");
   if (sel) {
+    form.querySelector('input[name="demande"][value="materiel"]').checked = true;
     const msg = form.querySelector("textarea[name='message']");
     msg.value = `Le configurateur m'a recommandé la sélection « ${sel.name} »${profil ? ` (profil : ${profil})` : ""}. J'aimerais en parler avec vous.`;
   }
-  $$("[data-formule]").forEach((a) =>
-    a.addEventListener("click", () => {
-      const input = form.querySelector(`input[name="formule"][value="${CSS.escape(a.dataset.formule)}"]`);
-      if (input) input.checked = true;
-    }),
-  );
 }
 
 export function init() {

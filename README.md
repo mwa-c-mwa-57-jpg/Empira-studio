@@ -11,7 +11,7 @@ npm run dev          # http://localhost:8080 (aucune dépendance à installer)
 npm run build        # génère le site final dans dist/
 ```
 
-Pour tester un vrai paiement en mode test : `STRIPE_SECRET_KEY=sk_test_... npm run dev`.
+Pour tester les paiements en mode test : `STRIPE_SECRET_KEY=sk_test_… PAYPAL_CLIENT_ID=… PAYPAL_CLIENT_SECRET=… ALMA_API_KEY=sk_test_… npm run dev` (chaque moyen s'active dès que sa clé est présente).
 
 ## Organisation
 
@@ -24,7 +24,8 @@ src/assets/css/         Design (couleurs, typographies, animations)
 src/assets/js/          Interactions : panier, WebGL, démo live, configurateur…
 src/assets/img|video|fonts
 src/public/             _headers (sécurité HTTP), robots.txt, manifeste
-server/checkout.js      Création du paiement Stripe (prix vérifiés côté serveur)
+server/checkout.js      Paiement : création, moyens activés, retour (prix vérifiés côté serveur)
+server/payments/        Stripe, PayPal et Alma
 netlify/functions/      Branchement de la fonction de paiement sur Netlify
 functions/api/          Branchement équivalent pour Cloudflare Pages
 scripts/                Génération du site et serveur local

@@ -1,14 +1,15 @@
 // Serveur local : `npm run dev` puis http://localhost:8080
 // Reproduit le comportement de l'hébergeur : en-têtes de sécurité de _headers,
 // URL sans .html, page 404 et fonction de paiement /api/checkout.
-// Pour tester un vrai paiement en mode test : STRIPE_SECRET_KEY=sk_test_... npm run dev
+// Pour tester les paiements en mode test, définis les clés avant de lancer :
+//   STRIPE_SECRET_KEY=sk_test_… PAYPAL_CLIENT_ID=… PAYPAL_CLIENT_SECRET=… ALMA_API_KEY=sk_test_… npm run dev
 
 import { createServer } from "node:http";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, extname, normalize, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import { handleCheckout } from "../server/checkout.js";
+import { handleCheckout, handleMethods, handleReturn } from "../server/checkout.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -72,7 +73,8 @@ function resolveFile(urlPath) {
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  if (url.pathname === "/api/checkout") {
+  const API = { "/api/checkout": handleCheckout, "/api/payment/methods": handleMethods, "/api/payment/return": handleReturn };
+  if (API[url.pathname]) {
     const chunks = [];
     for await (const c of req) chunks.push(c);
     const request = new Request(url, {
@@ -80,7 +82,7 @@ createServer(async (req, res) => {
       headers: req.headers,
       body: req.method === "POST" ? Buffer.concat(chunks) : undefined,
     });
-    const response = await handleCheckout(request, process.env);
+    const response = await API[url.pathname](request, process.env);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(Buffer.from(await response.arrayBuffer()));
     return;
@@ -97,5 +99,6 @@ createServer(async (req, res) => {
   res.end(readFileSync(target));
 }).listen(port, () => {
   console.log(`\n  Empira Studio en local : http://localhost:${port}\n`);
-  if (!process.env.STRIPE_SECRET_KEY) console.log("  (paiement en mode démo : STRIPE_SECRET_KEY non défini)\n");
+  const on = ["STRIPE_SECRET_KEY", "PAYPAL_CLIENT_ID", "ALMA_API_KEY"].filter((k) => process.env[k]);
+  console.log(on.length ? `  Paiement : ${on.join(", ")} configuré(s)\n` : "  (paiement en mode démo : aucune clé configurée)\n");
 });

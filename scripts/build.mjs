@@ -65,6 +65,7 @@ const common = {
   phone: config.phone,
   instagram: config.instagram,
   tiktok: config.tiktok,
+  tiktokLabel: config.tiktokHandle ? `@${config.tiktokHandle.replace(/^@/, "")}` : "Empira Agency",
   twitch: config.twitch,
   youtube: config.youtube,
   year: String(new Date().getFullYear()),

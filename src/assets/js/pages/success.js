@@ -50,7 +50,9 @@ function confetti(canvas) {
 }
 
 export function init() {
-  if (new URLSearchParams(location.search).get("session_id")) clearCart();
+  const params = new URLSearchParams(location.search);
+  // Stripe renvoie session_id ; PayPal et Alma passent par /api/payment/return qui ajoute ref.
+  if (params.get("session_id") || params.get("ref")) clearCart();
   const canvas = $("[data-confetti]");
   if (canvas && !reducedMotion()) confetti(canvas);
 }

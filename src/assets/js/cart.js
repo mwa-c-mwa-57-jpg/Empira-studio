@@ -1,6 +1,6 @@
 // Panier : stocké dans le navigateur (localStorage, aucun cookie), affiché dans
 // un tiroir latéral, et envoyé à /api/checkout pour le paiement Stripe.
-import { PRODUCTS, getProduct, fullName, SHIPPING, MAX_QTY } from "./catalog.js";
+import { PRODUCTS, getProduct, fullName, SHIPPING, MAX_QTY, PAYMENTS } from "./catalog.js";
 import { $, $$, esc, price, icons } from "./utils.js";
 import { lightDismiss, openModal, closeModal, toast, clearToasts } from "./ui.js";
 
@@ -108,7 +108,8 @@ function render() {
   $("[data-cart-subtotal]").textContent = price(t.subtotal);
   $("[data-cart-shipping]").textContent = !lines.length ? "—" : t.shipping === 0 ? "Offerte" : price(t.shipping);
   $("[data-cart-total]").textContent = price(t.total);
-  $("[data-checkout]").disabled = !lines.length;
+  $$("[data-pay]").forEach((b) => (b.disabled = !lines.length));
+  renderPayments(t);
 
   const meter = $("[data-ship-meter]");
   const left = SHIPPING.freeFrom - t.subtotal;
@@ -124,7 +125,7 @@ function render() {
   upsell.hidden = lines.length === 0;
   if (!upsell.dataset.ready) {
     upsell.dataset.ready = "1";
-    upsell.innerHTML = `<svg class="upsell-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg><div><strong>Besoin d'aide pour l'installation ?</strong><span>Empira Agency règle tout avec toi. Appel découverte gratuit.</span></div><a class="btn btn-ghost btn-sm" href="agency.html#rdv">Réserver</a>`;
+    upsell.innerHTML = `<svg class="upsell-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg><div><strong>Besoin d'aide pour tes lives ?</strong><span>Rejoins Empira Agency sur TikTok.</span></div><a class="btn btn-ghost btn-sm" href="agency.html#rejoindre">Rejoindre</a>`;
   }
 }
 
@@ -165,19 +166,66 @@ function showDemoNotice() {
   );
 }
 
+// Moyens de paiement réellement activés côté serveur (selon les clés configurées).
+// Sans clé (ou en aperçu), tous les boutons s'affichent et mènent au mode démo.
+let methods = null;
+async function loadMethods() {
+  try {
+    const res = await fetch("api/payment/methods", { headers: { accept: "application/json" } });
+    const data = res.ok ? await res.json() : null;
+    methods = data && Object.values(data).some(Boolean) ? data : { demo: true };
+  } catch {
+    methods = { demo: true };
+  }
+  render();
+}
+
+function renderPayments(t) {
+  const box = $("[data-pay-options]");
+  if (!box) return;
+  const on = (k) => !methods || methods.demo || methods[k];
+  box.querySelector('[data-pay="stripe"]').hidden = !on("stripe");
+  box.querySelector('[data-pay-hint="stripe"]').hidden = !on("stripe");
+  box.querySelector('[data-pay="paypal"]').hidden = !on("paypal");
+  const alma = box.querySelector("[data-pay-alma]");
+  alma.hidden = !on("alma");
+  const tooLow = t.total < PAYMENTS.almaMinTotal;
+  alma.querySelectorAll("[data-pay]").forEach((b) => (b.disabled = b.disabled || tooLow));
+  const note = alma.querySelector("[data-alma-note]");
+  note.hidden = !tooLow || !items.length;
+  note.textContent = `Disponible dès ${price(PAYMENTS.almaMinTotal)} d'achat.`;
+  // Le premier moyen visible devient le bouton principal.
+  const visible = [...box.querySelectorAll(":scope > [data-pay]")].filter((b) => !b.hidden);
+  visible.forEach((b, i) => {
+    b.classList.toggle("btn-primary", i === 0);
+    b.classList.toggle("btn-ghost", i !== 0);
+  });
+}
+
+const PAY_HOSTS = ["stripe.com", "paypal.com", "getalma.eu", "almapay.com"];
+const isPaymentPage = (u) => {
+  try {
+    const { protocol, hostname } = new URL(u);
+    return protocol === "https:" && PAY_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+};
+
 async function checkout(btn) {
   if (!items.length) return;
+  const provider = btn.dataset.pay;
   const label = btn.innerHTML;
-  btn.disabled = true;
+  $$("[data-pay]").forEach((b) => (b.disabled = true));
   btn.textContent = "Connexion sécurisée…";
   try {
     const res = await fetch("api/checkout", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify({ items, provider, installments: Number(btn.dataset.installments) || undefined }),
     });
     const data = await res.json().catch(() => ({}));
-    if (res.ok && typeof data.url === "string" && data.url.startsWith("https://checkout.stripe.com/")) {
+    if (res.ok && isPaymentPage(data.url)) {
       window.location.assign(data.url);
       return;
     }
@@ -186,8 +234,8 @@ async function checkout(btn) {
   } catch {
     showDemoNotice();
   } finally {
-    btn.disabled = false;
     btn.innerHTML = label;
+    render();
   }
 }
 
@@ -228,8 +276,8 @@ export function initCart() {
     }
     const rm = t.closest("[data-remove]");
     if (rm) return setQty(rm.dataset.remove, 0);
-    const co = t.closest("[data-checkout]");
-    if (co) checkout(co);
+    const pay = t.closest("[data-pay]");
+    if (pay && !pay.disabled) checkout(pay);
   });
   // Synchronise plusieurs onglets ouverts.
   window.addEventListener("storage", (e) => {
@@ -239,6 +287,7 @@ export function initCart() {
     }
   });
   render();
+  loadMethods();
 }
 
 export { PRODUCTS };

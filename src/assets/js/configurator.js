@@ -35,7 +35,7 @@ const STEPS = [
 ];
 
 const NOTE = {
-  console: "Bon à savoir : pour diffuser une console, il faut aussi une carte d'acquisition vidéo. On t'aide à la choisir pendant l'appel gratuit.",
+  console: "Bon à savoir : pour diffuser une console, il faut aussi une carte d'acquisition vidéo. Écris-nous sur TikTok, on t'aide à la choisir.",
 };
 
 // Choisit une sélection d'articles (aucun produit ni remise inventés).

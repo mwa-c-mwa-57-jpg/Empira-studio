@@ -1,6 +1,6 @@
-// Netlify Functions : expose server/checkout.js sur /api/checkout.
+// Netlify Functions : expose la création de paiement sur /api/checkout.
 import { handleCheckout } from "../../server/checkout.js";
 
-export default (request) => handleCheckout(request, { STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY });
+export default (request) => handleCheckout(request, process.env);
 
 export const config = { path: "/api/checkout" };

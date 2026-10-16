@@ -17,11 +17,23 @@
       <div><dt>Livraison</dt><dd data-cart-shipping>—</dd></div>
       <div class="total"><dt>Total TTC</dt><dd data-cart-total>0 €</dd></div>
     </dl>
-    <button class="btn btn-primary btn-block" type="button" data-checkout>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
-      Paiement sécurisé
-    </button>
-    <p class="drawer-note">Paiement chiffré par Stripe · CB, Apple Pay, Google Pay · Retours 30 jours</p>
+    <div class="pay-options" data-pay-options>
+      <button class="btn btn-primary btn-block" type="button" data-pay="stripe">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Payer par carte
+      </button>
+      <p class="pay-hint" data-pay-hint="stripe">CB, Visa, Mastercard, Apple Pay, Google Pay</p>
+      <button class="btn btn-ghost btn-block pay-paypal" type="button" data-pay="paypal">Payer avec <b>PayPal</b></button>
+      <div class="pay-alma" data-pay-alma>
+        <span>Payer en plusieurs fois avec <b>Alma</b></span>
+        <div class="pay-alma-btns">
+          <button class="btn btn-ghost btn-sm" type="button" data-pay="alma" data-installments="3">3 fois</button>
+          <button class="btn btn-ghost btn-sm" type="button" data-pay="alma" data-installments="4">4 fois</button>
+        </div>
+        <small data-alma-note hidden></small>
+      </div>
+    </div>
+    <p class="drawer-note">Paiement chiffré, sur la page sécurisée du prestataire · Retours 30 jours</p>
   </div>
 </dialog>
 

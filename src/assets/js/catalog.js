@@ -207,3 +207,10 @@ export const SHIPPING = {
 };
 
 export const MAX_QTY = 10;
+
+// Paiement en plusieurs fois (Alma) : montant minimum du panier (à aligner sur
+// ton contrat Alma) et nombres d'échéances proposés.
+export const PAYMENTS = {
+  almaMinTotal: 50,
+  almaInstallments: [3, 4],
+};

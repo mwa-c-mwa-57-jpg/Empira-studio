@@ -1,5 +1,8 @@
 // Démo « ton stream version Empira » : chat simulé, alertes et objectif animés.
+// Les trois boutons sont de vraies actions : « J'aime » (cœurs animés),
+// « Partager » (partage ou copie du lien du site) et « Suivre » (ouvre le TikTok de l'agence).
 import { $, esc, onVisible, reducedMotion } from "./utils.js";
+import { toast } from "./ui.js";
 
 const USERS = [
   ["nova_tv", "#f6d892"],
@@ -17,23 +20,29 @@ const LINES = [
   "le son est incroyable ce soir",
   "c'est quoi ton micro ??",
   "GG !!!",
-  "la lumière est trop propre",
+  "ta voix est trop claire",
   "première fois ici, salut tout le monde 👋",
   "la transition de scène 🔥",
-  "on voit grave mieux qu'avant",
-  "t'as changé de caméra ?",
-  "le flou derrière c'est cinéma",
+  "on entend grave mieux qu'avant",
+  "t'as changé de micro ?",
+  "zéro bruit de clavier, propre",
   "hype hype hype",
   "trop bien les nouvelles alertes",
   "l'overlay est magnifique",
-  "on est là 💜",
+  "on est là ✨",
   "le chat est chaud ce soir",
   "clip ça direct",
 ];
+// Sur TikTok, « suivre » et « s'abonner » sont la même chose : une seule alerte d'abonnement.
 const ALERTS = {
-  follow: { icon: "♥", label: "Nouveau follower", msg: (u) => `${u} te suit !`, goal: 1 },
-  sub: { icon: "★", label: "Nouvel abonné", msg: (u) => `${u} s'abonne · 3 mois`, goal: 5 },
-  raid: { icon: "⚡", label: "Raid entrant", msg: (u) => `${u} débarque avec 87 viewers`, goal: 10 },
+  like: { icon: "♥", label: "J'aime", msg: (u) => `${u} a aimé le live`, goal: 0 },
+  share: { icon: "↗", label: "Partage", msg: (u) => `${u} a partagé le live`, goal: 0 },
+  follow: { icon: "+", label: "Nouvel abonné", msg: (u) => `${u} suit maintenant Empira`, goal: 1 },
+};
+const MINE = {
+  like: "Tu as aimé le live",
+  share: "Tu as partagé Empira Studio",
+  follow: "Tu suis Empira Agency sur TikTok",
 };
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -45,7 +54,9 @@ export function liveDemo(root) {
   const frame = $(".stream-frame", root);
   const goalBar = $("[data-goal-bar]", root);
   const goalText = $("[data-goal-text]", root);
-  const viewers = $("[data-stream-viewers]", root);
+  const likesEl = $("[data-likes]", root);
+  const hearts = $("[data-hearts]", root);
+  let likes = 8412;
   let goal = 31;
   const GOAL = 50;
   let timer = 0;
@@ -60,19 +71,36 @@ export function liveDemo(root) {
   };
   const message = () => {
     const [u, c] = pick(USERS);
-    const li = `<b class="u">${esc(u)}</b> ${esc(pick(LINES))}`;
-    push(li);
+    push(`<b class="u">${esc(u)}</b> ${esc(pick(LINES))}`);
     chat.lastElementChild.querySelector(".u").style.color = c;
   };
   const updateGoal = () => {
     goalBar.style.transform = `scaleX(${Math.min(1, goal / GOAL)})`;
     goalText.textContent = `${Math.min(goal, GOAL)} / ${GOAL}`;
   };
+  const addLikes = (n) => {
+    likes += n;
+    likesEl.textContent = likes.toLocaleString("fr-FR");
+  };
+  const burst = (count = 6) => {
+    if (reducedMotion()) return;
+    for (let i = 0; i < count; i++) {
+      const h = document.createElement("span");
+      h.className = "heart";
+      h.textContent = "♥";
+      h.style.setProperty("--dx", `${Math.round((Math.random() - 0.5) * 90)}px`);
+      h.style.setProperty("--s", (0.8 + Math.random() * 0.8).toFixed(2));
+      h.style.setProperty("--d", `${Math.round(i * 90 + Math.random() * 60)}ms`);
+      h.addEventListener("animationend", () => h.remove(), { once: true });
+      hearts.append(h);
+    }
+  };
 
-  const trigger = (type) => {
+  // mine = true quand c'est le visiteur qui a cliqué.
+  const trigger = (type, mine = false) => {
     const a = ALERTS[type];
-    const [u] = pick(USERS);
-    alert.innerHTML = `<span class="ov-alert-icon">${a.icon}</span><span><small>${a.label}</small>${esc(a.msg(u))}</span>`;
+    const text = mine ? MINE[type] : a.msg(pick(USERS)[0]);
+    alert.innerHTML = `<span class="ov-alert-icon">${a.icon}</span><span><small>${a.label}</small>${esc(text)}</span>`;
     alert.classList.remove("show");
     void alert.offsetWidth;
     alert.classList.add("show");
@@ -82,15 +110,42 @@ export function liveDemo(root) {
       alert.classList.remove("show");
       frame.classList.remove("flash");
     }, 2800);
-    push(`<strong>${a.icon} ${esc(a.msg(u))}</strong>`, "sys");
-    goal = goal >= GOAL ? a.goal : goal + a.goal;
-    updateGoal();
-    if (viewers && type === "raid") viewers.textContent = (Number(viewers.textContent.replace(/\D/g, "")) + 87).toLocaleString("fr-FR");
+    push(`<strong>${a.icon} ${esc(text)}</strong>`, "sys");
+    if (a.goal) {
+      goal = goal >= GOAL ? a.goal : goal + a.goal;
+      updateGoal();
+    }
+    if (type === "like") {
+      addLikes(mine ? 1 : 12);
+      burst(mine ? 8 : 4);
+    }
   };
 
+  async function share() {
+    const url = document.body.dataset.site || location.origin;
+    const data = { title: "Empira Studio", text: "Matériel de streaming et agence TikTok LIVE : Empira Studio", url };
+    try {
+      if (navigator.share) {
+        await navigator.share(data);
+        trigger("share", true);
+        return;
+      }
+    } catch (err) {
+      if (err?.name === "AbortError") return; // partage annulé par le visiteur
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Lien du site copié : colle-le où tu veux");
+    } catch {
+      toast(url);
+    }
+    trigger("share", true);
+  }
+
   root.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-alert]");
-    if (b) trigger(b.dataset.alert);
+    if (e.target.closest("[data-like]")) trigger("like", true);
+    if (e.target.closest("[data-share]")) share();
+    if (e.target.closest("[data-follow]")) trigger("follow", true); // le lien s'ouvre dans un nouvel onglet
   });
 
   for (let i = 0; i < 7; i++) message();
@@ -99,7 +154,10 @@ export function liveDemo(root) {
 
   const tick = () => {
     message();
-    if (Math.random() < 0.12) trigger(pick(["follow", "follow", "sub"]));
+    const r = Math.random();
+    if (r < 0.1) trigger("like");
+    else if (r < 0.14) trigger("follow");
+    else if (r < 0.16) trigger("share");
     timer = setTimeout(tick, 900 + Math.random() * 1500);
   };
   onVisible(root, (visible) => {
