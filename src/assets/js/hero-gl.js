@@ -1,4 +1,4 @@
-// Fond animé du hero : aurore lumineuse calculée en WebGL (shader), qui suit
+// Fond animé du hero : fumée dorée calculée en WebGL (shader), qui suit
 // la souris. Rendu en demi-résolution, en pause hors écran ; repli CSS sinon.
 import { reducedMotion, lerp, onVisible } from "./utils.js";
 
@@ -11,6 +11,7 @@ uniform float u_time;
 uniform vec2 u_mouse;
 uniform vec3 u_a;
 uniform vec3 u_b;
+uniform vec3 u_d;
 
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p){
@@ -34,9 +35,8 @@ void main(){
                 fbm(p * 1.1 + 2.2 * q + vec2(8.3, 2.8) - 0.12 * t));
   float f = fbm(p + 2.4 * r);
 
-  vec3 col = vec3(0.027, 0.024, 0.043);
-  vec3 deep = vec3(0.12, 0.09, 0.42);
-  col = mix(col, deep, smoothstep(0.25, 0.85, f) * 0.75);
+  vec3 col = vec3(0.024, 0.024, 0.024);
+  col = mix(col, u_d, smoothstep(0.25, 0.85, f) * 0.8);
   col = mix(col, u_a, smoothstep(0.55, 1.05, f * 1.15 + length(q) * 0.25) * 0.55);
   col = mix(col, u_b, smoothstep(0.62, 1.0, r.x) * 0.42);
 
@@ -59,7 +59,7 @@ function compile(gl, type, src) {
 
 const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
 
-export function heroGL(canvas, { colorA = "#8b6cff", colorB = "#ff4fa3" } = {}) {
+export function heroGL(canvas, { colorA = "#e0b05a", colorB = "#8a5a20", colorDeep = "#2b1c0a" } = {}) {
   const gl = canvas?.getContext("webgl", { antialias: false, alpha: false, powerPreference: "low-power" });
   if (!gl) return false;
   let prog;
@@ -85,6 +85,7 @@ export function heroGL(canvas, { colorA = "#8b6cff", colorB = "#ff4fa3" } = {}) 
   const uMouse = gl.getUniformLocation(prog, "u_mouse");
   gl.uniform3fv(gl.getUniformLocation(prog, "u_a"), hex(colorA));
   gl.uniform3fv(gl.getUniformLocation(prog, "u_b"), hex(colorB));
+  gl.uniform3fv(gl.getUniformLocation(prog, "u_d"), hex(colorDeep));
 
   const scale = Math.min(window.devicePixelRatio || 1, 2) * 0.5;
   const resize = () => {

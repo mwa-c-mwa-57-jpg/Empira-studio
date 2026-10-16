@@ -1,17 +1,21 @@
-import { PRODUCTS, CATEGORIES } from "../catalog.js";
+import { LISTED, CATEGORIES } from "../catalog.js";
 import { $, $$, esc } from "../utils.js";
 import { cardHTML, stagger } from "../products-ui.js";
 
 const SORTS = {
-  pertinence: (a, b) => PRODUCTS.indexOf(a) - PRODUCTS.indexOf(b),
+  pertinence: (a, b) => LISTED.indexOf(a) - LISTED.indexOf(b),
   "prix-asc": (a, b) => a.price - b.price,
   "prix-desc": (a, b) => b.price - a.price,
   nom: (a, b) => a.name.localeCompare(b.name, "fr"),
 };
 
+// « rode » doit trouver « RØDE » : on retire accents et lettres spéciales.
 const normalize = (s) =>
   s
     .toLowerCase()
+    .replace(/ø/g, "o")
+    .replace(/œ/g, "oe")
+    .replace(/æ/g, "ae")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "");
 
@@ -29,12 +33,12 @@ export function init() {
   const search = $("[data-search]");
   const sort = $("[data-sort]");
 
-  const counts = Object.fromEntries(CATEGORIES.map((c) => [c.id, PRODUCTS.filter((p) => p.category === c.id).length]));
-  chips.innerHTML = [{ id: "tout", label: "Tout" }, ...CATEGORIES]
+  const counts = Object.fromEntries(CATEGORIES.map((c) => [c.id, LISTED.filter((p) => p.category === c.id).length]));
+  chips.innerHTML = [{ id: "tout", label: "Tout" }, ...CATEGORIES.filter((c) => counts[c.id] > 0)]
     .map(
       (c) =>
         `<button class="chip" type="button" data-cat="${esc(c.id)}" aria-pressed="false">${esc(c.label)} <small>${
-          c.id === "tout" ? PRODUCTS.length : counts[c.id]
+          c.id === "tout" ? LISTED.length : counts[c.id]
         }</small></button>`,
     )
     .join("");
@@ -46,8 +50,8 @@ export function init() {
   const render = () => {
     $$("[data-cat]", chips).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cat === state.cat)));
     const q = normalize(state.q.trim());
-    const list = PRODUCTS.filter((p) => state.cat === "tout" || p.category === state.cat)
-      .filter((p) => !q || normalize(`${p.name} ${p.kind} ${p.short} ${p.category}`).includes(q))
+    const list = LISTED.filter((p) => state.cat === "tout" || p.category === state.cat)
+      .filter((p) => !q || normalize(`${p.brand || ""} ${p.name} ${p.kind} ${p.short} ${p.category}`).includes(q))
       .sort(SORTS[state.sort]);
     grid.innerHTML = list.map((p, i) => cardHTML(p, i)).join("");
     stagger(grid);

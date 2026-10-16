@@ -1,5 +1,5 @@
 // Gabarits HTML des produits (cartes, aperçu rapide), réutilisés sur toutes les pages.
-import { getProduct, packValue } from "./catalog.js";
+import { getProduct, packValue, variantsOf } from "./catalog.js";
 import { esc, price, icons } from "./utils.js";
 import { openModal } from "./ui.js";
 
@@ -27,6 +27,19 @@ export function visualHTML(p) {
   return `<img src="${esc(p.image)}" alt="${esc(p.name)} — ${esc(p.kind)}" loading="lazy" width="300" height="300">`;
 }
 
+// Prix affiché sur une carte : « dès X € » si les variantes n'ont pas le même prix.
+function cardPrice(p) {
+  const prices = variantsOf(p).map((v) => v.price);
+  const min = Math.min(...prices);
+  return prices.some((x) => x !== min) ? `<small>dès</small> ${price(min)}` : price(p.price);
+}
+
+function variantHint(p) {
+  const vs = variantsOf(p);
+  if (vs.length < 2) return "";
+  return `<p class="p-variants">${vs.map((v) => esc(v.variant)).join(" · ")}</p>`;
+}
+
 export function cardHTML(p, i = 0) {
   const s = savings(p);
   const badge = badgeFor(p);
@@ -40,9 +53,10 @@ export function cardHTML(p, i = 0) {
       <p class="p-kind">${esc(p.kind)}</p>
       <h3 class="p-name"><a href="produit.html?id=${esc(p.id)}">${esc(p.name)}</a></h3>
       <p class="p-short">${esc(p.short)}</p>
+      ${variantHint(p)}
     </div>
     <div class="p-foot">
-      <p class="price">${price(p.price)}${s ? `<s>${price(s.value)}</s>` : ""}</p>
+      <p class="price">${cardPrice(p)}${s ? `<s>${price(s.value)}</s>` : ""}</p>
       <button class="add-btn" type="button" data-add="${esc(p.id)}" aria-label="Ajouter ${esc(p.name)} au panier">${icons.plus}</button>
     </div>
   </article>`;
@@ -61,7 +75,7 @@ export function quickView(id) {
     <div class="qv-media">${visualHTML(p)}</div>
     <div class="qv-info">
       <span class="badge">${esc(p.kind)}</span>
-      <h2 class="h-md">${esc(p.name)}</h2>
+      <h2 class="h-md">${esc(p.name)}${p.variant ? ` <span class="muted">· ${esc(p.variant)}</span>` : ""}</h2>
       <p class="price">${price(p.price)}${s ? `<s>${price(s.value)}</s>` : ""}</p>
       ${s ? `<p><span class="save-pill">Tu économises ${price(s.saved)}</span></p>` : ""}
       <p class="muted">${esc(p.description)}</p>

@@ -1,14 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#ff4fa3"/></linearGradient>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1626"/><stop offset="1" stop-color="#07060b"/></linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6d892"/><stop offset=".5" stop-color="#e0b05a"/><stop offset="1" stop-color="#a8712a"/></linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
-  <g transform="translate(10 10) scale(1.375)">
-    <rect x="3" y="23" width="26" height="6" rx="2" fill="url(#g)"/>
-    <rect x="3" y="6" width="6.5" height="20" rx="2" fill="url(#g)"/>
-    <rect x="22.5" y="6" width="6.5" height="20" rx="2" fill="url(#g)"/>
-    <rect x="12.75" y="14" width="6.5" height="12" rx="2" fill="url(#g)"/>
-    <circle cx="16" cy="7.5" r="3.2" fill="#ff3b4e"/>
+  <rect width="64" height="64" rx="14" fill="#060606"/>
+  <g transform="translate(11 9) scale(.42)" fill="url(#g)">
+    <path fill-rule="evenodd" d="M50 4 98 96H2ZM50 32 16 96h64Z"/>
+    <path fill-rule="evenodd" d="M50 64 68 96H32ZM50 76 40 96h20Z"/>
   </g>
 </svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#58544e"/><stop offset=".3" stop-color="#302e2b"/><stop offset="1" stop-color="#100f0e"/></linearGradient>
+    <linearGradient id="mh" x1="0" x2="1"><stop offset="0" stop-color="#5c5751"/><stop offset=".5" stop-color="#e6e1f2"/><stop offset="1" stop-color="#4a4742"/></linearGradient>
+    <linearGradient id="mv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ece8f6"/><stop offset=".5" stop-color="#9b968e"/><stop offset="1" stop-color="#413e3a"/></linearGradient>
+    <radialGradient id="sh"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <linearGradient id="pole" x1="0" x2="1"><stop offset="0" stop-color="#0e0d0c"/><stop offset=".4" stop-color="#44413d"/><stop offset=".6" stop-color="#23211f"/><stop offset="1" stop-color="#090908"/></linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#44413d"/><stop offset="1" stop-color="#181715"/></linearGradient>
+    <pattern id="grip" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#1a1917"/><rect width="4" height="1.2" fill="#322f2c"/></pattern>
+  </defs>
+  <ellipse cx="200" cy="364" rx="140" ry="18" fill="url(#sh)"/>
+  <path d="M100 330v16a100 22 0 0 0 200 0v-16z" fill="#0a0a09"/>
+  <ellipse cx="200" cy="330" rx="100" ry="22" fill="url(#base)"/>
+  <ellipse cx="200" cy="326" rx="78" ry="14" fill="none" stroke="#fff" stroke-opacity=".08"/>
+  <rect x="190" y="182" width="20" height="150" rx="4" fill="url(#pole)"/>
+  <rect x="186" y="214" width="28" height="78" rx="7" fill="url(#grip)"/>
+  <rect x="186" y="214" width="28" height="78" rx="7" fill="none" stroke="#383632"/>
+  <rect x="185" y="172" width="30" height="16" rx="5" fill="#191816" stroke="#46433e"/>
+  <rect x="194" y="92" width="12" height="84" rx="3" fill="url(#pole)"/>
+  <path d="M212 120h14q6 0 6 6v8q0 6-6 6h-8" fill="none" stroke="#322f2c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M216 240h14q6 0 6 6v8q0 6-6 6h-8" fill="none" stroke="#322f2c" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="200" cy="92" rx="14" ry="5" fill="#322f2c"/>
+  <rect x="195" y="70" width="10" height="22" rx="2" fill="url(#mh)"/>
+  <g stroke="#1f1e1c" stroke-width="1.2"><line x1="195" y1="74" x2="205" y2="74"/><line x1="195" y1="78" x2="205" y2="78"/><line x1="195" y1="82" x2="205" y2="82"/><line x1="195" y1="86" x2="205" y2="86"/></g>
+</svg>

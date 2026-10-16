@@ -1,6 +1,6 @@
 // Configurateur de setup : 3 questions → un pack + des compléments adaptés.
 // Raccourcis clavier : touches A, B, C, D pour répondre.
-import { getProduct } from "./catalog.js";
+import { getProduct, fullName } from "./catalog.js";
 import { $, $$, esc, price, icons, onVisible } from "./utils.js";
 
 const STEPS = [
@@ -25,33 +25,30 @@ const STEPS = [
   },
   {
     key: "budget",
-    q: "Quel budget pour ton setup ?",
+    q: "Quel budget pour ton son ?",
     opts: [
-      { v: "s", label: "Moins de 500 €", hint: "L'essentiel, bien choisi" },
-      { v: "m", label: "500 à 1 500 €", hint: "Le bon équilibre" },
-      { v: "l", label: "Plus de 1 500 €", hint: "Sans compromis" },
+      { v: "s", label: "Moins de 150 €", hint: "L'essentiel, bien choisi" },
+      { v: "m", label: "150 à 250 €", hint: "Micro + régie son" },
+      { v: "l", label: "Plus de 250 €", hint: "Le rendu broadcast" },
     ],
   },
 ];
 
-const EXTRA_BY_CONTENT = { pc: "deck-15", console: "capture-4k", talk: "vox-pro", creative: "lumen-key" };
 const WHY = {
-  pc: "Avec un contrôleur, tu changes de scène sans lâcher ta souris.",
-  console: "Une carte d'acquisition est indispensable pour diffuser ta console.",
-  talk: "En talk, ta voix est le produit : un micro broadcast fait toute la différence.",
-  creative: "Une seconde source de lumière sculpte ton plan de travail.",
+  "pack-starter": "En USB, le PD200XS se branche directement sur ton ordinateur : pas besoin d'interface pour démarrer.",
+  "pack-maono-streaming": "La G1 NEO ajoute la réduction de bruit, les effets de voix et les pads sonores : idéal pour animer tes lives.",
+  "pack-podcast-rode": "Le RØDE PodMic est un micro de studio radio : avec la G1 NEO, ta voix passe au niveau broadcast.",
+};
+const NOTE = {
+  console: "Bon à savoir : pour diffuser une console, il faut aussi une carte d'acquisition vidéo. On t'aide à la choisir pendant l'appel gratuit.",
 };
 
 export function recommend({ content, level, budget }) {
   let pack = "pack-starter";
-  if (budget === "m" && level !== "debutant") pack = "pack-createur";
-  if (budget === "l") pack = level === "debutant" ? "pack-createur" : "pack-studio";
-  const p = getProduct(pack);
-  const extras = [];
-  const extra = EXTRA_BY_CONTENT[content];
-  if (extra && !p.includes.includes(extra) && !(content === "talk" && budget === "s")) extras.push(extra);
-  if (pack === "pack-starter") extras.push("setup-remote");
-  return { pack: p, extras: extras.map(getProduct) };
+  if (budget === "m") pack = level === "pro" || content === "talk" ? "pack-podcast-rode" : "pack-maono-streaming";
+  if (budget === "l") pack = level === "debutant" && content !== "talk" ? "pack-maono-streaming" : "pack-podcast-rode";
+  const extras = level === "debutant" ? ["setup-remote"] : [];
+  return { pack: getProduct(pack), extras: extras.map(getProduct) };
 }
 
 export function configurator(root) {
@@ -84,16 +81,16 @@ export function configurator(root) {
     const total = all.reduce((s, p) => s + p.price, 0);
     const params = new URLSearchParams({ pack: pack.id, profil: `${answers.content}-${answers.level}-${answers.budget}` });
     card.innerHTML = `<div class="quiz-result">
-      <div class="quiz-result-media"><img src="${esc(getProduct(pack.includes[0]).image)}" alt=""></div>
+      <div class="quiz-result-media"><img src="${esc(pack.image)}" alt=""></div>
       <div class="qv-info">
         <span class="badge">Notre recommandation</span>
         <h3 class="h-md">${esc(pack.name)}${extras.length ? ` <span class="muted">+ ${extras.length}</span>` : ""}</h3>
         <p class="muted">${esc(pack.short)}</p>
         <ul>
-          ${pack.includes.map((id) => `<li>${esc(getProduct(id).name)} — ${esc(getProduct(id).kind)}</li>`).join("")}
+          ${pack.includes.map((id) => `<li>${esc(fullName(getProduct(id)))} — ${esc(getProduct(id).kind)}</li>`).join("")}
           ${extras.map((e) => `<li><strong>${esc(e.name)}</strong> — ${esc(e.kind)}</li>`).join("")}
         </ul>
-        ${answers.content in WHY && extras.some((e) => e.id === EXTRA_BY_CONTENT[answers.content]) ? `<p class="muted"><em>${esc(WHY[answers.content])}</em></p>` : ""}
+        <p class="muted"><em>${esc(WHY[pack.id])}</em>${NOTE[answers.content] ? `<br><em>${esc(NOTE[answers.content])}</em>` : ""}</p>
         <p class="price">${price(total)}</p>
         <div class="actions">
           <button class="btn btn-primary" type="button" data-add-all="${esc(all.map((p) => p.id).join(","))}">${icons.bag} Tout ajouter au panier</button>

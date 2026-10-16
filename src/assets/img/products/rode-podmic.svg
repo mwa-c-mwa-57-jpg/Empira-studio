@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#58544e"/><stop offset=".3" stop-color="#302e2b"/><stop offset="1" stop-color="#100f0e"/></linearGradient>
+    <linearGradient id="mh" x1="0" x2="1"><stop offset="0" stop-color="#5c5751"/><stop offset=".5" stop-color="#e6e1f2"/><stop offset="1" stop-color="#4a4742"/></linearGradient>
+    <linearGradient id="mv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ece8f6"/><stop offset=".5" stop-color="#9b968e"/><stop offset="1" stop-color="#413e3a"/></linearGradient>
+    <radialGradient id="sh"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#44413d"/><stop offset=".3" stop-color="#1f1e1c"/><stop offset="1" stop-color="#090908"/></linearGradient>
+    <radialGradient id="grill" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#e9e6f0"/><stop offset=".6" stop-color="#9b968e"/><stop offset="1" stop-color="#4a4742"/></radialGradient>
+    <pattern id="mesh" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#c2bfba"/><circle cx="2.5" cy="2.5" r="1.2" fill="#46433f"/></pattern>
+    <pattern id="mesh2" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="1.1" fill="#1f1e1c" fill-opacity=".8"/></pattern>
+  </defs>
+  <ellipse cx="200" cy="350" rx="150" ry="16" fill="url(#sh)"/>
+  <rect x="186" y="44" width="28" height="56" rx="6" fill="url(#mh)"/>
+  <path d="M112 236V120q0-22 22-22h132q22 0 22 22v116" fill="none" stroke="#181715" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M112 236V120q0-22 22-22h132q22 0 22 22v116" fill="none" stroke="#383632" stroke-width="8" stroke-linejoin="round"/>
+  <rect x="70" y="164" width="264" height="140" rx="62" fill="url(#body)"/>
+  <g fill="url(#mesh)">
+    <rect x="128" y="182" width="30" height="104" rx="13"/>
+    <rect x="174" y="180" width="30" height="108" rx="13"/>
+    <rect x="220" y="182" width="30" height="104" rx="13"/>
+  </g>
+  <rect x="88" y="172" width="220" height="7" rx="3.5" fill="#fff" opacity=".12"/>
+  <ellipse cx="318" cy="234" rx="44" ry="70" fill="#0e0d0c"/>
+  <ellipse cx="318" cy="234" rx="38" ry="62" fill="url(#grill)"/>
+  <ellipse cx="318" cy="234" rx="38" ry="62" fill="url(#mesh2)"/>
+  <ellipse cx="306" cy="206" rx="10" ry="18" fill="#fff" opacity=".35"/>
+  <circle cx="112" cy="236" r="24" fill="#181715"/>
+  <circle cx="112" cy="236" r="18" fill="url(#mv)"/>
+  <circle cx="112" cy="236" r="7" fill="#c9a24a"/>
+</svg>

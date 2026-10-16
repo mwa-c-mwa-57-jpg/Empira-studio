@@ -1,6 +1,6 @@
 // Panier : stocké dans le navigateur (localStorage, aucun cookie), affiché dans
 // un tiroir latéral, et envoyé à /api/checkout pour le paiement Stripe.
-import { PRODUCTS, getProduct, SHIPPING, MAX_QTY } from "./catalog.js";
+import { PRODUCTS, getProduct, fullName, SHIPPING, MAX_QTY } from "./catalog.js";
 import { $, $$, esc, price, icons } from "./utils.js";
 import { lightDismiss, openModal, closeModal, toast, clearToasts } from "./ui.js";
 
@@ -55,7 +55,7 @@ export function addToCart(id, qty = 1, { silent = false, open = false } = {}) {
   badge?.classList.add("bump");
   if (open) openCart();
   else if (!silent) {
-    toast(`${product.name} ajouté au panier`, { image: product.image, action: "Voir", onAction: openCart });
+    toast(`${fullName(product)} ajouté au panier`, { image: product.image, action: "Voir", onAction: openCart });
   }
 }
 
@@ -75,8 +75,8 @@ function lineHTML({ id, qty, product }) {
     <a class="line-item-media" href="produit.html?id=${esc(id)}"><img src="${esc(product.image)}" alt="" width="56" height="56"></a>
     <div>
       <h3>${esc(product.name)}</h3>
-      <p>${esc(product.kind)}</p>
-      <div class="qty" role="group" aria-label="Quantité de ${esc(product.name)}">
+      <p>${esc(product.variant || product.kind)}</p>
+      <div class="qty" role="group" aria-label="Quantité de ${esc(fullName(product))}">
         <button type="button" data-qty="${esc(id)}" data-delta="-1" aria-label="Retirer un">−</button>
         <output>${qty}</output>
         <button type="button" data-qty="${esc(id)}" data-delta="1" aria-label="Ajouter un" ${qty >= MAX_QTY ? "disabled" : ""}>+</button>
@@ -143,7 +143,7 @@ function closeCart() {
 /* ---------- Paiement ---------- */
 function mailtoOrder() {
   const lines = cartItems()
-    .map((l) => `- ${l.qty} × ${l.product.name} (${price(l.product.price)})`)
+    .map((l) => `- ${l.qty} × ${fullName(l.product)} (${price(l.product.price)})`)
     .join("\n");
   const body = `Bonjour Empira Studio,\n\nJe souhaite commander :\n${lines}\n\nTotal estimé : ${price(totals().total)}\n\nMes coordonnées :\n`;
   const email = document.body.dataset.email || "";

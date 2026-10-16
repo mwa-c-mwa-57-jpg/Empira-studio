@@ -1,4 +1,4 @@
-import { getProduct } from "../catalog.js";
+import { getProduct, fullName } from "../catalog.js";
 import { $, $$, esc, price, icons, finePointer, reducedMotion, lerp } from "../utils.js";
 import { cardHTML, stagger, savings } from "../products-ui.js";
 import { heroGL } from "../hero-gl.js";
@@ -6,8 +6,8 @@ import { liveDemo, heroOverlay } from "../live-demo.js";
 import { configurator } from "../configurator.js";
 import { journey } from "../journey.js";
 
-const FEATURED = ["vox-one", "deck-15", "optic-4k", "lumen-key"];
-const PACKS = ["pack-starter", "pack-createur", "pack-studio"];
+const FEATURED = ["maono-pd200xs-noir", "maono-g1-neo", "rode-podmic", "tonor-bras-profil-bas"];
+const PACKS = ["pack-starter", "pack-maono-streaming", "pack-podcast-rode"];
 
 function heroParallax(stage) {
   if (!stage || !finePointer() || reducedMotion()) return;
@@ -50,14 +50,14 @@ function packsHTML() {
         <p>${esc(p.short)}</p>
       </div>
       <div class="plan-thumbs">${p.includes
-        .map((pid) => `<img src="${esc(getProduct(pid).image)}" alt="${esc(getProduct(pid).name)}" title="${esc(getProduct(pid).name)}" loading="lazy" width="54" height="54">`)
+        .map((pid) => `<img src="${esc(getProduct(pid).image)}" alt="${esc(fullName(getProduct(pid)))}" title="${esc(fullName(getProduct(pid)))}" loading="lazy" width="54" height="54">`)
         .join("")}</div>
       <div>
         <p class="plan-price">${price(p.price)} <s>${price(s.value)}</s></p>
         <p><span class="save-pill">Tu économises ${price(s.saved)}</span></p>
       </div>
       <ul>
-        ${p.includes.map((pid) => `<li><span>${esc(getProduct(pid).name)} <span class="muted">· ${esc(getProduct(pid).kind)}</span></span></li>`).join("")}
+        ${p.includes.map((pid) => `<li><span>${esc(fullName(getProduct(pid)))} <span class="muted">· ${esc(getProduct(pid).kind)}</span></span></li>`).join("")}
         ${p.specs.slice(1).map((x) => `<li><span><strong>${esc(x)}</strong></span></li>`).join("")}
       </ul>
       <button class="btn ${featured ? "btn-primary" : "btn-ghost"} btn-block" type="button" data-add="${esc(p.id)}" data-open-cart>${icons.bag} Ajouter le pack</button>

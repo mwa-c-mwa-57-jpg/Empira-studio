@@ -9,14 +9,38 @@ Ce guide explique comment mettre le site en ligne sur **empirastudio.com**, l'h�
 | Élément | Détail |
 |---|---|
 | **Pages** | Accueil, Boutique (filtres, recherche, tri), Fiche produit, Agency, Contact, Commande confirmée, Message reçu, 404, Mentions légales, CGV, Confidentialité |
-| **Vente** | 12 produits, 3 packs, 1 service. Panier, livraison offerte dès 149 €, paiement Stripe (CB, Apple Pay, Google Pay) |
+| **Vente** | 8 produits réels (Maono, RØDE, TONOR, SLDXIAN) dont 2 avec variantes (coloris, longueur), 3 packs, 1 service. Panier, livraison offerte dès 149 €, paiement Stripe (CB, Apple Pay, Google Pay) |
 | **Accompagnement** | Page Agency : 6 services, 3 formules, méthode en 5 étapes, formulaire d'appel découverte |
 | **Interactif** | Fond animé WebGL qui suit la souris, écran « live » en 3D avec alertes, démo de stream avec chat simulé et boutons d'alertes, configurateur en 3 questions, défilement horizontal, curseur personnalisé, boutons magnétiques, apparitions au scroll |
 | **Vidéo** | 2 vidéos en boucle (≈ 400 Ko chacune), en pause hors écran pour économiser la batterie |
 | **Accessibilité** | Navigation au clavier, lecteurs d'écran, respect du réglage « réduire les animations » du téléphone/ordinateur |
 | **Référencement** | Titres et descriptions par page, sitemap.xml, robots.txt, données structurées Google (Organisation, Produits), image de partage réseaux sociaux |
 
-Le contenu de démonstration (noms de produits, prix, illustrations, vidéos) est à remplacer par ton vrai catalogue : voir la section 8.
+**Charte graphique** : noir profond et or, d'après le logo Empira Studio (emblème « A » recréé en vectoriel, typographie Montserrat espacée, signature « Développer • Accompagner • Influencer »).
+
+### Les prix à confirmer
+
+Les prix ci-dessous viennent des captures envoyées (prix publics constatés chez Amazon, Thomann, maono.com) ou sont **estimés** quand aucun prix n'était visible. **Ce sont des prix de départ : remplace-les par tes prix de vente** dans `src/assets/js/catalog.js`.
+
+| Produit | Prix sur le site | Origine |
+|---|---|---|
+| Maono PD200XS (noir / blanc) | 79,90 € | estimé (≈ 66 à 98 € selon les revendeurs) |
+| RØDE PodMic | 74,00 € | Amazon |
+| Micro TONOR USB/XLR | 59,90 € | estimé, **modèle exact à confirmer** |
+| Maono PD100 | 33,00 € | Thomann |
+| Maono G1 NEO | 99,90 € | estimé |
+| Bras TONOR profil bas | 29,99 € | Amazon (prix barré) |
+| Pied RØDE DS1 | 30,00 € | Amazon (prix barré) |
+| Câble XLR SLDXIAN 1 m / 2 m / 3 m | 9,69 € / 12,99 € / 13,99 € | Amazon |
+| Pack Starter (PD200XS + bras) | 99 € | à fixer |
+| Pack Streaming Maono (PD200XS + G1 NEO) | 166,99 € | maono.com |
+| Pack Podcast RØDE (PodMic + G1 NEO + bras + câble 3 m) | 199 € | à fixer |
+| Réglages à distance (1 h) | 49 € | à fixer |
+
+> ⚠️ Si tu achètes ces produits au prix public (Amazon, Thomann) pour les revendre au même prix, **tu ne gagnes rien**. Pour dégager une marge, ouvre un compte revendeur auprès des marques ou de leurs distributeurs en France.
+
+### Les visuels produits
+Les illustrations sont des **dessins originaux** créés pour le site, fidèles à l'allure de chaque produit. Les captures d'écran de sites marchands ne peuvent pas être réutilisées : les photos appartiennent aux marques et aux boutiques. Demande les **photos officielles** (kits presse) à Maono, RØDE et TONOR ou à leurs distributeurs : elles sont généralement fournies aux revendeurs. Remplace ensuite les fichiers de `src/assets/img/products/`.
 
 ---
 
@@ -98,7 +122,7 @@ Tant que Stripe n'est pas branché, le bouton « Paiement sécurisé » propose 
 5. Quand tout est bon, remplace la valeur par la **clé live** (`sk_live_…`).
 6. Dans Stripe, active aussi :
    - **Paramètres → Moyens de paiement** : Apple Pay, Google Pay (et PayPal si tu veux) ;
-   - **Paramètres → Image de marque** : logo, couleur `#8b6cff` ;
+   - **Paramètres → Image de marque** : logo, couleur or `#e0b05a` ;
    - **Paramètres → E-mails clients** : reçus de paiement automatiques ;
    - les **notifications** de nouveaux paiements sur ton téléphone (appli Stripe).
 
@@ -142,7 +166,7 @@ Avant d'encaisser le premier euro :
 - [ ] Faire **relire les CGV** par un professionnel (modèle fourni, pas un avis juridique).
 - [ ] Vérifier que les promesses affichées sont tenables : expédition sous 24 h, livraison 48-72 h, retours 30 jours, rappel sous 24 h. Modifie les textes sinon.
 - [ ] **Avis clients** : n'affiche que de vrais avis vérifiables (la loi sanctionne les faux avis). La section « témoignages » a volontairement été laissée de côté : on l'ajoutera avec tes premiers vrais retours.
-- [ ] Les noms de produits « Vox One », « Optic 4K »… sont des **exemples**. Si tu revends des marques (Elgato, Rode, Shure…), utilise leurs vrais noms et des photos autorisées par le fabricant ou le distributeur.
+- [ ] Vérifier les **caractéristiques** de chaque fiche produit avec la documentation officielle (elles ont été recoupées sur plusieurs revendeurs, mais seule la fiche du fabricant fait foi) et confirmer le **modèle exact du micro TONOR** et le **contenu du pack Maono** (bras et casque inclus ou non).
 
 ---
 
@@ -150,13 +174,13 @@ Avant d'encaisser le premier euro :
 
 | Je veux… | Fichier à modifier |
 |---|---|
-| Changer un prix, ajouter ou retirer un produit | `src/assets/js/catalog.js` (le prix payé est relu ici, impossible de tricher) |
+| Changer un prix, ajouter ou retirer un produit | `src/assets/js/catalog.js` (le prix payé est relu ici, impossible de tricher). Pour une variante (coloris, longueur), duplique le produit avec un nouvel `id` et le même `group` |
 | Changer les frais et le seuil de livraison offerte | `SHIPPING` dans `src/assets/js/catalog.js` |
 | Changer l'e-mail, le téléphone, les réseaux sociaux, le domaine | `site.config.json` |
 | Modifier un texte | `src/pages/*.html` |
 | Remplacer une image produit | `src/assets/img/products/` (photos détourées PNG/WebP de 800 × 800 px idéalement, puis mettre à jour le chemin dans `catalog.js`) |
 | Remplacer une vidéo | `src/assets/video/` : garde les mêmes noms (`stream-loop.mp4`, `brand-reel.mp4`), format MP4 H.264, sans son, moins de 5 Mo, plus une image `-poster.jpg` |
-| Modifier les couleurs | Variables en haut de `src/assets/css/styles.css` |
+| Modifier les couleurs (or, noir) | Variables en haut de `src/assets/css/styles.css` |
 
 Pour voir le résultat sur ton ordinateur (Node.js 20 ou plus requis) :
 

@@ -11,7 +11,7 @@
 // Ce fichier utilise uniquement les standards Web (Request / Response / fetch),
 // il fonctionne donc sur Netlify, Cloudflare Pages et le serveur local.
 
-import { getProduct, SHIPPING, MAX_QTY } from "../src/assets/js/catalog.js";
+import { getProduct, fullName, SHIPPING, MAX_QTY } from "../src/assets/js/catalog.js";
 
 const MAX_LINES = 30;
 const MAX_BODY = 8 * 1024;
@@ -84,7 +84,7 @@ function stripeParams(cart, origin) {
     p.set(`line_items[${i}][quantity]`, String(qty));
     p.set(`line_items[${i}][price_data][currency]`, "eur");
     p.set(`line_items[${i}][price_data][unit_amount]`, String(cents(product.price)));
-    p.set(`line_items[${i}][price_data][product_data][name]`, `${product.name} — ${product.kind}`);
+    p.set(`line_items[${i}][price_data][product_data][name]`, `${fullName(product)} — ${product.kind}`);
     p.set(`line_items[${i}][price_data][product_data][metadata][id]`, product.id);
   });
 
