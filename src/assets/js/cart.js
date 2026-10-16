@@ -1,10 +1,8 @@
 // Panier : stocké dans le navigateur (localStorage, aucun cookie), affiché dans
-// un tiroir latéral. Deux façons de payer :
-//  - sans clé Stripe : formulaire de commande, puis lien de paiement Qonto envoyé par e-mail ;
-//  - avec une clé Stripe : paiement par carte immédiat via /api/checkout.
+// un tiroir latéral, et envoyé à /api/checkout pour le paiement Stripe.
 import { PRODUCTS, getProduct, fullName, SHIPPING, MAX_QTY } from "./catalog.js";
 import { $, $$, esc, price, icons } from "./utils.js";
-import { lightDismiss, closeModal, toast, clearToasts } from "./ui.js";
+import { lightDismiss, openModal, closeModal, toast, clearToasts } from "./ui.js";
 
 const KEY = "empira-cart-v1";
 
@@ -111,7 +109,6 @@ function render() {
   $("[data-cart-shipping]").textContent = !lines.length ? "—" : t.shipping === 0 ? "Offerte" : price(t.shipping);
   $("[data-cart-total]").textContent = price(t.total);
   $$("[data-pay]").forEach((b) => (b.disabled = !lines.length));
-  renderPayments();
 
   const meter = $("[data-ship-meter]");
   const left = SHIPPING.freeFrom - t.subtotal;
@@ -143,36 +140,30 @@ function closeCart() {
 }
 
 /* ---------- Paiement ---------- */
-function mailtoOrder(details = "") {
+function mailtoOrder() {
   const lines = cartItems()
     .map((l) => `- ${l.qty} × ${fullName(l.product)} (${price(l.product.price)})`)
     .join("\n");
-  const body = `Bonjour Empira Studio,\n\nJe souhaite commander :\n${lines}\n\nTotal estimé : ${price(totals().total)}\n\nMes coordonnées :\n${details}`;
+  const body = `Bonjour Empira Studio,\n\nJe souhaite commander :\n${lines}\n\nTotal estimé : ${price(totals().total)}\n\nMes coordonnées :\n`;
   const email = document.body.dataset.email || document.querySelector("[data-email]")?.dataset.email || "";
   return `mailto:${email}?subject=${encodeURIComponent("Commande Empira Studio")}&body=${encodeURIComponent(body)}`;
 }
 
-// Paiement par carte immédiat si une clé Stripe est configurée sur l'hébergeur,
-// sinon commande avec lien de paiement Qonto (aussi en aperçu et en local).
-let stripe = false;
-async function loadMethods() {
-  try {
-    const res = await fetch("api/payment/methods", { headers: { accept: "application/json" } });
-    stripe = res.ok && (await res.json()).stripe === true;
-  } catch {
-    stripe = false;
-  }
-  render();
-}
-
-function renderPayments() {
-  const box = $("[data-pay-options]");
-  if (!box) return;
-  box.querySelector('[data-pay="stripe"]').hidden = !stripe;
-  box.querySelector('[data-pay="qonto"]').hidden = stripe;
-  box.querySelector("[data-pay-hint]").textContent = stripe
-    ? "CB, Visa, Mastercard, Apple Pay, Google Pay"
-    : "Carte ou Apple Pay via un lien sécurisé Qonto";
+// Tant que la clé Stripe n'est pas configurée (ou en aperçu), la commande part par e-mail.
+function showDemoNotice() {
+  closeCart();
+  openModal(
+    `<div class="notice-box">
+      <div class="icon">✦</div>
+      <h2 class="h-md">Le paiement en ligne arrive très bientôt</h2>
+      <p class="muted">Notre caisse sécurisée est en cours d'activation. Ton panier est conservé : envoie-le-nous par e-mail et on te recontacte dans la journée pour finaliser ta commande et te conseiller.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="${esc(mailtoOrder())}">Envoyer ma commande ${icons.arrow}</a>
+        <a class="btn btn-ghost" href="contact.html">Nous contacter</a>
+      </div>
+    </div>`,
+    { size: "sm" },
+  );
 }
 
 const isStripePage = (u) => {
@@ -200,84 +191,13 @@ async function checkout(btn) {
       window.location.assign(data.url);
       return;
     }
-    if (data.demo || [404, 405, 501].includes(res.status)) openOrder();
+    if (data.demo || [404, 405, 501].includes(res.status)) showDemoNotice();
     else toast(data.error || "Le paiement est momentanément indisponible.");
   } catch {
-    openOrder();
+    showDemoNotice();
   } finally {
     btn.innerHTML = label;
     render();
-  }
-}
-
-/* ---------- Commande avec lien de paiement Qonto ---------- */
-// Le formulaire part dans les formulaires Netlify (e-mail de notification à
-// l'équipe), qui crée ensuite le lien de paiement depuis l'application Qonto.
-const orderDialog = () => $("[data-order]");
-
-function orderText() {
-  const t = totals();
-  return [
-    ...cartItems().map((l) => `${l.qty} × ${fullName(l.product)} : ${price(l.product.price * l.qty)}`),
-    `Livraison : ${t.shipping === 0 ? "offerte" : price(t.shipping)}`,
-  ].join("\n");
-}
-
-function openOrder() {
-  const dlg = orderDialog();
-  if (!dlg || !items.length) return;
-  closeCart();
-  clearToasts();
-  const t = totals();
-  const form = $("[data-order-form]", dlg);
-  $("[data-order-summary]", dlg).innerHTML = `<ul>${cartItems()
-    .map((l) => `<li><span>${l.qty} × ${esc(fullName(l.product))}</span><span>${price(l.product.price * l.qty)}</span></li>`)
-    .join("")}<li><span>Livraison</span><span>${t.shipping === 0 ? "Offerte" : price(t.shipping)}</span></li></ul><p><span>Total TTC</span><strong>${price(t.total)}</strong></p>`;
-  form.elements.panier.value = orderText();
-  form.elements.total.value = price(t.total);
-  form.hidden = false;
-  $("[data-order-done]", dlg).hidden = true;
-  $("[data-order-error]", dlg).hidden = true;
-  if (!dlg.open) dlg.showModal();
-}
-
-async function submitOrder(e) {
-  e.preventDefault();
-  const form = e.currentTarget;
-  const dlg = orderDialog();
-  const error = $("[data-order-error]", dlg);
-  if (!items.length) return;
-  form.elements.panier.value = orderText();
-  form.elements.total.value = price(totals().total);
-  const btn = form.querySelector("[type=submit]");
-  const label = btn.innerHTML;
-  btn.disabled = true;
-  btn.textContent = "Envoi…";
-  error.hidden = true;
-  try {
-    // Envoi en arrière-plan vers Netlify (même principe que les autres formulaires).
-    const res = await fetch("/", {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(new FormData(form)).toString(),
-    });
-    if (!res.ok) throw new Error(String(res.status));
-    $("[data-order-email]", dlg).textContent = form.elements.email.value;
-    form.reset();
-    form.hidden = true;
-    $("[data-order-done]", dlg).hidden = false;
-    $("[data-order-done]", dlg).focus();
-    clearCart();
-  } catch {
-    const f = form.elements;
-    const details = [f.nom.value, f.email.value, f.telephone.value, f.adresse.value, `${f.code_postal.value} ${f.ville.value}`, f.pays.value]
-      .filter((v) => v.trim())
-      .join("\n");
-    error.innerHTML = `L'envoi n'a pas abouti. <a href="${esc(mailtoOrder(details))}">Envoie-nous ta commande par e-mail</a>, on te répond dans la journée.`;
-    error.hidden = false;
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = label;
   }
 }
 
@@ -319,15 +239,8 @@ export function initCart() {
     const rm = t.closest("[data-remove]");
     if (rm) return setQty(rm.dataset.remove, 0);
     const pay = t.closest("[data-pay]");
-    if (pay && !pay.disabled) pay.dataset.pay === "stripe" ? checkout(pay) : openOrder();
+    if (pay && !pay.disabled) checkout(pay);
   });
-  const order = orderDialog();
-  if (order) {
-    const close = () => order.close();
-    lightDismiss(order, close);
-    order.addEventListener("click", (e) => e.target.closest("[data-order-close]") && close());
-    $("[data-order-form]", order).addEventListener("submit", submitOrder);
-  }
   // Synchronise plusieurs onglets ouverts.
   window.addEventListener("storage", (e) => {
     if (e.key === KEY) {
@@ -336,7 +249,6 @@ export function initCart() {
     }
   });
   render();
-  loadMethods();
 }
 
 export { PRODUCTS };

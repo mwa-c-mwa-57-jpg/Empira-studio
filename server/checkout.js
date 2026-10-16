@@ -1,10 +1,8 @@
-// Points d'entrée du paiement, communs à Netlify, Cloudflare Pages et au serveur local.
+// Point d'entrée du paiement, commun à Netlify, Cloudflare Pages et au serveur local.
 //
-//   POST /api/checkout          { items } → { url } vers la page de paiement Stripe
-//   GET  /api/payment/methods   → { stripe: true | false } selon la clé configurée
+//   POST /api/checkout   { items } → { url } vers la page de paiement Stripe
 //
-// Sans clé Stripe, le panier propose la commande avec lien de paiement Qonto
-// (formulaire de commande, voir docs/GUIDE.md).
+// Sans clé Stripe, le panier propose d'envoyer la commande par e-mail.
 //
 // Sécurité : prix relus dans le catalogue côté serveur, clé secrète uniquement
 // dans les variables d'environnement de l'hébergeur, aucune donnée bancaire sur le site.
@@ -13,11 +11,6 @@ import { json, sameOrigin, validateCart, CartError } from "./payments/common.js"
 import { stripeEnabled, createStripePayment } from "./payments/stripe.js";
 
 const MAX_BODY = 8 * 1024;
-
-export function handleMethods(request, env = {}) {
-  if (request.method !== "GET") return json(405, { error: "Méthode non autorisée." });
-  return json(200, { stripe: stripeEnabled(env) });
-}
 
 export async function handleCheckout(request, env = {}) {
   if (request.method !== "POST") return json(405, { error: "Méthode non autorisée." });

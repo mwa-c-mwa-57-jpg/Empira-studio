@@ -10,7 +10,7 @@ import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, extname, normalize, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import { handleCheckout, handleMethods } from "../server/checkout.js";
+import { handleCheckout } from "../server/checkout.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -74,8 +74,7 @@ function resolveFile(urlPath) {
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  const API = { "/api/checkout": handleCheckout, "/api/payment/methods": handleMethods };
-  if (API[url.pathname]) {
+  if (url.pathname === "/api/checkout") {
     const chunks = [];
     for await (const c of req) chunks.push(c);
     const request = new Request(url, {
@@ -83,13 +82,13 @@ createServer(async (req, res) => {
       headers: req.headers,
       body: req.method === "POST" ? Buffer.concat(chunks) : undefined,
     });
-    const response = await API[url.pathname](request, process.env);
+    const response = await handleCheckout(request, process.env);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(Buffer.from(await response.arrayBuffer()));
     return;
   }
 
-  // Formulaires (contact, rendez-vous, commande) : Netlify les reçoit en production.
+  // Formulaires (contact, rendez-vous, newsletter) : Netlify les reçoit en production.
   if (req.method === "POST") {
     const chunks = [];
     for await (const c of req) chunks.push(c);
@@ -119,6 +118,6 @@ createServer(async (req, res) => {
   console.log(
     process.env.STRIPE_SECRET_KEY
       ? "  Paiement par carte : Stripe configuré\n"
-      : "  Paiement : commande avec lien de paiement Qonto (aucune clé Stripe)\n",
+      : "  (paiement en mode démo : aucune clé Stripe configurée)\n",
   );
 });

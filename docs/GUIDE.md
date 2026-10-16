@@ -9,7 +9,7 @@ Ce guide explique comment mettre le site en ligne sur **empirastudio.com**, l'h�
 | Élément | Détail |
 |---|---|
 | **Pages** | Accueil, Boutique (filtres, recherche, tri), Fiche produit, Agency, Contact, Commande confirmée, Message reçu, 404, Mentions légales, CGV, Confidentialité |
-| **Vente** | Uniquement tes 9 articles (Maono, RØDE, TONOR, SLDXIAN), avec leurs photos détourées. Le câble XLR existe en 1, 2 et 3 m. 3 « sélections » (setups composés de tes articles, au prix des articles, sans remise inventée). Panier, livraison offerte dès 149 €, paiement par carte via un **lien de paiement Qonto** (formulaire de commande) ou **Stripe** (paiement immédiat) |
+| **Vente** | Uniquement tes 9 articles (Maono, RØDE, TONOR, SLDXIAN), avec leurs photos détourées. Le câble XLR existe en 1, 2 et 3 m. 3 « sélections » (setups composés de tes articles, au prix des articles, sans remise inventée). Panier, livraison offerte dès 149 €, paiement **Stripe** (CB, Apple Pay, Google Pay), versé sur ton compte Qonto |
 | **Accompagnement** | Page Agency : 6 services, 3 formules, méthode en 5 étapes, formulaire d'appel découverte |
 | **Interactif** | Fond animé WebGL qui suit la souris, écran « live » en 3D avec alertes, démo de stream avec chat simulé et boutons d'alertes, configurateur en 3 questions, défilement horizontal, curseur personnalisé, boutons magnétiques, apparitions au scroll |
 | **Vidéo** | 2 vidéos en boucle (≈ 400 Ko chacune), en pause hors écran pour économiser la batterie |
@@ -67,9 +67,9 @@ Le site est **statique** (pas de base de données ni de serveur à maintenir) av
 | Solution | Coût | Points forts | Limites |
 |---|---|---|---|
 | **⭐ Netlify** (recommandé) | Gratuit pour démarrer | HTTPS automatique, **formulaires intégrés** (contact, agence, newsletter), fonction de paiement incluse, mise à jour automatique à chaque modification sur GitHub | Au-delà d'un gros trafic, passer à une offre payante (voir netlify.com/pricing) |
-| **Cloudflare Pages** | Gratuit | Bande passante illimitée, très rapide, protection anti-attaques incluse. Le code du paiement est déjà prêt (`functions/api/checkout.js`) | Pas de formulaires intégrés (contact, commande) : il faut brancher un service comme Formspree |
+| **Cloudflare Pages** | Gratuit | Bande passante illimitée, très rapide, protection anti-attaques incluse. Le code du paiement est déjà prêt (`functions/api/checkout.js`) | Pas de formulaires intégrés : il faut brancher un service comme Formspree |
 | **Vercel** | ≈ 20 $/mois | Très performant | L'offre gratuite est réservée aux projets **non commerciaux** : pour une boutique, offre payante obligatoire |
-| **Hébergement classique** (OVHcloud, o2switch, Hostinger) | 3-8 €/mois | Familier, e-mail souvent inclus | Ne fait tourner ni la fonction de paiement ni les formulaires (contact, commande) |
+| **Hébergement classique** (OVHcloud, o2switch, Hostinger) | 3-8 €/mois | Familier, e-mail souvent inclus | Ne fait tourner ni la fonction de paiement Stripe ni les formulaires |
 | **Shopify** (autre approche) | ≈ 30-40 €/mois + commissions | Clé en main : stocks, commandes, factures, étiquettes d'envoi | Il faudrait recréer ce design dans un thème Shopify ; moins de liberté |
 
 **Recommandation** : **Netlify** maintenant. Si un jour le catalogue dépasse une cinquantaine de références avec des stocks à gérer, on pourra brancher Shopify en arrière-plan en gardant ce design.
@@ -87,7 +87,7 @@ Le site est **statique** (pas de base de données ni de serveur à maintenir) av
 
 ### 4.2 Activer les formulaires
 1. **Site configuration → Forms → Enable form detection**, puis relance un déploiement.
-2. Dans **Forms → Form notifications**, ajoute ton e-mail pour recevoir chaque message (contact, appel découverte, newsletter) et surtout chaque **commande** (formulaire « commande », voir la partie 5).
+2. Dans **Forms → Form notifications**, ajoute ton e-mail pour recevoir chaque message (contact, appel découverte, newsletter).
 3. Les messages arrivent aussi dans le tableau de bord Netlify. Le filtre anti-spam est inclus, et chaque formulaire a un piège à robots invisible.
 
 ### 4.3 Brancher le domaine empirastudio.com (GoDaddy)
@@ -106,63 +106,46 @@ Le site affiche `contact@empirastudio.com` (modifiable dans `site.config.json`).
 
 ---
 
-## 5. Encaisser les paiements par carte avec Qonto
+## 5. Encaisser les paiements avec Stripe (versés sur ton compte Qonto)
 
-Qonto ne fournit pas de « caisse » à brancher directement sur un site. Mais il y a deux façons d'encaisser par carte avec l'argent qui arrive **sur ton compte Qonto**, et le site gère les deux :
+Le paiement passe directement par **Stripe** : le client clique sur **Payer par carte**, paie sur la page sécurisée Stripe (CB, Visa, Mastercard, Apple Pay, Google Pay), et revient sur la page de confirmation du site. Stripe verse ensuite automatiquement l'argent sur ton **compte Qonto**.
 
-| | **A. Liens de paiement Qonto** (actif dès la mise en ligne) | **B. Stripe, versé sur ton compte Qonto** |
-|---|---|---|
-| Ce que fait le client | Clique sur **Commander**, remplit ses coordonnées et son adresse, puis reçoit un lien de paiement par e-mail | Clique sur **Payer par carte** et paie tout de suite |
-| Moyens de paiement | Carte bancaire (CB, Visa, Mastercard), Apple Pay | Carte bancaire, Apple Pay, Google Pay |
-| Ce que tu fais | Tu crées le lien dans l'application Qonto (≈ 2 min par commande) | Rien : la commande est payée, tu n'as plus qu'à expédier |
-| Frais | Création des liens gratuite. Exemple annoncé : 1,4 % + 0,25 € par paiement avec une carte CB de particulier | De l'ordre de 1,5 % + 0,25 € par carte européenne |
-| Arrivée de l'argent | Sur ton compte Qonto, environ 4 jours ouvrés après un paiement par carte | Virement automatique de Stripe vers ton IBAN Qonto |
-| Activation | Dans l'application Qonto | Une clé à ajouter dans Netlify |
+Tant que la clé Stripe n'est pas ajoutée, le panier propose au client d'**envoyer sa commande par e-mail** : tu peux mettre le site en ligne avant d'avoir fini l'ouverture du compte Stripe.
 
-**Recommandation** : lance le site avec **A**, sans aucune clé. Quand les commandes deviennent régulières, ajoute **B** : dès que la clé Stripe est présente dans Netlify, le bouton du panier passe tout seul de **Commander** à **Payer par carte**. Ces frais évoluent : vérifie-les dans ton application Qonto et sur stripe.com/fr/pricing.
+### 5.1 Ouvrir et activer le compte Stripe (≈ 20 min)
+1. Crée un compte sur **stripe.com/fr** avec l'adresse e-mail de l'entreprise.
+2. **Active les paiements** : forme juridique, SIRET, adresse, pièce d'identité du dirigeant, et le site `https://empirastudio.com` avec une courte description (« vente de matériel de streaming »).
+3. **Compte bancaire pour les virements** : renseigne ton **IBAN Qonto** (à copier depuis l'application Qonto, rubrique du compte). C'est là que Stripe versera tes ventes.
+4. Active la **double authentification** du compte Stripe.
 
-### 5.1 Option A : les liens de paiement Qonto (pas à pas)
+### 5.2 Brancher Stripe sur le site
+1. Dans Stripe, **Développeurs → Clés API**, en **mode test** : copie la **clé secrète** (`sk_test_…`).
+2. Dans Netlify : **Site configuration → Environment variables → Add a variable**, nom `STRIPE_SECRET_KEY`, valeur la clé copiée.
+3. **Deploys → Trigger deploy** pour relancer le site. Le bouton **Payer par carte** mène désormais à la page Stripe.
+4. Fais une commande test avec la carte `4242 4242 4242 4242`, une date future et n'importe quel code. La commande apparaît dans Stripe (mode test).
+5. Quand tout est bon : repasse Stripe en **mode production**, copie la clé `sk_live_…`, remplace la valeur de `STRIPE_SECRET_KEY` dans Netlify et relance le déploiement.
 
-**Activation, une seule fois :**
-1. Dans l'application Qonto (web ou mobile), ouvre la rubrique **Liens de paiement**, puis clique sur **Activer**. Vérifie au passage que ton offre Qonto inclut cette fonctionnalité.
-2. Qonto te fait connecter un compte **Mollie**, son partenaire de paiement : informations de l'entreprise et site web (`https://empirastudio.com`). La validation peut prendre quelques jours, car Mollie vérifie parfois l'activité à la main.
-3. Dans les réglages des liens, active **carte bancaire** et **Apple Pay**. Tu peux laisser PayPal désactivé.
-4. Dans Netlify, vérifie que tu reçois bien les notifications du formulaire **commande** (partie 4.2).
+> ⚠️ La clé secrète ne doit **jamais** être écrite dans le code ni envoyée par message (même à moi). Elle vit uniquement dans Netlify. Si elle a fuité, régénère-la dans Stripe.
 
-**À chaque commande :**
-1. Tu reçois l'e-mail Netlify « commande » : nom, e-mail, adresse de livraison, articles et total TTC (livraison comprise).
-2. Tu vérifies le stock.
-3. Le plus pratique : dans Qonto, crée la **facture** du client (module Facturation) et ajoute-lui un **lien de paiement**. Le client reçoit sa facture et le bouton pour payer, et ta facture obligatoire est faite. Tu peux aussi créer un lien seul (rubrique **Liens de paiement → Créer**) en reprenant les articles du panier, à usage unique.
-4. Le client paie par carte ou Apple Pay sur la page sécurisée Qonto (`pay.qonto.com`).
-5. Qonto t'indique le paiement : tu expédies le colis.
+### 5.3 Réglages conseillés dans Stripe
+- **Paramètres → Moyens de paiement** : garde **Cartes**, **Apple Pay** et **Google Pay** activés. Désactive PayPal et le paiement en plusieurs fois s'ils apparaissent.
+- **Paramètres → Image de marque** : ton logo Empira, l'icône et la couleur or `#e0b05a`, pour une page de paiement à tes couleurs.
+- **Paramètres → E-mails clients** : active les **reçus de paiement** envoyés automatiquement.
+- **Paramètres → Informations publiques** : nom affiché sur les relevés bancaires (`EMPIRA STUDIO`), e-mail et téléphone du service client, liens vers tes CGV (`/cgv.html`) et ta politique de confidentialité.
+- Installe l'**application Stripe** sur ton téléphone et active les notifications : tu es prévenu à chaque vente.
 
-Le site annonce au client un lien **sous 24 h ouvrées** : active les notifications Netlify et Qonto sur ton téléphone pour tenir ce délai.
+### 5.4 Ce qui se passe à chaque commande
+1. Le client paie sur la page Stripe : il y saisit son adresse de livraison et son téléphone, et voit le détail du panier et des frais de port.
+2. Il revient sur la page de confirmation du site, son panier est vidé, et Stripe lui envoie son reçu.
+3. Tu reçois la notification : tous les détails (produits, adresse, téléphone) sont dans **Stripe → Paiements**.
+4. Tu expédies le colis sous 24 h ouvrées, comme annoncé sur le site.
+5. Stripe vire automatiquement l'argent sur ton compte Qonto, en général sous quelques jours ouvrés. Le premier virement prend souvent plus longtemps, le temps que Stripe vérifie le compte.
 
-**Pour tester :** passe une commande sur ton propre site, puis crée-toi un lien de 1 € et paie-le avec ta carte pour voir exactement le parcours de tes clients.
+**Remboursement** (retour sous 30 jours) : dans Stripe, ouvre le paiement puis clique sur **Rembourser**. Le client est recrédité sur sa carte.
 
-### 5.2 Option B : Stripe, versé sur ton compte Qonto
-1. Crée un compte sur **stripe.com/fr** et active-le (SIRET, pièce d'identité).
-2. **Paramètres → Comptes bancaires** : indique ton **IBAN Qonto**. Stripe y verse automatiquement tes ventes.
-3. **Développeurs → Clés API** : copie la clé secrète de test (`sk_test_…`) dans Netlify, **Site configuration → Environment variables**, sous le nom `STRIPE_SECRET_KEY`.
-4. Redéploie et teste avec la carte `4242 4242 4242 4242` (date future, n'importe quel code).
-5. Remplace ensuite par la clé live (`sk_live_…`).
-6. **Paramètres → Moyens de paiement** : active Apple Pay et Google Pay. **Paramètres → Image de marque** : ton logo Empira et la couleur or `#e0b05a`. **E-mails clients** : active les reçus.
+**Frais** : pas d'abonnement, une commission par vente. Pour une carte européenne standard, c'est de l'ordre de 1,5 % + 0,25 € (par exemple ≈ 1,36 € sur une commande de 74 €). Vérifie la grille à jour sur stripe.com/fr/pricing.
 
-Stripe demande lui-même l'adresse de livraison et le téléphone, et les prix sont toujours recalculés par le serveur du site.
-
-> ⚠️ La clé secrète Stripe ne doit **jamais** être écrite dans le code ni envoyée par message. Elle vit uniquement dans les variables d'environnement de Netlify.
-
-### 5.3 Pourquoi pas une connexion automatique entre Qonto et le site ?
-L'API de Qonto sait créer des liens de paiement par programme, mais elle est pensée pour les logiciels partenaires, pas pour une boutique :
-- connexion OAuth dont les jetons expirent toutes les heures et doivent être renouvelés et stockés en permanence ;
-- pas de retour automatique du client vers le site après le paiement ;
-- pas de saisie de l'adresse de livraison.
-
-Pour un paiement 100 % automatique, Stripe (option B) fait la même chose plus simplement, avec l'argent versé sur ton compte Qonto.
-
-### Où voir les commandes ?
-- **Option A** : dans les e-mails et le tableau de bord Netlify (**Forms → commande**), puis le suivi des paiements dans Qonto.
-- **Option B** : dans le tableau de bord Stripe, avec le nom du client, son adresse de livraison et les produits achetés.
+**Comptabilité** : dans Qonto, chaque virement Stripe regroupe plusieurs ventes. Le détail de chaque vente et des frais se trouve dans Stripe (**Soldes → Virements**, export CSV pour ton comptable).
 
 ---
 
@@ -174,7 +157,7 @@ Pour un paiement 100 % automatique, Stripe (option B) fait la même chose plus s
 | **Politique de sécurité du contenu (CSP) stricte** | Injection de code malveillant (XSS) : seul le code du site peut s'exécuter, aucun script externe |
 | **Anti-intégration (X-Frame-Options, frame-ancestors)** | Qu'un site pirate affiche le tien dans une fenêtre piégée |
 | **Prix recalculés côté serveur** | Qu'un petit malin modifie le prix dans son navigateur avant de payer |
-| **Paiement sur la page sécurisée de Qonto (Mollie) ou de Stripe (PCI-DSS niveau 1)** | Aucune donnée de carte ne passe par ton site : rien à voler |
+| **Paiement hébergé par Stripe (PCI-DSS niveau 1)** | Aucune donnée de carte ne passe par ton site : rien à voler |
 | **Clé Stripe en variable d'environnement** | Fuite de la clé via le code source |
 | **Contrôle d'origine, limites de taille et de quantité sur l'API** | Abus de la fonction de paiement depuis un autre site |
 | **Piège à robots + filtre anti-spam sur les formulaires** | Spam |
@@ -231,7 +214,7 @@ Une fois en ligne, chaque modification envoyée sur GitHub est publiée automati
 |---|---|
 | Nom de domaine `.com` (déjà payé jusqu'en 2029 si c'est le tien) | ≈ 15-25 €/an au renouvellement |
 | Hébergement Netlify | 0 € pour démarrer |
-| Paiements | Commission par vente (liens Qonto ou Stripe), sans abonnement supplémentaire |
+| Paiements Stripe | Commission par vente (≈ 1,5 % + 0,25 € par carte européenne), sans abonnement |
 | Adresse e-mail pro | 0 à 7 €/mois selon le service |
 | Médiateur de la consommation | Abonnement annuel, selon l'organisme |
 
