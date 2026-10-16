@@ -122,7 +122,7 @@ export function liveDemo(root) {
   };
 
   async function share() {
-    const url = document.body.dataset.site || location.origin;
+    const url = document.body.dataset.site || document.querySelector("[data-site]")?.dataset.site || location.origin;
     const data = { title: "Empira Studio", text: "Matériel de streaming et agence TikTok LIVE : Empira Studio", url };
     try {
       if (navigator.share) {
