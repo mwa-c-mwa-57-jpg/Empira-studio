@@ -26,7 +26,7 @@ Les prix ci-dessous viennent des captures envoyées (prix publics constatés che
 |---|---|---|
 | Maono PD200XS (blanc) + bras articulé | 79,90 € | estimé, **à vérifier** (le kit avec bras peut coûter plus cher) |
 | RØDE PodMic | 74,00 € | Amazon |
-| Micro TONOR USB/XLR | 59,90 € | estimé, **modèle exact à confirmer** |
+| Micro TONOR TD510 | 59,90 € | estimé |
 | Maono PD100 | 33,00 € | Thomann |
 | Maono G1 NEO | 99,90 € | estimé |
 | Pack Streaming Maono (PD200XS + G1 NEO) | 166,99 € | maono.com, **contenu exact à confirmer** |
@@ -183,7 +183,7 @@ Avant d'encaisser le premier euro :
 - [ ] Faire **relire les CGV** par un professionnel (modèle fourni, pas un avis juridique).
 - [ ] Vérifier que les promesses affichées sont tenables : expédition sous 24 h, livraison 48-72 h, retours 30 jours, rappel sous 24 h. Modifie les textes sinon.
 - [ ] **Avis clients** : n'affiche que de vrais avis vérifiables (la loi sanctionne les faux avis). La section « témoignages » a volontairement été laissée de côté : on l'ajoutera avec tes premiers vrais retours.
-- [ ] Vérifier les **caractéristiques** de chaque fiche produit avec la documentation officielle (elles ont été recoupées sur plusieurs revendeurs, mais seule la fiche du fabricant fait foi) et confirmer le **modèle exact du micro TONOR** et le **contenu du pack Maono** (bras et casque inclus ou non).
+- [ ] Vérifier les **caractéristiques** de chaque fiche produit avec la documentation officielle (elles ont été recoupées sur plusieurs revendeurs, mais seule la fiche du fabricant fait foi) et confirmer le **contenu du pack Maono** (bras et casque inclus ou non).
 
 ---
 

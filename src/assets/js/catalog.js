@@ -52,15 +52,15 @@ export const PRODUCTS = [
   {
     id: "tonor-micro-usb-xlr",
     brand: "TONOR",
-    name: "TONOR USB/XLR", // modèle exact à confirmer
+    name: "TONOR TD510",
     kind: "Micro dynamique USB/XLR avec pied de bureau",
     category: "micros",
     price: 59.9, // estimé
     image: `${IMG}tonor-micro.webp`,
     short: "Tout-en-un : le micro, son pied de bureau et ses deux câbles, prêt en deux minutes.",
     description:
-      "Un micro à double sortie : en USB-C directement sur ton ordinateur, ou en XLR sur une interface audio quand ton setup évolue. La prise casque 3,5 mm te permet de t'écouter en direct, et les commandes sont sur le micro. Livré avec son pied de bureau et ses câbles USB et XLR.",
-    specs: ["Double sortie USB-C et XLR", "Prise casque 3,5 mm pour t'écouter en direct", "Commandes sur le micro", "Pied de bureau inclus", "Câbles USB et XLR inclus"],
+      "Le TD510 est un micro dynamique à double sortie : en USB directement sur ton ordinateur, ou en XLR sur une interface audio comme la Maono G1 NEO quand ton setup évolue. Sa directivité cardioïde se concentre sur ta voix et laisse de côté les bruits de la pièce. La prise casque 3,5 mm te permet de t'écouter en direct, et le volume se règle sur le micro. Livré avec son pied de bureau et ses câbles USB et XLR.",
+    specs: ["Dynamique, directivité cardioïde", "Double sortie USB et XLR", "Réponse en fréquence 50 Hz – 14 kHz", "Prise casque 3,5 mm pour t'écouter en direct", "Volume réglable sur le micro", "Corps en alliage de zinc", "Pied de bureau, câbles USB et XLR inclus"],
   },
   {
     id: "maono-pd100",
@@ -159,7 +159,7 @@ export const SELECTIONS = [
     kind: "Démarrer en USB",
     items: ["tonor-micro-usb-xlr", "tonor-bras-profil-bas"],
     short: "Un micro USB livré avec ses câbles et un bras qui le place sous ta caméra. Branche, parle, c'est en ligne.",
-    why: "En USB, le micro TONOR se branche directement sur ton ordinateur : pas besoin d'interface pour démarrer.",
+    why: "En USB, le TONOR TD510 se branche directement sur ton ordinateur : pas besoin d'interface pour démarrer.",
   },
   {
     id: "regie-streaming",
