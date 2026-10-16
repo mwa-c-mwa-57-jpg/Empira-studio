@@ -1,15 +1,16 @@
 // Serveur local : `npm run dev` puis http://localhost:8080
 // Reproduit le comportement de l'hébergeur : en-têtes de sécurité de _headers,
-// URL sans .html, page 404 et fonction de paiement /api/checkout.
-// Pour tester les paiements en mode test, définis les clés avant de lancer :
-//   STRIPE_SECRET_KEY=sk_test_… PAYPAL_CLIENT_ID=… PAYPAL_CLIENT_SECRET=… ALMA_API_KEY=sk_test_… npm run dev
+// URL sans .html, page 404, fonction de paiement /api/checkout et réception
+// des formulaires (affichés dans le terminal au lieu d'être envoyés à Netlify).
+// Pour tester le paiement Stripe en mode test, définis la clé avant de lancer :
+//   STRIPE_SECRET_KEY=sk_test_… npm run dev
 
 import { createServer } from "node:http";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, extname, normalize, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import { handleCheckout, handleMethods, handleReturn } from "../server/checkout.js";
+import { handleCheckout, handleMethods } from "../server/checkout.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -73,7 +74,7 @@ function resolveFile(urlPath) {
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  const API = { "/api/checkout": handleCheckout, "/api/payment/methods": handleMethods, "/api/payment/return": handleReturn };
+  const API = { "/api/checkout": handleCheckout, "/api/payment/methods": handleMethods };
   if (API[url.pathname]) {
     const chunks = [];
     for await (const c of req) chunks.push(c);
@@ -88,6 +89,22 @@ createServer(async (req, res) => {
     return;
   }
 
+  // Formulaires (contact, rendez-vous, commande) : Netlify les reçoit en production.
+  if (req.method === "POST") {
+    const chunks = [];
+    for await (const c of req) chunks.push(c);
+    const fields = new URLSearchParams(Buffer.concat(chunks).toString("utf8"));
+    if (!fields.get("form-name") || fields.get("bot-field")) {
+      res.writeHead(400).end();
+      return;
+    }
+    console.log(`\n  Formulaire « ${fields.get("form-name")} » reçu (local) :`);
+    for (const [k, v] of fields) if (k !== "form-name" && k !== "bot-field") console.log(`    ${k}: ${v.replace(/\n/g, "\n      ")}`);
+    res.writeHead(200, { ...securityHeaders, "content-type": TYPES[".html"] });
+    res.end(readFileSync(join(dist, "merci.html")));
+    return;
+  }
+
   const file = resolveFile(url.pathname === "/" ? "/index.html" : url.pathname);
   const status = file ? 200 : 404;
   const target = file || join(dist, "404.html");
@@ -99,6 +116,9 @@ createServer(async (req, res) => {
   res.end(readFileSync(target));
 }).listen(port, () => {
   console.log(`\n  Empira Studio en local : http://localhost:${port}\n`);
-  const on = ["STRIPE_SECRET_KEY", "PAYPAL_CLIENT_ID", "ALMA_API_KEY"].filter((k) => process.env[k]);
-  console.log(on.length ? `  Paiement : ${on.join(", ")} configuré(s)\n` : "  (paiement en mode démo : aucune clé configurée)\n");
+  console.log(
+    process.env.STRIPE_SECRET_KEY
+      ? "  Paiement par carte : Stripe configuré\n"
+      : "  Paiement : commande avec lien de paiement Qonto (aucune clé Stripe)\n",
+  );
 });

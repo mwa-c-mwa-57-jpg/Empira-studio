@@ -1,5 +1,5 @@
-// Stripe Checkout : carte bancaire, Apple Pay, Google Pay (et PayPal, Klarna…
-// si tu les actives dans ton tableau de bord Stripe, sans code supplémentaire).
+// Stripe Checkout : carte bancaire, Apple Pay, Google Pay. Les ventes sont
+// versées automatiquement sur le compte bancaire choisi dans Stripe (IBAN Qonto).
 import { SHIPPING } from "../../src/assets/js/catalog.js";
 
 export const stripeEnabled = (env) => Boolean(env.STRIPE_SECRET_KEY);

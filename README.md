@@ -11,7 +11,7 @@ npm run dev          # http://localhost:8080 (aucune dépendance à installer)
 npm run build        # génère le site final dans dist/
 ```
 
-Pour tester les paiements en mode test : `STRIPE_SECRET_KEY=sk_test_… PAYPAL_CLIENT_ID=… PAYPAL_CLIENT_SECRET=… ALMA_API_KEY=sk_test_… npm run dev` (chaque moyen s'active dès que sa clé est présente).
+Sans clé, le panier propose la commande avec lien de paiement Qonto (les formulaires reçus s'affichent dans le terminal). Pour tester le paiement Stripe immédiat : `STRIPE_SECRET_KEY=sk_test_… npm run dev`.
 
 ## Organisation
 
@@ -24,8 +24,8 @@ src/assets/css/         Design (couleurs, typographies, animations)
 src/assets/js/          Interactions : panier, WebGL, démo live, configurateur…
 src/assets/img|video|fonts
 src/public/             _headers (sécurité HTTP), robots.txt, manifeste
-server/checkout.js      Paiement : création, moyens activés, retour (prix vérifiés côté serveur)
-server/payments/        Stripe, PayPal et Alma
+server/checkout.js      Paiement Stripe : création et activation (prix vérifiés côté serveur)
+server/payments/        Stripe et contrôle du panier
 netlify/functions/      Branchement de la fonction de paiement sur Netlify
 functions/api/          Branchement équivalent pour Cloudflare Pages
 scripts/                Génération du site et serveur local

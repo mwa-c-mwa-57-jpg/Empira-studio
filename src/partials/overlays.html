@@ -18,22 +18,69 @@
       <div class="total"><dt>Total TTC</dt><dd data-cart-total>0 €</dd></div>
     </dl>
     <div class="pay-options" data-pay-options>
-      <button class="btn btn-primary btn-block" type="button" data-pay="stripe">
+      <button class="btn btn-primary btn-block" type="button" data-pay="qonto">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Commander
+      </button>
+      <button class="btn btn-primary btn-block" type="button" data-pay="stripe" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
         Payer par carte
       </button>
-      <p class="pay-hint" data-pay-hint="stripe">CB, Visa, Mastercard, Apple Pay, Google Pay</p>
-      <button class="btn btn-ghost btn-block pay-paypal" type="button" data-pay="paypal">Payer avec <b>PayPal</b></button>
-      <div class="pay-alma" data-pay-alma>
-        <span>Payer en plusieurs fois avec <b>Alma</b></span>
-        <div class="pay-alma-btns">
-          <button class="btn btn-ghost btn-sm" type="button" data-pay="alma" data-installments="3">3 fois</button>
-          <button class="btn btn-ghost btn-sm" type="button" data-pay="alma" data-installments="4">4 fois</button>
-        </div>
-        <small data-alma-note hidden></small>
-      </div>
+      <p class="pay-hint" data-pay-hint>Carte ou Apple Pay via un lien sécurisé Qonto</p>
     </div>
     <p class="drawer-note">Paiement chiffré, sur la page sécurisée du prestataire · Retours 30 jours</p>
+  </div>
+</dialog>
+
+<dialog class="modal sm order" data-order aria-labelledby="order-title">
+  <button class="icon-btn modal-close" type="button" data-order-close aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <div class="modal-body">
+    <form class="form" name="commande" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field" data-order-form>
+      <input type="hidden" name="form-name" value="commande">
+      <p class="hp-field"><label>Ne pas remplir <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <input type="hidden" name="panier" data-order-cart>
+      <input type="hidden" name="total" data-order-total>
+      <div class="order-head">
+        <p class="eyebrow no-rule">Paiement sécurisé Qonto</p>
+        <h2 class="h-md" id="order-title">Finalise ta commande</h2>
+        <p class="muted">On vérifie le stock et on t'envoie ton <strong>lien de paiement sécurisé</strong> par e-mail sous 24&nbsp;h ouvrées. Tu paies par carte bancaire ou Apple Pay, et ton colis part dès réception du paiement.</p>
+      </div>
+      <div class="order-summary" data-order-summary></div>
+      <div class="form-row">
+        <div class="field"><label for="o-name">Prénom et nom</label><input id="o-name" name="nom" autocomplete="name" required maxlength="80"></div>
+        <div class="field"><label for="o-email">E-mail</label><input id="o-email" type="email" name="email" autocomplete="email" required maxlength="120"></div>
+      </div>
+      <div class="field"><label for="o-address">Adresse de livraison</label><input id="o-address" name="adresse" autocomplete="street-address" required maxlength="160"></div>
+      <div class="form-row">
+        <div class="field"><label for="o-zip">Code postal</label><input id="o-zip" name="code_postal" autocomplete="postal-code" required maxlength="12"></div>
+        <div class="field"><label for="o-city">Ville</label><input id="o-city" name="ville" autocomplete="address-level2" required maxlength="80"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="o-country">Pays</label>
+          <select id="o-country" name="pays" autocomplete="country-name">
+            <option>France</option>
+            <option>Belgique</option>
+            <option>Suisse</option>
+            <option>Luxembourg</option>
+            <option>Monaco</option>
+          </select>
+        </div>
+        <div class="field"><label for="o-phone">Téléphone (facultatif)</label><input id="o-phone" type="tel" name="telephone" autocomplete="tel" maxlength="30"></div>
+      </div>
+      <div class="field"><label for="o-msg">Une précision ? (facultatif)</label><textarea id="o-msg" name="message" maxlength="1000"></textarea></div>
+      <label class="check"><input type="checkbox" name="cgv" value="oui" required><span>J'accepte les <a href="cgv.html">conditions générales de vente</a> et la <a href="confidentialite.html">politique de confidentialité</a>.</span></label>
+      <p class="form-error" data-order-error role="alert" hidden></p>
+      <button class="btn btn-primary btn-block" type="submit">Recevoir mon lien de paiement</button>
+      <p class="order-note">Rien n'est débité sur cette page : tu paies uniquement via le lien sécurisé que l'on t'envoie.</p>
+    </form>
+    <div class="order-done" data-order-done tabindex="-1" hidden>
+      <div class="status-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h2 class="h-md">Commande reçue, <span class="grad-text">merci&nbsp;!</span></h2>
+      <p class="muted">Ton lien de paiement sécurisé arrive par e-mail à <strong data-order-email></strong> sous 24&nbsp;h ouvrées. Pense à vérifier tes courriers indésirables.</p>
+      <button class="btn btn-primary" type="button" data-order-close>Continuer mes achats</button>
+    </div>
   </div>
 </dialog>
 

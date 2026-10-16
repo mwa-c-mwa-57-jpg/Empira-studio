@@ -2892,36 +2892,6 @@ dialog {
   color: var(--dim);
   font-size: 0.72rem;
 }
-.pay-paypal b,
-.pay-alma b {
-  font-weight: 800;
-  font-style: italic;
-  letter-spacing: -0.01em;
-}
-.pay-alma {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 8px 10px;
-  padding: 10px 10px 10px 14px;
-  border-radius: 14px;
-  box-shadow: inset 0 0 0 1px var(--line);
-  font-size: 0.82rem;
-  color: var(--muted);
-}
-.pay-alma-btns {
-  display: flex;
-  gap: 6px;
-}
-.pay-alma-btns .btn {
-  min-height: 36px;
-  padding: 0 14px;
-}
-.pay-alma small {
-  grid-column: 1 / -1;
-  color: var(--dim);
-  font-size: 0.72rem;
-}
 .drawer-note {
   margin-top: 12px;
   text-align: center;
@@ -3076,6 +3046,76 @@ dialog {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
   }
+}
+
+/* ---------- Commande avec lien de paiement ---------- */
+.order .form {
+  gap: 14px;
+}
+.order-head {
+  display: grid;
+  gap: 10px;
+  padding-right: 36px;
+}
+.order-summary ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0 0 10px;
+  list-style: none;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.order-summary li,
+.order-summary p {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.order-summary li span:last-child,
+.order-summary strong {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.order-summary p {
+  margin-top: 10px;
+  font-weight: 700;
+}
+.order-summary {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgb(var(--accent-rgb) / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / 0.22);
+}
+.order .field textarea {
+  min-height: 84px;
+}
+.form-error {
+  color: var(--red);
+  font-size: 0.85rem;
+}
+.form-error a {
+  color: var(--text);
+  text-decoration: underline;
+}
+.order-note {
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+.order-done {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: 12px 0;
+  text-align: center;
+  outline: none;
+}
+.order-done .status-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
 }
 
 /* ---------- Formulaires ---------- */

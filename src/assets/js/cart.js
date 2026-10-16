@@ -1,8 +1,10 @@
 // Panier : stocké dans le navigateur (localStorage, aucun cookie), affiché dans
-// un tiroir latéral, et envoyé à /api/checkout pour le paiement Stripe.
-import { PRODUCTS, getProduct, fullName, SHIPPING, MAX_QTY, PAYMENTS } from "./catalog.js";
+// un tiroir latéral. Deux façons de payer :
+//  - sans clé Stripe : formulaire de commande, puis lien de paiement Qonto envoyé par e-mail ;
+//  - avec une clé Stripe : paiement par carte immédiat via /api/checkout.
+import { PRODUCTS, getProduct, fullName, SHIPPING, MAX_QTY } from "./catalog.js";
 import { $, $$, esc, price, icons } from "./utils.js";
-import { lightDismiss, openModal, closeModal, toast, clearToasts } from "./ui.js";
+import { lightDismiss, closeModal, toast, clearToasts } from "./ui.js";
 
 const KEY = "empira-cart-v1";
 
@@ -109,7 +111,7 @@ function render() {
   $("[data-cart-shipping]").textContent = !lines.length ? "—" : t.shipping === 0 ? "Offerte" : price(t.shipping);
   $("[data-cart-total]").textContent = price(t.total);
   $$("[data-pay]").forEach((b) => (b.disabled = !lines.length));
-  renderPayments(t);
+  renderPayments();
 
   const meter = $("[data-ship-meter]");
   const left = SHIPPING.freeFrom - t.subtotal;
@@ -141,72 +143,42 @@ function closeCart() {
 }
 
 /* ---------- Paiement ---------- */
-function mailtoOrder() {
+function mailtoOrder(details = "") {
   const lines = cartItems()
     .map((l) => `- ${l.qty} × ${fullName(l.product)} (${price(l.product.price)})`)
     .join("\n");
-  const body = `Bonjour Empira Studio,\n\nJe souhaite commander :\n${lines}\n\nTotal estimé : ${price(totals().total)}\n\nMes coordonnées :\n`;
+  const body = `Bonjour Empira Studio,\n\nJe souhaite commander :\n${lines}\n\nTotal estimé : ${price(totals().total)}\n\nMes coordonnées :\n${details}`;
   const email = document.body.dataset.email || document.querySelector("[data-email]")?.dataset.email || "";
   return `mailto:${email}?subject=${encodeURIComponent("Commande Empira Studio")}&body=${encodeURIComponent(body)}`;
 }
 
-function showDemoNotice() {
-  closeCart();
-  openModal(
-    `<div class="notice-box">
-      <div class="icon">✦</div>
-      <h2 class="h-md">Le paiement en ligne arrive très bientôt</h2>
-      <p class="muted">Notre caisse sécurisée est en cours d'activation. Ton panier est conservé : envoie-le-nous par e-mail et on te recontacte dans la journée pour finaliser ta commande et te conseiller.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-primary" href="${mailtoOrder()}">Envoyer ma commande ${icons.arrow}</a>
-        <a class="btn btn-ghost" href="contact.html">Nous contacter</a>
-      </div>
-    </div>`,
-    { size: "sm" },
-  );
-}
-
-// Moyens de paiement réellement activés côté serveur (selon les clés configurées).
-// Sans clé (ou en aperçu), tous les boutons s'affichent et mènent au mode démo.
-let methods = null;
+// Paiement par carte immédiat si une clé Stripe est configurée sur l'hébergeur,
+// sinon commande avec lien de paiement Qonto (aussi en aperçu et en local).
+let stripe = false;
 async function loadMethods() {
   try {
     const res = await fetch("api/payment/methods", { headers: { accept: "application/json" } });
-    const data = res.ok ? await res.json() : null;
-    methods = data && Object.values(data).some(Boolean) ? data : { demo: true };
+    stripe = res.ok && (await res.json()).stripe === true;
   } catch {
-    methods = { demo: true };
+    stripe = false;
   }
   render();
 }
 
-function renderPayments(t) {
+function renderPayments() {
   const box = $("[data-pay-options]");
   if (!box) return;
-  const on = (k) => !methods || methods.demo || methods[k];
-  box.querySelector('[data-pay="stripe"]').hidden = !on("stripe");
-  box.querySelector('[data-pay-hint="stripe"]').hidden = !on("stripe");
-  box.querySelector('[data-pay="paypal"]').hidden = !on("paypal");
-  const alma = box.querySelector("[data-pay-alma]");
-  alma.hidden = !on("alma");
-  const tooLow = t.total < PAYMENTS.almaMinTotal;
-  alma.querySelectorAll("[data-pay]").forEach((b) => (b.disabled = b.disabled || tooLow));
-  const note = alma.querySelector("[data-alma-note]");
-  note.hidden = !tooLow || !items.length;
-  note.textContent = `Disponible dès ${price(PAYMENTS.almaMinTotal)} d'achat.`;
-  // Le premier moyen visible devient le bouton principal.
-  const visible = [...box.querySelectorAll(":scope > [data-pay]")].filter((b) => !b.hidden);
-  visible.forEach((b, i) => {
-    b.classList.toggle("btn-primary", i === 0);
-    b.classList.toggle("btn-ghost", i !== 0);
-  });
+  box.querySelector('[data-pay="stripe"]').hidden = !stripe;
+  box.querySelector('[data-pay="qonto"]').hidden = stripe;
+  box.querySelector("[data-pay-hint]").textContent = stripe
+    ? "CB, Visa, Mastercard, Apple Pay, Google Pay"
+    : "Carte ou Apple Pay via un lien sécurisé Qonto";
 }
 
-const PAY_HOSTS = ["stripe.com", "paypal.com", "getalma.eu", "almapay.com"];
-const isPaymentPage = (u) => {
+const isStripePage = (u) => {
   try {
     const { protocol, hostname } = new URL(u);
-    return protocol === "https:" && PAY_HOSTS.some((h) => hostname === h || hostname.endsWith(`.${h}`));
+    return protocol === "https:" && (hostname === "stripe.com" || hostname.endsWith(".stripe.com"));
   } catch {
     return false;
   }
@@ -214,7 +186,6 @@ const isPaymentPage = (u) => {
 
 async function checkout(btn) {
   if (!items.length) return;
-  const provider = btn.dataset.pay;
   const label = btn.innerHTML;
   $$("[data-pay]").forEach((b) => (b.disabled = true));
   btn.textContent = "Connexion sécurisée…";
@@ -222,20 +193,91 @@ async function checkout(btn) {
     const res = await fetch("api/checkout", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ items, provider, installments: Number(btn.dataset.installments) || undefined }),
+      body: JSON.stringify({ items }),
     });
     const data = await res.json().catch(() => ({}));
-    if (res.ok && isPaymentPage(data.url)) {
+    if (res.ok && isStripePage(data.url)) {
       window.location.assign(data.url);
       return;
     }
-    if (data.demo || [404, 405, 501].includes(res.status)) showDemoNotice();
+    if (data.demo || [404, 405, 501].includes(res.status)) openOrder();
     else toast(data.error || "Le paiement est momentanément indisponible.");
   } catch {
-    showDemoNotice();
+    openOrder();
   } finally {
     btn.innerHTML = label;
     render();
+  }
+}
+
+/* ---------- Commande avec lien de paiement Qonto ---------- */
+// Le formulaire part dans les formulaires Netlify (e-mail de notification à
+// l'équipe), qui crée ensuite le lien de paiement depuis l'application Qonto.
+const orderDialog = () => $("[data-order]");
+
+function orderText() {
+  const t = totals();
+  return [
+    ...cartItems().map((l) => `${l.qty} × ${fullName(l.product)} : ${price(l.product.price * l.qty)}`),
+    `Livraison : ${t.shipping === 0 ? "offerte" : price(t.shipping)}`,
+  ].join("\n");
+}
+
+function openOrder() {
+  const dlg = orderDialog();
+  if (!dlg || !items.length) return;
+  closeCart();
+  clearToasts();
+  const t = totals();
+  const form = $("[data-order-form]", dlg);
+  $("[data-order-summary]", dlg).innerHTML = `<ul>${cartItems()
+    .map((l) => `<li><span>${l.qty} × ${esc(fullName(l.product))}</span><span>${price(l.product.price * l.qty)}</span></li>`)
+    .join("")}<li><span>Livraison</span><span>${t.shipping === 0 ? "Offerte" : price(t.shipping)}</span></li></ul><p><span>Total TTC</span><strong>${price(t.total)}</strong></p>`;
+  form.elements.panier.value = orderText();
+  form.elements.total.value = price(t.total);
+  form.hidden = false;
+  $("[data-order-done]", dlg).hidden = true;
+  $("[data-order-error]", dlg).hidden = true;
+  if (!dlg.open) dlg.showModal();
+}
+
+async function submitOrder(e) {
+  e.preventDefault();
+  const form = e.currentTarget;
+  const dlg = orderDialog();
+  const error = $("[data-order-error]", dlg);
+  if (!items.length) return;
+  form.elements.panier.value = orderText();
+  form.elements.total.value = price(totals().total);
+  const btn = form.querySelector("[type=submit]");
+  const label = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = "Envoi…";
+  error.hidden = true;
+  try {
+    // Envoi en arrière-plan vers Netlify (même principe que les autres formulaires).
+    const res = await fetch("/", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(new FormData(form)).toString(),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    $("[data-order-email]", dlg).textContent = form.elements.email.value;
+    form.reset();
+    form.hidden = true;
+    $("[data-order-done]", dlg).hidden = false;
+    $("[data-order-done]", dlg).focus();
+    clearCart();
+  } catch {
+    const f = form.elements;
+    const details = [f.nom.value, f.email.value, f.telephone.value, f.adresse.value, `${f.code_postal.value} ${f.ville.value}`, f.pays.value]
+      .filter((v) => v.trim())
+      .join("\n");
+    error.innerHTML = `L'envoi n'a pas abouti. <a href="${esc(mailtoOrder(details))}">Envoie-nous ta commande par e-mail</a>, on te répond dans la journée.`;
+    error.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = label;
   }
 }
 
@@ -277,8 +319,15 @@ export function initCart() {
     const rm = t.closest("[data-remove]");
     if (rm) return setQty(rm.dataset.remove, 0);
     const pay = t.closest("[data-pay]");
-    if (pay && !pay.disabled) checkout(pay);
+    if (pay && !pay.disabled) pay.dataset.pay === "stripe" ? checkout(pay) : openOrder();
   });
+  const order = orderDialog();
+  if (order) {
+    const close = () => order.close();
+    lightDismiss(order, close);
+    order.addEventListener("click", (e) => e.target.closest("[data-order-close]") && close());
+    $("[data-order-form]", order).addEventListener("submit", submitOrder);
+  }
   // Synchronise plusieurs onglets ouverts.
   window.addEventListener("storage", (e) => {
     if (e.key === KEY) {

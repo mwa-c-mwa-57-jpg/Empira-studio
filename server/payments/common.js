@@ -16,8 +16,6 @@ export const json = (status, data) =>
     },
   });
 
-export const redirect = (url) => new Response(null, { status: 303, headers: { location: url, "cache-control": "no-store" } });
-
 export function sameOrigin(request) {
   const origin = request.headers.get("origin");
   if (!origin) return false;
@@ -57,11 +55,3 @@ export function validateCart(payload) {
 }
 
 export const cents = (euros) => Math.round(euros * 100);
-export const euros = (c) => (c / 100).toFixed(2);
-
-// Les URL de retour sont construites côté serveur (jamais fournies par le navigateur).
-export const urls = (origin) => ({
-  cancel: `${origin}/boutique.html?paiement=annule`,
-  failure: `${origin}/boutique.html?paiement=echec`,
-  success: (provider, ref) => `${origin}/succes.html?paiement=${provider}&ref=${encodeURIComponent(ref)}`,
-});

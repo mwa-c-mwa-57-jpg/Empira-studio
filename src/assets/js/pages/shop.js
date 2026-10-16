@@ -47,10 +47,6 @@ export function init() {
 
   const banner = $("[data-cancel-banner]");
   if (params.get("paiement") === "annule") banner.hidden = false;
-  if (params.get("paiement") === "echec") {
-    banner.textContent = "Le paiement n'a pas abouti : aucun montant n'a été débité. Ton panier est toujours là, tu peux réessayer ou choisir un autre moyen de paiement.";
-    banner.hidden = false;
-  }
 
   const render = () => {
     $$("[data-cat]", chips).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cat === state.cat)));
