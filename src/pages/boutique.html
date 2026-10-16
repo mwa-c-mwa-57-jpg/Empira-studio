@@ -1,0 +1,60 @@
+<!--
+title: Boutique — Matériel de streaming | Empira Studio
+description: Micros, webcams, caméras, lumières, cartes d'acquisition, contrôleurs et packs complets pour streamer sur Twitch, YouTube ou TikTok. Livraison 48-72 h.
+priority: 0.9
+-->
+{{> head}}
+{{> header}}
+<main id="main">
+  <section class="page-hero">
+    <div class="container">
+      <nav class="crumbs fade-up d1" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">/</span><span>Boutique</span></nav>
+      <h1 class="h-xl"><span class="hero-title"><span class="line"><span>La boutique</span></span></span></h1>
+      <p class="lead fade-up d2">Du matériel testé en live par des streamers. Chaque produit a sa place dans un setup cohérent, et on peut te l'installer.</p>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-label="Produits">
+    <div class="container">
+      <p class="banner" data-cancel-banner hidden>Paiement annulé : aucun montant n'a été débité. Ton panier est toujours là quand tu veux.</p>
+      <div class="shop-bar">
+        <div class="shop-cats" data-cats role="toolbar" aria-label="Catégories"></div>
+        <div class="shop-tools">
+          <label class="search">
+            <span class="sr-only">Rechercher un produit</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="search" placeholder="Rechercher…" data-search maxlength="60" autocomplete="off">
+          </label>
+          <label class="sort">
+            <span class="sr-only">Trier par</span>
+            <select data-sort>
+              <option value="pertinence">Pertinence</option>
+              <option value="prix-asc">Prix croissant</option>
+              <option value="prix-desc">Prix décroissant</option>
+              <option value="nom">Nom</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <p class="shop-count" data-count-label aria-live="polite"></p>
+      <div class="p-grid" data-grid></div>
+      <div class="shop-empty" data-empty hidden>
+        <h2 class="h-sm">Aucun produit ne correspond.</h2>
+        <p>Essaie un autre mot-clé, ou demande-nous conseil : on trouvera ce qu'il te faut.</p>
+        <div class="hero-ctas"><button class="btn btn-ghost" type="button" data-reset>Réinitialiser</button><a class="btn btn-primary" href="contact.html?sujet=conseil">Demander conseil</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="cta-final theme-gold" data-reveal="scale">
+        <p class="eyebrow no-rule">Empira Agency</p>
+        <h2 class="h-lg">Tu ne sais pas quoi choisir ?</h2>
+        <p class="lead">15 minutes au téléphone avec un streamer de l'équipe, et tu repars avec la liste exacte de ce qu'il te faut. Gratuit et sans engagement.</p>
+        <div class="hero-ctas"><a class="btn btn-primary" href="agency.html#rdv">Réserver mon appel conseil</a><a class="btn btn-ghost" href="index.html#configurateur">Faire le configurateur</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+{{> footer}}

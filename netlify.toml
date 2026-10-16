@@ -1,0 +1,30 @@
+# Configuration Netlify (hébergement recommandé, voir docs/GUIDE.md)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Le domaine secondaire et le www renvoient vers le domaine principal.
+[[redirects]]
+  from = "https://www.empirastudio.com/*"
+  to = "https://empirastudio.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://empira-studio.com/*"
+  to = "https://empirastudio.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.empira-studio.com/*"
+  to = "https://empirastudio.com/:splat"
+  status = 301
+  force = true

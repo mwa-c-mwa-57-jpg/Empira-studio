@@ -1,0 +1,38 @@
+<dialog class="drawer" data-cart aria-labelledby="cart-title">
+  <div class="drawer-head">
+    <h2 id="cart-title">Ton panier <span data-cart-title-count></span></h2>
+    <button class="icon-btn" type="button" data-cart-close aria-label="Fermer le panier">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="ship-meter" data-ship-meter>
+    <p data-ship-text>Livraison offerte dès 149 €</p>
+    <div class="ship-track"><span data-ship-bar></span></div>
+  </div>
+  <div class="drawer-body" data-cart-lines></div>
+  <div class="drawer-upsell" data-cart-upsell hidden></div>
+  <div class="drawer-foot">
+    <dl class="totals">
+      <div><dt>Sous-total</dt><dd data-cart-subtotal>0 €</dd></div>
+      <div><dt>Livraison</dt><dd data-cart-shipping>—</dd></div>
+      <div class="total"><dt>Total TTC</dt><dd data-cart-total>0 €</dd></div>
+    </dl>
+    <button class="btn btn-primary btn-block" type="button" data-checkout>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      Paiement sécurisé
+    </button>
+    <p class="drawer-note">Paiement chiffré par Stripe · CB, Apple Pay, Google Pay · Retours 30 jours</p>
+  </div>
+</dialog>
+
+<dialog class="modal" data-modal aria-label="Fenêtre">
+  <button class="icon-btn modal-close" type="button" data-modal-close aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <div class="modal-body" data-modal-body></div>
+</dialog>
+
+<div class="toasts" data-toasts aria-live="polite" aria-atomic="false"></div>
+<div class="cursor" aria-hidden="true"><span class="cursor-ring"></span><span class="cursor-dot"></span></div>
+</body>
+</html>

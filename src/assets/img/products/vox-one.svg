@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="b" x1="0" x2="1"><stop offset="0" stop-color="#16131f"/><stop offset=".38" stop-color="#3d3655"/><stop offset=".55" stop-color="#2b253b"/><stop offset="1" stop-color="#110f18"/></linearGradient>
+    <linearGradient id="m" x1="0" x2="1"><stop offset="0" stop-color="#4f4964"/><stop offset=".45" stop-color="#e6e1f2"/><stop offset=".7" stop-color="#9c96b0"/><stop offset="1" stop-color="#3e3a52"/></linearGradient>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#ff4fa3"/></linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3350"/><stop offset="1" stop-color="#1c1828"/></linearGradient>
+    <radialGradient id="s"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <pattern id="mesh" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3.5" cy="3.5" r="1.7" fill="#07060b"/></pattern>
+    <clipPath id="cap"><rect x="146" y="34" width="108" height="222" rx="54"/></clipPath>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <ellipse cx="200" cy="366" rx="130" ry="18" fill="url(#s)"/>
+  <path d="M112 334v12a88 17 0 0 0 176 0v-12z" fill="#0d0b12"/>
+  <ellipse cx="200" cy="334" rx="88" ry="17" fill="url(#top)"/>
+  <ellipse cx="200" cy="331" rx="70" ry="11" fill="none" stroke="#fff" stroke-opacity=".08"/>
+  <rect x="191" y="250" width="18" height="86" rx="4" fill="url(#m)"/>
+  <path d="M132 142v88a68 40 0 0 0 136 0v-88" fill="none" stroke="url(#m)" stroke-width="11" stroke-linecap="round"/>
+  <g clip-path="url(#cap)">
+    <rect x="146" y="34" width="108" height="222" fill="url(#b)"/>
+    <rect x="146" y="34" width="108" height="118" fill="#4a4363"/>
+    <rect x="146" y="34" width="108" height="118" fill="url(#mesh)"/>
+    <rect x="146" y="34" width="108" height="118" fill="url(#b)" opacity=".55"/>
+    <rect x="146" y="148" width="108" height="10" fill="url(#m)"/>
+    <rect x="162" y="48" width="9" height="196" rx="4.5" fill="#fff" opacity=".09"/>
+  </g>
+  <circle cx="200" cy="196" r="17" fill="url(#a)" filter="url(#g)" opacity=".8"/>
+  <circle cx="200" cy="196" r="15" fill="#0b0a10" stroke="url(#a)" stroke-width="3"/>
+  <path d="M200 188v9m-5-4a5 5 0 0 0 10 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+  <circle cx="200" cy="232" r="10" fill="url(#m)"/>
+  <circle cx="200" cy="232" r="5" fill="#2a2539"/>
+  <circle cx="132" cy="168" r="13" fill="#1a1724" stroke="url(#m)" stroke-width="3"/>
+  <circle cx="268" cy="168" r="13" fill="#1a1724" stroke="url(#m)" stroke-width="3"/>
+</svg>

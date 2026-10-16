@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a4363"/><stop offset=".5" stop-color="#2b253b"/><stop offset="1" stop-color="#1a1724"/></linearGradient>
+    <linearGradient id="fr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f1b2b"/><stop offset="1" stop-color="#0c0a11"/></linearGradient>
+    <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15121d"/><stop offset="1" stop-color="#08070c"/></linearGradient>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#ff4fa3"/></linearGradient>
+    <radialGradient id="s"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+  <ellipse cx="205" cy="290" rx="170" ry="30" fill="url(#s)"/>
+  <path d="M60 196l110 52v40L60 236z" fill="url(#fl)"/>
+  <path d="M170 248l180-70v40l-180 70z" fill="url(#fr)"/>
+  <path d="M60 196l180-70 110 52-180 70z" fill="url(#top)"/>
+  <path d="M74 197l166-64 96 45" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M120 206l160-62 22 10-160 62z" fill="url(#a)" filter="url(#g)" opacity=".9"/>
+  <path d="M120 206l160-62 22 10-160 62z" fill="url(#a)"/>
+  <path d="M178 196l40-15 8 4-40 15z" fill="#fff" opacity=".35"/>
+  <g transform="matrix(180 -70 0 40 170 248)">
+    <path d="M.12 .3h.16v.24l-.02.12h-.12l-.02-.12z" fill="#05040a"/>
+    <path d="M.38 .3h.16v.24l-.02.12h-.12l-.02-.12z" fill="#05040a"/>
+    <rect x=".66" y=".36" width=".1" height=".22" rx=".02" fill="#05040a"/>
+    <circle cx=".88" cy=".46" r=".035" fill="#3ee08f"/>
+  </g>
+  <g transform="matrix(110 52 0 40 60 196)">
+    <rect x=".35" y=".38" width=".3" height=".22" rx=".08" fill="#05040a"/>
+  </g>
+  <path d="M60 236l110 52 180-70" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="2"/>
+</svg>

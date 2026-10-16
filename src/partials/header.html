@@ -1,0 +1,38 @@
+<a class="skip-link" href="#main">Aller au contenu</a>
+<div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="{{name}} — accueil">
+      {{> logo}}
+      <span class="brand-word">EMPIRA<span class="brand-sub">studio · agency</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <a href="boutique.html" {{current:boutique}}>Boutique</a>
+      <a href="boutique.html?cat=packs">Packs</a>
+      <a href="agency.html" {{current:agency}}>Agency</a>
+      <a href="index.html#configurateur">Configurateur</a>
+      <a href="contact.html" {{current:contact}}>Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-ghost btn-sm header-cta" href="agency.html#rdv">Appel gratuit</a>
+      <button class="icon-btn cart-btn" type="button" data-cart-open aria-label="Ouvrir le panier">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="cart-count" data-cart-count hidden>0</span>
+      </button>
+      <button class="icon-btn menu-btn" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
+  <nav aria-label="Navigation mobile">
+    <a href="index.html"><small>00</small>Accueil</a>
+    <a href="boutique.html"><small>01</small>Boutique</a>
+    <a href="boutique.html?cat=packs"><small>02</small>Packs</a>
+    <a href="agency.html"><small>03</small>Agency</a>
+    <a href="index.html#configurateur"><small>04</small>Configurateur</a>
+    <a href="contact.html"><small>05</small>Contact</a>
+  </nav>
+  <p class="mobile-menu-foot"><span class="live-dot"></span>{{siteHost}}</p>
+</div>

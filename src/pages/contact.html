@@ -1,0 +1,62 @@
+<!--
+title: Contact | Empira Studio & Empira Agency
+description: Une question sur une commande, un produit ou l'accompagnement ? Écris à l'équipe Empira, réponse sous 24 h ouvrées.
+priority: 0.7
+-->
+{{> head}}
+{{> header}}
+<main id="main">
+  <section class="page-hero">
+    <div class="container">
+      <nav class="crumbs fade-up d1" aria-label="Fil d'Ariane"><a href="index.html">Accueil</a><span aria-hidden="true">/</span><span>Contact</span></nav>
+      <h1 class="h-xl hero-title"><span class="line"><span>On t'écoute.</span></span></h1>
+      <p class="lead fade-up d2">Commande, conseil, SAV ou projet d'accompagnement : un membre de l'équipe te répond sous 24 h ouvrées.</p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container rdv">
+      <div class="rdv-aside" data-reveal="left">
+        <ul>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span><strong>E-mail</strong><a href="mailto:{{email}}">{{email}}</a></span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><strong>Horaires</strong>Du lundi au samedi, de 10 h à 19 h.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span><strong>Suivi de commande</strong>Le lien de suivi est dans l'e-mail d'expédition. Une question ? Indique ton numéro de commande.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10M7 20h10M12 4v16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span><strong>Réseaux</strong><a href="{{instagram}}" rel="noopener" target="_blank">Instagram</a> · <a href="{{tiktok}}" rel="noopener" target="_blank">TikTok</a> · <a href="{{twitch}}" rel="noopener" target="_blank">Twitch</a></span></li>
+        </ul>
+        <div class="cta-final theme-gold">
+          <h2 class="h-sm">Un projet d'accompagnement ?</h2>
+          <p class="muted">Pour l'agence, le formulaire dédié nous donne tout ce qu'il faut pour préparer ton appel.</p>
+          <a class="btn btn-primary btn-sm" href="agency.html#rdv">Appel découverte</a>
+        </div>
+      </div>
+      <div class="form-card" data-reveal>
+        <form class="form" name="contact" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact">
+          <p class="hp-field"><label>Ne pas remplir <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+          <div class="form-row">
+            <div class="field"><label for="c-name">Prénom et nom</label><input id="c-name" name="nom" autocomplete="name" required maxlength="80"></div>
+            <div class="field"><label for="c-email">E-mail</label><input id="c-email" type="email" name="email" autocomplete="email" required maxlength="120"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="c-subject">Sujet</label>
+              <select id="c-subject" name="sujet">
+                <option value="conseil">Conseil avant achat</option>
+                <option value="commande">Ma commande</option>
+                <option value="sav">SAV / garantie</option>
+                <option value="retour">Retour / remboursement</option>
+                <option value="agency">Accompagnement Empira Agency</option>
+                <option value="partenariat">Partenariat / marque</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <div class="field"><label for="c-order">N° de commande (facultatif)</label><input id="c-order" name="commande" maxlength="40"></div>
+          </div>
+          <div class="field"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required maxlength="3000"></textarea></div>
+          <label class="check"><input type="checkbox" name="consentement" value="oui" required><span>J'accepte qu'Empira utilise ces informations pour répondre à ma demande. <a href="confidentialite.html">En savoir plus</a></span></label>
+          <button class="btn btn-primary btn-block" type="submit">Envoyer le message <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+{{> footer}}

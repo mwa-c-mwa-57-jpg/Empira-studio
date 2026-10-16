@@ -1,0 +1,66 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="index.html" aria-label="{{name}} — accueil">
+          <img class="brand-mark" src="assets/img/favicon.svg" alt="" width="32" height="32">
+          <span class="brand-word">EMPIRA<span class="brand-sub">studio · agency</span></span>
+        </a>
+        <p>Le matériel de streaming choisi par des streamers, et une agence qui t'accompagne du premier live jusqu'aux partenariats.</p>
+        <form class="newsletter" name="newsletter" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="newsletter">
+          <p class="hp-field"><label>Ne pas remplir <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+          <label class="sr-only" for="nl-email">Ton e-mail</label>
+          <input id="nl-email" type="email" name="email" placeholder="Ton e-mail pour les drops & conseils" autocomplete="email" required>
+          <button class="btn btn-primary btn-sm" type="submit">S'inscrire</button>
+          <small>Un e-mail par mois, désinscription en un clic. <a href="confidentialite.html">Données personnelles</a>.</small>
+        </form>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h2>Boutique</h2>
+          <a href="boutique.html?cat=micros">Micros</a>
+          <a href="boutique.html?cat=cameras">Caméras</a>
+          <a href="boutique.html?cat=lumieres">Lumières</a>
+          <a href="boutique.html?cat=controle">Contrôleurs</a>
+          <a href="boutique.html?cat=packs">Packs</a>
+        </div>
+        <div>
+          <h2>Agency</h2>
+          <a href="agency.html#services">Services</a>
+          <a href="agency.html#formules">Formules</a>
+          <a href="agency.html#methode">Méthode</a>
+          <a href="agency.html#rdv">Appel découverte</a>
+        </div>
+        <div>
+          <h2>Aide</h2>
+          <a href="contact.html">Contact</a>
+          <a href="index.html#faq">FAQ</a>
+          <a href="cgv.html#livraison">Livraison</a>
+          <a href="cgv.html#retractation">Retours</a>
+        </div>
+        <div>
+          <h2>Suivre</h2>
+          <a href="{{instagram}}" rel="noopener" target="_blank">Instagram</a>
+          <a href="{{tiktok}}" rel="noopener" target="_blank">TikTok</a>
+          <a href="{{twitch}}" rel="noopener" target="_blank">Twitch</a>
+          <a href="{{youtube}}" rel="noopener" target="_blank">YouTube</a>
+        </div>
+      </div>
+    </div>
+    <p class="footer-giant" aria-hidden="true">EMPIRA</p>
+    <div class="footer-bottom">
+      <p>© {{year}} {{name}} · {{siteHost}}</p>
+      <p class="footer-secure">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Paiement sécurisé · CB, Visa, Mastercard, Apple Pay, Google Pay
+      </p>
+      <nav aria-label="Informations légales">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="cgv.html">CGV</a>
+        <a href="confidentialite.html">Confidentialité</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+{{> overlays}}
