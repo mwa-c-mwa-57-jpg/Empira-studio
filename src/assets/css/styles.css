@@ -31,8 +31,8 @@
   --gold-light: #f6d892;
   --gold: #e0b05a;
   --gold-deep: #a8712a;
-  --red: #ff3b4e;
-  --green: #3ee08f;
+  --red: #d9644f; /* réservé aux erreurs de formulaire */
+  --green: var(--gold);
 
   --accent: var(--gold);
   --accent-2: var(--gold-deep);
@@ -403,9 +403,9 @@ html:has(.mobile-menu:not([hidden])) {
   white-space: nowrap;
 }
 .badge-live {
-  background: var(--red);
-  color: #fff;
-  font-weight: 500;
+  background: var(--grad);
+  color: var(--on-accent);
+  font-weight: 600;
 }
 .badge-live::before,
 .live-dot {
@@ -418,18 +418,18 @@ html:has(.mobile-menu:not([hidden])) {
   animation: pulse 1.6s infinite;
 }
 .live-dot {
-  background: var(--red);
-  box-shadow: 0 0 0 0 rgb(255 59 78 / 0.6);
+  background: var(--gold);
+  box-shadow: 0 0 0 0 rgb(224 176 90 / 0.6);
 }
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgb(255 59 78 / 0.55);
+    box-shadow: 0 0 0 0 rgb(224 176 90 / 0.55);
   }
   70% {
-    box-shadow: 0 0 0 8px rgb(255 59 78 / 0);
+    box-shadow: 0 0 0 8px rgb(224 176 90 / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgb(255 59 78 / 0);
+    box-shadow: 0 0 0 0 rgb(224 176 90 / 0);
   }
 }
 .chip {
@@ -888,7 +888,7 @@ html:has(.mobile-menu:not([hidden])) {
 .ov-viewers svg {
   width: 14px;
   height: 14px;
-  color: var(--red);
+  color: var(--gold);
 }
 .ov-alert {
   position: absolute;
@@ -981,9 +981,9 @@ html:has(.mobile-menu:not([hidden])) {
   animation: bob 6s var(--ease-io) infinite alternate;
 }
 .float-mic {
-  width: 32%;
-  left: -8%;
-  bottom: -2%;
+  width: 17%;
+  left: -4%;
+  bottom: -6%;
 }
 .float-deck {
   width: 28%;
@@ -994,9 +994,9 @@ html:has(.mobile-menu:not([hidden])) {
   animation-delay: -2s;
 }
 .float-light {
-  width: 22%;
+  width: 26%;
   right: -9%;
-  top: -13%;
+  top: -12%;
 }
 .float-light img {
   animation-delay: -4s;
@@ -1226,11 +1226,12 @@ html:has(.mobile-menu:not([hidden])) {
 .world-products img {
   position: absolute;
   width: 55%;
+  height: auto;
   filter: drop-shadow(0 20px 30px rgb(0 0 0 / 0.6));
 }
-.world-products img:nth-child(1) { left: 0; top: 28%; width: 50%; }
-.world-products img:nth-child(2) { right: 0; top: 2%; width: 48%; }
-.world-products img:nth-child(3) { left: 36%; top: 50%; width: 38%; }
+.world-products img:nth-child(1) { left: 0; top: 34%; width: 52%; }
+.world-products img:nth-child(2) { right: 2%; top: 4%; width: 40%; }
+.world-products img:nth-child(3) { right: 0; top: 40%; width: 26%; }
 @media (max-width: 860px) {
   .duo {
     grid-template-columns: 1fr;
@@ -1276,6 +1277,8 @@ html:has(.mobile-menu:not([hidden])) {
 }
 .cat img {
   width: 70%;
+  height: 66%;
+  object-fit: contain;
   margin: auto;
   transition: transform 0.8s var(--ease-out);
 }
@@ -1362,7 +1365,9 @@ html:has(.mobile-menu:not([hidden])) {
   overflow: hidden;
 }
 .p-media img {
-  width: 74%;
+  width: 76%;
+  height: 80%;
+  object-fit: contain;
   filter: drop-shadow(0 24px 30px rgb(0 0 0 / 0.55));
   transition: transform 0.8s var(--ease-out);
 }
@@ -1827,6 +1832,8 @@ html:has(.mobile-menu:not([hidden])) {
 }
 .quiz-result-media img {
   width: 80%;
+  height: 80%;
+  object-fit: contain;
 }
 .quiz-result ul {
   display: grid;
@@ -1989,6 +1996,58 @@ html:has(.mobile-menu:not([hidden])) {
     max-width: 520px;
     margin-inline: auto;
   }
+}
+
+.plan-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  height: 150px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: radial-gradient(70% 90% at 50% 100%, rgb(var(--accent-rgb) / 0.18), transparent 70%), var(--surface-2);
+}
+.plan-visual img {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 46%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgb(0 0 0 / 0.6));
+}
+.plan li a:hover {
+  color: var(--gold);
+}
+.agency-card {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgb(var(--accent-rgb) / 0.07);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / 0.3);
+  color: var(--muted);
+  font-size: 0.88rem;
+  transition: box-shadow 0.3s;
+}
+.agency-card:hover {
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+.agency-card svg {
+  width: 40px;
+  height: 40px;
+}
+.agency-card strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.upsell-mark {
+  width: 40px;
+  height: 40px;
 }
 
 /* ---------- Parcours (défilement horizontal) ---------- */
@@ -2507,7 +2566,9 @@ dialog {
   background: var(--surface-2);
 }
 .line-item-media img {
-  width: 78%;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
 }
 .line-item h3 {
   font-family: var(--font-body);
@@ -2694,6 +2755,8 @@ dialog {
 }
 .qv-media img {
   width: 78%;
+  height: 78%;
+  object-fit: contain;
 }
 .qv-info {
   display: grid;
@@ -3119,7 +3182,9 @@ dialog {
 .product-stage > img {
   position: relative;
   z-index: 1;
-  width: 68%;
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
   transition: transform 0.6s var(--ease-out);
   animation: bob 6s var(--ease-io) infinite alternate;
 }
@@ -3255,7 +3320,7 @@ dialog {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgb(62 224 143 / 0.12);
+  background: rgb(224 176 90 / 0.12);
   color: var(--green);
   font-size: 0.85rem;
   font-weight: 600;
@@ -3716,7 +3781,7 @@ dialog {
   mix-blend-mode: screen;
 }
 .glitch::after {
-  color: var(--red);
+  color: var(--gold-light);
   clip-path: inset(55% 0 0 0);
   animation: glitch 2s infinite reverse steps(1);
   mix-blend-mode: screen;

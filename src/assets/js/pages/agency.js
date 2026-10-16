@@ -1,4 +1,4 @@
-import { getProduct } from "../catalog.js";
+import { getSelection } from "../catalog.js";
 import { $, $$, clamp } from "../utils.js";
 
 function timeline(list) {
@@ -67,11 +67,11 @@ function prefill() {
     const input = form.querySelector(`input[name="formule"][value="${CSS.escape(formule)}"]`);
     if (input) input.checked = true;
   }
-  const pack = getProduct(params.get("pack"));
+  const sel = getSelection(params.get("selection"));
   const profil = (params.get("profil") || "").replace(/[^a-z-]/g, "");
-  if (pack) {
+  if (sel) {
     const msg = form.querySelector("textarea[name='message']");
-    msg.value = `Le configurateur m'a recommandé le ${pack.name}${profil ? ` (profil : ${profil})` : ""}. J'aimerais en parler avec vous.`;
+    msg.value = `Le configurateur m'a recommandé la sélection « ${sel.name} »${profil ? ` (profil : ${profil})` : ""}. J'aimerais en parler avec vous.`;
   }
   $$("[data-formule]").forEach((a) =>
     a.addEventListener("click", () => {

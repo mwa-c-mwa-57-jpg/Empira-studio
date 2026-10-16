@@ -4,7 +4,7 @@ import { $, reducedMotion } from "../utils.js";
 
 function confetti(canvas) {
   const ctx = canvas.getContext("2d");
-  const colors = ["#f6d892", "#e0b05a", "#a8712a", "#f6f3ee", "#ff3b4e"];
+  const colors = ["#f6d892", "#e0b05a", "#a8712a", "#f6f3ee", "#c99a4a"];
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const resize = () => {
     canvas.width = canvas.clientWidth * dpr;

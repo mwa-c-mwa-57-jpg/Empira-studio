@@ -5,7 +5,6 @@ import { $, $$, esc, price, icons } from "./utils.js";
 import { lightDismiss, openModal, closeModal, toast, clearToasts } from "./ui.js";
 
 const KEY = "empira-cart-v1";
-const UPSELL_ID = "setup-remote";
 
 let items = load();
 
@@ -120,12 +119,12 @@ function render() {
       : `<strong>Livraison offerte</strong> débloquée 🎉`;
   $("[data-ship-bar]").style.transform = `scaleX(${Math.min(1, t.subtotal / SHIPPING.freeFrom)})`;
 
+  // L'accompagnement Empira Agency, proposé dès que le panier contient un article.
   const upsell = $("[data-cart-upsell]");
-  const svc = getProduct(UPSELL_ID);
-  const show = lines.length > 0 && !items.some((l) => l.id === UPSELL_ID);
-  upsell.hidden = !show;
-  if (show) {
-    upsell.innerHTML = `<img src="${esc(svc.image)}" alt=""><div><strong>Besoin d'un coup de main ?</strong><span>1 h de réglages en visio avec Empira Agency</span></div><button class="btn btn-primary btn-sm" type="button" data-add="${UPSELL_ID}" data-silent>+ ${price(svc.price)}</button>`;
+  upsell.hidden = lines.length === 0;
+  if (!upsell.dataset.ready) {
+    upsell.dataset.ready = "1";
+    upsell.innerHTML = `<svg class="upsell-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg><div><strong>Besoin d'aide pour l'installation ?</strong><span>Empira Agency règle tout avec toi. Appel découverte gratuit.</span></div><a class="btn btn-ghost btn-sm" href="agency.html#rdv">Réserver</a>`;
   }
 }
 

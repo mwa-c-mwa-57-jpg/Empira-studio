@@ -2,16 +2,16 @@
 import { $, esc, onVisible, reducedMotion } from "./utils.js";
 
 const USERS = [
-  ["nova_tv", "#8b6cff"],
-  ["kaelys", "#ff4fa3"],
-  ["rafou_93", "#3ee08f"],
-  ["pixelmaya", "#ffc35c"],
-  ["theo.plays", "#5ac8fa"],
-  ["ines_live", "#ff8a3d"],
-  ["mathgaming", "#c08bff"],
-  ["sora", "#3df5ff"],
-  ["lucas_rx", "#ff6b6b"],
-  ["zoe.mp4", "#b4f461"],
+  ["nova_tv", "#f6d892"],
+  ["kaelys", "#e0b05a"],
+  ["rafou_93", "#f6f3ee"],
+  ["pixelmaya", "#c99a4a"],
+  ["theo.plays", "#e8d2a6"],
+  ["ines_live", "#d4a24c"],
+  ["mathgaming", "#bfb6a8"],
+  ["sora", "#f0c674"],
+  ["lucas_rx", "#e6dccb"],
+  ["zoe.mp4", "#b88a3e"],
 ];
 const LINES = [
   "le son est incroyable ce soir",

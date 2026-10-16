@@ -1,13 +1,12 @@
-import { getProduct, fullName } from "../catalog.js";
+import { getProduct, fullName, SELECTIONS, selectionTotal } from "../catalog.js";
 import { $, $$, esc, price, icons, finePointer, reducedMotion, lerp } from "../utils.js";
-import { cardHTML, stagger, savings } from "../products-ui.js";
+import { cardHTML, stagger } from "../products-ui.js";
 import { heroGL } from "../hero-gl.js";
 import { liveDemo, heroOverlay } from "../live-demo.js";
 import { configurator } from "../configurator.js";
 import { journey } from "../journey.js";
 
-const FEATURED = ["maono-pd200xs-noir", "maono-g1-neo", "rode-podmic", "tonor-bras-profil-bas"];
-const PACKS = ["pack-starter", "pack-maono-streaming", "pack-podcast-rode"];
+const FEATURED = ["maono-pd200xs", "maono-g1-neo", "rode-podmic", "tonor-micro-usb-xlr"];
 
 function heroParallax(stage) {
   if (!stage || !finePointer() || reducedMotion()) return;
@@ -38,30 +37,24 @@ function heroParallax(stage) {
   loop();
 }
 
-function packsHTML() {
-  return PACKS.map((id, i) => {
-    const p = getProduct(id);
-    const s = savings(p);
+function selectionsHTML() {
+  return SELECTIONS.map((sel, i) => {
     const featured = i === 1;
-    return `<article class="plan${featured ? " featured" : ""}" ${featured ? 'data-flag="Recommandé"' : ""} data-reveal>
+    const items = sel.items.map(getProduct);
+    return `<article class="plan${featured ? " featured" : ""}" ${featured ? 'data-flag="Le plus complet"' : ""} data-reveal>
       <div class="plan-head">
-        <span class="mono muted">${esc(p.kind)}</span>
-        <h3 class="h-md">${esc(p.name)}</h3>
-        <p>${esc(p.short)}</p>
+        <span class="mono muted">${esc(sel.kind)}</span>
+        <h3 class="h-md">${esc(sel.name)}</h3>
+        <p>${esc(sel.short)}</p>
       </div>
-      <div class="plan-thumbs">${p.includes
-        .map((pid) => `<img src="${esc(getProduct(pid).image)}" alt="${esc(fullName(getProduct(pid)))}" title="${esc(fullName(getProduct(pid)))}" loading="lazy" width="54" height="54">`)
+      <div class="plan-visual">${items
+        .map((it) => `<img src="${esc(it.image)}" alt="${esc(fullName(it))}" title="${esc(fullName(it))}" loading="lazy" width="160" height="160">`)
         .join("")}</div>
-      <div>
-        <p class="plan-price">${price(p.price)} <s>${price(s.value)}</s></p>
-        <p><span class="save-pill">Tu économises ${price(s.saved)}</span></p>
-      </div>
+      <p class="plan-price">${price(selectionTotal(sel))} <small>${items.length > 1 ? `${items.length} articles` : "1 article"}</small></p>
       <ul>
-        ${p.includes.map((pid) => `<li><span>${esc(fullName(getProduct(pid)))} <span class="muted">· ${esc(getProduct(pid).kind)}</span></span></li>`).join("")}
-        ${p.specs.slice(1).map((x) => `<li><span><strong>${esc(x)}</strong></span></li>`).join("")}
+        ${items.map((it) => `<li><span><a href="produit.html?id=${esc(it.id)}">${esc(fullName(it))}</a> <span class="muted">· ${price(it.price)}</span></span></li>`).join("")}
       </ul>
-      <button class="btn ${featured ? "btn-primary" : "btn-ghost"} btn-block" type="button" data-add="${esc(p.id)}" data-open-cart>${icons.bag} Ajouter le pack</button>
-      <a class="link-arrow" href="produit.html?id=${esc(p.id)}">Voir le détail</a>
+      <button class="btn ${featured ? "btn-primary" : "btn-ghost"} btn-block" type="button" data-add-selection="${esc(sel.id)}">${icons.bag} Ajouter la sélection</button>
     </article>`;
   }).join("");
 }
@@ -79,8 +72,17 @@ export function init() {
   }
   const packs = $("[data-packs]");
   if (packs) {
-    packs.innerHTML = packsHTML();
+    packs.innerHTML = selectionsHTML();
     import("../ui.js").then(({ reveal }) => reveal(packs));
+    packs.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-add-selection]");
+      if (!b) return;
+      const sel = SELECTIONS.find((x) => x.id === b.dataset.addSelection);
+      import("../cart.js").then(({ addToCart, openCart }) => {
+        sel.items.forEach((id) => addToCart(id, 1, { silent: true }));
+        openCart();
+      });
+    });
   }
 
   liveDemo($("[data-live-demo]"));

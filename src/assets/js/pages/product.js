@@ -3,7 +3,6 @@ import { $, esc, price, icons, finePointer, reducedMotion } from "../utils.js";
 import { cardHTML, stagger, savings, visualHTML, badgeFor } from "../products-ui.js";
 import { addToCart, openCart } from "../cart.js";
 
-const UPSELL = "setup-remote";
 
 function jsonLd(p) {
   const site = document.querySelector('link[rel="canonical"]').href.replace(/\/[^/]*$/, "");
@@ -60,7 +59,6 @@ function variantPicker(p) {
 function productHTML(p) {
   const s = savings(p);
   const badge = badgeFor(p);
-  const svc = getProduct(UPSELL);
   return `<div class="product">
     <div class="product-stage" data-spotlight data-reveal="scale">${visualHTML(p)}</div>
     <div class="product-info">
@@ -76,12 +74,6 @@ function productHTML(p) {
       </div>
       ${s ? `<p><span class="save-pill">Tu économises ${price(s.saved)} par rapport aux produits à l'unité</span></p>` : ""}
       ${variantPicker(p)}
-      ${p.type !== "service" ? `<label class="upsell-check">
-        <input type="checkbox" data-upsell>
-        <img src="${esc(svc.image)}" alt="">
-        <span><strong>Ajouter les réglages à distance</strong><span>1 h en visio avec Empira Agency pour tout configurer</span></span>
-        <b>+ ${price(svc.price)}</b>
-      </label>` : ""}
       <div class="product-buy">
         <div class="qty lg" role="group" aria-label="Quantité">
           <button type="button" data-step="-1" aria-label="Diminuer">−</button>
@@ -110,6 +102,10 @@ function productHTML(p) {
         <p class="muted">${esc(p.description)}</p>
       </div>
       <ul class="specs">${p.specs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+      <a class="agency-card" href="agency.html#rdv">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg>
+        <span><strong>On l'installe avec toi</strong>Réglages, scènes OBS, son : Empira Agency t'accompagne. Appel découverte gratuit.</span>
+      </a>
       <p class="muted">Une question avant d'acheter ? <a class="link-arrow" href="contact.html?sujet=conseil&produit=${esc(p.id)}">Demande conseil à l'équipe</a></p>
     </div>
   </div>`;
@@ -133,11 +129,9 @@ export function init() {
   if (p.type === "service") document.body.classList.add("theme-gold");
 
   let qty = 1;
-  const svc = getProduct(UPSELL);
   const refresh = () => {
     $("[data-qty-out]", root).textContent = qty;
-    const upsell = $("[data-upsell]", root);
-    $("[data-buy-total]", root).textContent = price(p.price * qty + (upsell?.checked ? svc.price : 0));
+    $("[data-buy-total]", root).textContent = price(p.price * qty);
   };
   const render = () => {
     setMeta(p);
@@ -155,22 +149,15 @@ export function init() {
     }
     if (e.target.closest("[data-buy]")) {
       addToCart(p.id, qty, { silent: true });
-      if ($("[data-upsell]", root)?.checked) addToCart(UPSELL, 1, { silent: true });
       openCart();
     }
   });
   root.addEventListener("change", (e) => {
-    if (e.target.matches("[data-upsell]")) refresh();
     if (e.target.name === "variant") {
       const next = getProduct(e.target.value);
       if (!next) return;
-      const upsellChecked = $("[data-upsell]", root)?.checked;
       p = next;
       render();
-      if (upsellChecked) {
-        $("[data-upsell]", root).checked = true;
-        refresh();
-      }
       $(`input[name="variant"][value="${CSS.escape(p.id)}"]`, root)?.focus();
       const url = new URL(location.href);
       url.searchParams.set("id", p.id);

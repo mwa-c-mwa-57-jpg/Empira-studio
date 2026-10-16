@@ -9,7 +9,7 @@ Ce guide explique comment mettre le site en ligne sur **empirastudio.com**, l'h�
 | Élément | Détail |
 |---|---|
 | **Pages** | Accueil, Boutique (filtres, recherche, tri), Fiche produit, Agency, Contact, Commande confirmée, Message reçu, 404, Mentions légales, CGV, Confidentialité |
-| **Vente** | 8 produits réels (Maono, RØDE, TONOR, SLDXIAN) dont 2 avec variantes (coloris, longueur), 3 packs, 1 service. Panier, livraison offerte dès 149 €, paiement Stripe (CB, Apple Pay, Google Pay) |
+| **Vente** | Uniquement tes 9 articles (Maono, RØDE, TONOR, SLDXIAN), avec leurs photos détourées. Le câble XLR existe en 1, 2 et 3 m. 3 « sélections » (setups composés de tes articles, au prix des articles, sans remise inventée). Panier, livraison offerte dès 149 €, paiement Stripe (CB, Apple Pay, Google Pay) |
 | **Accompagnement** | Page Agency : 6 services, 3 formules, méthode en 5 étapes, formulaire d'appel découverte |
 | **Interactif** | Fond animé WebGL qui suit la souris, écran « live » en 3D avec alertes, démo de stream avec chat simulé et boutons d'alertes, configurateur en 3 questions, défilement horizontal, curseur personnalisé, boutons magnétiques, apparitions au scroll |
 | **Vidéo** | 2 vidéos en boucle (≈ 400 Ko chacune), en pause hors écran pour économiser la batterie |
@@ -24,23 +24,20 @@ Les prix ci-dessous viennent des captures envoyées (prix publics constatés che
 
 | Produit | Prix sur le site | Origine |
 |---|---|---|
-| Maono PD200XS (noir / blanc) | 79,90 € | estimé (≈ 66 à 98 € selon les revendeurs) |
+| Maono PD200XS (blanc) | 79,90 € | estimé (≈ 66 à 98 € selon les revendeurs) |
 | RØDE PodMic | 74,00 € | Amazon |
 | Micro TONOR USB/XLR | 59,90 € | estimé, **modèle exact à confirmer** |
 | Maono PD100 | 33,00 € | Thomann |
 | Maono G1 NEO | 99,90 € | estimé |
+| Pack Streaming Maono (PD200XS + G1 NEO) | 166,99 € | maono.com, **contenu exact à confirmer** |
 | Bras TONOR profil bas | 29,99 € | Amazon (prix barré) |
 | Pied RØDE DS1 | 30,00 € | Amazon (prix barré) |
 | Câble XLR SLDXIAN 1 m / 2 m / 3 m | 9,69 € / 12,99 € / 13,99 € | Amazon |
-| Pack Starter (PD200XS + bras) | 99 € | à fixer |
-| Pack Streaming Maono (PD200XS + G1 NEO) | 166,99 € | maono.com |
-| Pack Podcast RØDE (PodMic + G1 NEO + bras + câble 3 m) | 199 € | à fixer |
-| Réglages à distance (1 h) | 49 € | à fixer |
 
 > ⚠️ Si tu achètes ces produits au prix public (Amazon, Thomann) pour les revendre au même prix, **tu ne gagnes rien**. Pour dégager une marge, ouvre un compte revendeur auprès des marques ou de leurs distributeurs en France.
 
 ### Les visuels produits
-Les illustrations sont des **dessins originaux** créés pour le site, fidèles à l'allure de chaque produit. Les captures d'écran de sites marchands ne peuvent pas être réutilisées : les photos appartiennent aux marques et aux boutiques. Demande les **photos officielles** (kits presse) à Maono, RØDE et TONOR ou à leurs distributeurs : elles sont généralement fournies aux revendeurs. Remplace ensuite les fichiers de `src/assets/img/products/`.
+Les photos sont celles que tu as envoyées, recadrées et **détourées** (fond transparent) pour ressortir sur le fond noir. Le micro blanc a été détouré avec l'aide de Canva. Elles viennent de sites marchands et restent la propriété des marques : assure-toi d'avoir le droit de les utiliser (les marques et distributeurs fournissent en général leurs photos officielles aux revendeurs, en meilleure résolution). Pour en changer, remplace les fichiers `.webp` de `src/assets/img/products/`.
 
 ---
 
@@ -122,7 +119,7 @@ Tant que Stripe n'est pas branché, le bouton « Paiement sécurisé » propose 
 5. Quand tout est bon, remplace la valeur par la **clé live** (`sk_live_…`).
 6. Dans Stripe, active aussi :
    - **Paramètres → Moyens de paiement** : Apple Pay, Google Pay (et PayPal si tu veux) ;
-   - **Paramètres → Image de marque** : logo, couleur or `#e0b05a` ;
+   - **Paramètres → Image de marque** : ton logo Empira, couleur or `#e0b05a` ;
    - **Paramètres → E-mails clients** : reçus de paiement automatiques ;
    - les **notifications** de nouveaux paiements sur ton téléphone (appli Stripe).
 
