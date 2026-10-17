@@ -25,7 +25,7 @@ const fs = require('fs');
 
   const duration = Number(a3 || 25), fps = Number(a4 || 30);
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-i', '-',
-    '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
+    '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
   const frames = Math.round(duration * fps);
   for (let i = 0; i < frames; i++) {
     await page.evaluate(async t => { render(t); if (window.ready) await window.ready(); }, i / fps);

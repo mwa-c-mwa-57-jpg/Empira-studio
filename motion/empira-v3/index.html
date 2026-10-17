@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empira Agency — v3</title>
+<style>
+  :root { --or-profond:#AC6F17; --or:#CB8F2F; --or-clair:#F0C163; --ui:#0c0c0e; --ui2:#1c1c1f; --ui3:#2a2a2e; --mute:#8e8e93; --sh:0%; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { background:#000; overflow:hidden; width:100%; height:100%; }
+  body { font-family:'Inter', sans-serif; color:#fff; -webkit-font-smoothing:antialiased; }
+  #stage { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; background:#000; transform-origin:0 0; }
+  .scene { position:absolute; inset:0; display:none; overflow:hidden; }
+  .cam { position:absolute; inset:0; perspective:2200px; }
+  .plane { position:absolute; inset:0; transform-style:preserve-3d; }
+  .ft { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
+  .g { background:linear-gradient(100deg, #AC6F17 0%, #F0C163 30%, #CB8F2F 50%, #F7D27A 70%, #AC6F17 100%);
+       background-size:250% 100%; background-position:var(--sh) 0; -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .gbg { background:linear-gradient(120deg, #F7D27A, #CB8F2F 55%, #AC6F17); color:#000; }
+  svg.i { width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; }
+
+  /* barre d'état */
+  .status { position:absolute; left:0; right:0; top:0; height:120px; display:flex; align-items:center; justify-content:space-between; padding:30px 70px 0; font-size:40px; font-weight:600; }
+  .status .r { display:flex; gap:16px; align-items:center; }
+
+  .avatar { position:relative; border-radius:50%; overflow:hidden; background:#000; flex:none; }
+  .avatar img { position:absolute; }
+  .ring { padding:6px; border-radius:50%; background:conic-gradient(from 200deg, #F7D27A, #AC6F17, #F0C163, #CB8F2F, #F7D27A); }
+  .ring > .avatar { border:6px solid var(--ui); }
+
+  /* B — recherche */
+  #sb { position:absolute; left:40px; right:40px; top:150px; height:110px; display:flex; align-items:center; gap:22px; }
+  #sb .field { flex:1; height:100%; border-radius:24px; background:var(--ui2); display:flex; align-items:center; gap:20px; padding:0 30px; font-size:44px; }
+  #sb .go { font-size:44px; font-weight:700; }
+  .caret { display:inline-block; width:4px; height:52px; background:var(--or-clair); margin-left:2px; vertical-align:middle; }
+  #tabs { position:absolute; left:40px; right:40px; top:300px; display:flex; gap:56px; font-size:42px; font-weight:600; color:var(--mute); }
+  #tabs span.on { color:#fff; }
+  #tabline { position:absolute; top:368px; height:6px; border-radius:3px; background:var(--or-clair); }
+  #tabsep { position:absolute; left:0; right:0; top:378px; height:2px; background:#222; }
+  .res { position:absolute; left:40px; right:40px; display:flex; align-items:center; gap:30px; }
+  .res .t1 { font-size:46px; font-weight:700; }
+  .res .t2 { font-size:36px; color:var(--mute); margin-top:6px; }
+  .btn { border-radius:18px; padding:22px 44px; font-size:40px; font-weight:700; text-align:center; }
+  #tap { position:absolute; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; border:4px solid rgba(255,255,255,.9); background:rgba(255,255,255,.18); }
+  .vrow { position:absolute; left:40px; right:40px; display:flex; gap:14px; }
+  .vrow img { width:324px; height:432px; object-fit:cover; border-radius:16px; }
+
+  /* C — profil */
+  #pf { position:absolute; left:0; right:0; top:0; }
+  .hl { display:flex; flex-direction:column; align-items:center; gap:14px; font-size:30px; color:#ddd; }
+  .hl .c { width:132px; height:132px; border-radius:50%; border:3px solid #333; display:flex; align-items:center; justify-content:center; font-size:56px; color:var(--or-clair); background:var(--ui2); }
+  #grid { position:absolute; left:0; right:0; display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; }
+  #grid .cell { position:relative; height:476px; overflow:hidden; background:#111; }
+  #grid .cell img { width:100%; height:100%; object-fit:cover; }
+  .badge { position:absolute; left:14px; top:14px; padding:6px 14px; border-radius:10px; font-size:24px; font-weight:800; letter-spacing:.06em; }
+  #zoomimg { position:absolute; object-fit:cover; display:none; }
+
+  /* D — LIVE */
+  .chip { position:absolute; display:flex; align-items:center; gap:18px; padding:10px 30px 10px 10px; border-radius:60px; background:rgba(0,0,0,.45); backdrop-filter:blur(8px); font-size:38px; font-weight:700; }
+  .cmt { position:absolute; left:40px; display:flex; align-items:flex-start; gap:18px; font-size:36px; max-width:760px; }
+  .cmt .n { color:rgba(255,255,255,.7); font-weight:600; }
+  .cmt .b { padding:14px 24px; border-radius:26px; background:rgba(0,0,0,.42); line-height:1.25; }
+  .heart { position:absolute; width:70px; height:70px; }
+  #inputbar { position:absolute; left:40px; right:240px; bottom:70px; height:96px; border-radius:48px; background:rgba(0,0,0,.45); color:rgba(255,255,255,.75); font-size:36px; display:flex; align-items:center; padding:0 36px; }
+  .round { position:absolute; bottom:70px; width:96px; height:96px; border-radius:50%; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; font-size:48px; }
+
+  /* E — messages */
+  .bub { position:absolute; max-width:760px; padding:30px 40px; border-radius:44px; font-size:44px; line-height:1.28; font-weight:500; }
+  .bub.me { right:40px; background:var(--ui3); border-bottom-right-radius:12px; }
+  .bub.em { left:150px; border-bottom-left-radius:12px; font-weight:600; }
+  .dots { position:absolute; left:150px; padding:34px 40px; border-radius:44px; background:var(--ui2); display:flex; gap:14px; }
+  .dots i { width:20px; height:20px; border-radius:50%; background:#aaa; display:block; }
+
+  /* F — cartes */
+  .scard { position:absolute; left:-300px; top:-70px; width:600px; height:140px; flex-direction:row !important; align-items:center; border-radius:36px; display:flex; flex-direction:column; justify-content:center; gap:16px; padding:0 40px;
+           background:linear-gradient(150deg, rgba(40,32,18,.92), rgba(14,12,10,.92)); border:2px solid rgba(240,193,99,.55);
+           box-shadow:0 0 40px rgba(203,143,47,.25), inset 0 1px 0 rgba(255,255,255,.12); }
+  .scard .ic { font-size:64px; color:var(--or-clair); }
+  .scard .lb { font-size:46px; font-weight:700; line-height:1.1; }
+  .scard { gap:30px !important; }
+
+  /* G — texte 3D */
+  .k3 { position:absolute; left:0; right:0; text-align:center; font-weight:800; letter-spacing:-.04em; line-height:.92; white-space:nowrap; }
+  .bokeh { position:absolute; border-radius:50%; background:radial-gradient(circle, rgba(240,193,99,.85), rgba(203,143,47,0) 70%); }
+
+  /* H — gaming */
+  #gcard { position:absolute; left:110px; top:430px; width:860px; height:1300px; border-radius:60px; overflow:hidden; border:3px solid rgba(240,193,99,.6); box-shadow:0 0 90px rgba(203,143,47,.35); }
+  .vote { position:absolute; left:40px; right:40px; height:84px; border-radius:42px; background:rgba(0,0,0,.5); overflow:hidden; font-size:34px; font-weight:700; }
+  .vote i { position:absolute; left:0; top:0; bottom:0; border-radius:42px; }
+  .vote span { position:absolute; left:34px; top:0; line-height:84px; }
+
+  /* J — logo néon */
+  #rays line { stroke:url(#rayG); stroke-width:6; stroke-linecap:round; }
+  #spark { position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:#fff;
+           box-shadow:0 0 14px 5px #F7D27A, 0 0 50px 18px rgba(203,143,47,.85), 0 0 140px 50px rgba(172,111,23,.5); }
+  #grain { position:absolute; inset:0; opacity:.06; mix-blend-mode:overlay; pointer-events:none; }
+  #vig { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="rayG" x1="0" x2="1"><stop offset="0" stop-color="#F7D27A" stop-opacity="0"/><stop offset=".5" stop-color="#F7D27A"/><stop offset="1" stop-color="#fff"/></linearGradient>
+      <linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D27A"/><stop offset=".55" stop-color="#E0A63C"/><stop offset="1" stop-color="#AC6F17"/></linearGradient>
+    </defs>
+  </svg>
+
+  <!-- A · étincelle → logo néon -->
+  <div class="scene" id="sA">
+    <svg id="raysA" class="rays" viewBox="-540 -540 1080 1080" style="position:absolute;left:0;top:420px;width:1080px;height:1080px"></svg>
+    <div id="flareA" style="position:absolute;left:540px;top:900px;height:6px;margin-top:-3px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 30px #F0C163"></div>
+    <img id="glowA" src="assets/logo-empira.png" style="position:absolute;left:90px;top:610px;width:900px;mix-blend-mode:screen;filter:blur(22px) brightness(1.6)">
+    <img id="logoA" src="assets/logo-empira.png" style="position:absolute;left:90px;top:610px;width:900px;mix-blend-mode:screen">
+  </div>
+
+  <!-- B · recherche -->
+  <div class="scene" id="sB" style="background:var(--ui)">
+    <div class="cam"><div class="plane" id="pB">
+      <div class="status st"></div>
+      <div id="sb">
+        <div class="field"><span style="color:var(--mute)">ICON_SEARCH</span><span id="typed"></span><span class="caret" id="caret"></span></div>
+        <div class="go g">Rechercher</div>
+      </div>
+      <div id="tabs"><span>Top</span><span>Comptes</span><span>Vidéos</span><span>LIVE</span><span>Sons</span></div>
+      <div id="tabsep"></div><div id="tabline"></div>
+      <div class="res" id="resB" style="top:430px">
+        <div class="ring"><div class="avatar av" data-d="150"></div></div>
+        <div style="flex:1"><div class="t1">Empira Agency</div><div class="t2">@empiraagency · Agence de créateurs LIVE</div></div>
+        <div class="btn gbg" id="followB">Suivre</div>
+      </div>
+      <div style="position:absolute;left:40px;top:690px;font-size:42px;font-weight:700" id="vtitle">Vidéos</div>
+      <div class="vrow" id="vrowB" style="top:770px"></div>
+      <div id="tap"></div>
+    </div></div>
+  </div>
+
+  <!-- C · profil -->
+  <div class="scene" id="sC" style="background:var(--ui)">
+    <div class="cam"><div class="plane" id="pC">
+      <div id="pf">
+        <div class="status st"></div>
+        <div style="position:absolute;left:0;right:0;top:140px;display:flex;justify-content:space-between;padding:0 50px;font-size:56px">
+          <span>ICON_BACK</span><span style="font-size:46px;font-weight:700">Empira Agency</span><span style="display:flex;gap:40px">ICON_BELL ICON_SHARE</span>
+        </div>
+        <div id="pfav" class="ring" style="position:absolute;left:390px;top:260px"><div class="avatar av" data-d="276"></div></div>
+        <div style="position:absolute;left:0;right:0;top:590px;text-align:center;font-size:44px;font-weight:700">@empiraagency</div>
+        <div class="g" style="position:absolute;left:0;right:0;top:660px;text-align:center;font-size:32px;font-weight:700;letter-spacing:.24em">DÉVELOPPER · ACCOMPAGNER · INFLUENCER</div>
+        <div style="position:absolute;left:0;right:0;top:740px;display:flex;justify-content:center;gap:20px">
+          <div class="btn gbg" id="followC" style="width:400px">Suivre</div><div class="btn" style="width:400px;background:var(--ui3)">Message</div>
+        </div>
+        <div style="position:absolute;left:0;right:0;top:880px;text-align:center;font-size:38px;line-height:1.4;color:#e6e6e6">
+          Agence de créateurs LIVE 🎥<br>Formation · Coaching · Concepts · Empira Gaming 🎮
+        </div>
+        <div id="hls" style="position:absolute;left:40px;right:40px;top:1030px;display:flex;justify-content:space-between"></div>
+        <div style="position:absolute;left:0;right:0;top:1270px;height:96px;border-bottom:2px solid #222;display:flex;justify-content:space-around;align-items:center;font-size:48px;color:var(--mute)">
+          <span style="color:#fff;border-bottom:5px solid #fff;padding-bottom:18px">ICON_GRID</span><span>ICON_LIVE</span><span>ICON_HEART</span>
+        </div>
+        <div id="grid" style="top:1372px"></div>
+      </div>
+    </div></div>
+    <img id="zoomimg">
+  </div>
+
+  <!-- D · LIVE plein écran -->
+  <div class="scene" id="sD">
+    <img class="ft" id="fD">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),transparent 22%,transparent 55%,rgba(0,0,0,.6))"></div>
+    <div class="chip" style="left:40px;top:140px"><div class="avatar" style="width:90px;height:90px"><img src="thumbs/0.jpg" style="width:100%;height:100%;object-fit:cover;position:static"></div>
+      <div><div>@ton.live</div><div style="font-size:28px;font-weight:500;opacity:.8">avec Empira Agency</div></div>
+      <div class="gbg" style="padding:8px 18px;border-radius:12px;font-size:28px;font-weight:800;margin-left:6px">LIVE</div></div>
+    <div style="position:absolute;right:40px;top:160px;display:flex;align-items:center;gap:20px">
+      <div style="display:flex" id="stack"></div><span style="font-size:56px">✕</span></div>
+    <div id="cmts"></div>
+    <div id="gift" class="chip gbg" style="left:40px;top:1040px;color:#000;padding:16px 36px 16px 16px">
+      <div style="width:76px;height:76px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-size:44px">🎁</div>Léo a envoyé un cadeau</div>
+    <div id="hearts"></div>
+    <div id="inputbar">Ajoute un commentaire…</div>
+    <div class="round" style="right:136px">🎁</div><div class="round" style="right:30px;color:var(--or-clair)">ICON_HEART</div>
+  </div>
+
+  <!-- E · messages -->
+  <div class="scene" id="sE" style="background:var(--ui)">
+    <div class="cam"><div class="plane" id="pE">
+      <div class="status st"></div>
+      <div style="position:absolute;left:0;right:0;top:130px;height:170px;display:flex;align-items:center;gap:26px;padding:0 40px;border-bottom:2px solid #1f1f22">
+        <span style="font-size:56px">ICON_BACK</span>
+        <div class="ring"><div class="avatar av" data-d="104"></div></div>
+        <div><div style="font-size:44px;font-weight:700">Empira Agency</div><div style="font-size:32px;color:var(--or-clair)">● En ligne</div></div>
+      </div>
+      <div style="position:absolute;left:0;right:0;top:350px;text-align:center;font-size:32px;color:var(--mute)">Aujourd'hui 21:04</div>
+      <div class="bub me" id="m1" style="top:430px">Salut ! Je veux me lancer en LIVE 🎥 Vous pouvez m'aider ?</div>
+      <div class="dots" id="dots" style="top:690px"><i></i><i></i><i></i></div>
+      <div class="bub em gbg" id="m2" style="top:690px">Oui ! On commence par créer ton concept 🔥</div>
+      <div class="bub em gbg" id="m3" style="top:920px">Formation, coaching, vidéos, stats… on t'accompagne de A à Z.</div>
+      <div class="bub me" id="m4" style="top:1230px">Go ! 🙌</div>
+      <div id="emav" style="position:absolute;left:40px;top:1030px"><div class="avatar av" data-d="86"></div></div>
+      <div style="position:absolute;left:40px;right:40px;bottom:80px;height:110px;border-radius:55px;background:var(--ui2);display:flex;align-items:center;padding:0 40px;font-size:40px;color:var(--mute)">Message…</div>
+    </div></div>
+  </div>
+
+  <!-- F · services en cartes 3D -->
+  <div class="scene" id="sF" style="background:radial-gradient(ellipse at 50% 60%, #2a1d08 0%, #000 65%)">
+    <div style="position:absolute;left:0;right:0;top:200px;text-align:center;font-weight:800;font-size:100px;letter-spacing:-.03em;line-height:1" id="tF">On t'accompagne<br><span class="g">de A à Z</span></div>
+    <div class="cam" style="perspective:2600px"><div class="plane" id="pF" style="left:540px;top:1420px;width:0;height:0">
+      <div id="phoneF" style="position:absolute;left:-250px;top:-500px;transform-style:preserve-3d;width:500px;height:1000px;border-radius:70px;background:#0b0b0d;border:10px solid #2b2b2f;box-shadow:0 0 0 3px #111, 0 40px 120px rgba(0,0,0,.8);overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 45%, rgba(203,143,47,.45), transparent 60%)"></div>
+        <img src="assets/logo-empira.png" style="position:absolute;left:30px;top:330px;width:420px;mix-blend-mode:screen">
+      </div>
+      <div id="cardsF" style="position:absolute;left:0;top:0;transform-style:preserve-3d"></div>
+    </div></div>
+  </div>
+
+  <!-- G · texte 3D -->
+  <div class="scene" id="sG" style="background:#000">
+    <div id="bok"></div>
+    <div class="cam" style="perspective:1400px"><div class="plane" id="pG">
+      <div class="k3" id="g1" style="top:690px;font-size:200px">TON LIVE</div>
+      <div class="k3 g" id="g2" style="top:900px;font-size:230px">DE A À Z</div>
+    </div></div>
+  </div>
+
+  <!-- H · Empira Gaming -->
+  <div class="scene" id="sH" style="background:radial-gradient(ellipse at 50% 40%, #241806 0%, #000 70%)">
+    <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
+      <div style="font-size:52px;font-weight:300;letter-spacing:.5em;padding-left:.5em">EMPIRA</div>
+      <div class="g" id="tH" style="font-size:190px;font-weight:800;letter-spacing:-.03em;line-height:1;filter:drop-shadow(0 0 30px rgba(240,193,99,.45))">GAMING</div>
+    </div>
+    <div class="cam"><div class="plane" id="pH">
+      <div id="gcard">
+        <img class="ft" id="fH" style="width:860px;height:1529px;top:-110px">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent 25%,transparent 55%,rgba(0,0,0,.75))"></div>
+        <div class="chip" style="left:30px;top:30px;font-size:34px;padding:14px 30px"><span style="color:var(--or-clair);font-size:48px">ICON_PAD</span>Live interactif
+          <div class="gbg" style="padding:6px 16px;border-radius:10px;font-size:26px;font-weight:800">LIVE</div></div>
+        <div id="pop1" class="chip gbg" style="left:30px;top:760px;color:#000;font-size:34px;padding:16px 32px">⚡ Le chat lance un défi !</div>
+        <div style="position:absolute;left:40px;top:930px;font-size:34px;font-weight:700">Vote du chat</div>
+        <div class="vote" style="top:990px"><i class="gbg" id="v1"></i><span>Équipe Or</span></div>
+        <div class="vote" style="top:1090px"><i style="background:rgba(255,255,255,.28)" id="v2"></i><span>Équipe Noire</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- I · conseils & vision -->
+  <div class="scene" id="sI">
+    <img class="ft" id="fI" style="filter:blur(14px) brightness(.38);transform:scale(1.1)">
+    <div class="cam" style="perspective:1200px"><div class="plane">
+      <div class="k3 li" style="top:640px;font-size:118px">Ton live évolue</div>
+      <div class="k3 li g" style="top:790px;font-size:118px">avec nos conseils</div>
+      <div class="k3 li" style="top:940px;font-size:118px">et notre <span class="g">vision.</span></div>
+    </div></div>
+  </div>
+
+  <!-- J · logo néon final -->
+  <div class="scene" id="sJ">
+    <svg id="raysJ" class="rays" viewBox="-540 -540 1080 1080" style="position:absolute;left:0;top:300px;width:1080px;height:1080px"></svg>
+    <svg viewBox="0 0 300 280" id="neonA" style="position:absolute;left:305px;top:560px;width:470px;height:439px;overflow:visible">
+      <polygon id="neonLine" points="150,20 265,258 225,258 150,92 75,258 35,258" fill="none" stroke="#FFE3A3" stroke-width="3" stroke-linejoin="round" pathLength="1"
+               style="filter:drop-shadow(0 0 6px #F7D27A) drop-shadow(0 0 22px #CB8F2F) drop-shadow(0 0 60px #AC6F17)"/>
+    </svg>
+    <img id="glowJ" src="assets/logo-empira.png" style="position:absolute;left:90px;top:540px;width:900px;mix-blend-mode:screen;filter:blur(22px) brightness(1.6)">
+    <img id="logoJ" src="assets/logo-empira.png" style="position:absolute;left:90px;top:540px;width:900px;mix-blend-mode:screen">
+    <div class="g" id="handleJ" style="position:absolute;left:0;right:0;top:1200px;text-align:center;font-size:58px;font-weight:700">@empiraagency</div>
+  </div>
+
+  <div id="spark"></div>
+  <canvas id="grain" width="1080" height="1920"></canvas>
+  <div id="vig"></div>
+</div>
+
+<script>
+const DURATION = 22.5, FPS = 30;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const E = {
+  o3: x => 1 - Math.pow(1 - x, 3),
+  io3: x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2,
+  oExp: x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x),
+  iExp: x => x === 0 ? 0 : Math.pow(2, 10 * x - 10),
+  ioExp: x => x === 0 ? 0 : x === 1 ? 1 : x < .5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2,
+  oBack: x => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); },
+};
+const rnd = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+// ---------- Icônes ----------
+const ICON = {
+  SEARCH: '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+  BACK: '<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  BELL: '<svg class="i" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z M10 21h4"/></svg>',
+  SHARE: '<svg class="i" viewBox="0 0 24 24"><path d="M14 5l7 7-7 7 M21 12H9a6 6 0 0 0-6 6"/></svg>',
+  GRID: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>',
+  LIVE: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>',
+  HEART: '<svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.3-8.8A5 5 0 0 1 12 6a5 5 0 0 1 9.3 5.2C19 15.6 12 20 12 20z"/></svg>',
+  PAD: '<svg class="i" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.8 6.4l-1 3.2a2 2 0 0 1-3.4.8L15 15H9l-2.4 2.4a2 2 0 0 1-3.4-.8l-1-3.2A5 5 0 0 1 7 7z M8 10v3M6.5 11.5h3M16 11h.01M18 13h.01"/></svg>',
+  CAP: '<svg class="i" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg>',
+  COACH: '<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 4-6 7-6s6 2 7 6 M17 6c1.5 1 1.5 4 0 5 M19.5 4c3 2.5 3 7.5 0 10"/></svg>',
+  BULB: '<svg class="i" viewBox="0 0 24 24"><path d="M9 18h6 M10 21h4 M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/></svg>',
+  PLAY: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>',
+  CHART: '<svg class="i" viewBox="0 0 24 24"><path d="M4 20V4 M4 20h16 M7 15l4-4 3 3 5-6"/></svg>',
+};
+document.querySelectorAll('.scene').forEach(s => { s.innerHTML = s.innerHTML.replace(/ICON_([A-Z]+)/g, (_, k) => ICON[k]); });
+
+// ---------- Construction des éléments répétés ----------
+// Avatar = le A du logo (dans logo-empira.png : A centré en x=420, y=139, hauteur 238)
+function avatarHTML(d) { const k = .6 * d / 238; return `<img src="assets/logo-empira.png" style="width:${840 * k}px;left:${d / 2 - 420 * k}px;top:${d / 2 - 139 * k}px">`; }
+$$('.av').forEach(a => { const d = +a.dataset.d; a.style.width = a.style.height = d + 'px'; a.innerHTML = avatarHTML(d); });
+const STATUS = `<span>21:04</span><span class="r"><svg class="i" viewBox="0 0 24 24" style="stroke-width:2.6"><path d="M4 18v-2M9 18v-5M14 18V9M19 18V5"/></svg>
+  <svg class="i" viewBox="0 0 24 24" style="stroke-width:2.4"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/></svg>
+  <svg viewBox="0 0 30 16" style="width:62px;height:32px"><rect x="1" y="1" width="25" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.6" opacity=".5"/><rect x="3" y="3" width="18" height="10" rx="2" fill="#fff"/><rect x="27" y="5" width="2" height="6" rx="1" fill="#fff" opacity=".5"/></svg></span>`;
+$$('.st').forEach(s => s.innerHTML = STATUS);
+
+$('#vrowB').innerHTML = [1, 2, 5].map(i => `<img src="thumbs/${i}.jpg">`).join('');
+const HL = [['CAP', 'Formation'], ['COACH', 'Coaching'], ['BULB', 'Concepts'], ['PLAY', 'Vidéos'], ['CHART', 'Stats'], ['PAD', 'Gaming']];
+$('#hls').innerHTML = HL.map(([ic, lb]) => `<div class="hl"><div class="c">${ICON[ic]}</div>${lb}</div>`).join('');
+$('#grid').innerHTML = Array.from({ length: 9 }, (_, i) =>
+  `<div class="cell"><img src="${i === 0 ? 'footage/42316/000.jpg' : `thumbs/${i}.jpg`}">${[0, 3, 7].includes(i) ? '<div class="badge gbg">LIVE</div>' : ''}</div>`).join('');
+$('#stack').innerHTML = [2, 5, 7].map((i, k) => `<img src="thumbs/${i}.jpg" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:4px solid #000;margin-left:${k ? -26 : 0}px">`).join('');
+const CMTS = [['sarah_m', 'trop beau ce live 😍'], ['', 'Empira Agency a rejoint le LIVE'], ['nico.gaming', "c'est quoi ton concept ?"], ['julie', '🔥🔥🔥']];
+$('#cmts').innerHTML = CMTS.map(([n, m], i) => n
+  ? `<div class="cmt"><img src="thumbs/${[2, 5, 1][i > 1 ? i - 1 : i]}.jpg" style="width:72px;height:72px;border-radius:50%;object-fit:cover"><div class="b"><span class="n">${n}</span><br>${m}</div></div>`
+  : `<div class="cmt"><div class="avatar" style="width:72px;height:72px">${avatarHTML(72)}</div><div class="b g" style="font-weight:700;padding-top:24px">${m}</div></div>`).join('');
+const HEART = '<svg viewBox="0 0 24 24" style="width:100%;height:100%"><path fill="url(#gA)" d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>';
+$('#hearts').innerHTML = Array.from({ length: 9 }, () => `<div class="heart">${HEART}</div>`).join('');
+const SERV = [['CAP', 'Formation'], ['COACH', 'Coaching personnalisé'], ['BULB', 'Création de concept'], ['PLAY', 'Vidéos'], ['CHART', 'Analyse des stats']];
+$('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="ic">${ICON[ic]}</div><div class="lb">${lb}</div></div>`).join('');
+$('#bok').innerHTML = Array.from({ length: 16 }, (_, i) => {
+  const s = 40 + rnd(i) * 160; return `<div class="bokeh" style="left:${rnd(i + 20) * 1080 - s / 2}px;top:${rnd(i + 40) * 1920 - s / 2}px;width:${s}px;height:${s}px;opacity:${.15 + rnd(i + 60) * .35}"></div>`;
+}).join('');
+['raysA', 'raysJ'].forEach(id => {
+  $('#' + id).innerHTML = Array.from({ length: 28 }, (_, i) => {
+    const a = i / 28 * Math.PI * 2 + rnd(i) * .1, r1 = 60 + rnd(i + 3) * 60, r2 = 300 + rnd(i + 9) * 260;
+    return `<line x1="${Math.cos(a) * r1}" y1="${Math.sin(a) * r1}" x2="${Math.cos(a) * r2}" y2="${Math.sin(a) * r2}"/>`;
+  }).join('');
+});
+
+// Grain
+const grainSrc = document.createElement('canvas'); grainSrc.width = grainSrc.height = 256;
+{ const c = grainSrc.getContext('2d'), d = c.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = rnd(i * .37) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  c.putImageData(d, 0, 0); }
+const gctx = $('#grain').getContext('2d'), gpat = gctx.createPattern(grainSrc, 'repeat');
+
+// ---------- Rushes ----------
+const COUNT = { 42316: 79, 43531: 79, 51252: 60 };
+function foot(img, id, lt) {
+  const n = Math.min(COUNT[id] - 1, Math.max(0, Math.floor(lt * FPS)));
+  const src = `footage/${id}/${String(n).padStart(3, '0')}.jpg`;
+  if (img.dataset.src !== src) { img.src = src; img.dataset.src = src; }
+}
+window.ready = () => Promise.all($$('img').filter(i => i.getAttribute('src')).map(i => i.decode().catch(() => {})));
+
+// ---------- Transitions : coup de fouet vertical avec flou de mouvement ----------
+function scene(id, t, a, b, o = {}) {
+  const el = $(id), on = t >= a && t < b;
+  el.style.display = on ? 'block' : 'none';
+  if (!on) return null;
+  const fi = o.noIn ? 1 : E.oExp(P(t, a, a + .4));
+  const fo = o.noOut ? 0 : E.iExp(P(t, b - .3, b));
+  const y = (1 - fi) * 520 - fo * 620;
+  const blur = (1 - fi) * 70 + fo * 90;
+  el.style.transform = `translateY(${y}px) scale(${1 + fo * .06})`;
+  el.style.filter = blur > .5 ? `blur(${blur * .35}px)` : 'none';
+  el.style.opacity = o.noIn ? 1 - fo * .3 : cl(fi * 3) * (1 - fo * .3);
+  return t - a;
+}
+function popIn(el, lt, at, dur = .45, from = .6, origin) {
+  const q = E.oBack(P(lt, at, at + dur));
+  el.style.opacity = cl(P(lt, at, at + dur * .4));
+  if (origin) el.style.transformOrigin = origin;
+  el.style.transform = `scale(${lerp(from, 1, q)})`;
+}
+function setSpark(x, y, op, s = 1) { const sp = $('#spark'); sp.style.left = x + 'px'; sp.style.top = y + 'px'; sp.style.opacity = op; sp.style.transform = `scale(${s})`; }
+function rays(id, lt, at) {
+  const q = P(lt, at, at + .7), e = E.oExp(q);
+  const el = $('#' + id); el.style.opacity = q > 0 ? (1 - q) : 0;
+  el.style.transform = `scale(${.4 + e * 1.4}) rotate(${e * 12}deg)`;
+}
+
+// ---------- Rendu ----------
+function render(t) {
+  document.documentElement.style.setProperty('--sh', `${(t * 40) % 250}%`);
+  const f = Math.round(t * FPS);
+  gctx.clearRect(0, 0, 1080, 1920);
+  gctx.save(); gctx.translate(-(f * 73) % 256, -(f * 151) % 256); gctx.fillStyle = gpat; gctx.fillRect(0, 0, 1336, 2176); gctx.restore();
+  setSpark(540, 900, 0);
+  let lt;
+
+  // A · étincelle → explosion → logo néon
+  if ((lt = scene('#sA', t, 0, 1.75, { noIn: true })) !== null) {
+    const pulse = E.o3(P(lt, 0, .45));
+    setSpark(540, 900, lt < .62 ? pulse : 0, .6 + pulse * .8 + Math.sin(lt * 30) * .08);
+    rays('raysA', lt, .55);
+    const fl = E.oExp(P(lt, .5, .9)), flo = 1 - P(lt, .8, 1.3);
+    $('#flareA').style.width = fl * 1000 + 'px'; $('#flareA').style.marginLeft = -fl * 500 + 'px'; $('#flareA').style.opacity = lt > .5 ? flo : 0;
+    const q = E.oExp(P(lt, .55, 1.0));
+    const lg = $('#logoA');
+    lg.style.opacity = q;
+    lg.style.transform = `scale(${lerp(1.35, 1, q) + lt * .03})`;
+    lg.style.filter = q < .97 ? `blur(${(1 - q) * 20}px)` : 'none';
+    $('#glowA').style.opacity = q * lerp(1, .55, E.o3(P(lt, .9, 1.5)));
+    $('#glowA').style.transform = lg.style.transform;
+  }
+
+  // B · recherche
+  if ((lt = scene('#sB', t, 1.75, 3.6)) !== null) {
+    $('#pB').style.transform = `rotateX(${lerp(16, 3, E.io3(P(lt, 0, 1.8)))}deg) rotateY(${lerp(-10, 4, E.io3(P(lt, 0, 1.8)))}deg) translateZ(${lerp(-120, 40, E.io3(P(lt, 0, 1.8)))}px)`;
+    const txt = 'empira agency', n = Math.floor(P(lt, .3, 1.0) * txt.length);
+    $('#typed').textContent = txt.slice(0, n);
+    $('#caret').style.opacity = (Math.floor(lt * 4) % 2 || n < txt.length) ? 1 : 0;
+    const tabs = $$('#tabs span'), k = lt > 1.15 ? 1 : 0;
+    tabs.forEach((s, i) => s.classList.toggle('on', i === k));
+    const r0 = tabs[0].offsetLeft, r1 = tabs[1].offsetLeft, w0 = tabs[0].offsetWidth, w1 = tabs[1].offsetWidth;
+    const m = E.oExp(P(lt, 1.15, 1.45));
+    $('#tabline').style.left = lerp(r0, r1, m) + 40 + 'px'; $('#tabline').style.width = lerp(w0, w1, m) + 'px';
+    popIn($('#resB'), lt, 1.05, .45, .85, '0 50%');
+    $('#vtitle').style.opacity = $('#vrowB').style.opacity = E.o3(P(lt, 1.2, 1.5)) * .9;
+    $('#vrowB').style.transform = `translateY(${(1 - E.oExp(P(lt, 1.2, 1.6))) * 80}px)`;
+    $('#vrowB').style.filter = 'blur(3px)';
+    const tq = P(lt, 1.5, 1.85);
+    const tp = $('#tap'); tp.style.left = '880px'; tp.style.top = '505px';
+    tp.style.opacity = tq > 0 ? 1 - tq : 0; tp.style.transform = `scale(${.5 + E.o3(tq) * .9})`;
+    $('#followB').style.transform = `scale(${lt > 1.5 && lt < 1.65 ? .92 : 1})`;
+    $('#followB').textContent = lt > 1.6 ? 'Suivi ✓' : 'Suivre';
+  }
+
+  // C · profil, défilement, puis la vignette LIVE s'ouvre en plein écran
+  if ((lt = scene('#sC', t, 3.6, 6.2, { noOut: true })) !== null) {
+    const sc = E.io3(P(lt, .9, 1.8));
+    $('#pC').style.transform = `rotateX(${lerp(10, 2, E.io3(P(lt, 0, 1.6)))}deg) rotateY(${lerp(12, -3, E.io3(P(lt, 0, 2)))}deg) translateY(${-sc * 760}px)`;
+    popIn($('#pfav'), lt, .15, .5, .4);
+    $$('#hls .hl').forEach((h, i) => popIn(h, lt, .35 + i * .06, .4, .3));
+    $$('#grid .cell').forEach((c, i) => popIn(c, lt, .6 + i * .05, .45, .7));
+    // ouverture de la vignette 0 en plein écran (élément partagé)
+    const z = E.ioExp(P(lt, 2.0, 2.6)), zi = $('#zoomimg');
+    if (lt >= 2.0) {
+      const cell = $('#grid .cell').getBoundingClientRect(), st = $('#stage').getBoundingClientRect(), s = st.width / 1080;
+      const x0 = (cell.left - st.left) / s, y0 = (cell.top - st.top) / s, w0 = cell.width / s, h0 = cell.height / s;
+      zi.style.display = 'block'; zi.src = 'footage/42316/000.jpg';
+      zi.style.left = lerp(x0, 0, z) + 'px'; zi.style.top = lerp(y0, 0, z) + 'px';
+      zi.style.width = lerp(w0, 1080, z) + 'px'; zi.style.height = lerp(h0, 1920, z) + 'px';
+      zi.style.borderRadius = lerp(12, 0, z) + 'px';
+      $('#pC').style.filter = `blur(${z * 12}px) brightness(${1 - z * .5})`;
+    } else { zi.style.display = 'none'; $('#pC').style.filter = 'none'; }
+  }
+
+  // D · LIVE plein écran
+  if ((lt = scene('#sD', t, 6.2, 8.6, { noIn: true })) !== null) {
+    foot($('#fD'), 42316, lt);
+    $('#fD').style.transform = `scale(${1 + lt * .02})`;
+    $$('#cmts .cmt').forEach((c, i) => {
+      const at = .25 + i * .42, q = E.oExp(P(lt, at, at + .35));
+      const shift = $$('#cmts .cmt').filter((_, j) => j > i && lt > .25 + j * .42).length;
+      const y = 1560 - 130 - shift * 130;
+      c.style.top = y + 'px';
+      c.style.opacity = q * (1 - shift * .18);
+      c.style.transform = `translateY(${(1 - q) * 60}px)`;
+    });
+    $$('#hearts .heart').forEach((h, i) => {
+      const cyc = ((lt * .7 + i / 9) % 1), on = lt > .4 ? 1 : 0;
+      h.style.left = (930 + Math.sin(cyc * 7 + i * 2) * 40) + 'px'; h.style.top = (1700 - cyc * 700) + 'px';
+      h.style.opacity = on * Math.sin(cyc * Math.PI); h.style.transform = `scale(${.5 + cyc * .7}) rotate(${(rnd(i) - .5) * 40}deg)`;
+    });
+    const g = E.oBack(P(lt, 1.5, 1.85)), go = E.o3(P(lt, 2.15, 2.35));
+    $('#gift').style.opacity = lt > 1.5 ? 1 - go : 0;
+    $('#gift').style.transform = `translateX(${(1 - g) * -500 - go * 120}px)`;
+  }
+
+  // E · messages privés
+  if ((lt = scene('#sE', t, 8.6, 11.2)) !== null) {
+    $('#pE').style.transform = `rotateY(${lerp(-16, -3, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(8, 2, E.io3(P(lt, 0, 2.6)))}deg) translateZ(${lerp(-80, 30, E.io3(P(lt, 0, 2.6)))}px)`;
+    popIn($('#m1'), lt, .25, .45, .5, '100% 100%');
+    const dt = lt > .75 && lt < 1.3;
+    $('#dots').style.opacity = dt ? 1 : 0;
+    $$('#dots i').forEach((d, i) => d.style.transform = `translateY(${Math.sin(lt * 14 - i * .9) * -8}px)`);
+    popIn($('#m2'), lt, 1.3, .45, .5, '0 100%');
+    popIn($('#m3'), lt, 1.75, .45, .5, '0 100%');
+    popIn($('#emav'), lt, 1.75, .35, .5);
+    popIn($('#m4'), lt, 2.2, .4, .5, '100% 100%');
+  }
+
+  // F · le téléphone à plat, les services s'élèvent en couches
+  if ((lt = scene('#sF', t, 11.2, 14.0)) !== null) {
+    const rz = lerp(-42, -22, E.io3(P(lt, 0, 2.8)));
+    $('#pF').style.transform = `rotateX(58deg) rotateZ(${rz}deg) scale(${lerp(.85, 1, E.o3(P(lt, 0, 1)))})`;
+    $$('#cardsF .scard').forEach((c, i) => {
+      // chaque carte sort du téléphone et monte à sa hauteur, toujours tournée vers la caméra
+      const q = E.oBack(P(lt, .35 + i * .22, .95 + i * .22));
+      const z = 40 + q * (110 + (4 - i) * 150);
+      const side = (i % 2 ? 1 : -1) * 45;
+      c.style.opacity = cl(P(lt, .35 + i * .22, .5 + i * .22));
+      c.style.transform = `translate3d(${side * q}px, 0, ${z}px) rotateZ(${-rz}deg) rotateX(-58deg)`;
+    });
+    const tq = E.oExp(P(lt, .1, .6));
+    $('#tF').style.opacity = tq; $('#tF').style.transform = `translateY(${(1 - tq) * 60}px)`;
+  }
+
+  // G · texte 3D que la caméra traverse
+  if ((lt = scene('#sG', t, 14.0, 15.8, { noOut: true })) !== null) {
+    const a = E.oExp(P(lt, 0, .7)), thru = E.iExp(P(lt, 1.2, 1.8));
+    $('#pG').style.transform = `translateZ(${lerp(-1800, 0, a) + thru * 1300}px) rotateY(${lerp(28, -8, E.io3(P(lt, 0, 1.6)))}deg) rotateX(${lerp(-10, 4, E.io3(P(lt, 0, 1.6)))}deg)`;
+    $('#pG').style.filter = `blur(${(1 - a) * 18 + thru * 30}px)`;
+    $('#g2').style.transform = `translateZ(${lerp(-400, 0, E.oExp(P(lt, .15, .9)))}px)`;
+    $$('#bok .bokeh').forEach((b, i) => b.style.transform = `translate(${Math.sin(lt + i) * 30}px, ${-lt * (40 + rnd(i) * 120)}px) scale(${1 + thru * 2})`);
+    $('#sG').style.opacity = 1 - E.io3(P(lt, 1.55, 1.8));
+  }
+
+  // H · Empira Gaming
+  if ((lt = scene('#sH', t, 15.8, 18.4)) !== null) {
+    foot($('#fH'), 43531, lt);
+    $('#pH').style.transform = `rotateY(${lerp(14, -6, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(6, 0, E.io3(P(lt, 0, 2)))}deg) translateZ(${lerp(-60, 20, E.io3(P(lt, 0, 2.6)))}px)`;
+    const tq = E.oExp(P(lt, .1, .5));
+    $('#tH').style.opacity = tq; $('#tH').style.transform = `scale(${lerp(1.3, 1, tq)})`;
+    popIn($('#pop1'), lt, .9, .45, .5, '0 50%');
+    $('#pop1').style.opacity *= 1 - P(lt, 2.1, 2.3);
+    $('#v1').style.width = lerp(8, 68, E.io3(P(lt, 1.1, 2.4))) + '%';
+    $('#v2').style.width = lerp(8, 34, E.io3(P(lt, 1.1, 2.4))) + '%';
+  }
+
+  // I · « Ton live évolue avec nos conseils et notre vision. »
+  if ((lt = scene('#sI', t, 18.4, 20.1)) !== null) {
+    foot($('#fI'), 51252, lt);
+    $$('#sI .li').forEach((l, i) => {
+      const q = E.oExp(P(lt, .1 + i * .22, .7 + i * .22));
+      l.style.transformOrigin = '50% 100%';
+      l.style.transform = `rotateX(${(1 - q) * -85}deg) translateY(${(1 - q) * 60}px)`;
+      l.style.opacity = cl(q * 2);
+      l.style.filter = q < .97 ? `blur(${(1 - q) * 12}px)` : 'none';
+    });
+  }
+
+  // J · logo néon, puis retour à l'étincelle (boucle)
+  if ((lt = scene('#sJ', t, 20.1, DURATION + .01, { noOut: true })) !== null) {
+    const d = E.io3(P(lt, .15, .75));
+    const nl = $('#neonLine'); nl.style.strokeDasharray = 1; nl.style.strokeDashoffset = 1 - d;
+    $('#neonA').style.opacity = 1 - P(lt, .85, 1.1);
+    rays('raysJ', lt, .75);
+    const q = E.oExp(P(lt, .75, 1.2));
+    $('#logoJ').style.opacity = q;
+    $('#glowJ').style.opacity = q * lerp(1, .5, E.o3(P(lt, 1.1, 1.7)));
+    const h = E.oExp(P(lt, 1.1, 1.5));
+    $('#handleJ').style.opacity = h; $('#handleJ').style.transform = `translateY(${(1 - h) * 30}px)`;
+    const out = E.iExp(P(lt, 1.85, 2.3));
+    $('#sJ').style.transform = `scale(${1 - out * .97})`;
+    $('#sJ').style.opacity = 1 - out;
+    $('#sJ').style.transformOrigin = '540px 900px';
+    if (out > .3) setSpark(540, 900, E.o3(P(lt, 2.0, 2.3)), .6);
+  }
+}
+
+window.render = render;
+function fit() { const s = Math.min(innerWidth / 1080, innerHeight / 1920); const st = $('#stage'); st.style.transform = `scale(${s})`; st.style.left = (innerWidth - 1080 * s) / 2 + 'px'; }
+addEventListener('resize', fit); fit();
+if (!location.search.includes('export')) {
+  const t0 = performance.now();
+  (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>
