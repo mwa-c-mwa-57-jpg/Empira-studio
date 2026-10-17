@@ -23,18 +23,20 @@ const fs = require('fs');
       fs.writeFileSync(path.join(out, `t${t.toFixed(2)}.jpg`), await shot());
     }
   } else {
+    // les images sont écrites sur disque (reprise possible), puis assemblées avec le son
     const fps = Number(a3 || 30), dur = await page.evaluate(() => window.DURATION), frames = Math.round(dur * fps);
-    const args = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-i', '-'];
+    const dir = path.join(path.dirname(out), 'frames'); fs.mkdirSync(dir, { recursive: true });
+    for (let i = 0; i < frames; i++) {
+      const f = path.join(dir, `${String(i).padStart(4, '0')}.jpg`);
+      if (fs.existsSync(f)) continue;
+      await page.evaluate(t => window.renderAt(t), i / fps);
+      fs.writeFileSync(f, await shot());
+      if (i % 30 === 0) console.log(`image ${i}/${frames}`);
+    }
+    const args = ['-y', '-loglevel', 'error', '-framerate', String(fps), '-i', path.join(dir, '%04d.jpg')];
     if (a4) args.push('-i', a4, '-c:a', 'aac', '-b:a', '192k', '-shortest');
     args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out);
-    const ff = spawn('ffmpeg', args, { stdio: ['pipe', 'inherit', 'inherit'] });
-    for (let i = 0; i < frames; i++) {
-      await page.evaluate(t => window.renderAt(t), i / fps);
-      const buf = await shot();
-      if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
-      if (i % 60 === 0) console.log(`image ${i}/${frames}`);
-    }
-    ff.stdin.end(); await new Promise(r => ff.on('close', r));
+    await new Promise(r => spawn('ffmpeg', args, { stdio: 'inherit' }).on('close', r));
     console.log('OK ->', out);
   }
   await browser.close();
