@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empira Agency — v3</title>
+<style>
+  :root { --or-profond:#AC6F17; --or:#CB8F2F; --or-clair:#F0C163; --ui:#0c0c0e; --ui2:#1c1c1f; --ui3:#2a2a2e; --mute:#8e8e93; --sh:0%; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { background:#000; overflow:hidden; width:100%; height:100%; }
+  body { font-family:'Inter', sans-serif; color:#fff; -webkit-font-smoothing:antialiased; }
+  #stage { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; background:#000; transform-origin:0 0; }
+  .scene { position:absolute; inset:0; display:none; overflow:hidden; }
+  .cam { position:absolute; inset:0; perspective:2200px; }
+  .plane { position:absolute; inset:0; transform-style:preserve-3d; }
+  .ft { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
+  .g { background:linear-gradient(100deg, #AC6F17 0%, #F0C163 30%, #CB8F2F 50%, #F7D27A 70%, #AC6F17 100%);
+       background-size:250% 100%; background-position:var(--sh) 0; -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .gbg { background:linear-gradient(120deg, #F7D27A, #CB8F2F 55%, #AC6F17); color:#000; }
+  svg.i { width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; }
+
+  /* barre d'état */
+  .status { position:absolute; left:0; right:0; top:0; height:120px; display:flex; align-items:center; justify-content:space-between; padding:30px 70px 0; font-size:40px; font-weight:600; }
+  .status .r { display:flex; gap:16px; align-items:center; }
+
+  .avatar { position:relative; border-radius:50%; overflow:hidden; background:#000; flex:none; }
+  .avatar img { position:absolute; }
+  .ring { padding:6px; border-radius:50%; background:conic-gradient(from 200deg, #F7D27A, #AC6F17, #F0C163, #CB8F2F, #F7D27A); }
+  .ring > .avatar { border:6px solid var(--ui); }
+
+  /* B — recherche */
+  #sb { position:absolute; left:40px; right:40px; top:150px; height:110px; display:flex; align-items:center; gap:22px; }
+  #sb .field { flex:1; height:100%; border-radius:24px; background:var(--ui2); display:flex; align-items:center; gap:20px; padding:0 30px; font-size:44px; }
+  #sb .go { font-size:44px; font-weight:700; }
+  .caret { display:inline-block; width:4px; height:52px; background:var(--or-clair); margin-left:2px; vertical-align:middle; }
+  #tabs { position:absolute; left:40px; right:40px; top:300px; display:flex; gap:56px; font-size:42px; font-weight:600; color:var(--mute); }
+  #tabs span.on { color:#fff; }
+  #tabline { position:absolute; top:368px; height:6px; border-radius:3px; background:var(--or-clair); }
+  #tabsep { position:absolute; left:0; right:0; top:378px; height:2px; background:#222; }
+  .res { position:absolute; left:40px; right:40px; display:flex; align-items:center; gap:30px; }
+  .res .t1 { font-size:46px; font-weight:700; }
+  .res .t2 { font-size:36px; color:var(--mute); margin-top:6px; }
+  .btn { border-radius:18px; padding:22px 44px; font-size:40px; font-weight:700; text-align:center; }
+  #tap { position:absolute; width:120px; height:120px; margin:-60px 0 0 -60px; border-radius:50%; border:4px solid rgba(255,255,255,.9); background:rgba(255,255,255,.18); }
+  .vrow { position:absolute; left:40px; right:40px; display:flex; gap:14px; }
+  .vrow img { width:324px; height:432px; object-fit:cover; border-radius:16px; }
+
+  /* C — profil */
+  #pf { position:absolute; left:0; right:0; top:0; }
+  .hl { display:flex; flex-direction:column; align-items:center; gap:14px; font-size:30px; color:#ddd; }
+  .hl .c { width:132px; height:132px; border-radius:50%; border:3px solid #333; display:flex; align-items:center; justify-content:center; font-size:56px; color:var(--or-clair); background:var(--ui2); }
+  #grid { position:absolute; left:0; right:0; display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; }
+  #grid .cell { position:relative; height:476px; overflow:hidden; background:#111; }
+  #grid .cell img { width:100%; height:100%; object-fit:cover; }
+  .badge { position:absolute; left:14px; top:14px; padding:6px 14px; border-radius:10px; font-size:24px; font-weight:800; letter-spacing:.06em; }
+  #zoomimg { position:absolute; object-fit:cover; display:none; }
+
+  /* D — LIVE */
+  .chip { position:absolute; display:flex; align-items:center; gap:18px; padding:10px 30px 10px 10px; border-radius:60px; background:rgba(0,0,0,.45); backdrop-filter:blur(8px); font-size:38px; font-weight:700; }
+  .cmt { position:absolute; left:40px; display:flex; align-items:flex-start; gap:18px; font-size:36px; max-width:760px; }
+  .cmt .n { color:rgba(255,255,255,.7); font-weight:600; }
+  .cmt .b { padding:14px 24px; border-radius:26px; background:rgba(0,0,0,.42); line-height:1.25; }
+  .heart { position:absolute; width:70px; height:70px; }
+  #inputbar { position:absolute; left:40px; right:240px; bottom:70px; height:96px; border-radius:48px; background:rgba(0,0,0,.45); color:rgba(255,255,255,.75); font-size:36px; display:flex; align-items:center; padding:0 36px; }
+  .round { position:absolute; bottom:70px; width:96px; height:96px; border-radius:50%; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; font-size:48px; }
+
+  /* E — messages (style TikTok) */
+  .bub { position:absolute; max-width:740px; padding:26px 36px; border-radius:40px; font-size:44px; line-height:1.25; font-weight:600; }
+  .bub.me { right:36px; background:linear-gradient(115deg, #2F6BFF, #4E5BFF 55%, #7B4DFF); }
+  .bub.em { left:136px; background:#262628; }
+  .dots { position:absolute; left:136px; padding:32px 38px; border-radius:40px; background:#262628; display:flex; gap:14px; }
+  .dots i { width:20px; height:20px; border-radius:50%; background:#aaa; display:block; }
+  .qr { padding:16px 30px; border-radius:40px; background:#262628; }
+
+  /* F — cartes */
+  .scard { position:absolute; left:-300px; top:-70px; width:600px; height:140px; display:flex; flex-direction:row; align-items:center; gap:30px; padding:0 40px; border-radius:36px;
+           background:linear-gradient(#111114, #111114) padding-box, linear-gradient(110deg, #25F4EE, #FE2C55) border-box; border:4px solid transparent;
+           box-shadow:-6px -6px 0 rgba(37,244,238,.55), 6px 6px 0 rgba(254,44,85,.6), 0 20px 50px rgba(0,0,0,.6); }
+  .scard .ic { font-size:64px; color:#25F4EE; }
+  .scard:nth-child(even) .ic { color:#FE2C55; }
+  .scard .lb { font-size:46px; font-weight:700; line-height:1.1; color:#fff; }
+  .tt { color:#fff; text-shadow:-6px -4px 0 #25F4EE, 6px 4px 0 #FE2C55; }
+
+  /* G — texte 3D */
+  .k3 { position:absolute; left:0; right:0; text-align:center; font-weight:800; letter-spacing:-.04em; line-height:.92; white-space:nowrap; }
+  .bokeh { position:absolute; border-radius:50%; background:radial-gradient(circle, rgba(240,193,99,.85), rgba(203,143,47,0) 70%); }
+
+  /* H — gaming */
+  #gcard { position:absolute; left:110px; top:430px; width:860px; height:1300px; border-radius:60px; overflow:hidden; border:3px solid rgba(240,193,99,.6); box-shadow:0 0 90px rgba(203,143,47,.35); }
+  .vote { position:absolute; left:40px; right:40px; height:84px; border-radius:42px; background:rgba(0,0,0,.5); overflow:hidden; font-size:34px; font-weight:700; }
+  .vote i { position:absolute; left:0; top:0; bottom:0; border-radius:42px; }
+  .vote span { position:absolute; left:34px; top:0; line-height:84px; }
+
+  /* Interface LIVE TikTok (relevée sur une vraie capture) */
+  .lv { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; }
+  .lv.solo::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.4), transparent 16%, transparent 55%, rgba(0,0,0,.6)); }
+  .lv > * { position:absolute; }
+  .lv .dk { background:rgba(40,40,44,.72); }
+  .lv .host { left:30px; top:118px; height:98px; border-radius:49px; display:flex; align-items:center; gap:14px; padding:0 8px 0 7px; }
+  .lv .host .nm { font-size:38px; font-weight:700; line-height:1.05; } .lv .host .lk { font-size:28px; opacity:.9; }
+  .lv .plus1 { background:#fff; color:#FE2C55; border-radius:40px; padding:10px 22px; font-size:34px; font-weight:800; display:flex; align-items:center; gap:8px; margin-left:4px; }
+  .lv .topr { right:30px; top:128px; display:flex; align-items:center; gap:14px; }
+  .lv .tv { position:relative; width:70px; height:70px; }
+  .lv .tv img, .lv .tv .avatar { border:3px solid #F0C163; }
+  .lv .rk { position:absolute; right:-4px; bottom:-8px; font-size:28px; font-weight:900; font-style:italic; color:#fff; -webkit-text-stroke:1.5px #000; }
+  .lv .cnt { border-radius:36px; padding:14px 26px; font-size:32px; font-weight:600; }
+  .lv .x { font-size:56px; font-weight:300; margin-left:4px; }
+  .lv .row2 { left:30px; right:30px; top:234px; display:flex; justify-content:space-between; gap:14px; font-size:30px; font-weight:600; }
+  .lv .row2 > div { border-radius:20px; padding:12px 22px; display:flex; align-items:center; gap:10px; }
+  .lv .pk { left:0; right:0; top:330px; height:46px; display:flex; font-size:32px; font-weight:800; font-style:italic; }
+  .lv .pk .a { background:linear-gradient(90deg, #FE2C55, #ff6a8a); display:flex; align-items:center; padding-left:22px; }
+  .lv .pk .b { flex:1; background:linear-gradient(90deg, #25F4EE, #2BA6F5); display:flex; align-items:center; justify-content:flex-end; padding-right:22px; }
+  .lv .vids { left:0; right:0; top:376px; height:800px; display:flex; gap:4px; }
+  .lv .half { position:relative; flex:1; overflow:hidden; background:#111; }
+  .lv .half img { position:absolute; left:0; top:-120px; width:100%; height:1040px; object-fit:cover; }
+  .lv .tag { position:absolute; top:16px; padding:6px 14px; border-radius:12px; background:rgba(0,0,0,.45); font-size:28px; font-weight:800; }
+  .lv .timer { position:absolute; left:50%; top:0; transform:translateX(-50%); padding:10px 26px; border-radius:0 0 22px 22px; background:rgba(0,0,0,.55); font-size:32px; font-weight:700; white-space:nowrap; z-index:2; }
+  .lv .nmtag { position:absolute; right:14px; bottom:16px; padding:8px 22px; border-radius:30px; background:rgba(0,0,0,.45); font-size:30px; font-weight:600; }
+  .lv .giftb { height:86px; display:flex; align-items:center; gap:14px; padding:0 30px 0 6px; border-radius:43px; background:rgba(0,0,0,.5); white-space:nowrap; }
+  .lv .combo { font-size:64px; font-weight:900; font-style:italic; color:#fff; -webkit-text-stroke:2px rgba(0,0,0,.5); }
+  .lv .ranks { left:30px; right:30px; top:1196px; display:flex; justify-content:space-between; }
+  .lv .ranks > div { display:flex; gap:16px; align-items:center; }
+  .lv .ra { position:relative; width:76px; height:76px; }
+  .lv .ra img, .lv .ra .avatar { width:76px; height:76px; border-radius:50%; object-fit:cover; }
+  .lv .ra .rn { position:absolute; right:-6px; bottom:-10px; font-size:32px; font-weight:900; font-style:italic; -webkit-text-stroke:1.5px #000; }
+  .lv .cm { left:30px; max-width:960px; border-radius:42px; padding:14px 34px 14px 14px; display:flex; gap:20px; align-items:center; font-size:38px; font-weight:700; line-height:1.18; }
+  .lv .cm .n { color:rgba(255,255,255,.62); font-weight:500; font-size:36px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .lv .cm .ic { width:70px; height:70px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; font-size:38px; flex:none; }
+  .lv .bdg { font-size:26px; font-weight:800; color:#fff; padding:4px 12px; border-radius:10px; display:inline-flex; align-items:center; gap:6px; }
+  .lv .bar { left:30px; right:30px; bottom:44px; display:flex; align-items:center; gap:16px; }
+  .lv .inp { flex:1; height:96px; border-radius:48px; color:rgba(255,255,255,.75); font-size:36px; display:flex; align-items:center; justify-content:space-between; padding:0 22px 0 34px; }
+  .lv .ib { width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:46px; flex:none; }
+  .lv .hrt { width:76px; height:76px; }
+  #gcard { left:160px !important; top:430px !important; width:760px !important; height:1351px !important; }
+  .ttv { position:absolute; width:1206px; height:2622px; transform-origin:0 0; background:#000; overflow:hidden; }
+  .ttv .half { position:absolute; top:600px; height:1044px; overflow:hidden; background:#111; }
+  .ttv .half img { width:100%; height:100%; object-fit:cover; }
+  .ttv .flt { position:absolute; left:0; top:0; width:1206px; height:2622px; }
+  #gcard { left:202px !important; top:370px !important; width:700px !important; height:1522px !important; border-radius:56px; }
+  /* J — logo néon */
+  #rays line { stroke:url(#rayG); stroke-width:6; stroke-linecap:round; }
+  #spark { position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:#fff;
+           box-shadow:0 0 14px 5px #F7D27A, 0 0 50px 18px rgba(203,143,47,.85), 0 0 140px 50px rgba(172,111,23,.5); }
+  #grain { position:absolute; inset:0; opacity:.06; mix-blend-mode:overlay; pointer-events:none; }
+  #vig { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="rayG" x1="0" x2="1"><stop offset="0" stop-color="#F7D27A" stop-opacity="0"/><stop offset=".5" stop-color="#F7D27A"/><stop offset="1" stop-color="#fff"/></linearGradient>
+      <linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D27A"/><stop offset=".55" stop-color="#E0A63C"/><stop offset="1" stop-color="#AC6F17"/></linearGradient>
+    </defs>
+  </svg>
+
+  <!-- A · étincelle → logo néon -->
+  <div class="scene" id="sA">
+    <svg id="raysA" class="rays" viewBox="-540 -540 1080 1080" style="position:absolute;left:0;top:420px;width:1080px;height:1080px"></svg>
+    <div id="flareA" style="position:absolute;left:540px;top:900px;height:6px;margin-top:-3px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 30px #F0C163"></div>
+    <img id="glowA" src="assets/logo-empira.png" style="position:absolute;left:90px;top:610px;width:900px;mix-blend-mode:screen;filter:blur(22px) brightness(1.6)">
+    <img id="logoA" src="assets/logo-empira.png" style="position:absolute;left:90px;top:610px;width:900px;mix-blend-mode:screen">
+  </div>
+
+  <!-- B · vraie recherche TikTok (enregistrement d'écran) -->
+  <div class="scene" id="sB" style="background:#000">
+    <div class="cam"><div class="plane" id="pB">
+      <img id="srch" style="position:absolute;left:0;top:0;width:1080px;height:2348px">
+    </div></div>
+  </div>
+  <!-- C · vrai profil @empiraagency (capture, ligne des chiffres masquée) -->
+  <div class="scene" id="sC" style="background:#000">
+    <div class="cam"><div class="plane" id="pC">
+      <img id="prof" src="assets/profil-empira.jpg" style="position:absolute;left:0;top:0;width:1080px;height:2348px">
+    </div></div>
+  </div>
+  <!-- D · LIVE en match : vraie interface TikTok (filtre) sur nos vidéos -->
+  <div class="scene" id="sD" style="background:#000">
+    <div class="cam" style="perspective:2600px"><div class="plane" id="pD">
+      <div class="ttv" id="ttd" style="left:98px;top:0;transform:scale(.7323)"></div>
+    </div></div>
+  </div>
+  <!-- E · messages privés, style TikTok -->
+  <div class="scene" id="sE" style="background:#000">
+    <div class="cam"><div class="plane" id="pE">
+      <div class="status st"></div>
+      <div style="position:absolute;left:0;right:0;top:140px;height:130px;display:flex;align-items:center;gap:22px;padding:0 36px">
+        <span style="font-size:60px">ICON_BACK</span>
+        <div class="avatar av" data-d="92"></div>
+        <div style="font-size:44px;font-weight:700;flex:1">Empira-agency</div>
+        <span style="font-size:58px">ICON_PHONE</span><span style="font-size:58px;margin-left:30px">ICON_MORE</span>
+      </div>
+      <div style="position:absolute;left:0;right:0;top:330px;text-align:center;font-size:32px;color:var(--mute)">Aujourd'hui 21:04</div>
+      <div class="bub me" id="m1" style="top:410px">Salut ! Je veux me lancer en LIVE 🎥 Vous pouvez m'aider ?</div>
+      <div class="dots" id="dots" style="top:680px"><i></i><i></i><i></i></div>
+      <div class="bub em" id="m2" style="top:680px">Oui ! On commence par créer ton concept 🔥</div>
+      <div class="bub em" id="m3" style="top:900px">Formation, coaching, vidéos, stats… on t'accompagne de A à Z.</div>
+      <div id="emav" style="position:absolute;left:36px;top:1040px"><div class="avatar av" data-d="80"></div></div>
+      <div class="bub me" id="m4" style="top:1210px">Go ! 🙌</div>
+      <div style="position:absolute;left:36px;right:0;bottom:200px;display:flex;gap:18px;font-size:44px;white-space:nowrap">
+        <div class="qr">❤️</div><div class="qr">😂</div><div class="qr">👍</div><div class="qr">👆</div><div class="qr" style="font-size:36px;font-weight:600">🎮 Jeux</div><div class="qr" style="font-size:36px;font-weight:600">✨ Effets</div>
+      </div>
+      <div style="position:absolute;left:36px;right:36px;bottom:70px;display:flex;align-items:center;gap:22px">
+        <div style="width:100px;height:100px;border-radius:50%;background:#262628;display:flex;align-items:center;justify-content:center;font-size:52px">ICON_CAM</div>
+        <div style="flex:1;height:104px;border-radius:52px;background:#262628;display:flex;align-items:center;justify-content:space-between;padding:0 36px;font-size:40px;color:#8e8e93">Message…<span style="color:#fff;font-size:50px;display:flex;gap:30px">ICON_IMG ICON_MIC</span></div>
+      </div>
+    </div></div>
+  </div>
+  <!-- F · services en cartes 3D -->
+  <div class="scene" id="sF" style="background:radial-gradient(ellipse at 30% 62%, rgba(37,244,238,.16) 0%, transparent 45%), radial-gradient(ellipse at 72% 70%, rgba(254,44,85,.18) 0%, transparent 45%), #000">
+    <div style="position:absolute;left:0;right:0;top:200px;text-align:center;font-weight:800;font-size:100px;letter-spacing:-.03em;line-height:1" id="tF">On t'accompagne<br><span class="tt">de A à Z</span></div>
+    <div class="cam" style="perspective:2600px"><div class="plane" id="pF" style="left:540px;top:1420px;width:0;height:0">
+      <div id="phoneF" style="position:absolute;left:-250px;top:-500px;transform-style:preserve-3d;width:500px;height:1000px;border-radius:70px;background:#0b0b0d;border:10px solid #2b2b2f;box-shadow:0 0 0 3px #111, 0 40px 120px rgba(0,0,0,.8);overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 35% 40%, rgba(37,244,238,.3), transparent 55%), radial-gradient(circle at 65% 55%, rgba(254,44,85,.3), transparent 55%)"></div>
+        <img src="assets/logo-empira.png" style="position:absolute;left:30px;top:330px;width:420px;mix-blend-mode:screen">
+      </div>
+      <div id="cardsF" style="position:absolute;left:0;top:0;transform-style:preserve-3d"></div>
+    </div></div>
+  </div>
+
+  <!-- G · texte 3D -->
+  <div class="scene" id="sG" style="background:#000">
+    <div id="bok"></div>
+    <div class="cam" style="perspective:1400px"><div class="plane" id="pG">
+      <div class="k3" id="g1" style="top:690px;font-size:200px">TON LIVE</div>
+      <div class="k3 g" id="g2" style="top:900px;font-size:230px">DE A À Z</div>
+    </div></div>
+  </div>
+
+  <!-- H · Empira Gaming, LIVE avec barre de match -->
+  <div class="scene" id="sH" style="background:radial-gradient(ellipse at 50% 40%, #241806 0%, #000 70%)">
+    <div style="position:absolute;left:0;right:0;top:120px;text-align:center">
+      <div style="font-size:48px;font-weight:300;letter-spacing:.5em;padding-left:.5em">EMPIRA</div>
+      <div class="g" id="tH" style="font-size:170px;font-weight:800;letter-spacing:-.03em;line-height:1;filter:drop-shadow(0 0 30px rgba(240,193,99,.45))">GAMING</div>
+    </div>
+    <div class="cam"><div class="plane" id="pH">
+      <div id="gcard">
+        <img id="hrec" style="position:absolute;left:0;top:0;width:700px;height:1522px">
+      </div>
+    </div></div>
+  </div>
+  <!-- I · conseils & vision -->
+  <div class="scene" id="sI">
+    <img class="ft" id="fI" style="filter:blur(14px) brightness(.38);transform:scale(1.1)">
+    <div class="cam" style="perspective:1200px"><div class="plane">
+      <div class="k3 li" style="top:640px;font-size:118px">Ton live évolue</div>
+      <div class="k3 li g" style="top:790px;font-size:118px">avec nos conseils</div>
+      <div class="k3 li" style="top:940px;font-size:118px">et notre <span class="g">vision.</span></div>
+    </div></div>
+  </div>
+
+  <!-- J · logo néon final -->
+  <div class="scene" id="sJ">
+    <svg id="raysJ" class="rays" viewBox="-540 -540 1080 1080" style="position:absolute;left:0;top:300px;width:1080px;height:1080px"></svg>
+    <svg viewBox="0 0 300 280" id="neonA" style="position:absolute;left:305px;top:560px;width:470px;height:439px;overflow:visible">
+      <polygon id="neonLine" points="150,20 265,258 225,258 150,92 75,258 35,258" fill="none" stroke="#FFE3A3" stroke-width="3" stroke-linejoin="round" pathLength="1"
+               style="filter:drop-shadow(0 0 6px #F7D27A) drop-shadow(0 0 22px #CB8F2F) drop-shadow(0 0 60px #AC6F17)"/>
+    </svg>
+    <img id="glowJ" src="assets/logo-empira.png" style="position:absolute;left:90px;top:540px;width:900px;mix-blend-mode:screen;filter:blur(22px) brightness(1.6)">
+    <img id="logoJ" src="assets/logo-empira.png" style="position:absolute;left:90px;top:540px;width:900px;mix-blend-mode:screen">
+    <div class="g" id="handleJ" style="position:absolute;left:0;right:0;top:1200px;text-align:center;font-size:58px;font-weight:700">@empiraagency</div>
+  </div>
+
+  <div id="spark"></div>
+  <canvas id="grain" width="1080" height="1920"></canvas>
+  <div id="vig"></div>
+</div>
+
+<script>
+const DURATION = 22.5, FPS = 30;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const E = {
+  o3: x => 1 - Math.pow(1 - x, 3),
+  io3: x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2,
+  oExp: x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x),
+  iExp: x => x === 0 ? 0 : Math.pow(2, 10 * x - 10),
+  ioExp: x => x === 0 ? 0 : x === 1 ? 1 : x < .5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2,
+  oBack: x => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); },
+};
+const rnd = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+// ---------- Icônes ----------
+const ICON = {
+  SEARCH: '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+  BACK: '<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  BELL: '<svg class="i" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z M10 21h4"/></svg>',
+  SHARE: '<svg class="i" viewBox="0 0 24 24"><path d="M14 5l7 7-7 7 M21 12H9a6 6 0 0 0-6 6"/></svg>',
+  GRID: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>',
+  LIVE: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>',
+  HEART: '<svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.3-8.8A5 5 0 0 1 12 6a5 5 0 0 1 9.3 5.2C19 15.6 12 20 12 20z"/></svg>',
+  PAD: '<svg class="i" viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.8 6.4l-1 3.2a2 2 0 0 1-3.4.8L15 15H9l-2.4 2.4a2 2 0 0 1-3.4-.8l-1-3.2A5 5 0 0 1 7 7z M8 10v3M6.5 11.5h3M16 11h.01M18 13h.01"/></svg>',
+  CAP: '<svg class="i" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg>',
+  COACH: '<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 4-6 7-6s6 2 7 6 M17 6c1.5 1 1.5 4 0 5 M19.5 4c3 2.5 3 7.5 0 10"/></svg>',
+  BULB: '<svg class="i" viewBox="0 0 24 24"><path d="M9 18h6 M10 21h4 M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/></svg>',
+  PLAY: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>',
+  PHONE: '<svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  MORE: '<svg class="i" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  CAM: '<svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  IMG: '<svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.5"/><path d="M20 15l-5-5-9 9"/></svg>',
+  MIC: '<svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  CHART: '<svg class="i" viewBox="0 0 24 24"><path d="M4 20V4 M4 20h16 M7 15l4-4 3 3 5-6"/></svg>',
+};
+document.querySelectorAll('.scene').forEach(s => { s.innerHTML = s.innerHTML.replace(/ICON_([A-Z]+)/g, (_, k) => ICON[k]); });
+
+// ---------- Construction des éléments répétés ----------
+// Avatar = le A du logo (dans logo-empira.png : A centré en x=420, y=139, hauteur 238)
+function avatarHTML(d) { const k = .6 * d / 238; return `<img src="assets/logo-empira.png" style="width:${840 * k}px;left:${d / 2 - 420 * k}px;top:${d / 2 - 139 * k}px">`; }
+$$('.av').forEach(a => { const d = +a.dataset.d; a.style.width = a.style.height = d + 'px'; a.innerHTML = avatarHTML(d); });
+const STATUS = `<span>21:04</span><span class="r"><svg class="i" viewBox="0 0 24 24" style="stroke-width:2.6"><path d="M4 18v-2M9 18v-5M14 18V9M19 18V5"/></svg>
+  <svg class="i" viewBox="0 0 24 24" style="stroke-width:2.4"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/></svg>
+  <svg viewBox="0 0 30 16" style="width:62px;height:32px"><rect x="1" y="1" width="25" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.6" opacity=".5"/><rect x="3" y="3" width="18" height="10" rx="2" fill="#fff"/><rect x="27" y="5" width="2" height="6" rx="1" fill="#fff" opacity=".5"/></svg></span>`;
+$$('.st').forEach(s => s.innerHTML = STATUS);
+
+// Interface LIVE TikTok reproduite en HTML (relevée sur une vraie capture de LIVE match) :
+// pastille créateur « +1 », avatars classés, pastilles, barre de match, écran partagé,
+// bannière de cadeau, rangées de classement, bulles de commentaires, barre « Saisis ton message… ».
+const avImg = (a, d, extra = '') => a === 'emp' ? `<div class="avatar" style="width:${d}px;height:${d}px;${extra}">${avatarHTML(d)}</div>`
+  : `<img src="thumbs/${a}.jpg" style="width:${d}px;height:${d}px;border-radius:50%;object-fit:cover;flex:none;${extra}">`;
+const BDG = {
+  n1: '<span class="bdg" style="background:#FE2C55">🏅 N° 1</span>',
+  dia: n => `<span class="bdg" style="background:#5B5BF0">💎 ${n}</span>`,
+  fan: '<span class="bdg" style="background:#F08A24">🧡 Empira</span>',
+};
+function buildLive(el, c) {
+  const hearts = ['#FE2C55', '#FF6FA0', '#F0C163', '#FF3B30', '#B57BFF', '#FF8A3D'];
+  const gift = `<div class="giftb">${avImg(c.gift.a, 72)}<div style="font-size:32px"><b>${c.gift.n}</b> <span style="opacity:.75">a envoyé…</span></div>
+      <div style="font-size:64px;line-height:1">${c.gift.e}</div><div class="combo">x1</div></div>`;
+  el.classList.toggle('solo', !c.match);
+  el.innerHTML = `
+    ${c.match ? '' : `<img class="ft" id="${c.p}bg">`}
+    <div class="st status"></div>
+    <div class="host dk">${avImg(c.avatar, 84, 'border:3px solid #F0C163')}<div><div class="nm">${c.name}</div><div class="lk">♥ ${c.likes}</div></div>
+      <div class="plus1">❤️ +1</div></div>
+    <div class="topr"><div style="display:flex">${c.top.map((a, i) => `<div class="tv" style="margin-left:${i ? -18 : 0}px">${avImg(a, 70)}<div class="rk">${[9, 5][i]}</div></div>`).join('')}</div>
+      <div class="cnt dk">${c.viewers}</div><div class="x">✕</div></div>
+    <div class="row2"><div class="dk">🧡 LIVE populaire</div><div class="dk" style="flex:1;justify-content:center">🪐 0/5</div><div class="dk" style="flex:1;justify-content:center">Manuel</div></div>
+    ${c.match ? `
+    <div class="pk"><div class="a"><span id="${c.p}sa">0</span></div><div class="b"><span id="${c.p}sb">0</span></div></div>
+    <div class="vids">
+      <div class="half"><img id="${c.p}l"><div class="tag" style="left:14px">💎 D1</div>        <div id="${c.p}gw" style="position:absolute;left:12px;bottom:18px">${gift}</div></div>
+      <div class="timer">💎 <span id="${c.p}tm">02:00</span> ›</div>
+      <div class="half"><img id="${c.p}r"><div class="tag" style="right:14px">💎 C2</div><div class="nmtag">${c.opp}</div></div>
+    </div>
+    <div class="ranks"><div><div class="ib" style="width:76px;height:76px;background:#5a2236;font-size:36px">🛋️</div>
+        ${[1, 7].map((a, i) => `<div class="ra">${avImg(a, 76, 'border:3px solid #FE2C55')}<div class="rn" style="color:#FE2C55">${2 - i}</div></div>`).join('')}</div>
+      <div>${[2, 5, 8].map((a, i) => `<div class="ra">${avImg(a, 76, 'border:3px solid #25F4EE')}<div class="rn" style="color:#25F4EE">${i + 1}</div></div>`).join('')}</div></div>`
+    : `<div id="${c.p}gw" style="position:absolute;left:30px;top:1060px">${gift}</div>`}
+    ${c.cmts.map(m => m.sys
+      ? `<div class="cm dk"><div class="ic">♪</div><div>${m.sys}</div></div>`
+      : m.join
+      ? `<div class="cm dk"><div class="ic">👋</div><div class="n">${m.badges || ''}<span style="color:#fff;opacity:.62">${m.join}</span> <span style="color:#fff">a rejoint</span></div></div>`
+      : `<div class="cm dk">${avImg(m.a, 70)}<div><div class="n"><span ${m.gold ? 'class="g" style="font-weight:700"' : ''}>${m.n}</span>${m.badges || ''}</div>${m.m}</div></div>`).join('')}
+    <div class="bar"><div class="inp dk">Saisis ton message… <span style="font-size:52px">😶</span></div>
+      <div class="ib dk" style="font-size:44px">👥</div>
+      <div class="ib" style="background:#FE2C55;font-size:17px;font-weight:800">Combinaison</div>
+      <div class="ib dk">🎁</div><div class="ib dk" style="font-size:48px">➦</div></div>
+    ${Array.from({ length: 10 }, (_, i) => `<div class="hrt"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path fill="${hearts[i % hearts.length]}" d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></div>`).join('')}`;
+  el.querySelector('.st').innerHTML = STATUS;
+}
+function animLive(el, lt, o = {}) {
+  const p = o.p, cms = [...el.querySelectorAll('.cm')], step = o.step || .42, t0 = o.t0 ?? .15, bottom = o.bottom || 1650;
+  cms.forEach((c, i) => {
+    const at = t0 + i * step, q = E.oExp(P(lt, at, at + .3));
+    const above = cms.filter((_, j) => j > i && lt > t0 + j * step).reduce((s, x) => s + x.offsetHeight + 14, 0);
+    c.style.top = (bottom - c.offsetHeight - above) + 'px';
+    const top = bottom - c.offsetHeight - above;
+    c.style.opacity = lt < at || top < (o.minTop || 0) ? 0 : q * Math.max(0, 1 - above / 900);
+    c.style.transform = `translateY(${(1 - q) * 50}px)`;
+  });
+  const gw = el.querySelector(`#${p}gw`), ga = o.gift ?? 1.0;
+  const gi = E.oBack(P(lt, ga, ga + .35)), go = E.iExp(P(lt, ga + 1.25, ga + 1.45));
+  gw.style.opacity = lt > ga ? 1 - go : 0;
+  gw.style.transform = `translateX(${(1 - gi) * -600 - go * 150}px)`;
+  const n = Math.min(5, 1 + Math.floor(Math.max(0, lt - ga - .3) / .16)), cb = gw.querySelector('.combo');
+  cb.textContent = 'x' + n;
+  const ph = (lt - ga - .3) % .16;
+  cb.style.transform = `scale(${n > 1 && ph < .08 ? 1.35 - ph * 4 : 1})`;
+  el.querySelector('.plus1').style.transform = `scale(${1 + Math.max(0, Math.sin(lt * 9)) * .08})`;
+  el.querySelectorAll('.hrt').forEach((h, i) => {
+    const cyc = (lt * .75 + i / 10) % 1, on = lt > .3 ? 1 : 0;
+    h.style.left = (940 + Math.sin(cyc * 6 + i * 2.3) * 50) + 'px'; h.style.top = (1760 - cyc * 650) + 'px';
+    h.style.opacity = on * Math.sin(cyc * Math.PI); h.style.transform = `scale(${.45 + cyc * .75}) rotate(${(rnd(i) - .5) * 50}deg)`;
+  });
+  const sa = el.querySelector(`#${p}sa`);
+  if (sa) {
+    const a = Math.round(lerp(40, 520, E.io3(P(lt, .2, 2.3)))), b = Math.round(lerp(60, 310, E.io3(P(lt, .1, 2.0))));
+    sa.textContent = a; el.querySelector(`#${p}sb`).textContent = b;
+    el.querySelector('.pk .a').style.width = (100 * a / (a + b)) + '%';
+    const s = Math.max(0, 110 - Math.floor(lt));
+    el.querySelector(`#${p}tm`).textContent = `01:${String(s - 60).padStart(2, '0')}`;
+  }
+}
+// Écran LIVE = vraie interface TikTok (assets/tiktok-live-filtre.png, zone vidéo transparente)
+function buildTT(el, p) {
+  el.innerHTML = `<div class="half" style="left:0;width:604px"><img id="${p}l"></div>
+    <div class="half" style="left:607px;width:599px"><img id="${p}r"></div>
+    <img class="flt" src="assets/tiktok-live-filtre.png">`;
+}
+buildTT($('#ttd'), 'd');
+const SERV = [['CAP', 'Formation'], ['COACH', 'Coaching personnalisé'], ['BULB', 'Création de concept'], ['PLAY', 'Vidéos'], ['CHART', 'Analyse des stats']];
+$('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="ic">${ICON[ic]}</div><div class="lb">${lb}</div></div>`).join('');
+$('#bok').innerHTML = Array.from({ length: 16 }, (_, i) => {
+  const s = 40 + rnd(i) * 160; return `<div class="bokeh" style="left:${rnd(i + 20) * 1080 - s / 2}px;top:${rnd(i + 40) * 1920 - s / 2}px;width:${s}px;height:${s}px;opacity:${.15 + rnd(i + 60) * .35}"></div>`;
+}).join('');
+['raysA', 'raysJ'].forEach(id => {
+  $('#' + id).innerHTML = Array.from({ length: 28 }, (_, i) => {
+    const a = i / 28 * Math.PI * 2 + rnd(i) * .1, r1 = 60 + rnd(i + 3) * 60, r2 = 300 + rnd(i + 9) * 260;
+    return `<line x1="${Math.cos(a) * r1}" y1="${Math.sin(a) * r1}" x2="${Math.cos(a) * r2}" y2="${Math.sin(a) * r2}"/>`;
+  }).join('');
+});
+
+// Grain
+const grainSrc = document.createElement('canvas'); grainSrc.width = grainSrc.height = 256;
+{ const c = grainSrc.getContext('2d'), d = c.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = rnd(i * .37) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  c.putImageData(d, 0, 0); }
+const gctx = $('#grain').getContext('2d'), gpat = gctx.createPattern(grainSrc, 'repeat');
+
+// ---------- Rushes ----------
+const COUNT = { 42316: 79, 43531: 79, 51252: 60, 51613: 79, rec: 78, search: 51 };
+function foot(img, id, lt) {
+  const n = Math.min(COUNT[id] - 1, Math.max(0, Math.floor(lt * FPS)));
+  const src = `footage/${id}/${String(n).padStart(3, '0')}.jpg`;
+  if (img.dataset.src !== src) { img.src = src; img.dataset.src = src; }
+}
+window.ready = () => Promise.all($$('img').filter(i => i.getAttribute('src')).map(i => i.decode().catch(() => {})));
+
+// ---------- Transitions : coup de fouet vertical avec flou de mouvement ----------
+function scene(id, t, a, b, o = {}) {
+  const el = $(id), on = t >= a && t < b;
+  el.style.display = on ? 'block' : 'none';
+  if (!on) return null;
+  const fi = o.noIn ? 1 : E.oExp(P(t, a, a + .4));
+  const fo = o.noOut ? 0 : E.iExp(P(t, b - .3, b));
+  const y = (1 - fi) * 520 - fo * 620;
+  const blur = (1 - fi) * 70 + fo * 90;
+  el.style.transform = `translateY(${y}px) scale(${1 + fo * .06})`;
+  el.style.filter = blur > .5 ? `blur(${blur * .35}px)` : 'none';
+  el.style.opacity = o.noIn ? 1 - fo * .3 : cl(fi * 3) * (1 - fo * .3);
+  return t - a;
+}
+function popIn(el, lt, at, dur = .45, from = .6, origin) {
+  const q = E.oBack(P(lt, at, at + dur));
+  el.style.opacity = cl(P(lt, at, at + dur * .4));
+  if (origin) el.style.transformOrigin = origin;
+  el.style.transform = `scale(${lerp(from, 1, q)})`;
+}
+function setSpark(x, y, op, s = 1) { const sp = $('#spark'); sp.style.left = x + 'px'; sp.style.top = y + 'px'; sp.style.opacity = op; sp.style.transform = `scale(${s})`; }
+function rays(id, lt, at) {
+  const q = P(lt, at, at + .7), e = E.oExp(q);
+  const el = $('#' + id); el.style.opacity = q > 0 ? (1 - q) : 0;
+  el.style.transform = `scale(${.4 + e * 1.4}) rotate(${e * 12}deg)`;
+}
+
+// ---------- Rendu ----------
+function render(t) {
+  document.documentElement.style.setProperty('--sh', `${(t * 40) % 250}%`);
+  const f = Math.round(t * FPS);
+  gctx.clearRect(0, 0, 1080, 1920);
+  gctx.save(); gctx.translate(-(f * 73) % 256, -(f * 151) % 256); gctx.fillStyle = gpat; gctx.fillRect(0, 0, 1336, 2176); gctx.restore();
+  setSpark(540, 900, 0);
+  let lt;
+
+  // A · étincelle → explosion → logo néon
+  if ((lt = scene('#sA', t, 0, 1.75, { noIn: true })) !== null) {
+    const pulse = E.o3(P(lt, 0, .45));
+    setSpark(540, 900, lt < .62 ? pulse : 0, .6 + pulse * .8 + Math.sin(lt * 30) * .08);
+    rays('raysA', lt, .55);
+    const fl = E.oExp(P(lt, .5, .9)), flo = 1 - P(lt, .8, 1.3);
+    $('#flareA').style.width = fl * 1000 + 'px'; $('#flareA').style.marginLeft = -fl * 500 + 'px'; $('#flareA').style.opacity = lt > .5 ? flo : 0;
+    const q = E.oExp(P(lt, .55, 1.0));
+    const lg = $('#logoA');
+    lg.style.opacity = q;
+    lg.style.transform = `scale(${lerp(1.35, 1, q) + lt * .03})`;
+    lg.style.filter = q < .97 ? `blur(${(1 - q) * 20}px)` : 'none';
+    $('#glowA').style.opacity = q * lerp(1, .55, E.o3(P(lt, .9, 1.5)));
+    $('#glowA').style.transform = lg.style.transform;
+  }
+
+  // B · vraie recherche : « Empira » puis le compte empiraagency
+  if ((lt = scene('#sB', t, 1.75, 3.6)) !== null) {
+    foot($('#srch'), 'search', lt);
+    const k = E.io3(P(lt, 0, 1.85));
+    $('#pB').style.transform = `rotateX(${lerp(14, 2, k)}deg) rotateY(${lerp(-10, 3, k)}deg) translateZ(${lerp(-120, 30, k)}px)`;
+  }
+  // C · vrai profil : on le parcourt, puis la caméra plonge dans la publication LIVE
+  if ((lt = scene('#sC', t, 3.6, 6.2, { noOut: true })) !== null) {
+    const sc = E.io3(P(lt, .8, 1.8)), dive = E.iExp(P(lt, 1.95, 2.6));
+    const pc = $('#pC');
+    pc.style.transformOrigin = `539px ${1537 - sc * 428}px`;
+    pc.style.transform = `rotateX(${lerp(10, 0, E.io3(P(lt, 0, 1.6)))}deg) rotateY(${lerp(12, 0, E.io3(P(lt, 0, 1.9)))}deg) scale(${1 + dive * 5})`;
+    $('#prof').style.transform = `translateY(${-sc * 428}px)`;
+    pc.style.filter = dive > .01 ? `blur(${dive * 14}px) brightness(${1 + dive * .6})` : 'none';
+  }
+  // D · LIVE en match : le téléphone flotte en 3D, on s'en approche
+  if ((lt = scene('#sD', t, 6.2, 8.6, { noIn: true })) !== null) {
+    foot($('#dl'), 42316, lt); foot($('#dr'), 51252, lt);
+    const k = E.io3(P(lt, 0, 2.4));
+    $('#pD').style.transform = `rotateY(${lerp(-10, 6, k)}deg) rotateX(${lerp(5, -2, k)}deg) scale(${lerp(1, 1.1, k)})`;
+  }
+  // E · messages privés
+  if ((lt = scene('#sE', t, 8.6, 11.2)) !== null) {
+    $('#pE').style.transform = `rotateY(${lerp(-16, -3, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(8, 2, E.io3(P(lt, 0, 2.6)))}deg) translateZ(${lerp(-80, 30, E.io3(P(lt, 0, 2.6)))}px)`;
+    popIn($('#m1'), lt, .25, .45, .5, '100% 100%');
+    const dt = lt > .75 && lt < 1.3;
+    $('#dots').style.opacity = dt ? 1 : 0;
+    $$('#dots i').forEach((d, i) => d.style.transform = `translateY(${Math.sin(lt * 14 - i * .9) * -8}px)`);
+    popIn($('#m2'), lt, 1.3, .45, .5, '0 100%');
+    popIn($('#m3'), lt, 1.75, .45, .5, '0 100%');
+    popIn($('#emav'), lt, 1.75, .35, .5);
+    popIn($('#m4'), lt, 2.2, .4, .5, '100% 100%');
+  }
+
+  // F · le téléphone à plat, les services s'élèvent en couches
+  if ((lt = scene('#sF', t, 11.2, 14.0)) !== null) {
+    const rz = lerp(-42, -22, E.io3(P(lt, 0, 2.8)));
+    $('#pF').style.transform = `rotateX(58deg) rotateZ(${rz}deg) scale(${lerp(.85, 1, E.o3(P(lt, 0, 1)))})`;
+    $$('#cardsF .scard').forEach((c, i) => {
+      // chaque carte sort du téléphone et monte à sa hauteur, toujours tournée vers la caméra
+      const q = E.oBack(P(lt, .35 + i * .22, .95 + i * .22));
+      const z = 40 + q * (110 + (4 - i) * 150);
+      const side = (i % 2 ? 1 : -1) * 45;
+      c.style.opacity = cl(P(lt, .35 + i * .22, .5 + i * .22));
+      c.style.transform = `translate3d(${side * q}px, 0, ${z}px) rotateZ(${-rz}deg) rotateX(-58deg)`;
+    });
+    const tq = E.oExp(P(lt, .1, .6));
+    $('#tF').style.opacity = tq; $('#tF').style.transform = `translateY(${(1 - tq) * 60}px)`;
+  }
+
+  // G · texte 3D que la caméra traverse
+  if ((lt = scene('#sG', t, 14.0, 15.8, { noOut: true })) !== null) {
+    const a = E.oExp(P(lt, 0, .7)), thru = E.iExp(P(lt, 1.2, 1.8));
+    $('#pG').style.transform = `translateZ(${lerp(-1800, 0, a) + thru * 1300}px) rotateY(${lerp(28, -8, E.io3(P(lt, 0, 1.6)))}deg) rotateX(${lerp(-10, 4, E.io3(P(lt, 0, 1.6)))}deg)`;
+    $('#pG').style.filter = `blur(${(1 - a) * 18 + thru * 30}px)`;
+    $('#g2').style.transform = `translateZ(${lerp(-400, 0, E.oExp(P(lt, .15, .9)))}px)`;
+    $$('#bok .bokeh').forEach((b, i) => b.style.transform = `translate(${Math.sin(lt + i) * 30}px, ${-lt * (40 + rnd(i) * 120)}px) scale(${1 + thru * 2})`);
+    $('#sG').style.opacity = 1 - E.io3(P(lt, 1.55, 1.8));
+  }
+
+  // H · Empira Gaming
+  if ((lt = scene('#sH', t, 15.8, 18.4)) !== null) {
+    $('#pH').style.transform = `rotateY(${lerp(14, -6, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(6, 0, E.io3(P(lt, 0, 2)))}deg) translateZ(${lerp(-60, 20, E.io3(P(lt, 0, 2.6)))}px)`;
+    const tq = E.oExp(P(lt, .1, .5));
+    $('#tH').style.opacity = tq; $('#tH').style.transform = `scale(${lerp(1.3, 1, tq)})`;
+    foot($('#hrec'), 'rec', lt);
+  }
+  // I · « Ton live évolue avec nos conseils et notre vision. »
+  if ((lt = scene('#sI', t, 18.4, 20.1)) !== null) {
+    foot($('#fI'), 51252, lt);
+    $$('#sI .li').forEach((l, i) => {
+      const q = E.oExp(P(lt, .1 + i * .22, .7 + i * .22));
+      l.style.transformOrigin = '50% 100%';
+      l.style.transform = `rotateX(${(1 - q) * -85}deg) translateY(${(1 - q) * 60}px)`;
+      l.style.opacity = cl(q * 2);
+      l.style.filter = q < .97 ? `blur(${(1 - q) * 12}px)` : 'none';
+    });
+  }
+
+  // J · logo néon, puis retour à l'étincelle (boucle)
+  if ((lt = scene('#sJ', t, 20.1, DURATION + .01, { noOut: true })) !== null) {
+    const d = E.io3(P(lt, .15, .75));
+    const nl = $('#neonLine'); nl.style.strokeDasharray = 1; nl.style.strokeDashoffset = 1 - d;
+    $('#neonA').style.opacity = 1 - P(lt, .85, 1.1);
+    rays('raysJ', lt, .75);
+    const q = E.oExp(P(lt, .75, 1.2));
+    $('#logoJ').style.opacity = q;
+    $('#glowJ').style.opacity = q * lerp(1, .5, E.o3(P(lt, 1.1, 1.7)));
+    const h = E.oExp(P(lt, 1.1, 1.5));
+    $('#handleJ').style.opacity = h; $('#handleJ').style.transform = `translateY(${(1 - h) * 30}px)`;
+    const out = E.iExp(P(lt, 1.85, 2.3));
+    $('#sJ').style.transform = `scale(${1 - out * .97})`;
+    $('#sJ').style.opacity = 1 - out;
+    $('#sJ').style.transformOrigin = '540px 900px';
+    if (out > .3) setSpark(540, 900, E.o3(P(lt, 2.0, 2.3)), .6);
+  }
+}
+
+window.render = render;
+function fit() { const s = Math.min(innerWidth / 1080, innerHeight / 1920); const st = $('#stage'); st.style.transform = `scale(${s})`; st.style.left = (innerWidth - 1080 * s) / 2 + 'px'; }
+addEventListener('resize', fit); fit();
+if (!location.search.includes('export')) {
+  const t0 = performance.now();
+  (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>
