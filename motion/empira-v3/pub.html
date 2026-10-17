@@ -272,7 +272,7 @@ $('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="
 // Particules lumineuses dans l'espace 3D (donnent la sensation de profondeur pendant les déplacements)
 $('#world').insertAdjacentHTML('afterbegin', Array.from({ length: 60 }, (_, i) => {
   const s = 8 + rnd(i) * 30, c = i % 2 ? '240,193,99' : '203,143,47';
-  return `<div class="dot" style="width:${s}px;height:${s}px;background:radial-gradient(circle, rgba(${c},.9), rgba(${c},0) 70%);transform:translate3d(${-1400 + rnd(i + 1) * 2800}px,${-1200 + rnd(i + 2) * 23500}px,${-1800 + rnd(i + 3) * 1500}px)"></div>`;
+  return `<div class="dot" style="width:${s}px;height:${s}px;background:radial-gradient(circle, rgba(${c},.9), rgba(${c},0) 70%);transform:translate3d(${-1800 + rnd(i + 1) * 3600}px,${-1200 + rnd(i + 2) * 12000}px,${-1800 + rnd(i + 3) * 1500}px)"></div>`;
 }).join(''));
 
 // Grain
@@ -295,8 +295,9 @@ window.ready = () => Promise.all($$('img').filter(i => i.getAttribute('src')).ma
 // [x, y, z, rotateY, rotateX] de chaque écran ; [début, fin] du moment où la caméra s'y pose.
 // Les écrans sont empilés comme un fil TikTok (légèrement décalés et inclinés) ;
 // la caméra le descend en un seul mouvement continu : plus lent sur chaque écran, jamais à l'arrêt.
-const GAP = 2160, CEN = [0.75, 2.78, 4.98, 7.43, 9.98, 12.58, 14.88, 17.13, 19.48, 21.9];
-const POSE = CEN.map((_, i) => [i % 2 ? 110 : -110, i * GAP, 0, i % 2 ? -9 : 9]);
+const STEP_X = 1360, STEP_Y = 1080, CEN = [0.75, 2.78, 4.98, 7.43, 9.98, 12.58, 14.88, 17.13, 19.48, 21.9];
+// zigzag sur deux colonnes : chaque déplacement va une fois à droite, une fois à gauche
+const POSE = CEN.map((_, i) => [i % 2 ? STEP_X / 2 : -STEP_X / 2, i * STEP_Y, 0, i % 2 ? -5 : 5]);
 $$('.pnl').forEach((p, i) => { const [x, y, z, ry] = POSE[i]; p.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg)`; });
 // Rappels Empira dans l'espace entre deux écrans (un intervalle sur deux)
 $('#world').insertAdjacentHTML('beforeend', [1, 3, 5, 7].map((i, k) => {
@@ -305,7 +306,7 @@ $('#world').insertAdjacentHTML('beforeend', [1, 3, 5, 7].map((i, k) => {
     ? `<div class="sugg"><div class="avatar av" data-d="96"></div><div><div style="font-size:28px;color:#aaa">Compte suggéré</div><div style="font-size:40px;font-weight:800">Empira Agency</div></div>
        <div style="background:var(--rose);border-radius:16px;padding:16px 30px;font-size:34px;font-weight:800">Suivre</div></div>`
     : `<img src="assets/logo-empira-alpha.png" style="width:300px"><div style="font-size:40px;font-weight:600;letter-spacing:.06em">@empiraagency</div>`;
-  return `<div class="rem" data-gap="${i}" style="transform:translate3d(${m(0)}px,${a[1] + GAP / 2}px,150px) rotateY(${m(3)}deg) scale(.9)">${inner}</div>`;
+  return `<div class="rem" data-gap="${i}" style="transform:translate3d(${m(0)}px,${m(1)}px,220px) scale(.62)">${inner}</div>`;
 }).join(''));
 $$('.rem .av').forEach(a => { const d = +a.dataset.d; a.style.width = a.style.height = d + 'px'; a.innerHTML = avatarHTML(d); });
 function progress(t) { // position de la caméra le long du fil (0 = premier écran)
@@ -319,7 +320,7 @@ function progress(t) { // position de la caméra le long du fil (0 = premier éc
 function applyCam(t) {
   const s = progress(t), i0 = Math.floor(s), i1 = Math.min(POSE.length - 1, i0 + 1), fr = s - i0;
   const [x, y, z, ry] = POSE[i0].map((v, k) => lerp(v, POSE[i1][k], fr));
-  const back = 260 + (1 - E.io2(P(t, 0, CEN[0] + .4))) * 380 - E.io2(P(t, CEN[9], DURATION)) * 160;
+  const back = 260; // distance fixe : aucun zoom avant
   $('#world').style.transform = `translateZ(${-back}px) rotateZ(${Math.sin(t * .45) * 1.2}deg) rotateY(${-ry * .8}deg) translate3d(${-x}px,${-y}px,${-z}px)`;
   $$('.pnl').forEach((p, j) => p.style.display = Math.abs(j - s) <= 1.7 ? 'block' : 'none');
   $$('.rem').forEach(r => { const g = +r.dataset.gap; r.style.opacity = cl(1 - Math.abs(s - g - .5) * 3.2); });
