@@ -1,3 +1,5 @@
 motion/*/.sources/
 motion/*/footage/
 motion/*/thumbs/
+motion/empira-motion-hd/node_modules/
+motion/empira-motion-hd/out/

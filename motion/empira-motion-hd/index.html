@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Empira — Du A au A</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head>
+<body>
+<script type="module">
+// « Du A au A » — un seul plan-séquence en vraie 3D.
+// La caméra recule sans coupe : macro sur le A doré → traversée de la ring light → passage près du micro
+// → le studio → sortie par la façade vitrée → le studio est logé dans un A monumental, enseigne EMPIRA devant.
+// Unités : mètres. Toute la géométrie du A vient de assets/A_geometry.json (ajustée sur le logo officiel).
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const W = 1080, H = 1920, DURATION = 20.5;
+const BEAT = 60 / 128;                       // grille rythmique (128 BPM, cf. audit R2)
+const T_RING = 8 * BEAT, T_MIC = 16 * BEAT, T_FACADE = 26 * BEAT, T_IMPACT = 32 * BEAT, T_SIGN = 36 * BEAT;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.9;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x030305);
+scene.fog = new THREE.FogExp2(0x04050a, 0.0);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.16;
+const camera = new THREE.PerspectiveCamera(35, W / H, 0.002, 2000);
+
+// ---------- Matières ----------
+const tex = url => new Promise(r => new THREE.TextureLoader().load(url, t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; r(t); }));
+const M = {
+  gold: new THREE.MeshPhysicalMaterial({ color: 0xc8963c, metalness: 1, roughness: 0.3, clearcoat: 0.3, clearcoatRoughness: 0.25, envMapIntensity: 0.45 }),
+  bronze: new THREE.MeshPhysicalMaterial({ color: 0x6b4f24, metalness: 1, roughness: 0.42 }),
+  archGold: new THREE.MeshPhysicalMaterial({ color: 0xc99a3e, metalness: 1, roughness: 0.3 }),
+  black: new THREE.MeshPhysicalMaterial({ color: 0x060606, roughness: 0.4, clearcoat: 0.5, clearcoatRoughness: 0.35 }),
+  matte: new THREE.MeshStandardMaterial({ color: 0x101012, roughness: 0.75, metalness: 0.2 }),
+  steel: new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.35, metalness: 0.9 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0x17110c, roughness: 0.55, metalness: 0.1 }),
+  floor: new THREE.MeshStandardMaterial({ color: 0x0b0b0d, roughness: 0.28, metalness: 0.35 }),
+  fabric: new THREE.MeshStandardMaterial({ color: 0x0e0e10, roughness: 0.95 }),
+  ground: new THREE.MeshStandardMaterial({ color: 0x08080a, roughness: 0.32, metalness: 0.45 }),
+  stone: new THREE.MeshStandardMaterial({ color: 0x0c0c0d, roughness: 0.6, metalness: 0.2 }),
+};
+
+// ---------- Le A (géométrie officielle) ----------
+const AG = await (await fetch('assets/A_geometry.json')).json();
+const CX = (AG.outer[0][0] + AG.outer[3][0]) / 2, BASE = AG.outer[1][1];
+const shapeFrom = (pts, s) => { const sh = new THREE.Shape(); pts.forEach(([x, y], i) => i ? sh.lineTo((x - CX) * s, (BASE - y) * s) : sh.moveTo((x - CX) * s, (BASE - y) * s)); sh.closePath(); return sh; };
+function extrudeA(key, s, depth, bevel) {
+  const g = new THREE.ExtrudeGeometry(shapeFrom(AG[key], s), { depth, bevelEnabled: !!bevel, bevelThickness: bevel, bevelSize: bevel * 0.75, bevelSegments: 5, curveSegments: 1 });
+  g.translate(0, 0, -depth / 2); return g;
+}
+const add = (geo, mat, x = 0, y = 0, z = 0, parent = scene) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; };
+const box = (w, h, d, mat, x, y, z, p) => add(new THREE.BoxGeometry(w, h, d), mat, x, y, z, p);
+const cyl = (r1, r2, h, mat, x, y, z, p, seg = 48) => add(new THREE.CylinderGeometry(r1, r2, h, seg), mat, x, y, z, p);
+
+// Petit A doré sur son socle (début du film)
+const sA = 0.2 / (BASE - AG.outer[0][1]);                 // A de 20 cm de haut
+const DESK_Y = 0.72, A_BASE = DESK_Y + 0.10;
+const LOGO_Z = -1.0;
+const C = new THREE.Vector3(0, A_BASE + 0.1, LOGO_Z);     // centre du petit A
+const APEX_IN = new THREE.Vector3(0, A_BASE + (BASE - AG.outer[3][1]) * sA, LOGO_Z);
+// légèrement tourné : sa face plate ne renvoie pas la ring light en plein (sinon il brille comme une lampe)
+const logo = new THREE.Group(); logo.position.set(0, A_BASE, LOGO_Z); logo.rotation.y = 0.36; scene.add(logo);
+add(extrudeA('outer', sA, 0.016, 0.0022), M.gold, 0, 0, 0, logo);
+add(extrudeA('small', sA, 0.016, 0.0018), M.gold, 0, 0, 0, logo);
+box(0.34, 0.10, 0.12, M.black, 0, DESK_Y + 0.05, LOGO_Z);
+const wordTex = await tex('assets/wordmark.png');
+const wordMat = new THREE.MeshBasicMaterial({ map: wordTex, transparent: true, toneMapped: false, color: 0xe8e2d6 });
+add(new THREE.PlaneGeometry(0.28, 0.08), wordMat, 0, DESK_Y + 0.05, LOGO_Z + 0.0605).castShadow = false;
+
+// ---------- Trajectoire de la caméra (définie avant les objets qu'elle doit traverser) ----------
+// Distance d au petit A interpolée en échelle logarithmique (dézoom à vitesse perçue maîtrisée).
+// accélération juste après la ring light : l'anneau doit surgir par les bords du cadre dans la seconde qui suit le passage
+const KEYS = [[0, 0.03], [2.4, 0.2], [T_RING, 0.55], [T_RING + 1.1, 1.5], [T_MIC, 2.2], [10.0, 3.0], [T_FACADE, 4.05], [T_IMPACT, 19], [T_SIGN, 42], [19.0, 54], [DURATION, 57]];
+const lnKeys = KEYS.map(([t, d]) => [t, Math.log(d)]);
+function monotone(pts) { // Fritsch–Carlson
+  const n = pts.length, x = pts.map(p => p[0]), y = pts.map(p => p[1]), dl = [], m = [];
+  for (let i = 0; i < n - 1; i++) dl.push((y[i + 1] - y[i]) / (x[i + 1] - x[i]));
+  m[0] = dl[0]; m[n - 1] = dl[n - 2];
+  for (let i = 1; i < n - 1; i++) m[i] = dl[i - 1] * dl[i] <= 0 ? 0 : 3 * (x[i + 1] - x[i - 1]) / ((2 * x[i + 1] - x[i] - x[i - 1]) / dl[i - 1] + (x[i + 1] + x[i] - 2 * x[i - 1]) / dl[i]);
+  return t => {
+    if (t <= x[0]) return y[0]; if (t >= x[n - 1]) return y[n - 1];
+    let i = 0; while (t > x[i + 1]) i++;
+    const h = x[i + 1] - x[i], s = (t - x[i]) / h, s2 = s * s, s3 = s2 * s;
+    return (2 * s3 - 3 * s2 + 1) * y[i] + (s3 - 2 * s2 + s) * h * m[i] + (-2 * s3 + 3 * s2) * y[i + 1] + (s3 - s2) * h * m[i + 1];
+  };
+}
+const lnD = monotone(lnKeys);
+const smooth = (a, b, v) => { const x = Math.min(1, Math.max(0, (v - a) / (b - a))); return x * x * (3 - 2 * x); };
+const L0 = Math.log(0.03), L1 = Math.log(57);
+function camPose(d) {
+  const u = (Math.log(d) - L0) / (L1 - L0);
+  const th = THREE.MathUtils.degToRad(2 + 7 * smooth(0, 1, u));            // monte doucement
+  const ph = THREE.MathUtils.degToRad(3.5 * Math.sin(Math.PI * Math.min(1, u * 1.15))); // léger arc vers la droite
+  const pos = new THREE.Vector3(Math.sin(ph) * Math.cos(th), Math.sin(th), Math.cos(ph) * Math.cos(th)).multiplyScalar(d).add(C);
+  const tgt = APEX_IN.clone().lerp(C, smooth(Math.log(0.03), Math.log(0.25), Math.log(d)))
+    .lerp(new THREE.Vector3(0, 7.2, 0), smooth(Math.log(2.5), Math.log(40), Math.log(d)));
+  return { pos, tgt };
+}
+
+// ---------- Ring light : son centre est exactement sur la trajectoire au moment du passage ----------
+const ringP = camPose(0.55).pos, ringN = camPose(0.56).pos.clone().sub(ringP).normalize();
+const ring = new THREE.Group(); ring.position.copy(ringP); ring.lookAt(ringP.clone().add(ringN)); scene.add(ring);
+const ringLed = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.019, 32, 220), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff0d8, emissiveIntensity: 1.25 }));
+ring.add(ringLed);
+const ringBack = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.03, 24, 160), M.matte); ringBack.position.z = -0.022; ring.add(ringBack);
+const ringLight = new THREE.PointLight(0xfff0dc, 0.35, 2.2, 2); ringLight.position.copy(ringP); scene.add(ringLight);
+cyl(0.012, 0.012, ringP.y - 0.29, M.steel, ringP.x, (ringP.y - 0.29) / 2, ringP.z);
+for (let k = 0; k < 3; k++) { const a = k * 2.094; const leg = cyl(0.008, 0.008, 0.42, M.steel, ringP.x + Math.cos(a) * 0.17, 0.09, ringP.z + Math.sin(a) * 0.17); leg.lookAt(ringP.x, 0.5, ringP.z); leg.rotateX(Math.PI / 2); }
+
+// ---------- Micro sur bras articulé : la caméra le frôle par la gauche ----------
+const micP = camPose(2.2).pos.clone().add(new THREE.Vector3(-0.07, -0.045, 0));
+// le micro est tourné vers la place du créateur, donc vers la caméra une fois qu'elle l'a dépassé : on voit sa grille
+const mic = new THREE.Group(); mic.position.copy(micP); mic.lookAt(camPose(3.4).pos); scene.add(mic);
+const grilleTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, 256, 256);
+  g.strokeStyle = '#9a9a9e'; g.lineWidth = 2; for (let i = -256; i < 512; i += 10) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 256, 256); g.stroke(); g.beginPath(); g.moveTo(i, 256); g.lineTo(i + 256, 0); g.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 1); return t; })();
+const grilleMat = new THREE.MeshStandardMaterial({ color: 0xbfbfc4, metalness: 0.9, roughness: 0.35, map: grilleTex, alphaMap: grilleTex, transparent: true, side: THREE.DoubleSide });
+const micBody = cyl(0.03, 0.03, 0.13, M.matte, 0, 0, -0.01, mic); micBody.rotation.x = Math.PI / 2;
+const micCore = cyl(0.026, 0.026, 0.075, M.black, 0, 0, 0.09, mic); micCore.rotation.x = Math.PI / 2;
+const micGrille = cyl(0.032, 0.032, 0.08, grilleMat, 0, 0, 0.09, mic); micGrille.rotation.x = Math.PI / 2;
+const micRing = add(new THREE.TorusGeometry(0.031, 0.004, 12, 64), M.gold, 0, 0, 0.048, mic);
+const micMount = add(new THREE.TorusGeometry(0.05, 0.004, 12, 64), M.steel, 0, 0, -0.02, mic);
+const armPts = [micP.clone().add(new THREE.Vector3(0, 0.06, -0.02)), new THREE.Vector3(-0.45, 1.48, 0.45), new THREE.Vector3(-0.62, 1.15, -0.4), new THREE.Vector3(-0.72, DESK_Y + 0.02, -0.75)];
+add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(armPts), 64, 0.011, 12), M.steel);
+
+// ---------- Bureau et setup de création ----------
+box(1.7, 0.04, 0.8, M.wood, 0, DESK_Y - 0.02, -1.15);
+for (const [x, z] of [[-0.8, -0.8], [0.8, -0.8], [-0.8, -1.5], [0.8, -1.5]]) box(0.04, DESK_Y - 0.04, 0.04, M.steel, x, (DESK_Y - 0.04) / 2, z);
+const led = box(1.6, 0.012, 0.012, new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xf0b860, emissiveIntensity: 1.2 }), 0, DESK_Y + 0.006, -1.53);
+// écran : la vraie page TikTok @empiraagency
+const profile = await tex('assets/profil-empira.jpg');
+const screenTex = (() => { const c = document.createElement('canvas'); c.width = 1600; c.height = 900; const g = c.getContext('2d');
+  g.fillStyle = '#050505'; g.fillRect(0, 0, 1600, 900); g.filter = 'blur(30px) brightness(.45)'; g.drawImage(profile.image, 0, -500, 1600, 3480); g.filter = 'none';
+  g.drawImage(profile.image, 800 - 207, 0, 414, 900); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const monitor = new THREE.Group(); monitor.position.set(0.52, DESK_Y + 0.33, -1.36); monitor.rotation.y = -0.38; scene.add(monitor);
+box(0.7, 0.41, 0.025, M.black, 0, 0, 0, monitor);
+add(new THREE.PlaneGeometry(0.68, 0.383), new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false }), 0, 0, 0.0131, monitor);
+cyl(0.012, 0.012, 0.3, M.steel, 0, -0.2, -0.03, monitor); box(0.2, 0.012, 0.14, M.steel, 0, -0.33, -0.03, monitor);
+box(0.44, 0.018, 0.14, M.matte, 0.32, DESK_Y + 0.009, -0.92);
+// caméra sur trépied
+const cam3 = new THREE.Group(); cam3.position.set(1.05, 1.38, -0.15); cam3.lookAt(0, 0.95, -1.1); scene.add(cam3);
+box(0.14, 0.09, 0.08, M.matte, 0, 0, 0, cam3); const lens = cyl(0.035, 0.04, 0.1, M.black, 0, 0, 0.09, cam3); lens.rotation.x = Math.PI / 2;
+add(new THREE.TorusGeometry(0.036, 0.003, 12, 48), M.gold, 0, 0, 0.14, cam3);
+for (let k = 0; k < 3; k++) { const a = k * 2.094 + 0.4; const leg = cyl(0.01, 0.01, 1.42, M.steel, 1.05 + Math.cos(a) * 0.22, 0.68, -0.15 + Math.sin(a) * 0.22); leg.lookAt(1.05, 1.38, -0.15); leg.rotateX(Math.PI / 2); }
+// softbox
+const soft = new THREE.Group(); soft.position.set(-1.45, 1.75, -0.55); soft.lookAt(0, 0.9, -1.1); scene.add(soft);
+box(0.6, 0.6, 0.25, M.matte, 0, 0, 0, soft);
+add(new THREE.PlaneGeometry(0.56, 0.56), new THREE.MeshStandardMaterial({ color: 0, emissive: 0xfff3e2, emissiveIntensity: 0.9 }), 0, 0, 0.126, soft);
+cyl(0.012, 0.012, 1.75, M.steel, -1.45, 0.87, -0.55);
+
+// ---------- Le A monumental : le studio est logé dans son ouverture ----------
+const sB = 14 / (AG.outer[2][0] - AG.outer[4][0]);         // ouverture intérieure de 14 m à la base
+const DEPTH_B = 6;
+add(extrudeA('outer', sB, DEPTH_B, 0.12), M.bronze);
+const arch = add(extrudeA('small', sB, 0.6, 0.06), M.archGold, 0, 0, -DEPTH_B / 2 + 0.4);   // le petit A, en fond de studio
+const innerTri = [AG.outer[3], AG.outer[2], AG.outer[4]];
+add(new THREE.ShapeGeometry(shapeFrom(innerTri, sB)), M.fabric, 0, 0, -DEPTH_B / 2 + 0.05);   // mur du fond
+const floorIn = add(new THREE.PlaneGeometry(14.2, DEPTH_B), M.floor, 0, 0.002, 0); floorIn.rotation.x = -Math.PI / 2;
+// façade vitrée (ouverture intérieure) + meneaux
+const glass = add(new THREE.ShapeGeometry(shapeFrom(innerTri, sB)), new THREE.MeshPhysicalMaterial({ color: 0x9fb4c8, metalness: 0, roughness: 0.04, transparent: true, opacity: 0.07, side: THREE.DoubleSide }), 0, 0, DEPTH_B / 2);
+glass.castShadow = false;
+const apexH = (BASE - AG.outer[3][1]) * sB, half = 7;
+for (let x = -6; x <= 6.01; x += 1.5) { const h = apexH * (1 - Math.abs(x) / half); if (h > 0.2) box(0.05, h, 0.08, M.steel, x, h / 2, DEPTH_B / 2); }
+box(14, 0.06, 0.08, M.steel, 0, 3.4, DEPTH_B / 2);
+// mur acoustique sur le fond, autour de l'arche
+for (let i = -5; i <= 5; i++) for (let j = 0; j < 7; j++) {
+  const x = i * 0.95, y = 0.6 + j * 0.95, lim = apexH * (1 - (Math.abs(x) + 0.5) / half);
+  if (y + 0.45 < lim && !(Math.abs(x) < 3.4 && y < 6.6)) box(0.85, 0.85, 0.06, M.fabric, x, y, -DEPTH_B / 2 + 0.12);
+}
+// enseigne « LIVE » au mur
+const liveTex = (() => { const c = document.createElement('canvas'); c.width = 512; c.height = 160; const g = c.getContext('2d');
+  g.fillStyle = '#ff2f55'; g.beginPath(); g.arc(70, 80, 26, 0, 7); g.fill(); g.font = '700 110px Inter, sans-serif'; g.fillStyle = '#fff4e6'; g.fillText('LIVE', 120, 118);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+add(new THREE.PlaneGeometry(1.2, 0.375), new THREE.MeshBasicMaterial({ map: liveTex, transparent: true, toneMapped: false }), -3.0, 0.95, -DEPTH_B / 2 + 0.2).castShadow = false;
+
+// ---------- Extérieur : sol, enseigne monumentale, ciel ----------
+const ground = add(new THREE.PlaneGeometry(800, 800), M.ground, 0, -0.001, 0); ground.rotation.x = -Math.PI / 2;
+const SIGN_Z = 15;
+box(14.5, 3.4, 0.6, M.stone, 0, 1.7, SIGN_Z);
+const signWord = add(new THREE.PlaneGeometry(13, 13 * 240 / 840), new THREE.MeshBasicMaterial({ map: wordTex, transparent: true, toneMapped: false, color: 0x000000 }), 0, 1.75, SIGN_Z + 0.305);
+signWord.castShadow = false;
+const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 32, 16), new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false,
+  vertexShader: 'varying vec3 v; void main(){ v = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
+  fragmentShader: 'varying vec3 v; void main(){ float h = clamp(v.y*2.2+.1,0.,1.); vec3 c = mix(vec3(.05,.035,.02), vec3(.008,.01,.02), h); gl_FragColor = vec4(c,1.); }' }));
+scene.add(sky);
+
+// ---------- Lumières ----------
+const key = new THREE.SpotLight(0xffe8c8, 2.6, 6, 0.32, 0.8, 1.6); key.position.set(0.55, 2.0, -0.35); key.target.position.copy(C); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; scene.add(key, key.target);
+const rim = new THREE.SpotLight(0xffc982, 2.2, 6, 0.4, 0.8, 1.6); rim.position.set(-0.6, 1.6, -2.2); rim.target.position.copy(C); scene.add(rim, rim.target);
+const roomFill = new THREE.PointLight(0xffd9a8, 3, 9, 1.6); roomFill.position.set(0, 4.5, 0.5); scene.add(roomFill);
+const archLight = new THREE.SpotLight(0xffd08a, 9, 12, 0.6, 0.6, 1.4); archLight.position.set(0, 0.3, 1.5); archLight.target.position.set(0, 3.5, -2.6); scene.add(archLight, archLight.target);
+const up1 = new THREE.SpotLight(0xffd79a, 900, 40, 0.35, 0.7, 1.5); up1.position.set(-11, 0.3, 9); up1.target.position.set(-5, 10, 0); scene.add(up1, up1.target);
+const up2 = up1.clone(); up2.position.set(11, 0.3, 9); up2.target.position.set(5, 10, 0); scene.add(up2, up2.target);
+const moon = new THREE.DirectionalLight(0x9db2d8, 0.35); moon.position.set(-30, 40, 60); scene.add(moon);
+const signLight = new THREE.SpotLight(0xfff0d8, 300, 30, 0.5, 0.7, 1.5); signLight.position.set(0, 6, SIGN_Z + 9); signLight.target.position.set(0, 1.7, SIGN_Z); scene.add(signLight, signLight.target);
+
+// poussières en suspension dans le studio (profondeur)
+const dust = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(
+  Array.from({ length: 900 * 3 }, (_, i) => { const k = i % 3, r = Math.sin(i * 91.7) * 43758.5 % 1; return k === 0 ? r * 6 : k === 1 ? Math.abs(r) * 4 : r * 3; }), 3)),
+  new THREE.PointsMaterial({ color: 0xffe2b0, size: 0.006, transparent: true, opacity: 0.55, depthWrite: false }));
+scene.add(dust);
+
+// ---------- Post-traitement ----------
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.32, 0.35, 0.93); composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ---------- Rendu d'une image ----------
+window.renderAt = t => {
+  const d = Math.exp(lnD(t)), { pos, tgt } = camPose(d);
+  camera.position.copy(pos); camera.lookAt(tgt);
+  camera.near = Math.max(0.002, d * 0.05); camera.updateProjectionMatrix();
+  scene.fog.density = 0.004 + 0.02 * smooth(Math.log(40), Math.log(4), Math.log(d));   // un peu d'atmosphère dedans, très légère dehors
+  wordMat.color.setScalar(0.55);
+  const s = smooth(T_IMPACT, T_SIGN, t); signWord.material.color.setRGB(0.96 * s, 0.9 * s, 0.82 * s);   // l'enseigne s'allume sur l'impact
+  ringLed.material.emissiveIntensity = 1.25 + 0.5 * Math.max(0, 1 - Math.abs(t - T_RING) / 0.6);
+  // voile de lumière quand l'anneau frôle l'objectif (halation), calé sur le passage
+  const pass = Math.exp(-Math.pow((t - T_RING - 0.12) / 0.22, 2));
+  renderer.toneMappingExposure = 0.9 + 0.45 * pass; bloom.strength = 0.32 + 0.5 * pass;
+  dust.rotation.y = t * 0.01;
+  composer.render();
+};
+window.DURATION = DURATION;
+window.TIMES = { T_RING, T_MIC, T_FACADE, T_IMPACT, T_SIGN };
+window.ready = true;
+</script>
+</body>
+</html>
