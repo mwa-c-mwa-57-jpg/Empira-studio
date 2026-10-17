@@ -1,0 +1,5 @@
+{
+  "name": "empira-motion-hd",
+  "private": true,
+  "dependencies": { "three": "0.170.0" }
+}
