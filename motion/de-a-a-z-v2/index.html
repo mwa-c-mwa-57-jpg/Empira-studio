@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De A à Z v2 — Empira Agency</title>
+<style>
+  :root { --noir:#000; --or-profond:#AC6F17; --or:#CB8F2F; --or-clair:#F0C163; --creme:#FBF5E9; --sh:0%; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { background:#000; overflow:hidden; width:100%; height:100%; }
+  body { font-family:'Inter', sans-serif; color:#fff; }
+  #stage { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; background:#000; transform-origin:0 0; }
+  .scene { position:absolute; inset:0; display:none; overflow:hidden; }
+  .ft { position:absolute; inset:0; width:1080px; height:1920px; object-fit:cover; }
+  .shade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.7) 0%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 50%, rgba(0,0,0,.88) 85%); }
+  .field-gold { background:linear-gradient(160deg, #F0C163 0%, #CB8F2F 60%, #AC6F17 100%); }
+  .g { background:linear-gradient(100deg, #AC6F17 0%, #F0C163 30%, #CB8F2F 50%, #F0C163 70%, #AC6F17 100%);
+       background-size:250% 100%; background-position:var(--sh) 0; -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .big { position:absolute; left:0; right:0; text-align:center; font-weight:800; letter-spacing:-.035em; line-height:.9; white-space:nowrap; }
+  .caps { position:absolute; left:0; right:0; text-align:center; text-transform:uppercase; letter-spacing:.38em; padding-left:.38em; font-weight:500; }
+  .w { display:inline-block; will-change:transform, opacity; }
+  .line { overflow:hidden; padding:0 0 .08em; }
+  #flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+  #grain { position:absolute; inset:0; opacity:.09; mix-blend-mode:overlay; pointer-events:none; }
+
+  .marq { position:absolute; left:0; white-space:nowrap; font-weight:800; font-size:250px; letter-spacing:-.03em; line-height:1; }
+  .marq.o { color:transparent; -webkit-text-stroke:3px rgba(255,255,255,.85); }
+  .krow { position:absolute; left:0; white-space:nowrap; font-weight:800; font-size:210px; letter-spacing:-.03em; line-height:1; color:#000; }
+  .krow.o { color:transparent; -webkit-text-stroke:3px rgba(0,0,0,.55); }
+  #kin { position:absolute; left:-500px; right:-500px; top:-300px; bottom:-300px; transform:rotate(-8deg); }
+  .slice { position:absolute; inset:0; overflow:hidden; display:none; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1 · Le A du logo se dessine puis on plonge dedans -->
+  <div class="scene" id="s1">
+    <svg id="a1" viewBox="0 0 300 280" style="position:absolute;left:240px;top:640px;width:600px;height:560px;overflow:visible">
+      <defs><linearGradient id="gA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D27A"/><stop offset=".55" stop-color="#E0A63C"/><stop offset="1" stop-color="#AC6F17"/></linearGradient></defs>
+      <polygon id="a1fill" points="150,20 265,258 225,258 150,92 75,258 35,258" fill="url(#gA)"/>
+      <polygon id="a1in" points="150,183 188,258 173,258 150,205 127,258 112,258" fill="url(#gA)"/>
+      <polygon id="a1line" points="150,20 265,258 225,258 150,92 75,258 35,258" fill="none" stroke="#F7D27A" stroke-width="2.5" pathLength="1"
+               style="filter:drop-shadow(0 0 6px #F0C163) drop-shadow(0 0 18px #CB8F2F)"/>
+    </svg>
+  </div>
+
+  <!-- 2 · TE LANCER EN LIVE ? -->
+  <div class="scene" id="s2">
+    <img class="ft" id="f2"><div class="shade"></div>
+    <div class="big" style="top:250px;font-size:172px"><span class="w">TE</span> <span class="w">LANCER</span></div>
+    <div class="big" style="top:1330px;font-size:190px"><span class="w">EN</span> <span class="w g">LIVE&nbsp;?</span></div>
+  </div>
+
+  <!-- 3 · TON CONCEPT, fenêtre en forme de A -->
+  <div class="scene field-gold" id="s3">
+    <div class="big line" style="top:250px;font-size:230px;color:#000"><span class="w">TON</span></div>
+    <div id="awin" style="position:absolute;left:250px;top:560px;width:580px;height:560px;clip-path:polygon(50% 0, 100% 100%, 0 100%);overflow:hidden">
+      <img class="ft" id="f3" style="left:-250px;top:-560px">
+    </div>
+    <div class="big line" style="top:1190px;font-size:196px;color:#000" id="concept"></div>
+  </div>
+
+  <!-- 4 · UNIVERS / FORMAT / STYLE -->
+  <div class="scene" id="s4">
+    <img class="ft" id="f4"><div class="shade"></div>
+    <div class="caps" style="top:300px;font-size:44px">On le crée avec toi</div>
+    <div class="big" id="w4" style="top:1320px;font-size:210px"></div>
+  </div>
+
+  <!-- 5 · TES VIDÉOS -->
+  <div class="scene" id="s5">
+    <img class="ft" id="f5"><div class="shade" style="background:rgba(0,0,0,.35)"></div>
+    <div class="caps" style="top:330px;font-size:50px">Apprends à faire</div>
+    <div class="marq o" id="m5a" style="top:640px"></div>
+    <div class="marq g" id="m5b" style="top:900px"></div>
+    <div class="marq o" id="m5c" style="top:1160px"></div>
+  </div>
+
+  <!-- 6 · TES STATS -->
+  <div class="scene" id="s6" style="background:var(--creme)">
+    <div class="caps" style="top:300px;font-size:48px;color:#000;font-weight:600">Analyse</div>
+    <div class="big line" style="top:390px;font-size:250px;color:#000"><span class="w">TES</span></div>
+    <div class="big line" style="top:610px;font-size:250px;color:#000"><span class="w">STATS</span></div>
+    <svg viewBox="0 0 1080 700" style="position:absolute;left:0;top:900px;width:1080px;height:700px;overflow:visible">
+      <defs><linearGradient id="gL" x1="0" x2="1"><stop offset="0" stop-color="#AC6F17"/><stop offset="1" stop-color="#F0C163"/></linearGradient></defs>
+      <path id="chart" fill="none" stroke="url(#gL)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" pathLength="1"
+            d="M-40 560 C120 540 180 430 300 470 S470 520 560 360 S760 300 830 200 S980 90 1120 60"/>
+      <circle id="chartDot" r="30" fill="#000"/>
+    </svg>
+    <div class="caps" style="top:1560px;font-size:40px;color:#000;letter-spacing:.2em;padding-left:.2em" id="c6">Comprends ce qui marche</div>
+  </div>
+
+  <!-- 7 · COACHING -->
+  <div class="scene" id="s7">
+    <div id="card7" style="position:absolute;left:90px;top:260px;width:900px;height:1000px;border-radius:56px;overflow:hidden">
+      <img class="ft" id="f7" style="left:-90px;top:-260px">
+    </div>
+    <div class="big g" style="top:1185px;font-size:190px" id="t7">COACHING</div>
+    <div class="caps" style="top:1390px;font-size:52px" id="u7">personnalisé</div>
+  </div>
+
+  <!-- 8 · flash de mots -->
+  <div class="scene" id="s8"><div class="big" id="w8" style="top:830px"></div></div>
+
+  <!-- 9 · EMPIRA GAMING -->
+  <div class="scene" id="s9">
+    <img class="ft" id="f9"><div class="shade"></div>
+    <div class="slice" id="sl0"><img class="ft"></div><div class="slice" id="sl1"><img class="ft"></div>
+    <div class="slice" id="sl2"><img class="ft"></div><div class="slice" id="sl3"><img class="ft"></div>
+    <div class="caps" style="top:1250px;font-size:64px;font-weight:300" id="e9">Empira</div>
+    <div class="big g" style="top:1340px;font-size:226px" id="t9">GAMING</div>
+  </div>
+
+  <!-- 10 · conseils et vision -->
+  <div class="scene" id="s10">
+    <img class="ft" id="f10" style="filter:blur(8px) brightness(.45);transform:scale(1.08)">
+    <div id="v10" style="position:absolute;left:0;right:0;top:560px;text-align:center;font-weight:800;font-size:128px;line-height:1.02;letter-spacing:-.03em">
+      <div><span class="w">TON</span> <span class="w">LIVE</span></div>
+      <div><span class="w">ÉVOLUE</span> <span class="w">AVEC</span></div>
+      <div><span class="w g">NOS</span> <span class="w g">CONSEILS</span></div>
+      <div><span class="w">ET</span> <span class="w">NOTRE</span></div>
+      <div><span class="w g">VISION</span></div>
+    </div>
+  </div>
+
+  <!-- 11 · DE A À Z -->
+  <div class="scene field-gold" id="s11"><div id="kin"></div></div>
+
+  <!-- 12 · logo -->
+  <div class="scene" id="s12">
+    <img class="ft" id="f12" style="opacity:.32;mix-blend-mode:screen">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%, transparent 30%, #000 85%)"></div>
+    <div id="logo" style="position:absolute;left:70px;top:620px;width:940px;height:604px;mix-blend-mode:screen">
+      <img class="lg" src="assets/logo-empira.png" style="clip-path:inset(0 0 52% 0)">
+      <img class="lg" src="assets/logo-empira.png" style="clip-path:inset(54% 0 22% 0)">
+      <img class="lg" src="assets/logo-empira.png" style="clip-path:inset(78% 0 11% 0)">
+      <img class="lg" src="assets/logo-empira.png" style="clip-path:inset(90% 0 0 0)">
+    </div>
+    <div class="g" id="handle" style="position:absolute;left:0;right:0;top:1330px;text-align:center;font-size:54px;font-weight:600">@empiraagency</div>
+  </div>
+
+  <canvas id="grain" width="1080" height="1920"></canvas>
+  <div id="flash"></div>
+</div>
+<style>.lg { position:absolute; left:0; top:0; width:940px; height:604px; mix-blend-mode:lighten; }</style>
+
+<script>
+const DURATION = 17.5, FPS = 30;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const P = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const E = {
+  o3: x => 1 - Math.pow(1 - x, 3),
+  io3: x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2,
+  oExp: x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x),
+  iExp: x => x === 0 ? 0 : Math.pow(2, 10 * x - 10),
+  oBack: x => { const c1 = 1.6, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); },
+};
+const rnd = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+// ---------- Rushes (images extraites par prep.sh) ----------
+const COUNT = { 49141: 45, 42316: 73, 34486: 45, 41272: 49, 43531: 34, 51613: 34, 51252: 55, 14154: 96 };
+function foot(img, id, lt) {
+  const n = Math.min(COUNT[id] - 1, Math.max(0, Math.floor(lt * FPS)));
+  const src = `footage/${id}/${String(n).padStart(3, '0')}.jpg`;
+  if (img.dataset.src !== src) { img.src = src; img.dataset.src = src; }
+}
+// Attend que les images visibles soient décodées (utilisé par l'export image par image)
+window.ready = () => Promise.all($$('img').filter(i => i.getAttribute('src')).map(i => i.decode().catch(() => {})));
+
+// ---------- Préparation ----------
+$('#concept').innerHTML = [...'CONCEPT'].map(c => `<span class="w">${c}</span>`).join('');
+$('#m5a').textContent = $('#m5c').textContent = 'VIDÉOS · '.repeat(8);
+$('#m5b').textContent = 'TES VIDÉOS · '.repeat(6);
+$('#kin').innerHTML = Array.from({ length: 10 }, (_, i) =>
+  `<div class="krow ${i % 2 ? 'o' : ''}" style="top:${i * 240}px">${'DE A À Z · '.repeat(9)}</div>`).join('');
+
+const grainSrc = document.createElement('canvas'); grainSrc.width = grainSrc.height = 256;
+{ const c = grainSrc.getContext('2d'), d = c.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = rnd(i) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  c.putImageData(d, 0, 0); }
+const gctx = $('#grain').getContext('2d'), gpat = gctx.createPattern(grainSrc, 'repeat');
+
+// ---------- Outils ----------
+function scene(id, t, a, b) {
+  const el = $(id), on = t >= a && t < b;
+  el.style.display = on ? 'block' : 'none';
+  if (!on) return null;
+  // petit « punch » à l'entrée de chaque plan (coupe franche)
+  const k = E.oExp(P(t, a, a + .3));
+  el.style.transform = `scale(${lerp(1.07, 1, k)})`;
+  return t - a;
+}
+function pop(el, lt, at, dur = .22, from = 1.5) {
+  const q = E.oExp(P(lt, at, at + dur));
+  el.style.opacity = lt >= at ? 1 : 0;
+  el.style.transform = `scale(${lerp(from, 1, q)})`;
+  el.style.filter = q < .97 ? `blur(${(1 - q) * 10}px)` : 'none';
+}
+function rise(el, lt, at, dur = .45) {
+  const q = E.oExp(P(lt, at, at + dur));
+  el.style.transform = `translateY(${(1 - q) * 110}%)`;
+}
+const FLASHES = [1.1, 6.0, 9.4, 12.9, 14.3];
+
+// ---------- Rendu d'une image au temps t ----------
+function render(t) {
+  document.documentElement.style.setProperty('--sh', `${(t * 40) % 250}%`);
+  const f = Math.round(t * FPS);
+  gctx.clearRect(0, 0, 1080, 1920);
+  gctx.save(); gctx.translate(-(f * 73) % 256, -(f * 151) % 256); gctx.fillStyle = gpat; gctx.fillRect(0, 0, 1336, 2176); gctx.restore();
+  $('#flash').style.opacity = Math.max(0, ...FLASHES.map(c => t >= c ? 1 - (t - c) / .14 : 0)) * .9;
+
+  let lt;
+
+  // 1 · A dessiné, rempli, puis on plonge dedans
+  if ((lt = scene('#s1', t, 0, 1.1)) !== null) {
+    $('#s1').style.transform = 'none';
+    $('#a1line').style.strokeDasharray = 1;
+    $('#a1line').style.strokeDashoffset = 1 - E.io3(P(lt, .05, .55));
+    const fill = E.o3(P(lt, .4, .65));
+    $('#a1fill').style.opacity = fill; $('#a1in').style.opacity = E.o3(P(lt, .5, .7));
+    const dive = E.iExp(P(lt, .7, 1.1));
+    const a1 = $('#a1');
+    a1.style.transformOrigin = '28% 80%';
+    a1.style.transform = `scale(${1 + dive * 22})`;
+  }
+
+  // 2 · TE LANCER EN LIVE ?
+  if ((lt = scene('#s2', t, 1.1, 2.5)) !== null) {
+    foot($('#f2'), 49141, lt);
+    $('#f2').style.transform = `scale(${1.02 + lt * .05})`;
+    $$('#s2 .w').forEach((w, i) => pop(w, lt, [.05, .3, .65, .85][i]));
+  }
+
+  // 3 · TON CONCEPT + fenêtre en A
+  if ((lt = scene('#s3', t, 2.5, 3.5)) !== null) {
+    foot($('#f3'), 42316, lt);
+    rise($('#s3 .line .w'), lt, .02);
+    $$('#concept .w').forEach((w, i) => rise(w, lt, .12 + i * .035, .4));
+    const op = E.oBack(P(lt, .1, .45)), grow = E.iExp(P(lt, .62, 1.0));
+    const win = $('#awin');
+    win.style.transformOrigin = '50% 78%';
+    win.style.transform = `scale(${op * (1 + grow * 9)})`;
+  }
+
+  // 4 · UNIVERS / FORMAT / STYLE
+  if ((lt = scene('#s4', t, 3.5, 4.6)) !== null) {
+    foot($('#f4'), 42316, lt + 1.0);
+    const words = ['UNIVERS', 'FORMAT', 'STYLE'], k = Math.min(2, Math.floor(lt / .36));
+    const w4 = $('#w4');
+    if (w4.textContent !== words[k]) w4.innerHTML = `<span class="w ${k === 2 ? 'g' : ''}">${words[k]}</span>`;
+    pop(w4.firstChild, lt, k * .36, .2, 1.35);
+  }
+
+  // 5 · TES VIDÉOS (bandeaux qui défilent)
+  if ((lt = scene('#s5', t, 4.6, 6.0)) !== null) {
+    foot($('#f5'), 34486, lt);
+    const s = lt * 520;
+    $('#m5a').style.transform = `translateX(${-200 - s}px)`;
+    $('#m5b').style.transform = `translateX(${-1600 + s}px)`;
+    $('#m5c').style.transform = `translateX(${-500 - s * 1.2}px)`;
+  }
+
+  // 6 · TES STATS
+  if ((lt = scene('#s6', t, 6.0, 7.1)) !== null) {
+    $$('#s6 .line .w').forEach((w, i) => rise(w, lt, .02 + i * .08));
+    const d = E.io3(P(lt, .15, .9)), path = $('#chart');
+    path.style.strokeDasharray = 1; path.style.strokeDashoffset = 1 - d;
+    const L = path.getTotalLength(), p = path.getPointAtLength(L * d);
+    $('#chartDot').setAttribute('cx', p.x); $('#chartDot').setAttribute('cy', p.y);
+    $('#chartDot').style.opacity = d > .02 ? 1 : 0;
+    $('#c6').style.opacity = E.o3(P(lt, .5, .8));
+  }
+
+  // 7 · COACHING
+  if ((lt = scene('#s7', t, 7.1, 8.4)) !== null) {
+    foot($('#f7'), 41272, lt);
+    const q = E.oExp(P(lt, 0, .6));
+    $('#card7').style.transform = `scale(${lerp(.82, 1, q)})`;
+    $('#card7').style.borderRadius = lerp(300, 56, q) + 'px';
+    pop($('#t7'), lt, .2, .25, 1.4);
+    $('#u7').style.opacity = E.o3(P(lt, .5, .8));
+    $('#u7').style.letterSpacing = lerp(.7, .38, E.oExp(P(lt, .5, 1))) + 'em';
+  }
+
+  // 8 · flash de mots, fond qui alterne or / noir
+  if ((lt = scene('#s8', t, 8.4, 9.4)) !== null) {
+    const words = ['FORMATIONS', 'COACHING', 'CONCEPTS', 'ACCOMPAGNEMENT'], k = Math.min(3, Math.floor(lt / .25));
+    const dark = k % 2 === 1;
+    $('#s8').style.background = dark ? '#000' : 'linear-gradient(160deg, #F0C163, #CB8F2F 60%, #AC6F17)';
+    const w8 = $('#w8');
+    if (w8.dataset.k != k) {
+      w8.dataset.k = k;
+      w8.style.fontSize = Math.min(260, 1500 / words[k].length) + 'px';
+      w8.innerHTML = `<span class="w ${dark ? 'g' : ''}" style="${dark ? '' : 'color:#000'}">${words[k]}</span>`;
+    }
+    pop(w8.firstChild, lt, k * .25, .16, 1.25);
+  }
+
+  // 9 · EMPIRA GAMING, deux plans avec glitch à la coupe
+  if ((lt = scene('#s9', t, 9.4, 11.2)) !== null) {
+    const second = lt >= .9, id = second ? 51613 : 43531, clt = second ? lt - .9 : lt;
+    foot($('#f9'), id, clt);
+    const g = (lt < .14) || (lt >= .9 && lt < 1.06);
+    $$('#s9 .slice').forEach((s, i) => {
+      s.style.display = g ? 'block' : 'none';
+      if (!g) return;
+      foot(s.firstChild, id, clt);
+      const y0 = rnd(f * 7 + i) * 85, h = 4 + rnd(f * 13 + i) * 12;
+      s.style.clipPath = `inset(${y0}% 0 ${100 - y0 - h}% 0)`;
+      s.style.transform = `translateX(${(rnd(f * 3 + i) - .5) * 160}px)`;
+    });
+    pop($('#e9'), lt, .12, .3, 1.2);
+    pop($('#t9'), lt, .22, .25, 1.6);
+    $('#t9').style.transform += ` translateX(${g ? (rnd(f) - .5) * 40 : 0}px)`;
+  }
+
+  // 10 · Ton live évolue avec nos conseils et notre vision
+  if ((lt = scene('#s10', t, 11.2, 12.9)) !== null) {
+    foot($('#f10'), 51252, lt);
+    $$('#v10 .w').forEach((w, i) => pop(w, lt, .05 + i * .11, .22, 1.6));
+  }
+
+  // 11 · DE A À Z
+  if ((lt = scene('#s11', t, 12.9, 14.3)) !== null) {
+    $$('#kin .krow').forEach((r, i) => {
+      const dir = i % 2 ? 1 : -1, q = E.oExp(P(lt, i * .03, .5 + i * .03));
+      r.style.transform = `translateX(${dir * (lt * 420 + (1 - q) * 900) - 900}px)`;
+    });
+    const out = E.iExp(P(lt, 1.0, 1.4));
+    $('#kin').style.transform = `rotate(${-8 + out * 6}deg) scale(${lerp(1.2, 1, E.o3(P(lt, 0, .8))) * (1 + out * 2.5)})`;
+  }
+
+  // 12 · logo final
+  if ((lt = scene('#s12', t, 14.3, DURATION)) !== null) {
+    $('#s12').style.transform = 'none';
+    foot($('#f12'), 14154, lt);
+    const parts = $$('#logo .lg');
+    [[.1, .7], [.55, 1.05], [.85, 1.3], [1.1, 1.6]].forEach(([a, b], i) => {
+      const q = E.oExp(P(lt, a, b));
+      parts[i].style.opacity = q;
+      parts[i].style.transform = `translateY(${(1 - q) * (i === 0 ? 60 : 30)}px)`;
+      parts[i].style.filter = q < .97 ? `blur(${(1 - q) * 18}px)` : 'none';
+    });
+    const sc = 1 + E.o3(P(lt, 0, DURATION - 14.3)) * .04;
+    $('#logo').style.transform = `scale(${sc})`;
+    const h = E.oExp(P(lt, 1.6, 2.1));
+    $('#handle').style.opacity = h; $('#handle').style.transform = `translateY(${(1 - h) * 30}px)`;
+    const out = E.io3(P(lt, 2.75, 3.2));
+    $('#s12').style.opacity = 1 - out;
+  }
+}
+
+window.render = render;
+function fit() { const s = Math.min(innerWidth / 1080, innerHeight / 1920); const st = $('#stage'); st.style.transform = `scale(${s})`; st.style.left = (innerWidth - 1080 * s) / 2 + 'px'; }
+addEventListener('resize', fit); fit();
+if (!location.search.includes('export')) {
+  const t0 = performance.now();
+  (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>
