@@ -30,6 +30,10 @@ def pill(x0, y0, x1, y1, col, txt):
     d.rounded_rectangle((x0, y0, x1, y1), radius=12, fill=col)
     d.text(((x0 + x1) / 2, (y0 + y1) / 2), txt, font=ImageFont.truetype(FONT + 'Inter-Bold.otf', 32), fill='white', anchor='mm')
 
+# créateur du LIVE : pseudo et avatar remplacés par un créateur fictif
+avatar(0, 89, 240, 104, (240, 193, 99))
+d.rectangle((152, 192, 418, 256), fill=(32, 32, 32))
+d.text((157, 224), 'Nova.live', font=ImageFont.truetype(FONT + 'Inter-Bold.otf', 46), fill='white', anchor='lm')
 # avatars en haut à droite
 d.rectangle((835, 196, 968, 284), fill=(0, 0, 0))
 avatar(2, 878, 240, 76, (255, 255, 255)); rank('9', 880, 248, 'white')
