@@ -89,34 +89,52 @@
   .vote i { position:absolute; left:0; top:0; bottom:0; border-radius:42px; }
   .vote span { position:absolute; left:34px; top:0; line-height:84px; }
 
-  /* Interface LIVE TikTok */
+  /* Interface LIVE TikTok (relevée sur une vraie capture) */
   .lv { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; }
-  .lv::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.38), transparent 18%, transparent 58%, rgba(0,0,0,.55)); }
+  .lv.solo::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.4), transparent 16%, transparent 55%, rgba(0,0,0,.6)); }
   .lv > * { position:absolute; }
-  .lv .host { left:24px; top:122px; height:104px; border-radius:52px; background:rgba(0,0,0,.32); display:flex; align-items:center; gap:14px; padding:0 10px; }
-  .lv .host .nm { font-size:34px; font-weight:700; } .lv .host .lk { font-size:26px; opacity:.85; }
-  .lv .follow { background:#FE2C55; font-size:30px; font-weight:700; padding:16px 28px; border-radius:40px; margin-left:6px; }
-  .lv .pills { left:24px; top:246px; display:flex; gap:14px; }
-  .lv .pill { background:rgba(0,0,0,.3); border-radius:30px; padding:10px 22px; font-size:27px; font-weight:600; }
-  .lv .topr { right:24px; top:134px; display:flex; align-items:center; gap:10px; }
-  .lv .tv { position:relative; width:72px; height:72px; }
-  .lv .rk { position:absolute; left:23px; bottom:-12px; width:26px; height:26px; border-radius:50%; font-size:18px; font-weight:800; color:#000; text-align:center; line-height:26px; }
-  .lv .cnt { background:rgba(0,0,0,.32); border-radius:30px; padding:12px 18px; font-size:28px; font-weight:700; margin-left:4px; }
-  .lv .x { font-size:50px; margin-left:6px; }
-  .lv .cm { left:24px; width:740px; display:flex; gap:16px; align-items:flex-start; font-size:34px; line-height:1.22; text-shadow:0 1px 6px rgba(0,0,0,.7); }
-  .lv .cm .n { color:rgba(255,255,255,.72); font-weight:600; font-size:30px; }
-  .lv .giftb { left:0; top:1000px; height:116px; display:flex; align-items:center; gap:18px; padding:0 40px 0 24px; border-radius:0 60px 60px 0;
-               background:linear-gradient(90deg, rgba(254,44,85,.9), rgba(254,44,85,.55) 70%, rgba(254,44,85,0)); }
-  .lv .combo { font-size:84px; font-weight:900; font-style:italic; color:#fff; -webkit-text-stroke:3px #FE2C55; text-shadow:0 4px 0 #9b0f2a; margin-left:6px; }
-  .lv .bar { left:24px; right:24px; bottom:62px; display:flex; align-items:center; gap:16px; }
-  .lv .inp { flex:1; height:96px; border-radius:48px; background:rgba(0,0,0,.35); color:rgba(255,255,255,.75); font-size:34px; display:flex; align-items:center; padding:0 34px; }
-  .lv .ib { width:96px; height:96px; border-radius:50%; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; font-size:46px; }
+  .lv .dk { background:rgba(40,40,44,.72); }
+  .lv .host { left:30px; top:118px; height:98px; border-radius:49px; display:flex; align-items:center; gap:14px; padding:0 8px 0 7px; }
+  .lv .host .nm { font-size:38px; font-weight:700; line-height:1.05; } .lv .host .lk { font-size:28px; opacity:.9; }
+  .lv .plus1 { background:#fff; color:#FE2C55; border-radius:40px; padding:10px 22px; font-size:34px; font-weight:800; display:flex; align-items:center; gap:8px; margin-left:4px; }
+  .lv .topr { right:30px; top:128px; display:flex; align-items:center; gap:14px; }
+  .lv .tv { position:relative; width:70px; height:70px; }
+  .lv .tv img, .lv .tv .avatar { border:3px solid #F0C163; }
+  .lv .rk { position:absolute; right:-4px; bottom:-8px; font-size:28px; font-weight:900; font-style:italic; color:#fff; -webkit-text-stroke:1.5px #000; }
+  .lv .cnt { border-radius:36px; padding:14px 26px; font-size:32px; font-weight:600; }
+  .lv .x { font-size:56px; font-weight:300; margin-left:4px; }
+  .lv .row2 { left:30px; right:30px; top:234px; display:flex; justify-content:space-between; gap:14px; font-size:30px; font-weight:600; }
+  .lv .row2 > div { border-radius:20px; padding:12px 22px; display:flex; align-items:center; gap:10px; }
+  .lv .pk { left:0; right:0; top:330px; height:46px; display:flex; font-size:32px; font-weight:800; font-style:italic; }
+  .lv .pk .a { background:linear-gradient(90deg, #FE2C55, #ff6a8a); display:flex; align-items:center; padding-left:22px; }
+  .lv .pk .b { flex:1; background:linear-gradient(90deg, #25F4EE, #2BA6F5); display:flex; align-items:center; justify-content:flex-end; padding-right:22px; }
+  .lv .vids { left:0; right:0; top:376px; height:800px; display:flex; gap:4px; }
+  .lv .half { position:relative; flex:1; overflow:hidden; background:#111; }
+  .lv .half img { position:absolute; left:0; top:-120px; width:100%; height:1040px; object-fit:cover; }
+  .lv .tag { position:absolute; top:16px; padding:6px 14px; border-radius:12px; background:rgba(0,0,0,.45); font-size:28px; font-weight:800; }
+  .lv .timer { position:absolute; left:50%; top:0; transform:translateX(-50%); padding:10px 26px; border-radius:0 0 22px 22px; background:rgba(0,0,0,.55); font-size:32px; font-weight:700; white-space:nowrap; z-index:2; }
+  .lv .nmtag { position:absolute; right:14px; bottom:16px; padding:8px 22px; border-radius:30px; background:rgba(0,0,0,.45); font-size:30px; font-weight:600; }
+  .lv .giftb { height:86px; display:flex; align-items:center; gap:14px; padding:0 30px 0 6px; border-radius:43px; background:rgba(0,0,0,.5); white-space:nowrap; }
+  .lv .combo { font-size:64px; font-weight:900; font-style:italic; color:#fff; -webkit-text-stroke:2px rgba(0,0,0,.5); }
+  .lv .ranks { left:30px; right:30px; top:1196px; display:flex; justify-content:space-between; }
+  .lv .ranks > div { display:flex; gap:16px; align-items:center; }
+  .lv .ra { position:relative; width:76px; height:76px; }
+  .lv .ra img, .lv .ra .avatar { width:76px; height:76px; border-radius:50%; object-fit:cover; }
+  .lv .ra .rn { position:absolute; right:-6px; bottom:-10px; font-size:32px; font-weight:900; font-style:italic; -webkit-text-stroke:1.5px #000; }
+  .lv .cm { left:30px; max-width:960px; border-radius:42px; padding:14px 34px 14px 14px; display:flex; gap:20px; align-items:center; font-size:38px; font-weight:700; line-height:1.18; }
+  .lv .cm .n { color:rgba(255,255,255,.62); font-weight:500; font-size:36px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .lv .cm .ic { width:70px; height:70px; border-radius:50%; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; font-size:38px; flex:none; }
+  .lv .bdg { font-size:26px; font-weight:800; color:#fff; padding:4px 12px; border-radius:10px; display:inline-flex; align-items:center; gap:6px; }
+  .lv .bar { left:30px; right:30px; bottom:44px; display:flex; align-items:center; gap:16px; }
+  .lv .inp { flex:1; height:96px; border-radius:48px; color:rgba(255,255,255,.75); font-size:36px; display:flex; align-items:center; justify-content:space-between; padding:0 22px 0 34px; }
+  .lv .ib { width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:46px; flex:none; }
   .lv .hrt { width:76px; height:76px; }
-  .lv .pk { left:0; right:0; top:340px; height:64px; display:flex; font-size:28px; font-weight:800; }
-  .lv .pk .a { background:linear-gradient(90deg, #FE2C55, #ff5c7c); display:flex; align-items:center; padding-left:24px; }
-  .lv .pk .b { flex:1; background:linear-gradient(90deg, #4f95ff, #2D7CF6); display:flex; align-items:center; justify-content:flex-end; padding-right:24px; }
-  .lv .pk { position:absolute; } .lv .vs { position:absolute; left:50%; top:-14px; width:92px; height:92px; margin-left:-46px; border-radius:50%; background:#111; border:4px solid #fff; display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; font-style:italic; }
   #gcard { left:160px !important; top:430px !important; width:760px !important; height:1351px !important; }
+  .ttv { position:absolute; width:1206px; height:2622px; transform-origin:0 0; background:#000; overflow:hidden; }
+  .ttv .half { position:absolute; top:600px; height:1044px; overflow:hidden; background:#111; }
+  .ttv .half img { width:100%; height:100%; object-fit:cover; }
+  .ttv .flt { position:absolute; left:0; top:0; width:1206px; height:2622px; }
+  #gcard { left:202px !important; top:370px !important; width:700px !important; height:1522px !important; border-radius:56px; }
   /* J — logo néon */
   #rays line { stroke:url(#rayG); stroke-width:6; stroke-linecap:round; }
   #spark { position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:#fff;
@@ -190,10 +208,11 @@
     <img id="zoomimg">
   </div>
 
-  <!-- D · LIVE plein écran, interface LIVE TikTok -->
-  <div class="scene" id="sD">
-    <img class="ft" id="fD">
-    <div class="lv" id="lvd"></div>
+  <!-- D · LIVE en match : vraie interface TikTok (filtre) sur nos vidéos -->
+  <div class="scene" id="sD" style="background:#000">
+    <div class="cam" style="perspective:2600px"><div class="plane" id="pD">
+      <div class="ttv" id="ttd" style="left:98px;top:0;transform:scale(.7323)"></div>
+    </div></div>
   </div>
   <!-- E · messages -->
   <div class="scene" id="sE" style="background:var(--ui)">
@@ -244,9 +263,7 @@
     </div>
     <div class="cam"><div class="plane" id="pH">
       <div id="gcard">
-        <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;transform:scale(.7037);transform-origin:0 0">
-          <img class="ft" id="fH"><div class="lv" id="lvh"></div>
-        </div>
+        <div class="ttv" id="tth" style="left:0;top:0;transform:scale(.5804)"></div>
       </div>
     </div></div>
   </div>
@@ -326,61 +343,92 @@ const HL = [['CAP', 'Formation'], ['COACH', 'Coaching'], ['BULB', 'Concepts'], [
 $('#hls').innerHTML = HL.map(([ic, lb]) => `<div class="hl"><div class="c">${ICON[ic]}</div>${lb}</div>`).join('');
 $('#grid').innerHTML = Array.from({ length: 9 }, (_, i) =>
   `<div class="cell"><img src="${i === 0 ? 'footage/42316/000.jpg' : `thumbs/${i}.jpg`}">${[0, 3, 7].includes(i) ? '<div class="badge gbg">LIVE</div>' : ''}</div>`).join('');
-// Interface LIVE TikTok (reproduite en HTML) : pastille du créateur, top spectateurs,
-// commentaires, bannière de cadeau avec combo, barre de commentaire, cœurs.
-const TT = { rose: '#FE2C55', bleu: '#2D7CF6' };
-const avImg = (a, d) => a === 'emp' ? `<div class="avatar" style="width:${d}px;height:${d}px">${avatarHTML(d)}</div>`
-  : `<img src="${typeof a === 'number' ? `thumbs/${a}.jpg` : a}" style="width:${d}px;height:${d}px;border-radius:50%;object-fit:cover;flex:none">`;
+// Interface LIVE TikTok reproduite en HTML (relevée sur une vraie capture de LIVE match) :
+// pastille créateur « +1 », avatars classés, pastilles, barre de match, écran partagé,
+// bannière de cadeau, rangées de classement, bulles de commentaires, barre « Saisis ton message… ».
+const avImg = (a, d, extra = '') => a === 'emp' ? `<div class="avatar" style="width:${d}px;height:${d}px;${extra}">${avatarHTML(d)}</div>`
+  : `<img src="thumbs/${a}.jpg" style="width:${d}px;height:${d}px;border-radius:50%;object-fit:cover;flex:none;${extra}">`;
+const BDG = {
+  n1: '<span class="bdg" style="background:#FE2C55">🏅 N° 1</span>',
+  dia: n => `<span class="bdg" style="background:#5B5BF0">💎 ${n}</span>`,
+  fan: '<span class="bdg" style="background:#F08A24">🧡 Empira</span>',
+};
 function buildLive(el, c) {
   const hearts = ['#FE2C55', '#FF6FA0', '#F0C163', '#FF3B30', '#B57BFF', '#FF8A3D'];
+  const gift = `<div class="giftb">${avImg(c.gift.a, 72)}<div style="font-size:32px"><b>${c.gift.n}</b> <span style="opacity:.75">a envoyé…</span></div>
+      <div style="font-size:64px;line-height:1">${c.gift.e}</div><div class="combo">x1</div></div>`;
+  el.classList.toggle('solo', !c.match);
   el.innerHTML = `
+    ${c.match ? '' : `<img class="ft" id="${c.p}bg">`}
     <div class="st status"></div>
-    <div class="host">${avImg(c.avatar, 84)}<div><div class="nm">${c.name}</div><div class="lk">♥ ${c.likes}</div></div><div class="follow">Suivre</div></div>
-    <div class="pills"><div class="pill">🏆 Classement horaire</div><div class="pill">Explorer ›</div></div>
-    <div class="topr">${c.top.map((a, i) => `<div class="tv">${avImg(a, 72)}<div class="rk" style="background:${['#F5C451', '#C9CED6', '#D4895A'][i]}">${i + 1}</div></div>`).join('')}
-      <div class="cnt">👤 ${c.viewers}</div><div class="x">✕</div></div>
-    ${c.pk ? `<div class="pk"><div class="a" id="${c.p}pka"><span>${c.pk[0]}</span></div><div class="b"><span>${c.pk[1]}</span></div><div class="vs">VS</div></div>` : ''}
-    ${c.cmts.map(m => m.join
-      ? `<div class="cm"><div><span class="n">${m.join}</span> <span style="opacity:.75">a rejoint</span></div></div>`
-      : `<div class="cm">${avImg(m.a, 60)}<div><div class="n" ${m.gold ? 'style="color:#F0C163"' : ''}>${m.n}</div>${m.m}</div></div>`).join('')}
-    <div class="giftb">${avImg(c.gift.a, 84)}<div><div style="font-size:32px;font-weight:700">${c.gift.n}</div><div style="font-size:28px;opacity:.9">a envoyé ${c.gift.g}</div></div>
-      <div style="font-size:92px;line-height:1">${c.gift.e}</div><div class="combo">x1</div></div>
-    <div class="bar"><div class="inp">Ajoute un commentaire…</div><div class="ib">🎁</div><div class="ib" style="font-size:40px">↗</div><div class="ib">⋯</div></div>
+    <div class="host dk">${avImg(c.avatar, 84, 'border:3px solid #F0C163')}<div><div class="nm">${c.name}</div><div class="lk">♥ ${c.likes}</div></div>
+      <div class="plus1">❤️ +1</div></div>
+    <div class="topr"><div style="display:flex">${c.top.map((a, i) => `<div class="tv" style="margin-left:${i ? -18 : 0}px">${avImg(a, 70)}<div class="rk">${[9, 5][i]}</div></div>`).join('')}</div>
+      <div class="cnt dk">${c.viewers}</div><div class="x">✕</div></div>
+    <div class="row2"><div class="dk">🧡 LIVE populaire</div><div class="dk" style="flex:1;justify-content:center">🪐 0/5</div><div class="dk" style="flex:1;justify-content:center">Manuel</div></div>
+    ${c.match ? `
+    <div class="pk"><div class="a"><span id="${c.p}sa">0</span></div><div class="b"><span id="${c.p}sb">0</span></div></div>
+    <div class="vids">
+      <div class="half"><img id="${c.p}l"><div class="tag" style="left:14px">💎 D1</div>        <div id="${c.p}gw" style="position:absolute;left:12px;bottom:18px">${gift}</div></div>
+      <div class="timer">💎 <span id="${c.p}tm">02:00</span> ›</div>
+      <div class="half"><img id="${c.p}r"><div class="tag" style="right:14px">💎 C2</div><div class="nmtag">${c.opp}</div></div>
+    </div>
+    <div class="ranks"><div><div class="ib" style="width:76px;height:76px;background:#5a2236;font-size:36px">🛋️</div>
+        ${[1, 7].map((a, i) => `<div class="ra">${avImg(a, 76, 'border:3px solid #FE2C55')}<div class="rn" style="color:#FE2C55">${2 - i}</div></div>`).join('')}</div>
+      <div>${[2, 5, 8].map((a, i) => `<div class="ra">${avImg(a, 76, 'border:3px solid #25F4EE')}<div class="rn" style="color:#25F4EE">${i + 1}</div></div>`).join('')}</div></div>`
+    : `<div id="${c.p}gw" style="position:absolute;left:30px;top:1060px">${gift}</div>`}
+    ${c.cmts.map(m => m.sys
+      ? `<div class="cm dk"><div class="ic">♪</div><div>${m.sys}</div></div>`
+      : m.join
+      ? `<div class="cm dk"><div class="ic">👋</div><div class="n">${m.badges || ''}<span style="color:#fff;opacity:.62">${m.join}</span> <span style="color:#fff">a rejoint</span></div></div>`
+      : `<div class="cm dk">${avImg(m.a, 70)}<div><div class="n"><span ${m.gold ? 'class="g" style="font-weight:700"' : ''}>${m.n}</span>${m.badges || ''}</div>${m.m}</div></div>`).join('')}
+    <div class="bar"><div class="inp dk">Saisis ton message… <span style="font-size:52px">😶</span></div>
+      <div class="ib dk" style="font-size:44px">👥</div>
+      <div class="ib" style="background:#FE2C55;font-size:17px;font-weight:800">Combinaison</div>
+      <div class="ib dk">🎁</div><div class="ib dk" style="font-size:48px">➦</div></div>
     ${Array.from({ length: 10 }, (_, i) => `<div class="hrt"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path fill="${hearts[i % hearts.length]}" d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></div>`).join('')}`;
   el.querySelector('.st').innerHTML = STATUS;
 }
 function animLive(el, lt, o = {}) {
-  const cms = [...el.querySelectorAll('.cm')], step = o.step || .42, t0 = o.t0 ?? .15;
+  const p = o.p, cms = [...el.querySelectorAll('.cm')], step = o.step || .42, t0 = o.t0 ?? .15, bottom = o.bottom || 1650;
   cms.forEach((c, i) => {
     const at = t0 + i * step, q = E.oExp(P(lt, at, at + .3));
-    const newer = cms.filter((_, j) => j > i && lt > t0 + j * step).length;
-    c.style.top = (1590 - newer * 104) + 'px';
-    c.style.opacity = lt < at ? 0 : q * Math.max(0, 1 - newer * .17);
+    const above = cms.filter((_, j) => j > i && lt > t0 + j * step).reduce((s, x) => s + x.offsetHeight + 14, 0);
+    c.style.top = (bottom - c.offsetHeight - above) + 'px';
+    const top = bottom - c.offsetHeight - above;
+    c.style.opacity = lt < at || top < (o.minTop || 0) ? 0 : q * Math.max(0, 1 - above / 900);
     c.style.transform = `translateY(${(1 - q) * 50}px)`;
   });
-  const g = el.querySelector('.giftb'), ga = o.gift ?? 1.0;
+  const gw = el.querySelector(`#${p}gw`), ga = o.gift ?? 1.0;
   const gi = E.oBack(P(lt, ga, ga + .35)), go = E.iExp(P(lt, ga + 1.25, ga + 1.45));
-  g.style.opacity = lt > ga ? 1 - go : 0;
-  g.style.transform = `translateX(${(1 - gi) * -700 - go * 200}px)`;
-  const n = Math.min(5, 1 + Math.floor(Math.max(0, lt - ga - .3) / .16)), cb = g.querySelector('.combo');
+  gw.style.opacity = lt > ga ? 1 - go : 0;
+  gw.style.transform = `translateX(${(1 - gi) * -600 - go * 150}px)`;
+  const n = Math.min(5, 1 + Math.floor(Math.max(0, lt - ga - .3) / .16)), cb = gw.querySelector('.combo');
   cb.textContent = 'x' + n;
   const ph = (lt - ga - .3) % .16;
-  cb.style.transform = `scale(${n > 1 && ph < .08 ? 1.35 - ph * 4 : 1}) rotate(-6deg)`;
+  cb.style.transform = `scale(${n > 1 && ph < .08 ? 1.35 - ph * 4 : 1})`;
+  el.querySelector('.plus1').style.transform = `scale(${1 + Math.max(0, Math.sin(lt * 9)) * .08})`;
   el.querySelectorAll('.hrt').forEach((h, i) => {
     const cyc = (lt * .75 + i / 10) % 1, on = lt > .3 ? 1 : 0;
-    h.style.left = (940 + Math.sin(cyc * 6 + i * 2.3) * 50) + 'px'; h.style.top = (1690 - cyc * 650) + 'px';
+    h.style.left = (940 + Math.sin(cyc * 6 + i * 2.3) * 50) + 'px'; h.style.top = (1760 - cyc * 650) + 'px';
     h.style.opacity = on * Math.sin(cyc * Math.PI); h.style.transform = `scale(${.45 + cyc * .75}) rotate(${(rnd(i) - .5) * 50}deg)`;
   });
-  const pk = el.querySelector('.pk .a');
-  if (pk) { const w = 50 + Math.sin(lt * 2.2) * 8 + E.io3(P(lt, .5, 2.2)) * 12; pk.style.width = w + "%"; el.querySelector(".vs").style.left = w + "%"; }
+  const sa = el.querySelector(`#${p}sa`);
+  if (sa) {
+    const a = Math.round(lerp(40, 520, E.io3(P(lt, .2, 2.3)))), b = Math.round(lerp(60, 310, E.io3(P(lt, .1, 2.0))));
+    sa.textContent = a; el.querySelector(`#${p}sb`).textContent = b;
+    el.querySelector('.pk .a').style.width = (100 * a / (a + b)) + '%';
+    const s = Math.max(0, 110 - Math.floor(lt));
+    el.querySelector(`#${p}tm`).textContent = `01:${String(s - 60).padStart(2, '0')}`;
+  }
 }
-buildLive($('#lvd'), { p: 'd', name: 'ton.live', likes: '8 452', viewers: '236', avatar: 0, top: [2, 5, 7],
-  cmts: [{ a: 2, n: 'sarah_m', m: 'trop beau ce live 😍' }, { join: 'nico.gaming' },
-         { a: 'emp', n: 'Empira Agency', m: 'Super énergie, continue comme ça 🔥', gold: true }, { a: 1, n: 'julie', m: 'ton concept est trop bien 👏' }],
-  gift: { a: 5, n: 'léo', g: 'Rose', e: '🌹' } });
-buildLive($('#lvh'), { p: 'h', name: 'empira.gaming', likes: '3 120', viewers: '154', avatar: 'emp', top: [7, 1, 2], pk: ['Équipe Or', 'Équipe Noire'],
-  cmts: [{ join: 'max_fps' }, { a: 7, n: 'kenza', m: 'go go go 🔥' }, { a: 2, n: 'tom', m: 'défi accepté ! 🎮' }],
-  gift: { a: 7, n: 'kenza', g: 'Manette', e: '🎮' } });
+// Écran LIVE = vraie interface TikTok (assets/tiktok-live-filtre.png, zone vidéo transparente)
+function buildTT(el, p) {
+  el.innerHTML = `<div class="half" style="left:0;width:604px"><img id="${p}l"></div>
+    <div class="half" style="left:607px;width:599px"><img id="${p}r"></div>
+    <img class="flt" src="assets/tiktok-live-filtre.png">`;
+}
+buildTT($('#ttd'), 'd'); buildTT($('#tth'), 'h');
 const SERV = [['CAP', 'Formation'], ['COACH', 'Coaching personnalisé'], ['BULB', 'Création de concept'], ['PLAY', 'Vidéos'], ['CHART', 'Analyse des stats']];
 $('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="ic">${ICON[ic]}</div><div class="lb">${lb}</div></div>`).join('');
 $('#bok').innerHTML = Array.from({ length: 16 }, (_, i) => {
@@ -401,7 +449,7 @@ const grainSrc = document.createElement('canvas'); grainSrc.width = grainSrc.hei
 const gctx = $('#grain').getContext('2d'), gpat = gctx.createPattern(grainSrc, 'repeat');
 
 // ---------- Rushes ----------
-const COUNT = { 42316: 79, 43531: 79, 51252: 60 };
+const COUNT = { 42316: 79, 43531: 79, 51252: 60, 51613: 79 };
 function foot(img, id, lt) {
   const n = Math.min(COUNT[id] - 1, Math.max(0, Math.floor(lt * FPS)));
   const src = `footage/${id}/${String(n).padStart(3, '0')}.jpg`;
@@ -496,18 +544,18 @@ function render(t) {
       const cell = $('#grid .cell').getBoundingClientRect(), st = $('#stage').getBoundingClientRect(), s = st.width / 1080;
       const x0 = (cell.left - st.left) / s, y0 = (cell.top - st.top) / s, w0 = cell.width / s, h0 = cell.height / s;
       zi.style.display = 'block'; zi.src = 'footage/42316/000.jpg';
-      zi.style.left = lerp(x0, 0, z) + 'px'; zi.style.top = lerp(y0, 0, z) + 'px';
-      zi.style.width = lerp(w0, 1080, z) + 'px'; zi.style.height = lerp(h0, 1920, z) + 'px';
+      zi.style.left = lerp(x0, 98, z) + 'px'; zi.style.top = lerp(y0, 439, z) + 'px';
+      zi.style.width = lerp(w0, 442, z) + 'px'; zi.style.height = lerp(h0, 765, z) + 'px';
       zi.style.borderRadius = lerp(12, 0, z) + 'px';
-      $('#pC').style.filter = `blur(${z * 12}px) brightness(${1 - z * .5})`;
+      $('#pC').style.filter = `blur(${z * 12}px) brightness(${1 - z * .85})`;
     } else { zi.style.display = 'none'; $('#pC').style.filter = 'none'; }
   }
 
-  // D · LIVE plein écran
+  // D · LIVE en match : le téléphone flotte en 3D, on s'en approche
   if ((lt = scene('#sD', t, 6.2, 8.6, { noIn: true })) !== null) {
-    foot($('#fD'), 42316, lt);
-    $('#fD').style.transform = `scale(${1 + lt * .02})`;
-    animLive($('#lvd'), lt);
+    foot($('#dl'), 42316, lt); foot($('#dr'), 51252, lt);
+    const k = E.io3(P(lt, 0, 2.4));
+    $('#pD').style.transform = `rotateY(${lerp(-10, 6, k)}deg) rotateX(${lerp(5, -2, k)}deg) scale(${lerp(1, 1.1, k)})`;
   }
   // E · messages privés
   if ((lt = scene('#sE', t, 8.6, 11.2)) !== null) {
@@ -550,11 +598,10 @@ function render(t) {
 
   // H · Empira Gaming
   if ((lt = scene('#sH', t, 15.8, 18.4)) !== null) {
-    foot($('#fH'), 43531, lt);
     $('#pH').style.transform = `rotateY(${lerp(14, -6, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(6, 0, E.io3(P(lt, 0, 2)))}deg) translateZ(${lerp(-60, 20, E.io3(P(lt, 0, 2.6)))}px)`;
     const tq = E.oExp(P(lt, .1, .5));
     $('#tH').style.opacity = tq; $('#tH').style.transform = `scale(${lerp(1.3, 1, tq)})`;
-    animLive($('#lvh'), lt, { t0: .3, step: .4, gift: 1.0 });
+    foot($('#hl'), 43531, lt); foot($('#hr'), 51613, lt);
   }
   // I · « Ton live évolue avec nos conseils et notre vision. »
   if ((lt = scene('#sI', t, 18.4, 20.1)) !== null) {

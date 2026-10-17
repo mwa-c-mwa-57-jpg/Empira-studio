@@ -15,7 +15,8 @@ LOOK="eq=contrast=1.08:saturation=1.12:gamma=1.04,colorbalance=rs=.04:bs=-.05:rh
 # Rushes plein écran : id début durée
 echo "42316 2.0 2.6
 43531 2.5 2.6
-51252 0.5 2.0" | while read -r id ss dur; do
+51252 0.5 2.0
+51613 3.0 2.6" | while read -r id ss dur; do
   f=$(get $id 1080); mkdir -p "$OUT/$id"; rm -f "$OUT/$id"/*.jpg
   ffmpeg -nostdin -v error -y -ss "$ss" -t "$dur" -i "$f" -an \
     -vf "fps=30,crop='min(iw,ih*9/16)':'min(ih,iw*16/9)',scale=1080:1920,$LOOK" -q:v 4 -start_number 0 "$OUT/$id/%03d.jpg"
