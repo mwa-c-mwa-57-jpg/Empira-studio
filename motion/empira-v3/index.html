@@ -89,6 +89,34 @@
   .vote i { position:absolute; left:0; top:0; bottom:0; border-radius:42px; }
   .vote span { position:absolute; left:34px; top:0; line-height:84px; }
 
+  /* Interface LIVE TikTok */
+  .lv { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; }
+  .lv::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.38), transparent 18%, transparent 58%, rgba(0,0,0,.55)); }
+  .lv > * { position:absolute; }
+  .lv .host { left:24px; top:122px; height:104px; border-radius:52px; background:rgba(0,0,0,.32); display:flex; align-items:center; gap:14px; padding:0 10px; }
+  .lv .host .nm { font-size:34px; font-weight:700; } .lv .host .lk { font-size:26px; opacity:.85; }
+  .lv .follow { background:#FE2C55; font-size:30px; font-weight:700; padding:16px 28px; border-radius:40px; margin-left:6px; }
+  .lv .pills { left:24px; top:246px; display:flex; gap:14px; }
+  .lv .pill { background:rgba(0,0,0,.3); border-radius:30px; padding:10px 22px; font-size:27px; font-weight:600; }
+  .lv .topr { right:24px; top:134px; display:flex; align-items:center; gap:10px; }
+  .lv .tv { position:relative; width:72px; height:72px; }
+  .lv .rk { position:absolute; left:23px; bottom:-12px; width:26px; height:26px; border-radius:50%; font-size:18px; font-weight:800; color:#000; text-align:center; line-height:26px; }
+  .lv .cnt { background:rgba(0,0,0,.32); border-radius:30px; padding:12px 18px; font-size:28px; font-weight:700; margin-left:4px; }
+  .lv .x { font-size:50px; margin-left:6px; }
+  .lv .cm { left:24px; width:740px; display:flex; gap:16px; align-items:flex-start; font-size:34px; line-height:1.22; text-shadow:0 1px 6px rgba(0,0,0,.7); }
+  .lv .cm .n { color:rgba(255,255,255,.72); font-weight:600; font-size:30px; }
+  .lv .giftb { left:0; top:1000px; height:116px; display:flex; align-items:center; gap:18px; padding:0 40px 0 24px; border-radius:0 60px 60px 0;
+               background:linear-gradient(90deg, rgba(254,44,85,.9), rgba(254,44,85,.55) 70%, rgba(254,44,85,0)); }
+  .lv .combo { font-size:84px; font-weight:900; font-style:italic; color:#fff; -webkit-text-stroke:3px #FE2C55; text-shadow:0 4px 0 #9b0f2a; margin-left:6px; }
+  .lv .bar { left:24px; right:24px; bottom:62px; display:flex; align-items:center; gap:16px; }
+  .lv .inp { flex:1; height:96px; border-radius:48px; background:rgba(0,0,0,.35); color:rgba(255,255,255,.75); font-size:34px; display:flex; align-items:center; padding:0 34px; }
+  .lv .ib { width:96px; height:96px; border-radius:50%; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; font-size:46px; }
+  .lv .hrt { width:76px; height:76px; }
+  .lv .pk { left:0; right:0; top:340px; height:64px; display:flex; font-size:28px; font-weight:800; }
+  .lv .pk .a { background:linear-gradient(90deg, #FE2C55, #ff5c7c); display:flex; align-items:center; padding-left:24px; }
+  .lv .pk .b { flex:1; background:linear-gradient(90deg, #4f95ff, #2D7CF6); display:flex; align-items:center; justify-content:flex-end; padding-right:24px; }
+  .lv .pk { position:absolute; } .lv .vs { position:absolute; left:50%; top:-14px; width:92px; height:92px; margin-left:-46px; border-radius:50%; background:#111; border:4px solid #fff; display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; font-style:italic; }
+  #gcard { left:160px !important; top:430px !important; width:760px !important; height:1351px !important; }
   /* J — logo néon */
   #rays line { stroke:url(#rayG); stroke-width:6; stroke-linecap:round; }
   #spark { position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:#fff;
@@ -162,23 +190,11 @@
     <img id="zoomimg">
   </div>
 
-  <!-- D · LIVE plein écran -->
+  <!-- D · LIVE plein écran, interface LIVE TikTok -->
   <div class="scene" id="sD">
     <img class="ft" id="fD">
-    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),transparent 22%,transparent 55%,rgba(0,0,0,.6))"></div>
-    <div class="chip" style="left:40px;top:140px"><div class="avatar" style="width:90px;height:90px"><img src="thumbs/0.jpg" style="width:100%;height:100%;object-fit:cover;position:static"></div>
-      <div><div>@ton.live</div><div style="font-size:28px;font-weight:500;opacity:.8">avec Empira Agency</div></div>
-      <div class="gbg" style="padding:8px 18px;border-radius:12px;font-size:28px;font-weight:800;margin-left:6px">LIVE</div></div>
-    <div style="position:absolute;right:40px;top:160px;display:flex;align-items:center;gap:20px">
-      <div style="display:flex" id="stack"></div><span style="font-size:56px">✕</span></div>
-    <div id="cmts"></div>
-    <div id="gift" class="chip gbg" style="left:40px;top:1040px;color:#000;padding:16px 36px 16px 16px">
-      <div style="width:76px;height:76px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-size:44px">🎁</div>Léo a envoyé un cadeau</div>
-    <div id="hearts"></div>
-    <div id="inputbar">Ajoute un commentaire…</div>
-    <div class="round" style="right:136px">🎁</div><div class="round" style="right:30px;color:var(--or-clair)">ICON_HEART</div>
+    <div class="lv" id="lvd"></div>
   </div>
-
   <!-- E · messages -->
   <div class="scene" id="sE" style="background:var(--ui)">
     <div class="cam"><div class="plane" id="pE">
@@ -220,26 +236,20 @@
     </div></div>
   </div>
 
-  <!-- H · Empira Gaming -->
+  <!-- H · Empira Gaming, LIVE avec barre de match -->
   <div class="scene" id="sH" style="background:radial-gradient(ellipse at 50% 40%, #241806 0%, #000 70%)">
-    <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
-      <div style="font-size:52px;font-weight:300;letter-spacing:.5em;padding-left:.5em">EMPIRA</div>
-      <div class="g" id="tH" style="font-size:190px;font-weight:800;letter-spacing:-.03em;line-height:1;filter:drop-shadow(0 0 30px rgba(240,193,99,.45))">GAMING</div>
+    <div style="position:absolute;left:0;right:0;top:120px;text-align:center">
+      <div style="font-size:48px;font-weight:300;letter-spacing:.5em;padding-left:.5em">EMPIRA</div>
+      <div class="g" id="tH" style="font-size:170px;font-weight:800;letter-spacing:-.03em;line-height:1;filter:drop-shadow(0 0 30px rgba(240,193,99,.45))">GAMING</div>
     </div>
     <div class="cam"><div class="plane" id="pH">
       <div id="gcard">
-        <img class="ft" id="fH" style="width:860px;height:1529px;top:-110px">
-        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4),transparent 25%,transparent 55%,rgba(0,0,0,.75))"></div>
-        <div class="chip" style="left:30px;top:30px;font-size:34px;padding:14px 30px"><span style="color:var(--or-clair);font-size:48px">ICON_PAD</span>Live interactif
-          <div class="gbg" style="padding:6px 16px;border-radius:10px;font-size:26px;font-weight:800">LIVE</div></div>
-        <div id="pop1" class="chip gbg" style="left:30px;top:760px;color:#000;font-size:34px;padding:16px 32px">⚡ Le chat lance un défi !</div>
-        <div style="position:absolute;left:40px;top:930px;font-size:34px;font-weight:700">Vote du chat</div>
-        <div class="vote" style="top:990px"><i class="gbg" id="v1"></i><span>Équipe Or</span></div>
-        <div class="vote" style="top:1090px"><i style="background:rgba(255,255,255,.28)" id="v2"></i><span>Équipe Noire</span></div>
+        <div style="position:absolute;left:0;top:0;width:1080px;height:1920px;transform:scale(.7037);transform-origin:0 0">
+          <img class="ft" id="fH"><div class="lv" id="lvh"></div>
+        </div>
       </div>
     </div></div>
   </div>
-
   <!-- I · conseils & vision -->
   <div class="scene" id="sI">
     <img class="ft" id="fI" style="filter:blur(14px) brightness(.38);transform:scale(1.1)">
@@ -316,13 +326,61 @@ const HL = [['CAP', 'Formation'], ['COACH', 'Coaching'], ['BULB', 'Concepts'], [
 $('#hls').innerHTML = HL.map(([ic, lb]) => `<div class="hl"><div class="c">${ICON[ic]}</div>${lb}</div>`).join('');
 $('#grid').innerHTML = Array.from({ length: 9 }, (_, i) =>
   `<div class="cell"><img src="${i === 0 ? 'footage/42316/000.jpg' : `thumbs/${i}.jpg`}">${[0, 3, 7].includes(i) ? '<div class="badge gbg">LIVE</div>' : ''}</div>`).join('');
-$('#stack').innerHTML = [2, 5, 7].map((i, k) => `<img src="thumbs/${i}.jpg" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:4px solid #000;margin-left:${k ? -26 : 0}px">`).join('');
-const CMTS = [['sarah_m', 'trop beau ce live 😍'], ['', 'Empira Agency a rejoint le LIVE'], ['nico.gaming', "c'est quoi ton concept ?"], ['julie', '🔥🔥🔥']];
-$('#cmts').innerHTML = CMTS.map(([n, m], i) => n
-  ? `<div class="cmt"><img src="thumbs/${[2, 5, 1][i > 1 ? i - 1 : i]}.jpg" style="width:72px;height:72px;border-radius:50%;object-fit:cover"><div class="b"><span class="n">${n}</span><br>${m}</div></div>`
-  : `<div class="cmt"><div class="avatar" style="width:72px;height:72px">${avatarHTML(72)}</div><div class="b g" style="font-weight:700;padding-top:24px">${m}</div></div>`).join('');
-const HEART = '<svg viewBox="0 0 24 24" style="width:100%;height:100%"><path fill="url(#gA)" d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>';
-$('#hearts').innerHTML = Array.from({ length: 9 }, () => `<div class="heart">${HEART}</div>`).join('');
+// Interface LIVE TikTok (reproduite en HTML) : pastille du créateur, top spectateurs,
+// commentaires, bannière de cadeau avec combo, barre de commentaire, cœurs.
+const TT = { rose: '#FE2C55', bleu: '#2D7CF6' };
+const avImg = (a, d) => a === 'emp' ? `<div class="avatar" style="width:${d}px;height:${d}px">${avatarHTML(d)}</div>`
+  : `<img src="${typeof a === 'number' ? `thumbs/${a}.jpg` : a}" style="width:${d}px;height:${d}px;border-radius:50%;object-fit:cover;flex:none">`;
+function buildLive(el, c) {
+  const hearts = ['#FE2C55', '#FF6FA0', '#F0C163', '#FF3B30', '#B57BFF', '#FF8A3D'];
+  el.innerHTML = `
+    <div class="st status"></div>
+    <div class="host">${avImg(c.avatar, 84)}<div><div class="nm">${c.name}</div><div class="lk">♥ ${c.likes}</div></div><div class="follow">Suivre</div></div>
+    <div class="pills"><div class="pill">🏆 Classement horaire</div><div class="pill">Explorer ›</div></div>
+    <div class="topr">${c.top.map((a, i) => `<div class="tv">${avImg(a, 72)}<div class="rk" style="background:${['#F5C451', '#C9CED6', '#D4895A'][i]}">${i + 1}</div></div>`).join('')}
+      <div class="cnt">👤 ${c.viewers}</div><div class="x">✕</div></div>
+    ${c.pk ? `<div class="pk"><div class="a" id="${c.p}pka"><span>${c.pk[0]}</span></div><div class="b"><span>${c.pk[1]}</span></div><div class="vs">VS</div></div>` : ''}
+    ${c.cmts.map(m => m.join
+      ? `<div class="cm"><div><span class="n">${m.join}</span> <span style="opacity:.75">a rejoint</span></div></div>`
+      : `<div class="cm">${avImg(m.a, 60)}<div><div class="n" ${m.gold ? 'style="color:#F0C163"' : ''}>${m.n}</div>${m.m}</div></div>`).join('')}
+    <div class="giftb">${avImg(c.gift.a, 84)}<div><div style="font-size:32px;font-weight:700">${c.gift.n}</div><div style="font-size:28px;opacity:.9">a envoyé ${c.gift.g}</div></div>
+      <div style="font-size:92px;line-height:1">${c.gift.e}</div><div class="combo">x1</div></div>
+    <div class="bar"><div class="inp">Ajoute un commentaire…</div><div class="ib">🎁</div><div class="ib" style="font-size:40px">↗</div><div class="ib">⋯</div></div>
+    ${Array.from({ length: 10 }, (_, i) => `<div class="hrt"><svg viewBox="0 0 24 24" style="width:100%;height:100%"><path fill="${hearts[i % hearts.length]}" d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></div>`).join('')}`;
+  el.querySelector('.st').innerHTML = STATUS;
+}
+function animLive(el, lt, o = {}) {
+  const cms = [...el.querySelectorAll('.cm')], step = o.step || .42, t0 = o.t0 ?? .15;
+  cms.forEach((c, i) => {
+    const at = t0 + i * step, q = E.oExp(P(lt, at, at + .3));
+    const newer = cms.filter((_, j) => j > i && lt > t0 + j * step).length;
+    c.style.top = (1590 - newer * 104) + 'px';
+    c.style.opacity = lt < at ? 0 : q * Math.max(0, 1 - newer * .17);
+    c.style.transform = `translateY(${(1 - q) * 50}px)`;
+  });
+  const g = el.querySelector('.giftb'), ga = o.gift ?? 1.0;
+  const gi = E.oBack(P(lt, ga, ga + .35)), go = E.iExp(P(lt, ga + 1.25, ga + 1.45));
+  g.style.opacity = lt > ga ? 1 - go : 0;
+  g.style.transform = `translateX(${(1 - gi) * -700 - go * 200}px)`;
+  const n = Math.min(5, 1 + Math.floor(Math.max(0, lt - ga - .3) / .16)), cb = g.querySelector('.combo');
+  cb.textContent = 'x' + n;
+  const ph = (lt - ga - .3) % .16;
+  cb.style.transform = `scale(${n > 1 && ph < .08 ? 1.35 - ph * 4 : 1}) rotate(-6deg)`;
+  el.querySelectorAll('.hrt').forEach((h, i) => {
+    const cyc = (lt * .75 + i / 10) % 1, on = lt > .3 ? 1 : 0;
+    h.style.left = (940 + Math.sin(cyc * 6 + i * 2.3) * 50) + 'px'; h.style.top = (1690 - cyc * 650) + 'px';
+    h.style.opacity = on * Math.sin(cyc * Math.PI); h.style.transform = `scale(${.45 + cyc * .75}) rotate(${(rnd(i) - .5) * 50}deg)`;
+  });
+  const pk = el.querySelector('.pk .a');
+  if (pk) { const w = 50 + Math.sin(lt * 2.2) * 8 + E.io3(P(lt, .5, 2.2)) * 12; pk.style.width = w + "%"; el.querySelector(".vs").style.left = w + "%"; }
+}
+buildLive($('#lvd'), { p: 'd', name: 'ton.live', likes: '8 452', viewers: '236', avatar: 0, top: [2, 5, 7],
+  cmts: [{ a: 2, n: 'sarah_m', m: 'trop beau ce live 😍' }, { join: 'nico.gaming' },
+         { a: 'emp', n: 'Empira Agency', m: 'Super énergie, continue comme ça 🔥', gold: true }, { a: 1, n: 'julie', m: 'ton concept est trop bien 👏' }],
+  gift: { a: 5, n: 'léo', g: 'Rose', e: '🌹' } });
+buildLive($('#lvh'), { p: 'h', name: 'empira.gaming', likes: '3 120', viewers: '154', avatar: 'emp', top: [7, 1, 2], pk: ['Équipe Or', 'Équipe Noire'],
+  cmts: [{ join: 'max_fps' }, { a: 7, n: 'kenza', m: 'go go go 🔥' }, { a: 2, n: 'tom', m: 'défi accepté ! 🎮' }],
+  gift: { a: 7, n: 'kenza', g: 'Manette', e: '🎮' } });
 const SERV = [['CAP', 'Formation'], ['COACH', 'Coaching personnalisé'], ['BULB', 'Création de concept'], ['PLAY', 'Vidéos'], ['CHART', 'Analyse des stats']];
 $('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="ic">${ICON[ic]}</div><div class="lb">${lb}</div></div>`).join('');
 $('#bok').innerHTML = Array.from({ length: 16 }, (_, i) => {
@@ -449,24 +507,8 @@ function render(t) {
   if ((lt = scene('#sD', t, 6.2, 8.6, { noIn: true })) !== null) {
     foot($('#fD'), 42316, lt);
     $('#fD').style.transform = `scale(${1 + lt * .02})`;
-    $$('#cmts .cmt').forEach((c, i) => {
-      const at = .25 + i * .42, q = E.oExp(P(lt, at, at + .35));
-      const shift = $$('#cmts .cmt').filter((_, j) => j > i && lt > .25 + j * .42).length;
-      const y = 1560 - 130 - shift * 130;
-      c.style.top = y + 'px';
-      c.style.opacity = q * (1 - shift * .18);
-      c.style.transform = `translateY(${(1 - q) * 60}px)`;
-    });
-    $$('#hearts .heart').forEach((h, i) => {
-      const cyc = ((lt * .7 + i / 9) % 1), on = lt > .4 ? 1 : 0;
-      h.style.left = (930 + Math.sin(cyc * 7 + i * 2) * 40) + 'px'; h.style.top = (1700 - cyc * 700) + 'px';
-      h.style.opacity = on * Math.sin(cyc * Math.PI); h.style.transform = `scale(${.5 + cyc * .7}) rotate(${(rnd(i) - .5) * 40}deg)`;
-    });
-    const g = E.oBack(P(lt, 1.5, 1.85)), go = E.o3(P(lt, 2.15, 2.35));
-    $('#gift').style.opacity = lt > 1.5 ? 1 - go : 0;
-    $('#gift').style.transform = `translateX(${(1 - g) * -500 - go * 120}px)`;
+    animLive($('#lvd'), lt);
   }
-
   // E · messages privés
   if ((lt = scene('#sE', t, 8.6, 11.2)) !== null) {
     $('#pE').style.transform = `rotateY(${lerp(-16, -3, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(8, 2, E.io3(P(lt, 0, 2.6)))}deg) translateZ(${lerp(-80, 30, E.io3(P(lt, 0, 2.6)))}px)`;
@@ -512,12 +554,8 @@ function render(t) {
     $('#pH').style.transform = `rotateY(${lerp(14, -6, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(6, 0, E.io3(P(lt, 0, 2)))}deg) translateZ(${lerp(-60, 20, E.io3(P(lt, 0, 2.6)))}px)`;
     const tq = E.oExp(P(lt, .1, .5));
     $('#tH').style.opacity = tq; $('#tH').style.transform = `scale(${lerp(1.3, 1, tq)})`;
-    popIn($('#pop1'), lt, .9, .45, .5, '0 50%');
-    $('#pop1').style.opacity *= 1 - P(lt, 2.1, 2.3);
-    $('#v1').style.width = lerp(8, 68, E.io3(P(lt, 1.1, 2.4))) + '%';
-    $('#v2').style.width = lerp(8, 34, E.io3(P(lt, 1.1, 2.4))) + '%';
+    animLive($('#lvh'), lt, { t0: .3, step: .4, gift: 1.0 });
   }
-
   // I · « Ton live évolue avec nos conseils et notre vision. »
   if ((lt = scene('#sI', t, 18.4, 20.1)) !== null) {
     foot($('#fI'), 51252, lt);
