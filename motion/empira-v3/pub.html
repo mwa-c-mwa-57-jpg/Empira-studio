@@ -10,11 +10,11 @@
   html, body { background:#000; overflow:hidden; width:100%; height:100%; }
   body { font-family:'Inter', sans-serif; color:#fff; -webkit-font-smoothing:antialiased; }
   #stage { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; background:#000; transform-origin:0 0; }
-  #haze { position:absolute; inset:-10%; background:radial-gradient(ellipse at 20% 30%, rgba(37,244,238,.10), transparent 45%), radial-gradient(ellipse at 80% 75%, rgba(254,44,85,.12), transparent 45%); }
+  #haze { position:absolute; inset:-10%; background:radial-gradient(ellipse at 30% 30%, rgba(203,143,47,.10), transparent 45%), radial-gradient(ellipse at 70% 75%, rgba(172,111,23,.10), transparent 45%); }
   #view { position:absolute; inset:0; perspective:2000px; }
   #world { position:absolute; left:540px; top:960px; width:0; height:0; transform-style:preserve-3d; }
   .pnl { position:absolute; left:-540px; top:-960px; width:1080px; height:1920px; overflow:hidden; background:#000; border-radius:48px;
-         box-shadow:0 0 0 2px #1d1d20, 0 0 120px rgba(37,244,238,.10); backface-visibility:hidden; }
+         box-shadow:0 0 0 2px #1d1d20, 0 0 120px rgba(203,143,47,.12); backface-visibility:hidden; }
   .dot { position:absolute; border-radius:50%; }
   .ft { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
   svg.i { width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; }
@@ -72,8 +72,14 @@
   #notif .n1 { font-size:38px; font-weight:700; } #notif .n2 { font-size:34px; color:#ccc; margin-top:4px; }
   #grain { position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay; pointer-events:none; z-index:7; }
   .spark { position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:#fff;
-           box-shadow:0 0 14px 5px #fff, -18px -10px 50px 14px rgba(37,244,238,.7), 18px 10px 50px 14px rgba(254,44,85,.7); }
-  .rays line { stroke-width:6; stroke-linecap:round; }
+           box-shadow:0 0 14px 5px #F7D27A, 0 0 50px 18px rgba(203,143,47,.85), 0 0 140px 50px rgba(172,111,23,.5); }
+  .rays line { stroke-width:3; stroke-linecap:round; }
+  .logo { position:absolute; }
+  .logo img { width:100%; height:100%; display:block; }
+  .logo .shine { position:absolute; inset:0; -webkit-mask:url(assets/logo-empira-alpha.png) center/100% 100% no-repeat; mask:url(assets/logo-empira-alpha.png) center/100% 100% no-repeat;
+                 background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.95) 50%, transparent 62%) no-repeat; background-size:250% 100%; mix-blend-mode:screen; }
+  #fan9 img { position:absolute; left:390px; top:40px; width:300px; height:396px; object-fit:cover; border-radius:22px; border:2px solid rgba(240,193,99,.55); box-shadow:0 30px 70px rgba(0,0,0,.8); }
+  #dust9 i { position:absolute; left:0; top:0; width:6px; height:6px; border-radius:50%; background:#F7D27A; box-shadow:0 0 12px #F0C163; }
 </style>
 </head>
 <body>
@@ -81,14 +87,13 @@
   <div id="haze"></div>
   <div id="view"><div id="world">
 
-    <!-- 0 · intro : étincelle → logo -->
-    <div class="pnl" id="p0" style="background:radial-gradient(ellipse at 40% 45%, rgba(37,244,238,.12), transparent 50%), radial-gradient(ellipse at 60% 55%, rgba(254,44,85,.14), transparent 50%), #000">
+    <!-- 0 · intro : étincelle dorée → logo (couleurs Empira) -->
+    <div class="pnl" id="p0" style="background:radial-gradient(ellipse at 50% 46%, rgba(203,143,47,.22), transparent 55%), #000">
       <svg class="rays" id="rays0" viewBox="-540 -540 1080 1080" style="position:absolute;left:0;top:420px;width:1080px;height:1080px"></svg>
-      <img id="logo0" src="assets/logo-empira-alpha.png" style="position:absolute;left:90px;top:620px;width:900px">
-      <div class="tt" id="h0" style="position:absolute;left:0;right:0;top:1250px;text-align:center;font-size:72px;font-weight:800">@empiraagency</div>
+      <div class="logo" id="logo0" style="left:90px;top:620px;width:900px;height:579px"><img src="assets/logo-empira-alpha.png"><div class="shine"></div></div>
+      <div id="h0" style="position:absolute;left:0;right:0;top:1260px;text-align:center;font-size:58px;font-weight:600;letter-spacing:.06em">@empiraagency</div>
       <div class="spark" id="sp0" style="left:540px;top:900px"></div>
     </div>
-
     <!-- 1 · vraie recherche TikTok -->
     <div class="pnl" id="p1"><img id="srch" style="position:absolute;left:0;top:0;width:1080px;height:2348px"></div>
 
@@ -149,17 +154,22 @@
     <!-- 8 · vidéo « Pour toi » : conseils & vision -->
     <div class="pnl" id="p8"></div>
 
-    <!-- 9 · fin : suivre @empiraagency -->
-    <div class="pnl" id="p9" style="background:radial-gradient(ellipse at 35% 40%, rgba(37,244,238,.14), transparent 50%), radial-gradient(ellipse at 65% 60%, rgba(254,44,85,.16), transparent 50%), #000">
-      <svg class="rays" id="rays9" viewBox="-540 -540 1080 1080" style="position:absolute;left:0;top:300px;width:1080px;height:1080px"></svg>
-      <img id="logo9" src="assets/logo-empira-alpha.png" style="position:absolute;left:90px;top:470px;width:900px">
-      <div class="tt" id="h9" style="position:absolute;left:0;right:0;top:1080px;text-align:center;font-size:76px;font-weight:800">@empiraagency</div>
-      <div id="b9" style="position:absolute;left:0;right:0;top:1190px;text-align:center;font-size:40px;color:#ddd">Agence de créateurs TikTok Live 🚀</div>
-      <div id="f9" style="position:absolute;left:290px;width:500px;top:1300px;height:120px;border-radius:24px;background:var(--rose);font-size:52px;font-weight:800;text-align:center;line-height:120px">Suivre</div>
-      <div id="d9" style="position:absolute;left:0;right:0;top:1470px;text-align:center;font-size:44px;font-weight:600">📩 DM pour nous rejoindre</div>
-      <div id="tap9" style="position:absolute;left:640px;top:1360px;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,.2);opacity:0"></div>
+    <!-- 9 · fin : vraies publications en éventail, logo, carte « Suivre » -->
+    <div class="pnl" id="p9" style="background:radial-gradient(ellipse at 50% 42%, rgba(203,143,47,.28), transparent 52%), radial-gradient(ellipse at 50% 100%, rgba(172,111,23,.25), transparent 50%), #000">
+      <div id="dust9"></div>
+      <div id="fan9" style="position:absolute;left:0;right:0;top:150px;height:560px;perspective:1600px"></div>
+      <div class="logo" id="logo9" style="left:150px;top:640px;width:780px;height:501px"><img src="assets/logo-empira-alpha.png"><div class="shine"></div></div>
+      <div id="r9" style="position:absolute;left:0;right:0;top:1190px;text-align:center;font-size:46px;font-weight:300;letter-spacing:.42em;padding-left:.42em;color:#F7D9A0">REJOINS L'AGENCE</div>
+      <div id="c9" style="position:absolute;left:90px;width:900px;top:1300px;height:220px;border-radius:44px;background:rgba(20,20,22,.92);border:2px solid rgba(240,193,99,.35);
+           display:flex;align-items:center;gap:28px;padding:0 34px;box-shadow:0 30px 90px rgba(0,0,0,.7), 0 0 60px rgba(203,143,47,.15)">
+        <div class="avatar av" data-d="140" style="border:4px solid #F0C163"></div>
+        <div style="flex:1;min-width:0"><div style="font-size:44px;font-weight:800">Empira-agency</div><div style="font-size:30px;color:#aaa;margin-top:6px">@empiraagency</div>
+          <div style="font-size:28px;color:#ccc;margin-top:6px">Agence de créateurs TikTok Live 🚀</div></div>
+        <div id="f9" style="width:230px;height:100px;border-radius:22px;background:var(--rose);font-size:42px;font-weight:800;text-align:center;line-height:100px;flex:none">Suivre</div>
+      </div>
+      <div id="d9" style="position:absolute;left:0;right:0;top:1580px;text-align:center;font-size:42px;font-weight:600">📩 DM pour nous rejoindre</div>
+      <div id="tap9" style="position:absolute;left:855px;top:1410px;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,.2);opacity:0"></div>
     </div>
-
   </div></div>
 
   <!-- rappels Empira (hors caméra) -->
@@ -246,20 +256,23 @@ $('#ttd').innerHTML = `<div class="half" style="left:0;width:604px"><img id="dl"
   <div class="ttb" id="emc"><div class="avatar" style="width:80px;height:80px">${avatarHTML(80)}</div>
     <div><div style="font-size:34px;font-weight:500;color:rgba(255,255,255,.62)">Empira Agency <span style="background:#F08A24;color:#fff;font-size:26px;font-weight:800;padding:3px 10px;border-radius:9px">🧡 Empira</span></div>Fier de toi Nova ! 💪</div></div>`;
 
+$('#fan9').innerHTML = ['post-viewers', 'post-live', 'post-gaming', 'post-recrute'].map(n => `<img src="assets/${n}.jpg">`).join('');
+$('#dust9').innerHTML = '<i></i>'.repeat(40);
+function shine(el, lt, at) { el.querySelector('.shine').style.backgroundPosition = `${lerp(160, -60, E.io2(P(lt, at, at + .9)))}% 0`; }
 const SERV = [['CAP', 'Formation'], ['COACH', 'Coaching personnalisé'], ['BULB', 'Création de concept'], ['PLAY', 'Vidéos'], ['CHART', 'Analyse des stats']];
 $('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="ic">${ICON[ic]}</div><div class="lb">${lb}</div></div>`).join('');
 
-['rays0', 'rays9'].forEach(id => {
+['rays0'].forEach(id => {
   $('#' + id).innerHTML = Array.from({ length: 28 }, (_, i) => {
     const a = i / 28 * Math.PI * 2 + rnd(i) * .1, r1 = 60 + rnd(i + 3) * 60, r2 = 300 + rnd(i + 9) * 260;
-    return `<line stroke="${i % 2 ? '#25F4EE' : '#FE2C55'}" x1="${Math.cos(a) * r1}" y1="${Math.sin(a) * r1}" x2="${Math.cos(a) * r2}" y2="${Math.sin(a) * r2}"/>`;
+    return `<line stroke="${i % 2 ? '#F7D27A' : '#CB8F2F'}" x1="${Math.cos(a) * r1}" y1="${Math.sin(a) * r1}" x2="${Math.cos(a) * r2}" y2="${Math.sin(a) * r2}"/>`;
   }).join('');
 });
 
 // Particules lumineuses dans l'espace 3D (donnent la sensation de profondeur pendant les déplacements)
 $('#world').insertAdjacentHTML('afterbegin', Array.from({ length: 60 }, (_, i) => {
-  const s = 10 + rnd(i) * 40, c = i % 2 ? '37,244,238' : '254,44,85';
-  return `<div class="dot" style="width:${s}px;height:${s}px;background:radial-gradient(circle, rgba(${c},.9), rgba(${c},0) 70%);transform:translate3d(${-1500 + rnd(i + 1) * 15000}px,${-1600 + rnd(i + 2) * 3200}px,${-2600 + rnd(i + 3) * 2200}px)"></div>`;
+  const s = 8 + rnd(i) * 30, c = i % 2 ? '240,193,99' : '203,143,47';
+  return `<div class="dot" style="width:${s}px;height:${s}px;background:radial-gradient(circle, rgba(${c},.9), rgba(${c},0) 70%);transform:translate3d(${-1400 + rnd(i + 1) * 2800}px,${-1200 + rnd(i + 2) * 23500}px,${-1800 + rnd(i + 3) * 1500}px)"></div>`;
 }).join(''));
 
 // Grain
@@ -280,47 +293,38 @@ window.ready = () => Promise.all($$('img').filter(i => i.getAttribute('src')).ma
 
 // ---------- Les écrans dans l'espace et la caméra ----------
 // [x, y, z, rotateY, rotateX] de chaque écran ; [début, fin] du moment où la caméra s'y pose.
-const POSE = [[0, 0, 0, 0, 0], [1350, 450, -500, -14, 4], [2600, -150, -1100, 12, -5], [3900, 500, -600, -10, 3], [5200, -200, -1300, 14, -4],
-              [6400, 450, -700, -12, 5], [7700, -150, -1200, 10, -3], [9000, 450, -500, -14, 4], [10300, -200, -1100, 12, -5], [11600, 300, -600, 0, 0]];
-const FOCUS = [[0, 1.5], [1.95, 3.6], [4.05, 5.9], [6.35, 8.5], [8.95, 11.0], [11.45, 13.7], [14.15, 15.6], [16.05, 18.2], [18.65, 20.3], [20.75, DURATION]];
-const PULL = 1500;
-$$('.pnl').forEach((p, i) => { const [x, y, z, ry, rx] = POSE[i]; p.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg)`; });
-// Rappels Empira posés entre deux écrans, un peu devant : on les croise pendant les vols de caméra
-$('#world').insertAdjacentHTML('beforeend', POSE.slice(0, -1).map((a, i) => {
-  const b = POSE[i + 1], m = k => (a[k] + b[k]) / 2;
-  const inner = i % 2
+// Les écrans sont empilés comme un fil TikTok (légèrement décalés et inclinés) ;
+// la caméra le descend en un seul mouvement continu : plus lent sur chaque écran, jamais à l'arrêt.
+const GAP = 2160, CEN = [0.75, 2.78, 4.98, 7.43, 9.98, 12.58, 14.88, 17.13, 19.48, 21.9];
+const POSE = CEN.map((_, i) => [i % 2 ? 110 : -110, i * GAP, 0, i % 2 ? -9 : 9]);
+$$('.pnl').forEach((p, i) => { const [x, y, z, ry] = POSE[i]; p.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg)`; });
+// Rappels Empira dans l'espace entre deux écrans (un intervalle sur deux)
+$('#world').insertAdjacentHTML('beforeend', [1, 3, 5, 7].map((i, k) => {
+  const a = POSE[i], b = POSE[i + 1], m = j => (a[j] + b[j]) / 2;
+  const inner = k % 2
     ? `<div class="sugg"><div class="avatar av" data-d="96"></div><div><div style="font-size:28px;color:#aaa">Compte suggéré</div><div style="font-size:40px;font-weight:800">Empira Agency</div></div>
        <div style="background:var(--rose);border-radius:16px;padding:16px 30px;font-size:34px;font-weight:800">Suivre</div></div>`
-    : `<img src="assets/logo-empira-alpha.png" style="width:360px;filter:drop-shadow(-4px -3px 0 rgba(37,244,238,.85)) drop-shadow(4px 3px 0 rgba(254,44,85,.85))"><div class="tt" style="font-size:48px;font-weight:800">@empiraagency</div>`;
-  return `<div class="rem" style="transform:translate3d(${m(0)}px,${m(1) + (i % 2 ? 700 : -650)}px,${m(2) + 350}px) rotateY(${m(3)}deg) rotateZ(var(--spin)) scale(1.7)">${inner}</div>`;
+    : `<img src="assets/logo-empira-alpha.png" style="width:300px"><div style="font-size:40px;font-weight:600;letter-spacing:.06em">@empiraagency</div>`;
+  return `<div class="rem" data-gap="${i}" style="transform:translate3d(${m(0)}px,${a[1] + GAP / 2}px,150px) rotateY(${m(3)}deg) scale(.9)">${inner}</div>`;
 }).join(''));
-
-// Pose de la caméra : posée sur un écran (avec une lente dérive), ou en vol vers le suivant (recul en arc)
-function camAt(t) {
-  const drift = (i, k) => { const p = POSE[i]; return [p[0], p[1], p[2], p[3] + (k - .5) * 3, p[4] + (k - .5) * -1.5, k * 90]; };
-  for (let i = 0; i < FOCUS.length; i++) {
-    const [a, b] = FOCUS[i];
-    if (t <= b) {
-      if (t >= a || i === 0) return { pose: drift(i, P(t, a, b)), pull: 0, i };
-      const [, pb] = FOCUS[i - 1], u = P(t, pb, a), e = E.io3(u);
-      const p0 = drift(i - 1, 1), p1 = drift(i, 0);
-      return { pose: p0.map((v, k) => lerp(v, p1[k], e)), pull: Math.sin(Math.PI * u) * PULL, i: e < .5 ? i - 1 : i };
-    }
+$$('.rem .av').forEach(a => { const d = +a.dataset.d; a.style.width = a.style.height = d + 'px'; a.innerHTML = avatarHTML(d); });
+function progress(t) { // position de la caméra le long du fil (0 = premier écran)
+  if (t <= CEN[0]) return 0;
+  for (let i = 0; i < CEN.length - 1; i++) if (t < CEN[i + 1]) {
+    const u = (t - CEN[i]) / (CEN[i + 1] - CEN[i]);
+    return i + u - .7 * Math.sin(2 * Math.PI * u) / (2 * Math.PI);
   }
-  return { pose: drift(FOCUS.length - 1, 1), pull: 0, i: FOCUS.length - 1 };
+  return CEN.length - 1;
 }
 function applyCam(t) {
-  const c = camAt(t), c0 = camAt(Math.max(0, t - 1 / FPS));
-  const [x, y, z, ry, rx, push] = c.pose;
-  $('#world').style.transform = `translateZ(${push - c.pull}px) rotateX(${-rx}deg) rotateY(${-ry}deg) translate3d(${-x}px,${-y}px,${-z}px)`;
-  const speed = Math.hypot(x - c0.pose[0], y - c0.pose[1], z - c0.pose[2], (c.pull - c0.pull));
-  $('#world').style.filter = speed > 4 ? `blur(${Math.min(3.5, speed / 50)}px)` : 'none';
-  $$('.pnl').forEach((p, j) => p.style.display = Math.abs(j - c.i) <= 2 ? 'block' : 'none');
-  // les rappels n'apparaissent que pendant les vols, jamais sur un écran où la caméra est posée
-  $$('.rem').forEach(r => r.style.opacity = cl((c.pull - 250) / 500));
+  const s = progress(t), i0 = Math.floor(s), i1 = Math.min(POSE.length - 1, i0 + 1), fr = s - i0;
+  const [x, y, z, ry] = POSE[i0].map((v, k) => lerp(v, POSE[i1][k], fr));
+  const back = 260 + (1 - E.io2(P(t, 0, CEN[0] + .4))) * 380 - E.io2(P(t, CEN[9], DURATION)) * 160;
+  $('#world').style.transform = `translateZ(${-back}px) rotateZ(${Math.sin(t * .45) * 1.2}deg) rotateY(${-ry * .8}deg) translate3d(${-x}px,${-y}px,${-z}px)`;
+  $$('.pnl').forEach((p, j) => p.style.display = Math.abs(j - s) <= 1.7 ? 'block' : 'none');
+  $$('.rem').forEach(r => { const g = +r.dataset.gap; r.style.opacity = cl(1 - Math.abs(s - g - .5) * 3.2); });
 }
-$$('.rem .av').forEach(a => { const d = +a.dataset.d; a.style.width = a.style.height = d + 'px'; a.innerHTML = avatarHTML(d); });
-const local = (t, i) => t - (i === 0 ? 0 : FOCUS[i][0] - .45);
+const local = (t, i) => t - (i === 0 ? 0 : CEN[i] - 1.1);
 
 function pop(el, lt, at, dur = .4, from = .6) {
   const q = E.oBack(P(lt, at, at + dur));
@@ -346,15 +350,15 @@ function render(t) {
   applyCam(t);
   let lt;
 
-  // 0 · étincelle → logo
+  // 0 · étincelle dorée → logo avec reflet
   lt = local(t, 0);
   { const pulse = E.o3(P(lt, 0, .45)), sp = $('#sp0');
     sp.style.opacity = lt < .62 ? pulse : 0; sp.style.transform = `scale(${.6 + pulse * .8 + Math.sin(lt * 30) * .08})`;
     rays('rays0', lt, .55);
-    const q = E.oExp(P(lt, .55, 1.0)), lg = $('#logo0');
-    lg.style.opacity = q; lg.style.transform = `scale(${lerp(1.3, 1, q)})`; glitch(lg, lt, .55);
-    const h = E.oExp(P(lt, .9, 1.3)); $('#h0').style.opacity = h; $('#h0').style.transform = `translateY(${(1 - h) * 40}px)`; }
-
+    const q = E.oExp(P(lt, .55, 1.05)), lg = $('#logo0');
+    lg.style.opacity = q; lg.style.transform = `scale(${lerp(1.15, 1, q)})`; lg.style.filter = q < .97 ? `blur(${(1 - q) * 16}px)` : 'none';
+    shine(lg, lt, .9);
+    const h = E.oExp(P(lt, 1.0, 1.4)); $('#h0').style.opacity = h; $('#h0').style.letterSpacing = lerp(.3, .06, h) + 'em'; }
   // 1 · recherche
   foot($('#srch'), 'search', local(t, 1));
 
@@ -400,16 +404,25 @@ function render(t) {
   $$('#p8 .stk').forEach((s, i) => pop(s, lt, .45 + i * .22, .35, .3));
   $$('#p8 .disc').forEach(d => d.style.transform = `rotate(${lt * 120}deg)`);
 
-  // 9 · fin : logo, puis on appuie sur « Suivre »
+  // 9 · fin : éventail de vraies publications, logo, « Rejoins l'agence », on appuie sur « Suivre »
   lt = local(t, 9);
-  { rays('rays9', lt, .45);
-    const q = E.oExp(P(lt, .45, .9)), lg = $('#logo9'); lg.style.opacity = q; lg.style.transform = `scale(${lerp(1.3, 1, q)})`; glitch(lg, lt, .45);
-    [['#h9', .7], ['#b9', .85], ['#f9', 1.0], ['#d9', 1.15]].forEach(([id, a]) => { const e = E.oExp(P(lt, a, a + .4)); $(id).style.opacity = e; $(id).style.transform = `translateY(${(1 - e) * 40}px)`; });
-    const tap = P(lt, 1.6, 2.0), done = lt > 1.75, fb = $('#f9');
+  { $$('#fan9 img').forEach((im, i) => {
+      const q = E.oBack(P(lt, .7 + i * .1, 1.25 + i * .1)), side = i - 1.5, fl = Math.sin(lt * 1.4 + i) * 10;
+      im.style.opacity = cl(P(lt, .7 + i * .1, .9 + i * .1));
+      im.style.transform = `translate(${side * 215 * q}px, ${(1 - q) * 160 + Math.abs(side) * 40 + fl}px) rotateY(${-side * 14}deg) rotateZ(${side * 7 * q}deg) scale(${lerp(.6, 1, q)})`;
+    });
+    const q = E.oExp(P(lt, .4, .95)), lg = $('#logo9');
+    lg.style.opacity = q; lg.style.transform = `scale(${lerp(1.12, 1, q)})`; lg.style.filter = q < .97 ? `blur(${(1 - q) * 14}px)` : 'none';
+    shine(lg, lt, 1.0);
+    const r = E.oExp(P(lt, .95, 1.5)); $('#r9').style.opacity = r; $('#r9').style.letterSpacing = lerp(.8, .42, r) + 'em';
+    const c = E.oBack(P(lt, 1.15, 1.6)); $('#c9').style.opacity = cl(P(lt, 1.15, 1.3)); $('#c9').style.transform = `translateY(${(1 - c) * 120}px)`;
+    const d = E.oExp(P(lt, 1.5, 1.9)); $('#d9').style.opacity = d; $('#d9').style.transform = `translateY(${(1 - d) * 30}px)`;
+    const tap = P(lt, 2.0, 2.4), done = lt > 2.15, fb = $('#f9');
     $('#tap9').style.opacity = tap > 0 ? 1 - tap : 0; $('#tap9').style.transform = `scale(${.5 + E.o3(tap) * .9})`;
-    fb.textContent = done ? 'Abonné(e) ✓' : 'Suivre'; fb.style.background = done ? '#2a2a2e' : 'var(--rose)';
-    if (lt > 1.6 && lt < 1.75) fb.style.transform += ' scale(.94)'; }
-
+    fb.textContent = done ? 'Abonné(e) ✓' : 'Suivre'; fb.style.background = done ? '#2a2a2e' : 'var(--rose)'; fb.style.fontSize = done ? '32px' : '42px';
+    fb.style.transform = lt > 2.0 && lt < 2.15 ? 'scale(.92)' : 'none';
+    $$('#dust9 i').forEach((p, k) => { const cyc = (lt * (.05 + rnd(k) * .08) + rnd(k + 9)) % 1;
+      p.style.transform = `translate(${rnd(k + 3) * 1080 + Math.sin(lt + k) * 20}px, ${1920 - cyc * 2100}px)`; p.style.opacity = Math.sin(cyc * Math.PI) * .8; }); }
   // Rappels : logos qui flottent entre les écrans, et notifications
   $$('.rem').forEach((r, k) => r.style.setProperty('--spin', Math.sin(t * 1.6 + k) * 8 + 'deg'));
   { const N = [[4.7, 6.1, 'a commencé un LIVE', 'Regarder'], [16.6, 18.0, "t'invite à rejoindre l'agence", 'Voir']];
