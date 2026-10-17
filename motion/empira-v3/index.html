@@ -64,12 +64,13 @@
   #inputbar { position:absolute; left:40px; right:240px; bottom:70px; height:96px; border-radius:48px; background:rgba(0,0,0,.45); color:rgba(255,255,255,.75); font-size:36px; display:flex; align-items:center; padding:0 36px; }
   .round { position:absolute; bottom:70px; width:96px; height:96px; border-radius:50%; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; font-size:48px; }
 
-  /* E — messages */
-  .bub { position:absolute; max-width:760px; padding:30px 40px; border-radius:44px; font-size:44px; line-height:1.28; font-weight:500; }
-  .bub.me { right:40px; background:var(--ui3); border-bottom-right-radius:12px; }
-  .bub.em { left:150px; border-bottom-left-radius:12px; font-weight:600; }
-  .dots { position:absolute; left:150px; padding:34px 40px; border-radius:44px; background:var(--ui2); display:flex; gap:14px; }
+  /* E — messages (style TikTok) */
+  .bub { position:absolute; max-width:740px; padding:26px 36px; border-radius:40px; font-size:44px; line-height:1.25; font-weight:600; }
+  .bub.me { right:36px; background:linear-gradient(115deg, #2F6BFF, #4E5BFF 55%, #7B4DFF); }
+  .bub.em { left:136px; background:#262628; }
+  .dots { position:absolute; left:136px; padding:32px 38px; border-radius:40px; background:#262628; display:flex; gap:14px; }
   .dots i { width:20px; height:20px; border-radius:50%; background:#aaa; display:block; }
+  .qr { padding:16px 30px; border-radius:40px; background:#262628; }
 
   /* F — cartes */
   .scard { position:absolute; left:-300px; top:-70px; width:600px; height:140px; flex-direction:row !important; align-items:center; border-radius:36px; display:flex; flex-direction:column; justify-content:center; gap:16px; padding:0 40px;
@@ -181,59 +182,44 @@
     </div></div>
   </div>
 
-  <!-- C · profil -->
-  <div class="scene" id="sC" style="background:var(--ui)">
+  <!-- C · vrai profil @empiraagency (capture, ligne des chiffres masquée) -->
+  <div class="scene" id="sC" style="background:#000">
     <div class="cam"><div class="plane" id="pC">
-      <div id="pf">
-        <div class="status st"></div>
-        <div style="position:absolute;left:0;right:0;top:140px;display:flex;justify-content:space-between;padding:0 50px;font-size:56px">
-          <span>ICON_BACK</span><span style="font-size:46px;font-weight:700">Empira Agency</span><span style="display:flex;gap:40px">ICON_BELL ICON_SHARE</span>
-        </div>
-        <div id="pfav" class="ring" style="position:absolute;left:390px;top:260px"><div class="avatar av" data-d="276"></div></div>
-        <div style="position:absolute;left:0;right:0;top:590px;text-align:center;font-size:44px;font-weight:700">@empiraagency</div>
-        <div class="g" style="position:absolute;left:0;right:0;top:660px;text-align:center;font-size:32px;font-weight:700;letter-spacing:.24em">DÉVELOPPER · ACCOMPAGNER · INFLUENCER</div>
-        <div style="position:absolute;left:0;right:0;top:740px;display:flex;justify-content:center;gap:20px">
-          <div class="btn gbg" id="followC" style="width:400px">Suivre</div><div class="btn" style="width:400px;background:var(--ui3)">Message</div>
-        </div>
-        <div style="position:absolute;left:0;right:0;top:880px;text-align:center;font-size:38px;line-height:1.4;color:#e6e6e6">
-          Agence de créateurs LIVE 🎥<br>Formation · Coaching · Concepts · Empira Gaming 🎮
-        </div>
-        <div id="hls" style="position:absolute;left:40px;right:40px;top:1030px;display:flex;justify-content:space-between"></div>
-        <div style="position:absolute;left:0;right:0;top:1270px;height:96px;border-bottom:2px solid #222;display:flex;justify-content:space-around;align-items:center;font-size:48px;color:var(--mute)">
-          <span style="color:#fff;border-bottom:5px solid #fff;padding-bottom:18px">ICON_GRID</span><span>ICON_LIVE</span><span>ICON_HEART</span>
-        </div>
-        <div id="grid" style="top:1372px"></div>
-      </div>
+      <img id="prof" src="assets/profil-empira.jpg" style="position:absolute;left:0;top:0;width:1080px;height:2348px">
     </div></div>
-    <img id="zoomimg">
   </div>
-
   <!-- D · LIVE en match : vraie interface TikTok (filtre) sur nos vidéos -->
   <div class="scene" id="sD" style="background:#000">
     <div class="cam" style="perspective:2600px"><div class="plane" id="pD">
       <div class="ttv" id="ttd" style="left:98px;top:0;transform:scale(.7323)"></div>
     </div></div>
   </div>
-  <!-- E · messages -->
-  <div class="scene" id="sE" style="background:var(--ui)">
+  <!-- E · messages privés, style TikTok -->
+  <div class="scene" id="sE" style="background:#000">
     <div class="cam"><div class="plane" id="pE">
       <div class="status st"></div>
-      <div style="position:absolute;left:0;right:0;top:130px;height:170px;display:flex;align-items:center;gap:26px;padding:0 40px;border-bottom:2px solid #1f1f22">
-        <span style="font-size:56px">ICON_BACK</span>
-        <div class="ring"><div class="avatar av" data-d="104"></div></div>
-        <div><div style="font-size:44px;font-weight:700">Empira Agency</div><div style="font-size:32px;color:var(--or-clair)">● En ligne</div></div>
+      <div style="position:absolute;left:0;right:0;top:140px;height:130px;display:flex;align-items:center;gap:22px;padding:0 36px">
+        <span style="font-size:60px">ICON_BACK</span>
+        <div class="avatar av" data-d="92"></div>
+        <div style="font-size:44px;font-weight:700;flex:1">Empira-agency</div>
+        <span style="font-size:58px">ICON_PHONE</span><span style="font-size:58px;margin-left:30px">ICON_MORE</span>
       </div>
-      <div style="position:absolute;left:0;right:0;top:350px;text-align:center;font-size:32px;color:var(--mute)">Aujourd'hui 21:04</div>
-      <div class="bub me" id="m1" style="top:430px">Salut ! Je veux me lancer en LIVE 🎥 Vous pouvez m'aider ?</div>
-      <div class="dots" id="dots" style="top:690px"><i></i><i></i><i></i></div>
-      <div class="bub em gbg" id="m2" style="top:690px">Oui ! On commence par créer ton concept 🔥</div>
-      <div class="bub em gbg" id="m3" style="top:920px">Formation, coaching, vidéos, stats… on t'accompagne de A à Z.</div>
-      <div class="bub me" id="m4" style="top:1230px">Go ! 🙌</div>
-      <div id="emav" style="position:absolute;left:40px;top:1030px"><div class="avatar av" data-d="86"></div></div>
-      <div style="position:absolute;left:40px;right:40px;bottom:80px;height:110px;border-radius:55px;background:var(--ui2);display:flex;align-items:center;padding:0 40px;font-size:40px;color:var(--mute)">Message…</div>
+      <div style="position:absolute;left:0;right:0;top:330px;text-align:center;font-size:32px;color:var(--mute)">Aujourd'hui 21:04</div>
+      <div class="bub me" id="m1" style="top:410px">Salut ! Je veux me lancer en LIVE 🎥 Vous pouvez m'aider ?</div>
+      <div class="dots" id="dots" style="top:680px"><i></i><i></i><i></i></div>
+      <div class="bub em" id="m2" style="top:680px">Oui ! On commence par créer ton concept 🔥</div>
+      <div class="bub em" id="m3" style="top:900px">Formation, coaching, vidéos, stats… on t'accompagne de A à Z.</div>
+      <div id="emav" style="position:absolute;left:36px;top:1040px"><div class="avatar av" data-d="80"></div></div>
+      <div class="bub me" id="m4" style="top:1210px">Go ! 🙌</div>
+      <div style="position:absolute;left:36px;right:0;bottom:200px;display:flex;gap:18px;font-size:44px;white-space:nowrap">
+        <div class="qr">❤️</div><div class="qr">😂</div><div class="qr">👍</div><div class="qr">👆</div><div class="qr" style="font-size:36px;font-weight:600">🎮 Jeux</div><div class="qr" style="font-size:36px;font-weight:600">✨ Effets</div>
+      </div>
+      <div style="position:absolute;left:36px;right:36px;bottom:70px;display:flex;align-items:center;gap:22px">
+        <div style="width:100px;height:100px;border-radius:50%;background:#262628;display:flex;align-items:center;justify-content:center;font-size:52px">ICON_CAM</div>
+        <div style="flex:1;height:104px;border-radius:52px;background:#262628;display:flex;align-items:center;justify-content:space-between;padding:0 36px;font-size:40px;color:#8e8e93">Message…<span style="color:#fff;font-size:50px;display:flex;gap:30px">ICON_IMG ICON_MIC</span></div>
+      </div>
     </div></div>
   </div>
-
   <!-- F · services en cartes 3D -->
   <div class="scene" id="sF" style="background:radial-gradient(ellipse at 50% 60%, #2a1d08 0%, #000 65%)">
     <div style="position:absolute;left:0;right:0;top:200px;text-align:center;font-weight:800;font-size:100px;letter-spacing:-.03em;line-height:1" id="tF">On t'accompagne<br><span class="g">de A à Z</span></div>
@@ -263,7 +249,7 @@
     </div>
     <div class="cam"><div class="plane" id="pH">
       <div id="gcard">
-        <div class="ttv" id="tth" style="left:0;top:0;transform:scale(.5804)"></div>
+        <img id="hrec" style="position:absolute;left:0;top:0;width:700px;height:1522px">
       </div>
     </div></div>
   </div>
@@ -325,6 +311,11 @@ const ICON = {
   COACH: '<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 4-6 7-6s6 2 7 6 M17 6c1.5 1 1.5 4 0 5 M19.5 4c3 2.5 3 7.5 0 10"/></svg>',
   BULB: '<svg class="i" viewBox="0 0 24 24"><path d="M9 18h6 M10 21h4 M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/></svg>',
   PLAY: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>',
+  PHONE: '<svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+  MORE: '<svg class="i" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  CAM: '<svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  IMG: '<svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.5"/><path d="M20 15l-5-5-9 9"/></svg>',
+  MIC: '<svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
   CHART: '<svg class="i" viewBox="0 0 24 24"><path d="M4 20V4 M4 20h16 M7 15l4-4 3 3 5-6"/></svg>',
 };
 document.querySelectorAll('.scene').forEach(s => { s.innerHTML = s.innerHTML.replace(/ICON_([A-Z]+)/g, (_, k) => ICON[k]); });
@@ -339,10 +330,6 @@ const STATUS = `<span>21:04</span><span class="r"><svg class="i" viewBox="0 0 24
 $$('.st').forEach(s => s.innerHTML = STATUS);
 
 $('#vrowB').innerHTML = [1, 2, 5].map(i => `<img src="thumbs/${i}.jpg">`).join('');
-const HL = [['CAP', 'Formation'], ['COACH', 'Coaching'], ['BULB', 'Concepts'], ['PLAY', 'Vidéos'], ['CHART', 'Stats'], ['PAD', 'Gaming']];
-$('#hls').innerHTML = HL.map(([ic, lb]) => `<div class="hl"><div class="c">${ICON[ic]}</div>${lb}</div>`).join('');
-$('#grid').innerHTML = Array.from({ length: 9 }, (_, i) =>
-  `<div class="cell"><img src="${i === 0 ? 'footage/42316/000.jpg' : `thumbs/${i}.jpg`}">${[0, 3, 7].includes(i) ? '<div class="badge gbg">LIVE</div>' : ''}</div>`).join('');
 // Interface LIVE TikTok reproduite en HTML (relevée sur une vraie capture de LIVE match) :
 // pastille créateur « +1 », avatars classés, pastilles, barre de match, écran partagé,
 // bannière de cadeau, rangées de classement, bulles de commentaires, barre « Saisis ton message… ».
@@ -428,7 +415,7 @@ function buildTT(el, p) {
     <div class="half" style="left:607px;width:599px"><img id="${p}r"></div>
     <img class="flt" src="assets/tiktok-live-filtre.png">`;
 }
-buildTT($('#ttd'), 'd'); buildTT($('#tth'), 'h');
+buildTT($('#ttd'), 'd');
 const SERV = [['CAP', 'Formation'], ['COACH', 'Coaching personnalisé'], ['BULB', 'Création de concept'], ['PLAY', 'Vidéos'], ['CHART', 'Analyse des stats']];
 $('#cardsF').innerHTML = SERV.map(([ic, lb]) => `<div class="scard"><div class="ic">${ICON[ic]}</div><div class="lb">${lb}</div></div>`).join('');
 $('#bok').innerHTML = Array.from({ length: 16 }, (_, i) => {
@@ -449,7 +436,7 @@ const grainSrc = document.createElement('canvas'); grainSrc.width = grainSrc.hei
 const gctx = $('#grain').getContext('2d'), gpat = gctx.createPattern(grainSrc, 'repeat');
 
 // ---------- Rushes ----------
-const COUNT = { 42316: 79, 43531: 79, 51252: 60, 51613: 79 };
+const COUNT = { 42316: 79, 43531: 79, 51252: 60, 51613: 79, rec: 78 };
 function foot(img, id, lt) {
   const n = Math.min(COUNT[id] - 1, Math.max(0, Math.floor(lt * FPS)));
   const src = `footage/${id}/${String(n).padStart(3, '0')}.jpg`;
@@ -531,26 +518,15 @@ function render(t) {
     $('#followB').textContent = lt > 1.6 ? 'Suivi ✓' : 'Suivre';
   }
 
-  // C · profil, défilement, puis la vignette LIVE s'ouvre en plein écran
+  // C · vrai profil : on le parcourt, puis la caméra plonge dans la publication LIVE
   if ((lt = scene('#sC', t, 3.6, 6.2, { noOut: true })) !== null) {
-    const sc = E.io3(P(lt, .9, 1.8));
-    $('#pC').style.transform = `rotateX(${lerp(10, 2, E.io3(P(lt, 0, 1.6)))}deg) rotateY(${lerp(12, -3, E.io3(P(lt, 0, 2)))}deg) translateY(${-sc * 760}px)`;
-    popIn($('#pfav'), lt, .15, .5, .4);
-    $$('#hls .hl').forEach((h, i) => popIn(h, lt, .35 + i * .06, .4, .3));
-    $$('#grid .cell').forEach((c, i) => popIn(c, lt, .6 + i * .05, .45, .7));
-    // ouverture de la vignette 0 en plein écran (élément partagé)
-    const z = E.ioExp(P(lt, 2.0, 2.6)), zi = $('#zoomimg');
-    if (lt >= 2.0) {
-      const cell = $('#grid .cell').getBoundingClientRect(), st = $('#stage').getBoundingClientRect(), s = st.width / 1080;
-      const x0 = (cell.left - st.left) / s, y0 = (cell.top - st.top) / s, w0 = cell.width / s, h0 = cell.height / s;
-      zi.style.display = 'block'; zi.src = 'footage/42316/000.jpg';
-      zi.style.left = lerp(x0, 98, z) + 'px'; zi.style.top = lerp(y0, 439, z) + 'px';
-      zi.style.width = lerp(w0, 442, z) + 'px'; zi.style.height = lerp(h0, 765, z) + 'px';
-      zi.style.borderRadius = lerp(12, 0, z) + 'px';
-      $('#pC').style.filter = `blur(${z * 12}px) brightness(${1 - z * .85})`;
-    } else { zi.style.display = 'none'; $('#pC').style.filter = 'none'; }
+    const sc = E.io3(P(lt, .8, 1.8)), dive = E.iExp(P(lt, 1.95, 2.6));
+    const pc = $('#pC');
+    pc.style.transformOrigin = `539px ${1537 - sc * 428}px`;
+    pc.style.transform = `rotateX(${lerp(10, 0, E.io3(P(lt, 0, 1.6)))}deg) rotateY(${lerp(12, 0, E.io3(P(lt, 0, 1.9)))}deg) scale(${1 + dive * 5})`;
+    $('#prof').style.transform = `translateY(${-sc * 428}px)`;
+    pc.style.filter = dive > .01 ? `blur(${dive * 14}px) brightness(${1 + dive * .6})` : 'none';
   }
-
   // D · LIVE en match : le téléphone flotte en 3D, on s'en approche
   if ((lt = scene('#sD', t, 6.2, 8.6, { noIn: true })) !== null) {
     foot($('#dl'), 42316, lt); foot($('#dr'), 51252, lt);
@@ -601,7 +577,7 @@ function render(t) {
     $('#pH').style.transform = `rotateY(${lerp(14, -6, E.io3(P(lt, 0, 2.6)))}deg) rotateX(${lerp(6, 0, E.io3(P(lt, 0, 2)))}deg) translateZ(${lerp(-60, 20, E.io3(P(lt, 0, 2.6)))}px)`;
     const tq = E.oExp(P(lt, .1, .5));
     $('#tH').style.opacity = tq; $('#tH').style.transform = `scale(${lerp(1.3, 1, tq)})`;
-    foot($('#hl'), 43531, lt); foot($('#hr'), 51613, lt);
+    foot($('#hrec'), 'rec', lt);
   }
   // I · « Ton live évolue avec nos conseils et notre vision. »
   if ((lt = scene('#sI', t, 18.4, 20.1)) !== null) {
