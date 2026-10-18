@@ -64,6 +64,7 @@ async function login(pw) {
   } catch {
     r = { status: 0, ok: false, data: {} };
   }
+  if (r.ok && !Array.isArray(r.data.products)) r = { status: 0, ok: false, data: {} }; // pas de fonction admin derrière
   if (!r.ok && [0, 404, 405, 501].includes(r.status) && !isRealSite()) {
     demo = true;
     r = await api("GET");
