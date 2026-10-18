@@ -4,19 +4,41 @@
 // des formulaires (affichés dans le terminal au lieu d'être envoyés à Netlify).
 // Pour tester le paiement Stripe en mode test, définis la clé avant de lancer :
 //   STRIPE_SECRET_KEY=sk_test_… npm run dev
+// Espace admin en local (http://localhost:8080/admin) : les modifications sont
+// écrites directement dans src/ au lieu de GitHub :
+//   ADMIN_PASSWORD=un-mot-de-passe-long npm run dev
 
 import { createServer } from "node:http";
-import { readFileSync, existsSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
 import { join, extname, normalize, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { handleCheckout } from "../server/checkout.js";
+import { handleAdmin } from "../server/admin/handler.js";
+import { PRODUCTS_PATH, serializeProducts, parseProducts } from "../server/admin/products-file.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 const port = Number(process.env.PORT) || 8080;
 
-execFileSync(process.execPath, [join(root, "scripts/build.mjs")], { stdio: "inherit" });
+const build = () => execFileSync(process.execPath, [join(root, "scripts/build.mjs")], { stdio: "inherit" });
+build();
+
+// Stockage local de l'espace admin : mêmes opérations que sur GitHub, dans src/.
+const productsFile = join(root, PRODUCTS_PATH);
+const localStorage = {
+  async load() {
+    const source = readFileSync(productsFile, "utf8");
+    return { products: parseProducts(source), version: String(statSync(productsFile).mtimeMs) };
+  },
+  async save({ products, files = [], message }) {
+    for (const f of files) writeFileSync(join(root, f.path), Buffer.from(f.base64, "base64"));
+    writeFileSync(productsFile, serializeProducts(products));
+    console.log(`\n  ${message} (enregistré en local)`);
+    build();
+    return { version: String(statSync(productsFile).mtimeMs) };
+  },
+};
 
 const TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -74,7 +96,7 @@ function resolveFile(urlPath) {
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  if (url.pathname === "/api/checkout") {
+  if (url.pathname === "/api/checkout" || url.pathname === "/api/admin") {
     const chunks = [];
     for await (const c of req) chunks.push(c);
     const request = new Request(url, {
@@ -82,7 +104,8 @@ createServer(async (req, res) => {
       headers: req.headers,
       body: req.method === "POST" ? Buffer.concat(chunks) : undefined,
     });
-    const response = await handleCheckout(request, process.env);
+    const response =
+      url.pathname === "/api/admin" ? await handleAdmin(request, process.env, localStorage) : await handleCheckout(request, process.env);
     res.writeHead(response.status, Object.fromEntries(response.headers));
     res.end(Buffer.from(await response.arrayBuffer()));
     return;

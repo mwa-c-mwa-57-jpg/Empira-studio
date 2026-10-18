@@ -11,7 +11,7 @@ npm run dev          # http://localhost:8080 (aucune dépendance à installer)
 npm run build        # génère le site final dans dist/
 ```
 
-Pour tester le paiement Stripe en mode test : `STRIPE_SECRET_KEY=sk_test_… npm run dev`. Sans clé, le panier propose d'envoyer la commande par e-mail. Les formulaires envoyés en local s'affichent dans le terminal.
+Pour tester le paiement Stripe en mode test : `STRIPE_SECRET_KEY=sk_test_… npm run dev`. Pour tester l'espace admin (http://localhost:8080/admin, modifications écrites dans `src/`) : `ADMIN_PASSWORD=un-mot-de-passe-long npm run dev`. Sans clé, le panier propose d'envoyer la commande par e-mail. Les formulaires envoyés en local s'affichent dans le terminal.
 
 ## Organisation
 
@@ -19,13 +19,15 @@ Pour tester le paiement Stripe en mode test : `STRIPE_SECRET_KEY=sk_test_… npm
 site.config.json        Domaine, e-mail, réseaux sociaux (injectés dans toutes les pages)
 src/pages/              Les pages (accueil, boutique, produit, agency, contact, légal…)
 src/partials/           En-tête, pied de page, panier, éléments communs
-src/assets/js/catalog.js   Catalogue produits : prix, descriptions, packs, livraison
+src/assets/js/products-data.js  Les produits (modifiés depuis l'espace admin /admin)
+src/assets/js/catalog.js   Catalogue : catégories, sélections, livraison
 src/assets/css/         Design (couleurs, typographies, animations)
 src/assets/js/          Interactions : panier, WebGL, démo live, configurateur…
 src/assets/img|video|fonts
 src/public/             _headers (sécurité HTTP), robots.txt, manifeste
 server/checkout.js      Paiement Stripe (prix vérifiés côté serveur)
 server/payments/        Stripe et contrôle du panier
+server/admin/           Espace admin : validation et enregistrement sur GitHub
 netlify/functions/      Branchement de la fonction de paiement sur Netlify
 functions/api/          Branchement équivalent pour Cloudflare Pages
 scripts/                Génération du site et serveur local

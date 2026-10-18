@@ -1,4 +1,4 @@
-import { getProduct, fullName, SELECTIONS, selectionTotal } from "../catalog.js";
+import { getProduct, fullName, SELECTIONS, selectionTotal, LISTED } from "../catalog.js";
 import { $, $$, esc, price, icons, finePointer, reducedMotion, lerp } from "../utils.js";
 import { cardHTML, stagger } from "../products-ui.js";
 import { heroGL } from "../hero-gl.js";
@@ -6,7 +6,12 @@ import { liveDemo, heroOverlay } from "../live-demo.js";
 import { configurator } from "../configurator.js";
 import { journey } from "../journey.js";
 
+// Les 4 produits mis en avant (complétés par d'autres si l'un est retiré depuis l'admin).
 const FEATURED = ["maono-pd200xs", "maono-g1-neo", "rode-podmic", "tonor-micro-usb-xlr"];
+const featuredProducts = () => {
+  const list = FEATURED.map(getProduct).filter(Boolean);
+  return list.concat(LISTED.filter((p) => !list.includes(p))).slice(0, 4);
+};
 
 function heroParallax(stage) {
   if (!stage || !finePointer() || reducedMotion()) return;
@@ -67,7 +72,7 @@ export function init() {
 
   const featured = $("[data-featured]");
   if (featured) {
-    featured.innerHTML = FEATURED.map((id, i) => cardHTML(getProduct(id), i)).join("");
+    featured.innerHTML = featuredProducts().map((p, i) => cardHTML(p, i)).join("");
     stagger(featured);
   }
   const packs = $("[data-packs]");

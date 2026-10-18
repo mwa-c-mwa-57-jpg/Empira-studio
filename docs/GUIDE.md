@@ -20,7 +20,7 @@ Ce guide explique comment mettre le site en ligne sur **empirastudio.com**, l'h�
 
 ### Les prix à confirmer
 
-Les prix ci-dessous viennent des captures envoyées (prix publics constatés chez Amazon, Thomann, maono.com) ou sont **estimés** quand aucun prix n'était visible. **Ce sont des prix de départ : remplace-les par tes prix de vente** dans `src/assets/js/catalog.js`.
+Les prix ci-dessous viennent des captures envoyées (prix publics constatés chez Amazon, Thomann, maono.com) ou sont **estimés** quand aucun prix n'était visible. **Ce sont des prix de départ : remplace-les par tes prix de vente** depuis l'espace admin (`/admin`, partie 6).
 
 | Produit | Prix sur le site | Origine |
 |---|---|---|
@@ -149,7 +149,44 @@ Tant que la clé Stripe n'est pas ajoutée, le panier propose au client d'**envo
 
 ---
 
-## 6. La sécurité : ce qui est déjà en place
+## 6. Gérer tes produits : l'espace admin
+
+Le site a sa propre fenêtre de gestion : **empirastudio.com/admin**, protégée par un mot de passe. Depuis ton téléphone ou ton ordinateur, tu peux :
+- **ajouter un produit** : photo, nom, marque, type, catégorie, prix, badge, accroche, description et caractéristiques ;
+- **modifier** n'importe quel produit (un prix, une photo, un texte) ;
+- **retirer** un produit (le bouton demande une confirmation).
+
+Chaque enregistrement crée une nouvelle version du site sur GitHub, et Netlify le republie tout seul : la boutique est à jour **1 à 2 minutes** plus tard. Rien n'est jamais perdu : l'historique GitHub garde toutes les versions, et je peux revenir en arrière si besoin.
+
+Conseils pour les photos : idéalement une photo **détourée** (fond transparent, PNG ou WebP), sinon sur fond blanc. Elle est réduite automatiquement. Si tu n'as qu'une photo avec un décor, envoie-la-moi et je la détoure.
+
+### 6.1 Activer l'espace admin (une seule fois, ≈ 10 min)
+
+**1. Créer une clé GitHub** qui autorise le site à enregistrer tes produits, et uniquement ça :
+1. Sur github.com : ta photo de profil → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
+2. Nom : `Empira admin`. Durée : la plus longue proposée (note la date d'expiration pour la renouveler).
+3. **Repository access → Only select repositories** → choisis `Empira-studio`.
+4. **Permissions → Repository permissions → Contents → Read and write**. Ne coche rien d'autre.
+5. **Generate token** et copie la clé (elle commence par `github_pat_`).
+
+**2. Dans Netlify** : **Site configuration → Environment variables**, ajoute ces variables :
+
+| Nom | Valeur |
+|---|---|
+| `ADMIN_PASSWORD` | Ton mot de passe admin, **12 caractères minimum** (une phrase comme `Micro-Doré-Live-2026` fonctionne bien) |
+| `GITHUB_TOKEN` | La clé GitHub copiée à l'étape 1 |
+| `GITHUB_REPO` | `mwa-c-mwa-57-jpg/Empira-studio` |
+| `GITHUB_BRANCH` | `main` (la branche publiée par Netlify) |
+
+**3.** **Deploys → Trigger deploy**, puis ouvre `empirastudio.com/admin` et connecte-toi.
+
+> ⚠️ Comme la clé Stripe, la clé GitHub et le mot de passe admin ne s'écrivent **jamais** dans le code ni dans un message. Si tu penses qu'ils ont fuité : change `ADMIN_PASSWORD` dans Netlify, et supprime la clé dans GitHub pour en créer une nouvelle.
+
+Tu y accèdes par le petit lien **Admin** tout en bas du site, ou directement par `empirastudio.com/admin`. La page n'est pas indexée par Google, et sans le mot de passe on ne peut rien y faire.
+
+---
+
+## 7. La sécurité : ce qui est déjà en place
 
 | Protection | Ce que ça empêche |
 |---|---|
@@ -159,6 +196,7 @@ Tant que la clé Stripe n'est pas ajoutée, le panier propose au client d'**envo
 | **Prix recalculés côté serveur** | Qu'un petit malin modifie le prix dans son navigateur avant de payer |
 | **Paiement hébergé par Stripe (PCI-DSS niveau 1)** | Aucune donnée de carte ne passe par ton site : rien à voler |
 | **Clé Stripe en variable d'environnement** | Fuite de la clé via le code source |
+| **Espace admin protégé par mot de passe, clé GitHub limitée au seul dépôt du site** | Qu'un inconnu modifie tes produits ou tes prix ; même en cas de fuite, la clé ne donne accès à rien d'autre |
 | **Contrôle d'origine, limites de taille et de quantité sur l'API** | Abus de la fonction de paiement depuis un autre site |
 | **Piège à robots + filtre anti-spam sur les formulaires** | Spam |
 | **Aucune base de données ni espace d'administration en ligne** | Il n'y a rien à pirater : pas de mot de passe admin, pas de WordPress à mettre à jour |
@@ -171,7 +209,7 @@ Tant que la clé Stripe n'est pas ajoutée, le panier propose au client d'**envo
 
 ---
 
-## 7. Obligations légales (France)
+## 8. Obligations légales (France)
 
 Avant d'encaisser le premier euro :
 
@@ -185,15 +223,15 @@ Avant d'encaisser le premier euro :
 
 ---
 
-## 8. Modifier le site toi-même
+## 9. Modifier le site toi-même
 
 | Je veux… | Fichier à modifier |
 |---|---|
-| Changer un prix, ajouter ou retirer un produit | `src/assets/js/catalog.js` (le prix payé est relu ici, impossible de tricher). Pour une variante (coloris, longueur), duplique le produit avec un nouvel `id` et le même `group` |
+| Changer un prix, ajouter ou retirer un produit | L'espace admin **/admin** (partie 6). Les produits sont stockés dans `src/assets/js/products-data.js` ; le prix payé est relu côté serveur, impossible de tricher. Pour une variante (coloris, longueur), duplique le produit avec un nouvel `id` et le même `group` |
 | Changer les frais et le seuil de livraison offerte | `SHIPPING` dans `src/assets/js/catalog.js` |
 | Changer l'e-mail, le téléphone, les réseaux sociaux, le domaine | `site.config.json` (`tiktok` = lien de ton compte TikTok, `tiktokHandle` = ton pseudo sans @) |
 | Modifier un texte | `src/pages/*.html` |
-| Remplacer une image produit | `src/assets/img/products/` (photos détourées PNG/WebP de 800 × 800 px idéalement, puis mettre à jour le chemin dans `catalog.js`) |
+| Remplacer une image produit | Depuis l'espace admin : ouvre le produit, choisis une nouvelle photo, enregistre |
 | Remplacer une vidéo | `src/assets/video/` : garde les mêmes noms (`stream-loop.mp4`, `brand-reel.mp4`), format MP4 H.264, sans son, moins de 5 Mo, plus une image `-poster.jpg` |
 | Modifier les couleurs (or, noir) | Variables en haut de `src/assets/css/styles.css` |
 
@@ -208,7 +246,7 @@ Une fois en ligne, chaque modification envoyée sur GitHub est publiée automati
 
 ---
 
-## 9. Budget récapitulatif
+## 10. Budget récapitulatif
 
 | Poste | Coût estimé |
 |---|---|
@@ -220,7 +258,7 @@ Une fois en ligne, chaque modification envoyée sur GitHub est publiée automati
 
 ---
 
-## 10. Pistes pour la suite
+## 11. Pistes pour la suite
 
 - Remplacer les illustrations par de **vraies photos** de ton matériel et filmer une **vraie vidéo** de ton studio pour le haut de page.
 - Ajouter les **avis clients** vérifiés (Trustpilot, Avis Vérifiés, Google).

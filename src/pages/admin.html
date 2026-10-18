@@ -1,0 +1,85 @@
+<!--
+title: Espace admin | Empira Studio
+description: Gestion des produits de la boutique Empira Studio.
+sitemap: no
+nav: admin
+-->
+{{> head}}
+{{> logo}}
+<main id="main" class="admin">
+  <section class="admin-login" data-admin-login>
+    <svg class="admin-mark" viewBox="0 0 100 100" aria-hidden="true"><use href="#empira-mark" fill="url(#gold-grad)"/></svg>
+    <p class="eyebrow no-rule">Empira Studio</p>
+    <h1 class="h-md">Espace admin</h1>
+    <p class="muted">Ajoute, modifie ou retire les produits de ta boutique.</p>
+    <form class="form" data-admin-login-form>
+      <div class="field">
+        <label for="a-password">Mot de passe</label>
+        <input id="a-password" type="password" name="password" autocomplete="current-password" required>
+      </div>
+      <p class="admin-error" data-admin-login-error role="alert" hidden></p>
+      <button class="btn btn-primary btn-block" type="submit">Entrer</button>
+    </form>
+    <a class="admin-back" href="index.html">← Retour au site</a>
+  </section>
+
+  <section class="admin-app" data-admin-app hidden>
+    <header class="admin-head">
+      <div>
+        <p class="eyebrow no-rule">Espace admin</p>
+        <h1 class="h-md">Tes produits <span class="admin-count" data-admin-count></span></h1>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" type="button" data-admin-new>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Ajouter un produit
+        </button>
+        <a class="btn btn-ghost btn-sm" href="boutique.html" target="_blank" rel="noopener">Voir la boutique</a>
+        <button class="btn btn-ghost btn-sm" type="button" data-admin-logout>Se déconnecter</button>
+      </div>
+    </header>
+    <p class="admin-banner" data-admin-banner role="status" hidden></p>
+    <input class="admin-search" type="search" placeholder="Rechercher un produit…" aria-label="Rechercher un produit" data-admin-search>
+    <div class="admin-list" data-admin-list></div>
+  </section>
+</main>
+
+<dialog class="modal admin-editor" data-admin-editor aria-labelledby="editor-title">
+  <button class="icon-btn modal-close" type="button" data-editor-close aria-label="Fermer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <form class="form modal-body" data-editor-form novalidate>
+    <h2 class="h-md" id="editor-title" data-editor-title>Nouveau produit</h2>
+
+    <div class="photo-field">
+      <div class="photo-preview" data-photo-preview><span>Aucune photo</span></div>
+      <div class="field">
+        <label for="e-photo">Photo du produit</label>
+        <input id="e-photo" type="file" accept="image/png,image/jpeg,image/webp" data-photo-input>
+        <small class="field-hint">Idéal : photo détourée sur fond transparent (PNG ou WebP), sinon sur fond blanc. Elle est réduite automatiquement.</small>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field"><label for="e-name">Nom du produit *</label><input id="e-name" name="name" maxlength="80" placeholder="Ex. Maono PD200XS + bras"></div>
+      <div class="field"><label for="e-brand">Marque</label><input id="e-brand" name="brand" maxlength="40" placeholder="Ex. Maono"></div>
+    </div>
+    <div class="field"><label for="e-kind">Type de produit *</label><input id="e-kind" name="kind" maxlength="100" placeholder="Ex. Micro dynamique USB/XLR"></div>
+    <div class="form-row">
+      <div class="field"><label for="e-category">Catégorie *</label><select id="e-category" name="category" data-editor-categories></select></div>
+      <div class="field"><label for="e-price">Prix de vente TTC (€) *</label><input id="e-price" name="price" inputmode="decimal" placeholder="Ex. 79,90"></div>
+    </div>
+    <div class="field"><label for="e-badge">Badge (facultatif)</label><input id="e-badge" name="badge" maxlength="24" placeholder="Ex. Nouveau, Pro, Best-seller"></div>
+    <div class="field"><label for="e-short">Accroche *</label><textarea id="e-short" name="short" maxlength="240" rows="2" placeholder="Une phrase qui donne envie, affichée sur la carte du produit."></textarea></div>
+    <div class="field"><label for="e-description">Description *</label><textarea id="e-description" name="description" maxlength="2500" rows="5" placeholder="Ce que fait le produit, pour qui, ce qui est inclus."></textarea></div>
+    <div class="field"><label for="e-specs">Caractéristiques (une par ligne)</label><textarea id="e-specs" name="specs" rows="4" placeholder="Double sortie USB-C et XLR&#10;Câbles inclus"></textarea></div>
+
+    <p class="admin-error" data-editor-error role="alert" hidden></p>
+    <div class="editor-actions">
+      <button class="btn btn-primary" type="submit" data-editor-save>Enregistrer</button>
+      <button class="btn btn-ghost" type="button" data-editor-close>Annuler</button>
+      <button class="btn btn-ghost editor-delete" type="button" data-editor-delete hidden>Supprimer</button>
+    </div>
+  </form>
+</dialog>
+{{> overlays}}

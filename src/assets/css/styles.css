@@ -4067,3 +4067,221 @@ dialog {
     animation: none;
   }
 }
+
+/* ---------- Espace admin ---------- */
+.admin {
+  min-height: 100dvh;
+  padding: calc(var(--safe-top) + clamp(32px, 6vw, 64px)) var(--gutter) 80px;
+}
+.admin-login {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  width: min(420px, 100%);
+  margin: 6vh auto 0;
+  padding: clamp(24px, 5vw, 40px);
+  border-radius: var(--radius-lg);
+  background: var(--bg-2);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+.admin-login .form {
+  width: 100%;
+}
+.admin-mark {
+  width: 48px;
+  height: 48px;
+}
+.admin-back {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.admin-error {
+  color: var(--red);
+  font-size: 0.88rem;
+}
+.admin-app {
+  display: grid;
+  gap: 20px;
+  width: min(880px, 100%);
+  margin: 0 auto;
+}
+.admin-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.admin-count {
+  color: var(--dim);
+  font-weight: 600;
+}
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.admin-banner {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: rgb(var(--accent-rgb) / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / 0.3);
+  font-size: 0.9rem;
+}
+.admin-banner[data-tone="info"] {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--muted);
+}
+.admin-search {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.admin-search:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.admin-list {
+  display: grid;
+  gap: 8px;
+}
+.admin-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 16px 10px 10px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.25s, background-color 0.25s;
+}
+.admin-row:hover,
+.admin-row:focus-visible {
+  outline: none;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / 0.45);
+}
+.admin-row img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.admin-row-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.admin-row-main strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.admin-row-main small {
+  color: var(--gold);
+  font-weight: 600;
+}
+.admin-row-main span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.admin-row-price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.admin-row-edit {
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.admin-empty {
+  padding: 24px 0;
+  text-align: center;
+}
+.admin-editor {
+  width: min(640px, calc(100vw - 24px));
+}
+.admin-editor .form {
+  gap: 14px;
+}
+.admin-editor textarea {
+  min-height: 0;
+}
+.photo-field {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+.photo-preview {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  border-radius: var(--radius);
+  background: radial-gradient(circle at 50% 55%, rgb(var(--accent-rgb) / 0.2), transparent 70%), var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--dim);
+  font-size: 0.75rem;
+  overflow: hidden;
+}
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.photo-field input[type="file"] {
+  min-height: 0;
+  padding: 10px;
+  font-size: 0.85rem;
+}
+.field-hint {
+  color: var(--dim);
+  font-size: 0.75rem;
+}
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.editor-delete {
+  margin-left: auto;
+  color: var(--red);
+}
+@media (max-width: 560px) {
+  .admin-row {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+  .admin-row img {
+    width: 48px;
+    height: 48px;
+  }
+  .admin-row-edit {
+    display: none;
+  }
+  .photo-field {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+  .photo-preview {
+    width: 88px;
+    height: 88px;
+  }
+  .editor-delete {
+    margin-left: 0;
+  }
+}

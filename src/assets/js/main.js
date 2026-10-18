@@ -15,6 +15,7 @@ const PAGES = {
   contact: () => import("./pages/contact.js"),
   succes: () => import("./pages/success.js"),
   404: () => import("./pages/notfound.js"),
+  admin: () => import("./pages/admin.js"),
 };
 
 // La page courante est déclarée sur <body data-page> (ou sur un élément [data-page] si le site est intégré ailleurs).

@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /succes.html
 Disallow: /merci.html
+Disallow: /admin
 
 Sitemap: {{siteUrl}}/sitemap.xml
