@@ -133,9 +133,10 @@ const KEYS = [
   { b: 32, p: new THREE.Vector3(0.35, 2.2, -27.5), t: new THREE.Vector3(0, 2.2, -42), fov: 53, roll: -2 },
   { b: 38, p: new THREE.Vector3(-0.3, 2.0, -39), t: new THREE.Vector3(0, 2.3, -55), fov: 50, roll: 2 },
   { b: 40, p: new THREE.Vector3(0, 2.8, -47.5), t: new THREE.Vector3(0, 8, -92), fov: 46 },
-  { b: 44, p: new THREE.Vector3(0, 4.8, -55), t: new THREE.Vector3(0, 9, -92), fov: 42 },
-  { b: 48, p: new THREE.Vector3(0, 5.8, -59), t: new THREE.Vector3(0, 9.4, -92), fov: 39 },
-  { b: 56, p: new THREE.Vector3(0, 6.1, -61), t: new THREE.Vector3(0, 9.5, -92), fov: 37 },
+  // fin en recul (pas de zoom avant) : le A, l'enseigne et le @ doivent tenir dans le cadre
+  { b: 44, p: new THREE.Vector3(0, 4.6, -54), t: new THREE.Vector3(0, 8.2, -92), fov: 42 },
+  { b: 48, p: new THREE.Vector3(0, 4.9, -50), t: new THREE.Vector3(0, 7.6, -92), fov: 42 },
+  { b: 56, p: new THREE.Vector3(0, 5.2, -45), t: new THREE.Vector3(0, 7.2, -92), fov: 42 },
 ];
 const posCurve = new THREE.CatmullRomCurve3(KEYS.map(k => k.p), false, 'centripetal');
 function monotone(xs, ys) {
@@ -215,12 +216,12 @@ const monoKey = new THREE.SpotLight(0xffe0b0, 260, 80, 0.35, 0.7, 1.5); monoKey.
 scene.add(monoLight1, monoLight1.target, monoLight2, monoLight2.target, monoKey, monoKey.target);
 const wordTex = await tex('assets/wordmark.png');
 const signMat = new THREE.MeshBasicMaterial({ map: wordTex, transparent: true, toneMapped: false, color: 0x000000 });
-add(new THREE.PlaneGeometry(15, 15 * 240 / 840), signMat, 0, 2.6, -79);
+add(new THREE.PlaneGeometry(6.2, 6.2 * 240 / 840), signMat, 0, 1.75, -79);   // doit tenir dans la largeur du cadre vertical
 const handle = (() => { const c = document.createElement('canvas'); c.width = 1024; c.height = 160; const g = c.getContext('2d');
   g.font = '700 96px Inter, Helvetica, sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffffff'; g.fillText('@empiraagency', 512, 112);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
 const handleMat = new THREE.MeshBasicMaterial({ map: handle, transparent: true, toneMapped: false, opacity: 0 });
-add(new THREE.PlaneGeometry(6.4, 1), handleMat, 0, 0.75, -78.9);
+add(new THREE.PlaneGeometry(3.6, 0.5625), handleMat, 0, 0.62, -78.9);
 // feux d'artifice : gerbes de particules sur les temps forts
 const BURSTS = [[40, -9, 15, -95, C.gold], [40, 9, 13, -95, C.rose], [42, 0, 22, -100, C.cyan], [44, -12, 19, -98, C.violet], [44, 12, 19, -98, C.gold], [46, -5, 25, -102, C.rose], [48, 6, 24, -102, C.cyan], [48, 0, 18, -96, C.gold]];
 const bursts = BURSTS.map(([b, x, y, z, col], k) => {
