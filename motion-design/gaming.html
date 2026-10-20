@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empira Gaming — Level Up (TikTok 30s)</title>
+<style>
+@font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
+  src:url(assets/fonts/montserrat-latin-ext.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
+  src:url(assets/fonts/montserrat-latin.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+:root{--gold-1:#F6D58E;--gold-2:#E8B65C;--gold-3:#C98A2E;--gold-4:#9A5A0C;--text:#F6F1E7;--muted:#D2C4AD}
+html,body{margin:0;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:"Montserrat",sans-serif}
+#stage{position:relative;overflow:hidden;background:#050403;transform-origin:center center}
+#stage>*{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.plane{position:absolute;left:0;top:0;transform-origin:0 0;display:none;backface-visibility:hidden}
+.plane img{display:block;width:100%;height:100%}
+.sheen{position:absolute;inset:0;mix-blend-mode:overlay;background-repeat:no-repeat;background-size:300% 100%;
+  background-image:linear-gradient(105deg,rgba(255,255,255,0) 40%,rgba(255,236,190,.95) 50%,rgba(255,255,255,0) 60%)}
+.blk{position:absolute;white-space:nowrap;color:var(--text)}
+.blk.c{transform:translateX(-50%);text-align:center}
+.blk.wrap{white-space:normal}
+.w{display:inline-block}
+.gold{background:linear-gradient(135deg,var(--gold-1) 0%,var(--gold-2) 40%,var(--gold-3) 75%,var(--gold-4) 115%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.label{font-weight:500;font-size:20px;letter-spacing:.45em;color:var(--gold-2)}
+.h1{font-weight:300;font-size:66px;letter-spacing:.005em;line-height:1.12;text-shadow:0 2px 30px rgba(0,0,0,.55)}
+.hook{font-weight:300;font-size:74px;letter-spacing:.005em;line-height:1.15}
+.big{font-weight:300;font-size:92px;letter-spacing:.01em;line-height:1.1;text-shadow:0 4px 40px rgba(0,0,0,.7)}
+.sub{font-weight:300;font-size:28px;letter-spacing:.02em;line-height:1.35;color:var(--muted);text-shadow:0 2px 20px rgba(0,0,0,.85)}
+.v .sub{font-size:31px}
+.v .h1{font-size:64px}
+.call{font-weight:500;font-size:19px;letter-spacing:.42em;color:var(--text);text-shadow:0 1px 12px rgba(0,0,0,.9)}
+.live{font-weight:600;font-size:20px;letter-spacing:.32em;color:#1a1208;background:linear-gradient(135deg,#F6D58E,#C98A2E);padding:7px 14px 7px 34px;border-radius:999px;box-shadow:0 0 30px rgba(240,180,80,.55)}
+.live::before{content:"";position:absolute;left:13px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#1a1208}
+.bub{font-weight:400;font-size:27px;letter-spacing:.01em;color:var(--text);background:rgba(14,11,7,.72);border:1.5px solid rgba(232,182,92,.75);
+  padding:12px 22px 12px 62px;border-radius:999px;box-shadow:0 6px 30px rgba(0,0,0,.5),0 0 18px rgba(232,182,92,.18);transform-origin:0 50%}
+.bub::before{content:"";position:absolute;left:14px;top:50%;width:34px;height:34px;margin-top:-17px;border-radius:50%;background:linear-gradient(135deg,#F6D58E,#9A5A0C)}
+.xpl{font-weight:500;font-size:17px;letter-spacing:.3em;color:#9b8f7c;text-align:center;transform:translateX(-50%)}
+.v .xpl{font-size:16px;letter-spacing:.22em}
+.lvl{font-weight:600;font-size:96px;letter-spacing:.32em;text-align:center;transform:translate(-50%,-50%);color:#FFF4DC;text-shadow:0 0 18px rgba(240,180,80,.95),0 0 46px rgba(240,170,60,.7)}
+.v .bub{font-size:34px;padding:14px 26px 14px 70px}
+.v .bub::before{width:40px;height:40px;margin-top:-20px}
+#logo .lp{position:absolute;display:block;transform-origin:50% 50%}
+#sweep{position:absolute;-webkit-mask-image:url(assets/logo-icon.png);mask-image:url(assets/logo-icon.png);-webkit-mask-size:100% 100%;mask-size:100% 100%;
+  mix-blend-mode:screen;background:linear-gradient(115deg,rgba(255,255,255,0) 35%,rgba(255,244,214,.95) 50%,rgba(255,255,255,0) 65%);background-size:300% 100%;background-repeat:no-repeat}
+.ctaG{font-weight:500;font-size:30px;letter-spacing:.55em}
+.cta1{font-weight:600;font-size:46px;letter-spacing:.06em}
+.cta2{font-weight:400;font-size:25px;letter-spacing:.32em;color:var(--muted)}
+.cta0{font-weight:500;font-size:19px;letter-spacing:.5em;color:var(--text)}
+#bloom,#flash,#leak{mix-blend-mode:screen;opacity:0}
+#topscrim{background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.6) 22%,rgba(0,0,0,0) 42%);opacity:0}
+#lvlback{opacity:0}
+#grain{opacity:.085;mix-blend-mode:overlay}
+.bar{position:absolute;left:0;width:100%;background:#000}
+#fade{background:#000}
+#ui{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:500 13px/1 "Montserrat",sans-serif;color:#e9dcc2;
+  background:rgba(20,16,10,.85);border:1px solid #5a4422;padding:8px 12px;border-radius:999px;z-index:10}
+#ui button,#ui a{font:inherit;color:#140f08;background:linear-gradient(135deg,#F6D58E,#C98A2E);border:0;border-radius:999px;padding:8px 14px;cursor:pointer;text-decoration:none}
+#ui input{width:240px;accent-color:#C98A2E}
+body.render #ui{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg"></canvas>
+  <div id="cam"></div>
+  <canvas id="fx"></canvas>
+  <div id="bloom"></div>
+  <div id="leak"></div>
+  <div id="scrim"></div>
+  <div id="topscrim"></div>
+  <div id="lvlback"></div>
+  <div id="hud"></div>
+  <div id="logo"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <canvas id="grain"></canvas>
+  <div id="bars"><div class="bar" id="barT" style="top:0"></div><div class="bar" id="barB" style="bottom:0"></div></div>
+  <div id="fade"></div>
+</div>
+<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="30" step="0.01" value="0"><span id="tc">00.00</span><a id="swap" href="#">16:9</a></div>
+<script>
+"use strict";
+/* =====================================================================
+   EMPIRA GAMING — « Level Up » — 30 s, un seul plan-séquence.
+   Format TikTok 9:16 par défaut (?ar=16x9 pour la version paysage).
+   Même moteur que index.html : caméra 3D à travers de vraies photos
+   étalonnées noir & or. Tempo 120 BPM, impact logo à 22.0 s.
+   ===================================================================== */
+const Q = new URLSearchParams(location.search);
+const V = Q.get("ar") !== "16x9";
+const W = V ? 1080 : 1920, H = V ? 1920 : 1080, DUR = 30, F = 1000;
+const pick = (v, h) => V ? v : h;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const bell = (t, a, m, b) => t <= a || t >= b ? 0 : t < m ? E.sine((t - a) / (m - a)) : 1 - E.sine((t - m) / (b - m));
+const E = {
+  lin: t => t, sine: t => -(Math.cos(Math.PI * t) - 1) / 2,
+  inOut: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  in: t => t * t * t, in2: t => t * t,
+  out: t => 1 - Math.pow(1 - t, 3), out4: t => 1 - Math.pow(1 - t, 4),
+  outExpo: t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t),
+  outBack: t => { const c1 = 1.6, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+};
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const $ = id => document.getElementById(id);
+
+document.body.classList.add(V ? "v" : "h");
+Object.assign($("stage").style, { width: W + "px", height: H + "px" });
+["bg", "fx"].forEach(id => { $(id).width = W; $(id).height = H; });
+$("grain").width = V ? 360 : 640; $("grain").height = V ? 640 : 360;
+$("cam").style.transformOrigin = `${W / 2}px ${H / 2}px`;
+$("vignette").style.background = V
+  ? "radial-gradient(ellipse 80% 62% at 50% 50%,rgba(0,0,0,0) 45%,rgba(0,0,0,.5) 82%,rgba(0,0,0,.88) 100%)"
+  : "radial-gradient(ellipse 72% 68% at 50% 50%,rgba(0,0,0,0) 40%,rgba(0,0,0,.5) 80%,rgba(0,0,0,.88) 100%)";
+$("scrim").style.background = V
+  ? "linear-gradient(180deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.55) 18%,rgba(0,0,0,0) 34%)"
+  : "radial-gradient(ellipse 900px 520px at 10% 88%,rgba(0,0,0,.72),rgba(0,0,0,.35) 45%,rgba(0,0,0,0) 75%)";
+$("scrim").style.opacity = 0;
+$("swap").textContent = V ? "Version 16:9" : "Version 9:16";
+$("swap").href = V ? "?ar=16x9" : "?";
+
+/* ---------------------------- Photos (plans 3D) ---------------------------- */
+const P = {};
+function plane(id, src, iw, ih, w, anchor, at, o = {}) {
+  const h = w * ih / iw, cx = at[0] + (0.5 - anchor[0]) * w, cy = at[1] + (0.5 - anchor[1]) * h;
+  const el = document.createElement("div"); el.className = "plane"; el.style.width = w + "px"; el.style.height = h + "px";
+  if (o.blend) el.style.mixBlendMode = o.blend;
+  if (o.mask) { el.style.webkitMaskImage = el.style.maskImage = o.mask; if (o.mask.includes("),")) { el.style.webkitMaskComposite = "source-in"; el.style.maskComposite = "intersect"; } }
+  const im = document.createElement("img"); im.src = src; el.appendChild(im);
+  if (o.sheen) { const s = document.createElement("div"); s.className = "sheen"; el.appendChild(s); o.sheenEl = s; }
+  $("cam").appendChild(el);
+  return P[id] = Object.assign({ id, el, w, h, x: cx - w / 2, y: cy - h / 2, z: at[2] }, o);
+}
+const uvw = (p, u, v) => [p.x + u * p.w, p.y + v * p.h, p.z];
+const W_ = (id, u, v) => uvw(P[id], u, v);
+const RADIAL = (rx = 58, ry = 58, cx = 50, cy = 50, inner = 52) => `radial-gradient(ellipse ${rx}% ${ry}% at ${cx}% ${cy}%,#000 ${inner}%,transparent 100%)`;
+const G = "assets/photos/gaming/";
+
+// du plus lointain au plus proche
+plane("pad", G + "g_pad.jpg", 3200, 2400, 3200, [0.5, 0.5], [0, -250, 17500], { mask: RADIAL(62, 64, 50, 42, 52), sheen: true });
+plane("arena", G + "g_arena.jpg", 3200, 1969, 4400, [0.55, 0.5], [0, -250, 15000], { mask: "linear-gradient(180deg,transparent 0%,#000 18%,#000 82%,transparent 100%), linear-gradient(90deg,transparent 0%,#000 10%,#000 90%,transparent 100%)" });
+plane("desk", G + "g_desk.jpg", 3200, 2134, 2700, [0.55, 0.62], [-220, 140, 11900], { mask: RADIAL(56, 58, 52, 56, 46), sheen: true });
+plane("mic", "assets/photos/mic.jpg", 3000, 3000, 2000, [0.53, 0.42], [650, -60, 10600], { blend: "screen", sheen: true, mask: RADIAL(62, 70, 52, 40, 55) });
+plane("headset", G + "g_headset.jpg", 2133, 3200, 1900, [0.42, 0.42], [-300, 0, 9300], { mask: RADIAL(54, 52, 48, 42, 46), sheen: true });
+plane("room", "assets/photos/gaming.jpg", 2133, 3200, 2400, [0.47, 0.585], [0, 0, 6600], { mask: "linear-gradient(180deg,transparent 0%,#000 14%,#000 86%,transparent 100%), linear-gradient(90deg,transparent 0%,#000 10%,#000 90%,transparent 100%)" });
+plane("phone", G + "g_phone.jpg", 2133, 3200, 3000, [0.54, 0.44], [0, 0, 4000], { mask: RADIAL(48, 46, 54, 44, 40) });
+const SCREEN_C = W_("phone", 0.54, 0.44), MONITOR = W_("room", 0.47, 0.585);
+const PAD_A = W_("pad", 0.787, 0.373);        // le bouton A de la manette
+
+/* ---------------------------- Caméra ---------------------------- */
+const CAM = V ? [
+  [0.0, 0, 20, 0, 0], [2.8, 0, 10, 1300, 0], [4.05, 0, 0, 3990, 0, "in2"],
+  [4.6, 0, 40, 4500, -0.8, "out"], [8.8, 30, 10, 5000, 0.6],
+  [9.95, 0, -10, 6560, 0, "in2"],
+  [10.6, -280, 0, 7850, -0.6, "out"], [11.5, -260, 0, 8050, -0.3],
+  [12.2, 600, -50, 9200, 0.8, "inOut"], [12.9, 640, -60, 9400, 0.4],
+  [13.7, -200, 140, 10600, -0.6, "inOut"], [14.6, -190, 140, 10800, -0.3],
+  [15.4, 0, -200, 11600, 0, "inOut"], [19.0, 0, -230, 12300, 0.4],
+  [19.75, 0, -250, 14700, 0, "in2"],
+  [20.45, 0, -250, 15000, 0, "out"], [21.35, PAD_A[0] - 40, PAD_A[1] + 10, 16700, 0, "inOut"], [21.95, PAD_A[0] - 5, PAD_A[1], 16950, 0],
+  [24.2, PAD_A[0], PAD_A[1] - 760, 17000, 0, "out4"], [30.0, PAD_A[0], PAD_A[1] - 810, 17120, 0],
+] : [
+  [0.0, 0, 30, 0, 0], [2.8, 0, 10, 1300, 0], [4.05, 0, 0, 3990, 0, "in2"],
+  [4.6, 0, 40, 4900, -0.8, "out"], [8.8, 30, 10, 5250, 0.6],
+  [9.95, 0, -10, 6560, 0, "in2"],
+  [10.6, -280, 0, 8100, -0.6, "out"], [11.5, -260, 0, 8300, -0.3],
+  [12.2, 480, -40, 9450, 0.8, "inOut"], [12.9, 520, -50, 9650, 0.4],
+  [13.7, -210, 140, 10750, -0.6, "inOut"], [14.6, -200, 140, 10950, -0.3],
+  [15.4, 0, -220, 12300, 0, "inOut"], [19.0, 0, -240, 12900, 0.4],
+  [19.75, 0, -250, 14700, 0, "in2"],
+  [20.45, 0, -560, 15200, 0, "out"], [21.35, PAD_A[0] - 40, PAD_A[1] - 170, 16700, 0, "inOut"], [21.95, PAD_A[0] - 5, PAD_A[1] - 20, 16950, 0],
+  [24.2, PAD_A[0], PAD_A[1] - 700, 17000, 0, "out4"], [30.0, PAD_A[0], PAD_A[1] - 740, 17120, 0],
+];
+const camRaw = t => {
+  let i = 0; while (i < CAM.length - 2 && t > CAM[i + 1][0]) i++;
+  const a = CAM[i], b = CAM[i + 1]; let u = prog(t, a[0], b[0]); u = b[5] ? E[b[5]](u) : u;
+  return [lerp(a[1], b[1], u), lerp(a[2], b[2], u), lerp(a[3], b[3], u), lerp(a[4], b[4], u)];
+};
+const CAM_HZ = 120, CAM_N = DUR * CAM_HZ + 1, camTab = [];
+(function () {
+  const raw = []; for (let i = 0; i < CAM_N; i++) raw.push(camRaw(i / CAM_HZ));
+  const sig = 0.14 * CAM_HZ, R = Math.ceil(sig * 3), k = []; let ks = 0;
+  for (let j = -R; j <= R; j++) { const v = Math.exp(-j * j / (2 * sig * sig)); k.push(v); ks += v; }
+  for (let i = 0; i < CAM_N; i++) { const acc = [0, 0, 0, 0]; for (let j = -R; j <= R; j++) { const s = raw[clamp(i + j, 0, CAM_N - 1)], w = k[j + R] / ks; for (let c = 0; c < 4; c++) acc[c] += s[c] * w; } camTab.push(acc); }
+})();
+// petites secousses de « réaction » du jeu (sur les vagues de likes), du clic sur A et de l'impact
+const KICKS = [[5.6, 3], [6.6, 3], [7.6, 3], [8.6, 4], [18.8, 5], [21.45, 4], [22.0, 9]];
+function camera(t) {
+  const f = clamp(t, 0, DUR) * CAM_HZ, i = Math.floor(f), u = f - i, a = camTab[i], b = camTab[Math.min(i + 1, CAM_N - 1)];
+  let [x, y, z, r] = a.map((v, c) => lerp(v, b[c], u));
+  x += Math.sin(t * 0.9) * 5 + Math.sin(t * 2.3 + 1) * 1.5; y += Math.sin(t * 0.7 + 2) * 4 + Math.cos(t * 2.9) * 1.2; r += Math.sin(t * 0.37) * 0.15;
+  for (const [k0, amp0] of KICKS) { const s = prog(t, k0, k0 + 0.45); if (s > 0 && s < 1) { const amp = (1 - s) * (1 - s) * amp0; x += Math.sin(t * 190) * amp; y += Math.cos(t * 230) * amp; } }
+  return { x, y, z, r: r * Math.PI / 180 };
+}
+function proj(c, X, Y, Z) { const d = Z - c.z; if (d <= 1) return null; const s = F / d; return [W / 2 + (X - c.x) * s, H / 2 + (Y - c.y) * s, s, d]; }
+function rollPt(c, p) { const cs = Math.cos(c.r), sn = Math.sin(c.r), dx = p[0] - W / 2, dy = p[1] - H / 2; return [W / 2 + dx * cs - dy * sn, H / 2 + dx * sn + dy * cs]; }
+
+/* ---------------------------- Logo (espace écran) ---------------------------- */
+const LS = pick(0.225, 0.26), LCX = W / 2, LCY = pick(800, 400);
+const lpx = (px, py) => [LCX + (px - 2322) * LS, LCY + (py - 1551) * LS];
+const A_OUT = [lpx(1741, 1498), lpx(2322, 299), lpx(2903, 1498)];
+const LOGO = {};
+[["icon", 1729, 287, 1187, 1224], ["empira", 949, 1786, 2747, 413], ["agency", 288, 2381, 4069, 160], ["tagline", 288, 2688, 4069, 127]].forEach(([n, px, py, w, h]) => {
+  const [x, y] = lpx(px, py), im = document.createElement("img"); im.src = `assets/logo-${n}.png`; im.className = "lp";
+  Object.assign(im.style, { left: x + "px", top: y + "px", width: w * LS + "px", height: h * LS + "px", opacity: 0 }); $("logo").appendChild(im); LOGO[n] = im;
+  if (n === "icon") { const s = document.createElement("div"); s.id = "sweep"; Object.assign(s.style, { left: x + "px", top: y + "px", width: w * LS + "px", height: h * LS + "px", opacity: 0 }); $("logo").appendChild(s); LOGO.sweep = s; }
+});
+const CTA_Y = lpx(0, 2803)[1] + pick(52, 40);
+const CTA = [["ctaG gold", "EMPIRA GAMING", 0, 25.55], ["cta0", "RETROUVE-NOUS SUR TIKTOK", pick(84, 66), 26.2], ["cta1 gold", "@empiraagency", pick(118, 96), 26.45], ["cta2", "EMPIRAAGENCY.FR", pick(190, 162), 26.7]].map(([cls, txt, dy, t0]) => {
+  const d = document.createElement("div"); d.className = "blk c " + cls; d.textContent = txt; Object.assign(d.style, { left: LCX + "px", top: (CTA_Y + dy) + "px", opacity: 0 }); $("logo").appendChild(d); return { el: d, t0 };
+});
+
+/* ---------------------------- Textes ---------------------------- */
+const TEXTS = [];
+function text(cls, html, x, y, t0, t1, o = {}) {
+  const d = document.createElement("div"); d.className = "blk " + cls + (o.center ? " c" : "") + (o.maxw ? " wrap" : "");
+  d.style.left = x + "px"; d.style.top = y + "px"; if (o.maxw) d.style.width = o.maxw + "px";
+  const words = []; html.replace(/<g>(.*?)<\/g>|([^<]+)/g, (m, g, plain) => { (g || plain).trim().split(/\s+/).forEach(w => w && words.push({ w, gold: !!g })); });
+  words.forEach((o2, i) => {
+    if (o2.w === "|") { d.appendChild(document.createElement("br")); return; }
+    const s = document.createElement("span"); s.className = "w" + (o2.gold ? " gold" : ""); s.textContent = o2.w; d.appendChild(s);
+    if (i < words.length - 1 && words[i + 1].w !== "|") d.appendChild(document.createTextNode(" "));
+  });
+  $("hud").appendChild(d);
+  const T = { el: d, spans: [...d.querySelectorAll(".w")], t0, t1, stag: o.stag ?? 0.07, dur: o.dur ?? 0.8, out: o.out ?? 0.5, fly: o.fly };
+  TEXTS.push(T); return T;
+}
+const TX = pick(80, 150), TY = pick(255, 760), SUBW = pick(900, 0);
+const HOOK1 = pick(560, 395), HOOK2 = pick(770, 490), ULY = pick(1000, 585), ULX = pick(380, 430);
+text("hook", pick("Tu fais du gaming | sur <g>TikTok</g> ?", "Tu fais du gaming sur <g>TikTok</g> ?"), W / 2, HOOK1, 0.6, 3.05, { center: true, fly: true });
+text("hook", pick("Passe en mode | <g>Empira Gaming.</g>", "Passe en mode <g>Empira Gaming.</g>"), W / 2, HOOK2, 1.6, 3.05, { center: true, stag: 0.09, fly: true });
+const SECTIONS = [
+  ["01 — LIVES INTERACTIFS", "Ta communauté <g>joue avec toi.</g>", "Likes, commentaires : ton live réagit en direct.", 4.35, 9.2],
+  ["02 — SETUP GAMING", "Ton setup, <g>prêt à streamer.</g>", "Casque, micro, clavier, caméra, éclairage : on le monte avec toi.", 10.3, 15.0],
+  ["03 — COACHING", "Fais <g>level up</g> ta chaîne.", "Concept, stratégie, formation : on t'accompagne à chaque niveau.", 15.5, 19.3],
+];
+SECTIONS.forEach(([lab, h1, sub, t0, t1]) => {
+  text("label", lab, TX + 2, TY, t0, t1, { stag: 0.05 });
+  text("h1", h1, TX, TY + 36, t0 + 0.2, t1);
+  text("sub", sub, TX + 2, TY + pick(126, 128), t0 + 0.75, t1, { stag: 0.035, maxw: SUBW || undefined });
+});
+// final : « Prêt ? Appuie sur A. »
+text("big", "Prêt ?", W / 2, pick(300, 150), 20.3, 21.5, { center: true, stag: 0.1, out: 0.35 });
+text("big", "Appuie sur <g>A.</g>", W / 2, pick(420, 262), 20.7, 21.5, { center: true, stag: 0.1, out: 0.35 });
+
+// Légendes du setup
+const CALLS = [
+  { name: "CASQUE", p: () => W_("headset", 0.50, 0.36), t0: 10.85, t1: 11.9 },
+  { name: "MICRO", p: () => W_("mic", 0.70, 0.30), t0: 12.4, t1: 13.35 },
+  { name: "CLAVIER & SOURIS", p: () => W_("desk", 0.60, 0.58), t0: 13.9, t1: 14.9 },
+].map(c => { const d = document.createElement("div"); d.className = "blk call"; d.textContent = c.name; $("hud").appendChild(d); return Object.assign(c, { el: d }); });
+const LIVE = (() => { const d = document.createElement("div"); d.className = "blk live"; d.textContent = "LIVE"; d.style.opacity = 0; $("hud").appendChild(d); return d; })();
+
+/* ---------------------------- Live interactif ---------------------------- */
+const BUBBLES = [["on lance une partie ?", 4.75], ["GG !", 5.75], ["trop fort", 6.75], ["encore une !", 7.75], ["let's go", 8.25]].map(([txt, t0]) => {
+  const d = document.createElement("div"); d.className = "blk bub"; d.textContent = txt; d.style.opacity = 0; $("hud").appendChild(d); return { el: d, t0 };
+});
+const BUB_X = pick(70, 1330), BUB_Y = pick(1400, 900), BUB_STEP = pick(88, 74);
+const HEART_WAVES = [5.25, 6.25, 7.25, 8.25];            // vagues de likes (le jeu réagit ~0.35 s après)
+const heartPath = (() => { const p = new Path2D(); p.moveTo(0, 6); p.bezierCurveTo(-14, -6, -9, -18, 0, -10); p.bezierCurveTo(9, -18, 14, -6, 0, 6); p.closePath(); return p; })();
+
+/* ---------------------------- Barre d'XP ---------------------------- */
+const XP = { x0: pick(90, 560), x1: pick(990, 1360), y: pick(1300, 200), levels: [["CONCEPT", 16.0], ["STRATÉGIE", 16.75], ["FORMATION", 17.5], ["COMMUNAUTÉ", 18.25]], up: 18.8 };
+const XP_EL = XP.levels.map(([name], i) => { const d = document.createElement("div"); d.className = "blk xpl"; d.textContent = name; d.style.opacity = 0; $("hud").appendChild(d); return d; });
+const LVL = (() => { const d = document.createElement("div"); d.className = "blk lvl"; d.textContent = "LEVEL UP"; d.style.opacity = 0; $("hud").appendChild(d); return d; })();
+
+/* ---------------------------- Poussière d'or 3D ---------------------------- */
+const DUST = (() => { const r = rng(11), a = []; for (let i = 0; i < 1400; i++) a.push({ x: -1700 + r() * 3400, y: -2400 + r() * 4200, z: 300 + r() * 17500, s: 0.6 + r() * 2.2, ph: r() * 6.28, sp: .4 + r(), vx: (r() - .5) * 14, vy: -6 - r() * 14 }); return a; })();
+const sprite = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d"); const rg = g.createRadialGradient(32, 32, 0, 32, 32, 32); rg.addColorStop(0, "rgba(255,236,190,1)"); rg.addColorStop(.25, "rgba(246,205,130,.75)"); rg.addColorStop(1, "rgba(232,170,80,0)"); g.fillStyle = rg; g.fillRect(0, 0, 64, 64); return c; })();
+const disc = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"); const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, "rgba(246,205,130,.55)"); rg.addColorStop(.7, "rgba(240,190,110,.35)"); rg.addColorStop(.85, "rgba(240,190,110,.5)"); rg.addColorStop(1, "rgba(240,190,110,0)"); g.fillStyle = rg; g.fillRect(0, 0, 128, 128); return c; })();
+const bg = $("bg").getContext("2d"), fx = $("fx").getContext("2d"), gc = $("grain").getContext("2d"), grainImg = gc.createImageData($("grain").width, $("grain").height);
+
+/* ---------------------------- Rendu ---------------------------- */
+function planeState(p, t, c) {
+  const d = p.z - c.z; let o = 1, blur = 0, bright = 1;
+  switch (p.id) {
+    case "phone": o = E.sine(prog(t, 0.9, 2.6)) * 0.95 + 0.05 * prog(t, 0.2, 0.9); bright = 0.85 + 0.6 * bell(t, 3.3, 4.0, 4.3); break;
+    case "room": o = E.sine(prog(t, 3.9, 4.6)); bright = 1 + Math.max(...HEART_WAVES.map(h => bell(t, h + 0.3, h + 0.4, h + 0.9))) * 0.35 + 0.9 * E.in2(prog(t, 9.2, 9.95)); break;
+    case "headset": o = E.sine(prog(t, 9.9, 10.5)); break;
+    case "mic": o = E.sine(prog(t, 11.5, 12.1)); break;
+    case "desk": o = E.sine(prog(t, 12.9, 13.5)); break;
+    case "arena": o = E.sine(prog(t, 14.4, 15.4)); bright = 1 + 0.35 * bell(t, 18.75, 18.85, 19.5) + 1.4 * E.in2(prog(t, 19.3, 19.75)); break;
+    case "pad": o = E.sine(prog(t, 19.95, 20.6)) * (1 - 0.8 * E.out(prog(t, 22.0, 23.0))); blur = 7 * E.out(prog(t, 22.1, 23.2)); bright = 1 + 0.5 * bell(t, 21.4, 21.5, 22.2); break;
+  }
+  if (d < 900) { const q = clamp((d - 60) / 840); o *= E.sine(q); blur += (1 - q) * 14; }
+  return { o, blur, bright };
+}
+const SHEEN_WIN = { headset: [10.7, 11.9], mic: [12.3, 13.4], desk: [13.8, 15.0], pad: [20.5, 21.4] };
+function drawPlanes(t, c) {
+  $("cam").style.transform = `rotate(${c.r}rad)`;
+  for (const id in P) {
+    const p = P[id], d = p.z - c.z, st = d > 1 ? planeState(p, t, c) : { o: 0 };
+    if (st.o <= 0.003) { p.el.style.display = "none"; continue; }
+    const s = F / d, sx = W / 2 + (p.x - c.x) * s, sy = H / 2 + (p.y - c.y) * s;
+    if (sx > W * 1.3 || sy > H * 1.3 || sx + p.w * s < -W * .3 || sy + p.h * s < -H * .3) { p.el.style.display = "none"; continue; }
+    p.el.style.display = "block";
+    p.el.style.transform = `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px) scale(${s.toFixed(5)})`;
+    p.el.style.opacity = st.o.toFixed(3);
+    let f = ""; if (st.blur > 0.4) f += `blur(${(st.blur / s).toFixed(2)}px) `; if (Math.abs(st.bright - 1) > 0.01) f += `brightness(${st.bright.toFixed(3)})`;
+    p.el.style.filter = f || "none";
+    if (p.sheenEl) { const win = SHEEN_WIN[id], u = prog(t, win[0], win[1]); p.sheenEl.style.opacity = u > 0 && u < 1 ? 1 : 0; p.sheenEl.style.backgroundPosition = `${(100 - u * 100).toFixed(1)}% 0`; }
+  }
+}
+function drawBg(t) {
+  const g = bg.createRadialGradient(W / 2, H * .55, 60, W / 2, H * .55, Math.max(W, H) * .65);
+  g.addColorStop(0, "#120d08"); g.addColorStop(.6, "#070504"); g.addColorStop(1, "#020202");
+  bg.setTransform(1, 0, 0, 1, 0, 0); bg.fillStyle = g; bg.fillRect(0, 0, W, H);
+}
+function spark(ctx, x, y, r, a = 1) {
+  const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+  rg.addColorStop(0, `rgba(255,252,240,${a})`); rg.addColorStop(.16, `rgba(255,232,175,${.95 * a})`); rg.addColorStop(.45, `rgba(240,180,80,${.32 * a})`); rg.addColorStop(1, "rgba(240,180,80,0)");
+  ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+}
+function flare(ctx, x, y, k, len = 900) {
+  if (k <= 0.01) return;
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  const g = ctx.createLinearGradient(x - len, y, x + len, y);
+  g.addColorStop(0, "rgba(240,170,70,0)"); g.addColorStop(.5, `rgba(255,226,160,${.55 * k})`); g.addColorStop(1, "rgba(240,170,70,0)");
+  ctx.fillStyle = g; ctx.fillRect(x - len, y - 2.2, 2 * len, 4.4); ctx.globalAlpha = .5 * k; ctx.fillRect(x - len * .6, y - 9, len * 1.2, 18); ctx.globalAlpha = 1;
+  spark(ctx, x, y, 90 * k, .6 * k);
+  [[-.45, 26, .14], [-.8, 54, .08], [.35, 16, .12], [1.25, 80, .06]].forEach(([f, r, a]) => {
+    const gx = W / 2 + (W / 2 - x) * f, gy = H / 2 + (H / 2 - y) * f;
+    const rg = ctx.createRadialGradient(gx, gy, 0, gx, gy, r); rg.addColorStop(0, `rgba(250,210,140,${a * k})`); rg.addColorStop(.8, `rgba(240,180,90,${a * k * .6})`); rg.addColorStop(1, "rgba(240,180,90,0)");
+    ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(gx, gy, r, 0, 6.283); ctx.fill();
+  });
+  ctx.restore();
+}
+function trail(ctx, posAt, t, t0, t1) {
+  const EMIT = 0.022, LIFE = 0.9;
+  for (let j = Math.max(0, Math.floor((t - LIFE) / EMIT)); j * EMIT <= t; j++) {
+    const e = j * EMIT; if (e < t0 || e > t1) continue;
+    const p = posAt(e); if (!p) continue;
+    const age = t - e, hx = hash(j), hy = hash(j + 999), hs = hash(j + 555);
+    const x = p[0] + (hx - .5) * 70 * age, y = p[1] + (hy - .5) * 70 * age - 30 * age + 40 * age * age;
+    ctx.globalAlpha = (1 - age / LIFE) * .85; ctx.fillStyle = hs > .7 ? "#FFF3D6" : "#F0C066";
+    ctx.beginPath(); ctx.arc(x, y, (0.8 + hs * 2) * (1 - age / LIFE * .5), 0, 6.283); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+// gerbe d'étincelles (le jeu « réagit »)
+function burst(ctx, x, y, t, t0, n = 46, speed = 520, seed = 1) {
+  const age = t - t0; if (age < 0 || age > 1.1) return;
+  for (let i = 0; i < n; i++) {
+    const a = hash(seed * 31 + i) * 6.283, v = speed * (0.35 + 0.65 * hash(seed * 17 + i * 3)), s = 1.2 + 2.6 * hash(seed + i * 7);
+    const px = x + Math.cos(a) * v * age, py = y + Math.sin(a) * v * age + 260 * age * age;
+    ctx.globalAlpha = Math.pow(1 - age / 1.1, 1.5); ctx.fillStyle = hash(i + seed) > .7 ? "#FFF3D6" : "#F0C066";
+    ctx.beginPath(); ctx.arc(px, py, s * (1 - age / 1.4), 0, 6.283); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function resample(pts, N) {
+  const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const out = []; let j = 0;
+  for (let k = 0; k < N; k++) { const d = L[L.length - 1] * k / (N - 1); while (j < L.length - 2 && L[j + 1] < d) j++; const u = (d - L[j]) / Math.max(1e-6, L[j + 1] - L[j]); out.push([lerp(pts[j][0], pts[j + 1][0], u), lerp(pts[j][1], pts[j + 1][1], u)]); }
+  return out;
+}
+function glowStroke(ctx, path, a, w = 3.4) {
+  ctx.lineJoin = ctx.lineCap = "round"; ctx.globalAlpha = .55 * a; ctx.strokeStyle = "#E8B65C"; ctx.lineWidth = w * 3; ctx.shadowColor = "rgba(240,180,80,1)"; ctx.shadowBlur = 26; ctx.stroke(path);
+  ctx.shadowBlur = 0; ctx.globalAlpha = a; ctx.strokeStyle = "#F6D58E"; ctx.lineWidth = w; ctx.stroke(path); ctx.globalAlpha = 1;
+}
+
+function drawFx(t, c) {
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.clearRect(0, 0, W, H);
+  const cs = Math.cos(c.r), sn = Math.sin(c.r);
+  fx.setTransform(cs, sn, -sn, cs, W / 2 - (W / 2 * cs - H / 2 * sn), H / 2 - (W / 2 * sn + H / 2 * cs));
+  // poussière d'or 3D
+  for (const d of DUST) {
+    const X = d.x + d.vx * t, Y = d.y + d.vy * t + Math.sin(t * d.sp + d.ph) * 20, dz = d.z - c.z;
+    if (dz < 40 || dz > 6000) continue;
+    const s = F / dz, x = W / 2 + (X - c.x) * s, y = H / 2 + (Y - c.y) * s;
+    if (x < -80 || x > W + 80 || y < -80 || y > H + 80) continue;
+    const tw = .55 + .45 * Math.sin(t * d.sp * 2.2 + d.ph), fade = clamp((6000 - dz) / 1500) * clamp((dz - 40) / 200);
+    if (dz < 700) { const r = d.s * s * 9; fx.globalAlpha = .22 * tw * fade; fx.drawImage(disc, x - r, y - r, 2 * r, 2 * r); }
+    else { const r = Math.max(1.2, d.s * s * 7); fx.globalAlpha = .7 * tw * fade; fx.drawImage(sprite, x - r, y - r, 2 * r, 2 * r); }
+  }
+  fx.globalAlpha = 1;
+
+  // A : accroche soulignée + étincelle qui plonge dans l'écran du téléphone
+  {
+    const born = prog(t, 0.35, 0.6);
+    if (born > 0 && t < 4.2) {
+      const fly = E.in2(prog(t, 3.0, 3.6)), sc = 1 + fly * 2.6, al = 1 - E.out(prog(t, 3.05, 3.45));
+      const y0 = ULY, x0 = W / 2 - ULX, x1 = W / 2 + ULX, u = E.inOut(prog(t, 0.4, 2.3)), hx = lerp(x0, x1, u);
+      const tx = v => W / 2 + (v - W / 2) * sc, ty = v => H / 2 + (v - H / 2) * sc;
+      if (al > 0) {
+        fx.lineCap = "round"; fx.globalAlpha = .45 * al * born; fx.strokeStyle = "#E8B65C"; fx.lineWidth = 8 * sc; fx.shadowColor = "rgba(240,180,80,1)"; fx.shadowBlur = 20;
+        fx.beginPath(); fx.moveTo(tx(x0), ty(y0)); fx.lineTo(tx(hx), ty(y0)); fx.stroke(); fx.shadowBlur = 0;
+        fx.globalAlpha = al * born; fx.strokeStyle = "#F0C066"; fx.lineWidth = 2.6 * sc; fx.stroke(); fx.globalAlpha = 1;
+      }
+      const posAt = e => { const dv = E.inOut(prog(e, 2.45, 3.5)), hx2 = lerp(x0, x1, E.inOut(prog(e, 0.4, 2.3))), lc = proj(camera(e), ...SCREEN_C); return dv > 0 && lc ? [lerp(hx2, lc[0], dv), lerp(y0, lc[1], dv) - Math.sin(dv * Math.PI) * 90] : [hx2, y0]; };
+      const gone = 1 - prog(t, 3.5, 3.75);
+      if (gone > 0) { const p = posAt(t), r = lerp(30, 12, E.inOut(prog(t, 2.45, 3.5))); trail(fx, posAt, t, 0.45, 3.5); spark(fx, p[0], p[1], r * (1 + .1 * Math.sin(t * 9)) * born, gone); }
+    }
+    const lc = proj(c, ...SCREEN_C); if (lc) flare(fx, lc[0], lc[1], bell(t, 3.35, 3.7, 4.25) * 1.1, 1100);
+  }
+
+  // B : le live — l'écran réagit aux likes
+  {
+    const m = proj(c, ...MONITOR);
+    if (m && t > 4.3 && t < 10.2) HEART_WAVES.forEach((h, k) => { burst(fx, m[0], m[1], t, h + 0.35, 46, 520 * m[2], k + 3); flare(fx, m[0], m[1], bell(t, h + 0.3, h + 0.38, h + 0.9) * .8, 800); });
+    // LIVE au-dessus de l'écran
+    const lq = proj(c, ...W_("room", 0.47, 0.50)), la = E.outBack(prog(t, 4.45, 4.85)) * (1 - E.out(prog(t, 9.1, 9.4)));
+    if (lq && la > 0) { const rp = rollPt(c, lq); LIVE.style.opacity = clamp(la).toFixed(3); LIVE.style.transform = `translate(${rp[0].toFixed(1)}px,${rp[1].toFixed(1)}px) translate(-50%,-50%) scale(${(.7 + .3 * la).toFixed(3)})`; LIVE.style.filter = `brightness(${(1 + .25 * Math.sin(t * 7)).toFixed(3)})`; } else LIVE.style.opacity = 0;
+  }
+  fx.setTransform(1, 0, 0, 1, 0, 0);
+  // cœurs (likes) qui montent vers l'écran — espace écran
+  {
+    const m = proj(c, ...MONITOR);
+    HEART_WAVES.forEach((h, k) => {
+      for (let i = 0; i < 11; i++) {
+        const t0 = h - 0.55 + i * 0.05, age = t - t0; if (age < 0 || age > 1.0) continue;
+        const sx = pick(820, 1640) + (hash(k * 50 + i) - .5) * 160, sy = pick(1500, 960);
+        const tx = m ? m[0] + (hash(k * 70 + i) - .5) * 120 : W / 2, ty = m ? m[1] : H / 2;
+        const u = E.inOut(clamp(age / 0.9)), x = lerp(sx, tx, u) + Math.sin(age * 9 + i) * 26 * (1 - u), y = lerp(sy, ty, u) - Math.sin(u * Math.PI) * 120;
+        const s = (1.3 + hash(i + k) * 1.2) * (1 - .45 * u) * pick(1.5, 1.2), a = Math.min(1, age * 6) * (1 - Math.pow(u, 4));
+        fx.save(); fx.translate(x, y); fx.rotate((hash(i * 3 + k) - .5) * .6); fx.scale(s, s); fx.globalAlpha = a;
+        fx.fillStyle = hash(i * 9 + k) > .65 ? "#FFF0CC" : "#E8B65C"; fx.shadowColor = "rgba(240,180,80,.9)"; fx.shadowBlur = 14; fx.fill(heartPath); fx.restore();
+      }
+    });
+    fx.globalAlpha = 1;
+  }
+  fx.setTransform(cs, sn, -sn, cs, W / 2 - (W / 2 * cs - H / 2 * sn), H / 2 - (W / 2 * sn + H / 2 * cs));
+
+  // C : légendes du setup
+  for (const C of CALLS) {
+    const a = E.out(prog(t, C.t0, C.t0 + .45)) * (1 - E.out(prog(t, C.t1, C.t1 + .35)));
+    if (a <= 0) { C.el.style.opacity = 0; continue; }
+    const q = proj(c, ...C.p()); if (!q) { C.el.style.opacity = 0; continue; }
+    const dir = q[0] > W * 0.55 ? -1 : 1, L1 = 70 * E.out(prog(t, C.t0, C.t0 + .35)), L2 = pick(150, 190) * E.out(prog(t, C.t0 + .15, C.t0 + .6));
+    const x = q[0], y = q[1], ex = x + dir * L1 * .7, ey = y - L1 * .7;
+    fx.globalAlpha = a; fx.strokeStyle = "#F0C066"; fx.lineWidth = 1.6; fx.beginPath(); fx.moveTo(x, y); fx.lineTo(ex, ey); fx.lineTo(ex + dir * L2, ey); fx.stroke();
+    fx.beginPath(); fx.arc(x, y, 5, 0, 6.283); fx.fillStyle = "#F6D58E"; fx.fill();
+    fx.beginPath(); fx.arc(x, y, 11 + 4 * Math.sin(t * 6), 0, 6.283); fx.strokeStyle = "rgba(246,213,142,.5)"; fx.stroke(); fx.globalAlpha = 1;
+    const rp = rollPt(c, [ex + dir * 8, ey - 34]);
+    C.el.style.opacity = (a * E.out(prog(t, C.t0 + .3, C.t0 + .7))).toFixed(3);
+    C.el.style.transform = `translate(${rp[0].toFixed(1)}px,${rp[1].toFixed(1)}px)${dir < 0 ? " translateX(-100%)" : ""}`;
+  }
+  { const q = proj(c, ...W_("headset", 0.48, 0.44)); if (q) flare(fx, q[0], q[1], bell(t, 10.75, 10.85, 11.3) * .7, 700); }
+  { const q = proj(c, ...W_("arena", 0.55, 0.42)); if (q) flare(fx, q[0], q[1], E.in2(prog(t, 18.9, 19.75)) * (1 - prog(t, 19.75, 20.1)) + bell(t, 18.75, 18.85, 19.4) * .8, 1300); }
+
+  // E : bouton A — clic, « A » doré, puis morphing vers le logo
+  {
+    const q = proj(c, ...PAD_A);
+    if (q) flare(fx, q[0], q[1], bell(t, 21.4, 21.47, 21.9) * 1.0 + bell(t, 20.6, 21.0, 21.4) * .25, 1000);
+    if (q && t > 21.4 && t < 22.6) {
+      const r = 95 * q[2] * 0.5, pop = E.outBack(prog(t, 21.45, 21.62)), morph = E.inOut(prog(t, 21.72, 22.0)), fadeL = 1 - prog(t, 22.0, 22.25);
+      // onde de choc autour du bouton
+      const sw = prog(t, 21.45, 22.05); if (sw > 0 && sw < 1) { fx.globalAlpha = (1 - sw) * .8; fx.strokeStyle = "#F3CF86"; fx.lineWidth = 3; fx.beginPath(); fx.arc(q[0], q[1], r * (1 + 5 * E.outExpo(sw)), 0, 6.283); fx.stroke(); fx.globalAlpha = 1; }
+      fx.setTransform(1, 0, 0, 1, 0, 0);
+      const bp = rollPt(c, q), h = r * 1.15 * pop, wdt = h * 0.97;
+      const glyph = [[bp[0] - wdt / 2, bp[1] + h / 2], [bp[0], bp[1] - h / 2], [bp[0] + wdt / 2, bp[1] + h / 2]];
+      const N = 90, src = resample(glyph, N), dst = resample(A_OUT, N);
+      const path = new Path2D(); for (let i = 0; i < N; i++) { const x = lerp(src[i][0], dst[i][0], morph), y = lerp(src[i][1], dst[i][1], morph); i ? path.lineTo(x, y) : path.moveTo(x, y); }
+      glowStroke(fx, path, fadeL, 3.4 + 2 * (1 - morph));
+      if (morph > 0) spark(fx, lerp(src[N - 1][0], dst[N - 1][0], morph), lerp(src[N - 1][1], dst[N - 1][1], morph), 30 * fadeL);
+    }
+  }
+  fx.setTransform(1, 0, 0, 1, 0, 0);
+  burst(fx, W / 2, lpx(0, 900)[1], t, 22.0, 80, 900, 9);
+}
+
+function drawHud(t, c) {
+  // bulles du chat
+  const visible = BUBBLES.map((b, i) => ({ b, i, a: E.out(prog(t, b.t0, b.t0 + .35)) * (1 - E.out(prog(t, Math.min(b.t0 + 2.6, 9.1), Math.min(b.t0 + 2.6, 9.1) + .4))) }));
+  BUBBLES.forEach((b, i) => {
+    const a = visible[i].a; if (a <= 0) { b.el.style.opacity = 0; return; }
+    // décalage vers le haut quand de nouvelles bulles arrivent
+    let rank = 0; for (let j = i + 1; j < BUBBLES.length; j++) rank += E.out(prog(t, BUBBLES[j].t0, BUBBLES[j].t0 + .3));
+    const y = BUB_Y - rank * BUB_STEP, pop = E.outBack(prog(t, b.t0, b.t0 + .35));
+    b.el.style.opacity = a.toFixed(3);
+    b.el.style.transform = `translate(${BUB_X}px,${y.toFixed(1)}px) scale(${(0.75 + 0.25 * pop).toFixed(3)})`;
+    b.el.style.filter = a < 1 ? `blur(${((1 - a) * 6).toFixed(2)}px)` : "none";
+  });
+  // barre d'XP
+  const show = E.out(prog(t, 15.55, 16.0)) * (1 - E.out(prog(t, 19.25, 19.6)));
+  fx.setTransform(1, 0, 0, 1, 0, 0);
+  if (show > 0) {
+    const n = XP.levels.length, segW = (XP.x1 - XP.x0) / n, gap = 10;
+    for (let i = 0; i < n; i++) {
+      const [name, lt] = XP.levels[i], f = E.inOut(prog(t, lt, lt + 0.45)), x = XP.x0 + i * segW;
+      fx.globalAlpha = show; fx.fillStyle = "rgba(20,15,9,.75)"; fx.strokeStyle = "rgba(201,138,46,.55)"; fx.lineWidth = 1.5;
+      fx.beginPath(); fx.roundRect(x + gap / 2, XP.y, segW - gap, 14, 7); fx.fill(); fx.stroke();
+      if (f > 0) { const gr = fx.createLinearGradient(x, 0, x + segW, 0); gr.addColorStop(0, "#C98A2E"); gr.addColorStop(1, "#F6D58E"); fx.fillStyle = gr; fx.shadowColor = "rgba(240,180,80,1)"; fx.shadowBlur = 16 + 20 * bell(t, lt + .4, lt + .5, lt + .9);
+        fx.beginPath(); fx.roundRect(x + gap / 2, XP.y, (segW - gap) * f, 14, 7); fx.fill(); fx.shadowBlur = 0; }
+      const lit = prog(t, lt + 0.35, lt + 0.5);
+      XP_EL[i].style.opacity = show.toFixed(3); XP_EL[i].style.left = (x + segW / 2) + "px"; XP_EL[i].style.top = (XP.y - 36) + "px";
+      XP_EL[i].style.color = lit > 0.5 ? "#F6D58E" : "#9b8f7c";
+    }
+    fx.globalAlpha = 1;
+  } else XP_EL.forEach(el => el.style.opacity = 0);
+  // LEVEL UP
+  const lu = prog(t, XP.up, XP.up + 0.4), lo = 1 - E.out(prog(t, 19.35, 19.7));
+  const lvA = (lu > 0 && lo > 0) ? clamp(lu * 3) * lo : 0;
+  $("lvlback").style.opacity = (lvA * .9).toFixed(3);
+  $("lvlback").style.background = `radial-gradient(ellipse ${pick(620, 900)}px ${pick(260, 240)}px at 50% ${pick(840, 470)}px, rgba(0,0,0,.85), rgba(0,0,0,.5) 50%, rgba(0,0,0,0) 100%)`;
+  if (lu > 0 && lo > 0) { LVL.style.opacity = (clamp(lu * 3) * lo).toFixed(3); LVL.style.left = (W / 2) + "px"; LVL.style.top = pick(840, 470) + "px"; LVL.style.transform = `translate(-50%,-50%) scale(${(0.6 + 0.4 * E.outBack(lu)).toFixed(3)})`; LVL.style.letterSpacing = (0.6 - 0.28 * E.out(lu)).toFixed(3) + "em"; LVL.style.fontSize = pick(84, 96) + "px"; burst(fx, W / 2, pick(840, 470), t, XP.up, 60, 700, 21); }
+  else LVL.style.opacity = 0;
+}
+
+function drawText(t) {
+  for (const T of TEXTS) {
+    const outU = prog(t, T.t1, T.t1 + T.out);
+    T.spans.forEach((s, i) => {
+      const u = prog(t, T.t0 + i * T.stag, T.t0 + i * T.stag + T.dur), e = E.out(u);
+      s.style.opacity = (e * (1 - E.sine(outU))).toFixed(3);
+      s.style.transform = `translateY(${((1 - e) * 34).toFixed(2)}px)`;
+      const blur = (1 - E.out4(u)) * 12 + outU * 10; s.style.filter = blur > .05 ? `blur(${blur.toFixed(2)}px)` : "none";
+    });
+    if (T.fly) { const sc = 1 + E.in2(prog(t, 3.0, 3.6)) * 2.6, yOff = (parseFloat(T.el.style.top) - H / 2) * (sc - 1); T.el.style.transform = `translateX(-50%) translateY(${yOff.toFixed(1)}px) scale(${sc.toFixed(3)})`; }
+  }
+}
+
+function drawOverlays(t, c) {
+  let k = 0, bx = W / 2, by = H / 2;
+  const ph = bell(t, 3.75, 4.12, 4.6); if (ph > k) { k = ph; const q = proj(c, ...SCREEN_C); if (q) { bx = q[0]; by = q[1]; } }
+  const mon = bell(t, 9.35, 9.95, 10.7); if (mon > k) { k = mon; bx = W / 2; by = H / 2; }
+  const st = bell(t, 19.45, 19.95, 20.55); if (st > k) { k = st; bx = W / 2; by = H / 2; }
+  const R = Math.max(W, H);
+  $("bloom").style.opacity = k.toFixed(3);
+  $("bloom").style.background = `radial-gradient(circle ${R}px at ${bx.toFixed(0)}px ${by.toFixed(0)}px, rgba(255,248,230,1) 0%, rgba(255,226,165,.92) ${(18 + 40 * k).toFixed(0)}%, rgba(214,150,60,.55) ${(45 + 40 * k).toFixed(0)}%, rgba(120,70,20,${(.3 * k).toFixed(2)}) 100%)`;
+  const lk = Math.max(bell(t, 11.4, 11.8, 12.4), bell(t, 12.8, 13.2, 13.8), bell(t, 14.6, 15.1, 15.7)) * .35, lx = ((t * 260) % (W + 700)) - 350;
+  $("leak").style.opacity = lk.toFixed(3);
+  $("leak").style.background = `radial-gradient(ellipse ${pick(500, 600)}px ${pick(1300, 900)}px at ${lx.toFixed(0)}px 40%, rgba(255,180,80,.55), rgba(255,140,40,0) 70%)`;
+  const imp = 22.0, fl = prog(t, imp - .03, imp + .6), fa = fl > 0 && fl < 1 ? Math.pow(1 - fl, 2.2) : 0;
+  $("flash").style.opacity = fa.toFixed(3);
+  $("flash").style.background = `radial-gradient(circle ${R}px at ${LCX}px ${lpx(0, 900)[1].toFixed(0)}px, rgba(255,246,222,.95) 0%, rgba(240,190,100,.55) 18%, rgba(160,100,30,.12) 45%, rgba(0,0,0,0) 70%)`;
+  const bh = V ? 0 : 102 * (1 - E.inOut(prog(t, 22.0, 23.2)));
+  $("barT").style.height = $("barB").style.height = bh.toFixed(1) + "px";
+  const sc = Math.max(...SECTIONS.map(s => bell(t, s[3] - 0.1, s[3] + 0.5, s[4] + 0.6)), bell(t, 20.2, 20.6, 21.7));
+  $("scrim").style.opacity = sc.toFixed(3);
+  $("topscrim").style.opacity = bell(t, 20.1, 20.6, 21.75).toFixed(3);
+  $("fade").style.opacity = Math.max(1 - E.out(prog(t, 0, 1.0)), E.in(prog(t, 29.3, 30))).toFixed(3);
+}
+
+function drawLogo(t) {
+  const imp = 22.0, fill = prog(t, imp - .05, imp + .14);
+  LOGO.icon.style.opacity = E.out(fill).toFixed(3); LOGO.icon.style.transformOrigin = "50% 100%";
+  LOGO.icon.style.transform = `scale(${(1 + .06 * (1 - E.out(prog(t, imp, imp + .8)))).toFixed(4)})`;
+  const sw = prog(t, imp + .5, imp + 1.4); LOGO.sweep.style.opacity = sw > 0 && sw < 1 ? 1 : 0; LOGO.sweep.style.backgroundPosition = `${(100 - sw * 100).toFixed(2)}% 0`;
+  const rev = (el, a, b, mode) => {
+    const u = E.inOut(prog(t, a, b)); el.style.opacity = u > 0 ? 1 : 0;
+    if (mode === "lr") { const X = -15 + u * 130; el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(90deg,#000 ${X - 15}%,transparent ${X}%)`; }
+    else { const X = u * 62; el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(90deg,transparent ${50 - X - 12}%,#000 ${50 - X}%,#000 ${50 + X}%,transparent ${50 + X + 12}%)`; }
+    el.style.transform = `translateY(${((1 - E.out(prog(t, a, b))) * 14).toFixed(2)}px)`;
+  };
+  rev(LOGO.empira, imp + .45, imp + 1.6, "lr"); rev(LOGO.agency, imp + 1.25, imp + 2.3, "c"); rev(LOGO.tagline, imp + 2.0, imp + 3.3, "c");
+  CTA.forEach(({ el, t0 }) => { const u = E.out(prog(t, t0, t0 + 0.8)); el.style.opacity = u.toFixed(3); el.style.transform = `translateX(-50%) translateY(${((1 - u) * 18).toFixed(1)}px)`; el.style.filter = u < 1 ? `blur(${((1 - u) * 8).toFixed(2)}px)` : "none"; });
+}
+
+function drawGrain(frame) { const r = rng(frame * 7919 + 13), d = grainImg.data; for (let i = 0; i < d.length; i += 4) { const v = r() * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } gc.putImageData(grainImg, 0, 0); }
+
+function seek(t) { const c = camera(t); drawBg(t); drawPlanes(t, c); drawFx(t, c); drawHud(t, c); drawText(t); drawOverlays(t, c); drawLogo(t); drawGrain(Math.floor(t * 30)); }
+window.seek = seek; window.DUR = DUR;
+
+const render = Q.has("render");
+if (render) document.body.classList.add("render");
+window.ready = (async () => {
+  await document.fonts.load('300 40px "Montserrat"'); await document.fonts.load('400 40px "Montserrat"'); await document.fonts.load('500 40px "Montserrat"'); await document.fonts.load('600 40px "Montserrat"'); await document.fonts.ready;
+  await Promise.all([...document.images].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+  await Promise.all([...document.images].map(im => im.decode ? im.decode().catch(() => 0) : 0));
+  seek(0); return true;
+})();
+if (!render) {
+  const fit = () => { const s = Math.min(innerWidth / W, (innerHeight - 70) / H); $("stage").style.transform = `scale(${s})`; };
+  addEventListener("resize", fit); fit();
+  const audio = new Audio("out/gaming-mix.wav"); let playing = false, t0 = 0, start = 0;
+  const tick = () => { if (!playing) return; let t = audio.readyState > 2 && !audio.paused ? audio.currentTime : (performance.now() - start) / 1000 + t0; if (t >= DUR) { playing = false; t = DUR; $("play").textContent = "▶ Lecture"; } seek(t); $("scrub").value = t; $("tc").textContent = t.toFixed(2).padStart(5, "0"); requestAnimationFrame(tick); };
+  $("play").onclick = () => { playing = !playing; $("play").textContent = playing ? "❚❚ Pause" : "▶ Lecture"; if (playing) { t0 = +$("scrub").value; if (t0 >= DUR - .05) t0 = 0; start = performance.now(); audio.currentTime = t0; audio.play().catch(() => {}); tick(); } else audio.pause(); };
+  $("scrub").oninput = e => { const t = +e.target.value; audio.currentTime = t; t0 = t; start = performance.now(); seek(t); $("tc").textContent = t.toFixed(2).padStart(5, "0"); };
+}
+</script>
+</body>
+</html>

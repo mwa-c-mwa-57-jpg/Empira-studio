@@ -11,7 +11,7 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => (
 const FPS = +(args.fps || 30);
 const OUT = path.resolve(ROOT, args.out || "out/empira-video-silent.mp4");
 const AR = args.ar || "9x16", VW = AR === "16x9" ? 1920 : 1080, VH = AR === "16x9" ? 1080 : 1920;
-const URL_Q = `index.html?render&ar=${AR}`;
+const PAGE = args.page || "index.html", URL_Q = `${PAGE}?render&ar=${AR}`;
 
 const MIME = { ".html": "text/html", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".wav": "audio/wav", ".js": "text/javascript" };
 const server = http.createServer((req, res) => {
@@ -31,13 +31,13 @@ if (args.stills) {
   fs.mkdirSync(path.join(ROOT, "out/stills"), { recursive: true });
   for (const t of args.stills.split(",").map(Number)) {
     await page.evaluate(t => window.seek(t), t);
-    await stage.screenshot({ path: path.join(ROOT, `out/stills/${AR}-t${t.toFixed(2).padStart(5, "0")}.png`) });
+    await stage.screenshot({ path: path.join(ROOT, `out/stills/${PAGE.replace(".html", "")}-${AR}-t${t.toFixed(2).padStart(5, "0")}.png`) });
   }
 } else {
   // rendu parallèle : N pages (processus de rendu distincts), chacune encode un segment, puis concaténation
   const from = +(args.from || 0), to = +(args.to || 30), WORKERS = +(args.workers || 1);
   const n = Math.round((to - from) * FPS), per = Math.ceil(n / WORKERS), t0 = Date.now();
-  const tmp = path.join(ROOT, "out/.chunks"); fs.mkdirSync(tmp, { recursive: true });
+  const tmp = path.join(ROOT, "out/.chunks-" + PAGE.replace(".html", "") + "-" + AR); fs.mkdirSync(tmp, { recursive: true });
   let done = 0;
   const work = async (w) => {
     const pg = w === 0 ? page : await browser.newPage({ viewport: { width: VW, height: VH }, deviceScaleFactor: 1 });

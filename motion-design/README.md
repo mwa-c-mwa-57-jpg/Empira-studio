@@ -44,3 +44,27 @@ Voix off : `python3 tools/voiceover.py [fichier_voix]` (instants de calage dans 
 Aperçu en direct : `npx http-server .`, puis ouvrir `index.html` (ou `index.html?ar=16x9`) et cliquer sur « Lecture ».
 
 Les textes (`SECTIONS`), la caméra (`CAM`, une par format), les photos (`plane(...)`) et le CTA se trouvent dans `index.html`.
+
+---
+
+# Empira Gaming : pub TikTok 30 s « Level Up »
+
+Même moteur, même charte noir et or, rythme plus nerveux :
+1. On plonge dans l'écran d'un téléphone.
+2. **Lives interactifs** : le chat et les likes font réagir le jeu.
+3. **Setup gaming** : casque, micro, clavier et souris.
+4. **Coaching** : barre d'XP, puis LEVEL UP.
+5. « Prêt ? Appuie sur A. » : le bouton A de la manette devient le « A » du logo, suivi de EMPIRA GAMING et @empiraagency.
+
+| Fichier | Rôle |
+|---|---|
+| `gaming.html` | Source (9:16 par défaut, `?ar=16x9`) |
+| `out/gaming-tiktok-9x16-60fps.mp4` / `out/gaming-16x9-60fps.mp4` | Vidéos (musique + bruitages, sans voix off) |
+| `out/gaming-music.wav` / `out/gaming-sfx.wav` / `out/gaming-mix.wav` | Pistes audio |
+| `GAMING-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
+| `tools/grade_gaming.py`, `tools/audio_gaming.py` | Étalonnage des photos et bande son |
+
+```bash
+python3 tools/grade_gaming.py && python3 tools/audio_gaming.py
+node tools/render.mjs --page gaming.html --ar 9x16 --fps 60 --workers 3 --out out/gaming-9x16-silent.mp4
+```

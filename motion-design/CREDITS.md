@@ -27,3 +27,14 @@ Toutes les photos viennent de **Pexels** et sont sous [licence Pexels](https://w
 Les personnes visibles sont en silhouette, de dos ou dans l'ombre, donc non identifiables. Aucune marque n'est mise en avant à l'écran.
 Musique et bruitages : synthétisés par `tools/audio.py`, sans aucun droit tiers.
 Police : Montserrat (SIL Open Font License).
+
+## Pub Empira Gaming (`gaming.html`)
+| Fichier | Rôle dans la pub | Source |
+|---|---|---|
+| `gaming/g_phone.jpg` | Ouverture : plongée dans l'écran du téléphone (écran flouté, aucune interface lisible) | https://www.pexels.com/photo/a-person-using-a-smartphone-in-a-dark-room-6943446/ |
+| `gaming.jpg` | 01 Lives interactifs — la chambre du gamer | https://www.pexels.com/photo/immersive-night-gaming-setup-with-neon-lighting-34697345/ |
+| `gaming/g_headset.jpg` | 02 Setup — casque | https://www.pexels.com/photo/man-wearing-headphones-in-front-of-computer-18966483/ |
+| `mic.jpg` | 02 Setup — micro | https://www.pexels.com/photo/grey-condenser-microphone-close-up-photography-352505/ |
+| `gaming/g_desk.jpg` | 02 Setup — clavier et souris | https://www.pexels.com/photo/futuristic-gaming-mouse-on-neon-lit-desktop-28779690/ |
+| `gaming/g_arena.jpg` | 03 Coaching — l'arène, LEVEL UP | https://www.pexels.com/photo/people-inside-stadium-2263410/ |
+| `gaming/g_pad.jpg` | Final « Appuie sur A » (logo de la console effacé) | https://www.pexels.com/photo/close-up-shot-of-an-xbox-game-controller-4714924/ |
