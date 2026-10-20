@@ -12,3 +12,5 @@ out/vcheck/
 out/v3-*-silent.mp4
 out/.chunks*/
 out/gaming-*-silent.mp4
+out/.*.mp4
+out/.*.wav
