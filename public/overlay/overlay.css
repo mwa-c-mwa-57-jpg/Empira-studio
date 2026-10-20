@@ -1,0 +1,221 @@
+@font-face {
+  font-family: 'Anton';
+  src: url('/vendor/fonts/anton/anton-latin-400-normal.woff2') format('woff2');
+  font-display: block;
+}
+@font-face {
+  font-family: 'Caveat';
+  font-weight: 700;
+  src: url('/vendor/fonts/caveat/caveat-latin-700-normal.woff2') format('woff2');
+  font-display: block;
+}
+@font-face {
+  font-family: 'Oswald';
+  font-weight: 600;
+  src: url('/vendor/fonts/oswald/oswald-latin-600-normal.woff2') format('woff2');
+  font-display: block;
+}
+
+:root {
+  --ink: #141414;
+  --toast-bg: rgba(246, 244, 238, 0.93);
+  --status-bg: rgba(18, 18, 20, 0.86);
+  --pink: #f3628f;
+  --live: #e8223f;
+  --gold-1: #ffe066;
+  --gold-2: #f5b400;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1b120b;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  font-family: Oswald, 'Arial Narrow', sans-serif;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 85% 70% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* ---- logo (sous la zone d'interface TikTok du haut) ---- */
+.brand {
+  position: absolute;
+  left: 2vw;
+  top: 16.4vh;
+  display: flex;
+  align-items: flex-end;
+  gap: 1vw;
+  line-height: 0.9;
+}
+.brand-title {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 6.6vw;
+  letter-spacing: 0.02em;
+  color: #c9ccd1;
+  text-shadow:
+    0 0.12vw 0 #a3a6ab,
+    0 0.24vw 0 #8d9095,
+    0 0.36vw 0 #77797e,
+    0 0.48vw 0 #616368,
+    0 0.6vw 0 #4b4d52,
+    0 1vw 1.4vw rgba(0, 0, 0, 0.6);
+}
+.brand-side {
+  display: flex;
+  align-items: center;
+  gap: 0.8vw;
+  padding-bottom: 0.4vw;
+}
+.brand-sub {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 2.9vw;
+  letter-spacing: 0.08em;
+  color: var(--pink);
+  text-shadow: 0 0.2vw 0 #7c1d3f, 0 0.4vw 0.8vw rgba(0, 0, 0, 0.5);
+}
+.brand-badge {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 2.2vw;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--live);
+  border: 0.3vw solid #ffc2cd;
+  border-radius: 1vw;
+  padding: 0.35vw 0.9vw 0.25vw;
+  box-shadow: 0 0 1.4vw rgba(232, 34, 63, 0.7);
+  animation: livepulse 1.6s ease-in-out infinite;
+}
+@keyframes livepulse {
+  50% { box-shadow: 0 0 0.4vw rgba(232, 34, 63, 0.3); }
+}
+
+/* ---- notifications + statut (au-dessus de la barre de commentaire TikTok) ---- */
+.feed-column {
+  position: absolute;
+  left: 50%;
+  bottom: 20.8vh;
+  transform: translateX(-50%);
+  width: 64vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6vh;
+}
+#toasts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5vh;
+}
+.toast,
+.status {
+  max-width: 64vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 2.15vw;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.55vh 1.8vw;
+  border-radius: 1.6vw;
+  box-shadow: 0 0.4vw 1.4vw rgba(0, 0, 0, 0.35);
+}
+.toast {
+  color: var(--ink);
+  background: var(--toast-bg);
+  animation: toastin 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.toast.out {
+  opacity: 0;
+  transform: translateY(-0.8vh) scale(0.96);
+}
+@keyframes toastin {
+  from { opacity: 0; transform: translateY(1vh) scale(0.9); }
+}
+.status {
+  color: #fff;
+  background: var(--status-bg);
+  border: 0.2vw solid rgba(255, 255, 255, 0.18);
+  font-size: 2.3vw;
+  transition: opacity 0.3s;
+}
+.hidden {
+  opacity: 0;
+}
+
+/* ---- légende des paliers (en bas à droite, comme dans la vidéo) ---- */
+#legend {
+  position: absolute;
+  right: 0.8vw;
+  top: 79.6vh;
+  width: 29vw;
+}
+.legend-title {
+  font-size: 1.55vw;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 0.45vh;
+  text-shadow: 0 0.2vw 0.6vw rgba(0, 0, 0, 0.9);
+}
+.legend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55vh 1vw;
+}
+.chip {
+  font-family: Anton, Impact, sans-serif;
+  font-size: 1.75vw;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 0.38vh 0;
+  border-radius: 0.8vw;
+  color: #1c1c1c;
+  background: linear-gradient(#ffffff, #e6e6e6);
+  box-shadow: 0 0.3vw 0 rgba(0, 0, 0, 0.35), inset 0 -0.2vw 0 rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s;
+}
+.chip.premium {
+  color: #4a2a00;
+  background: linear-gradient(var(--gold-1), var(--gold-2));
+}
+.chip.active {
+  transform: scale(1.1);
+  animation: chipglow 0.8s ease-in-out infinite alternate;
+}
+@keyframes chipglow {
+  from { box-shadow: 0 0 0.4vw rgba(255, 224, 102, 0.4); }
+  to { box-shadow: 0 0 2.2vw rgba(255, 224, 102, 1); }
+}
+
+.offline {
+  position: absolute;
+  top: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(200, 20, 40, 0.9);
+  color: #fff;
+  padding: 0.8vh 2vw;
+  border-radius: 1vw;
+  font-size: 2vw;
+  white-space: nowrap;
+}

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Print Booth Live — Tableau de bord</title>
+  <link rel="stylesheet" href="/static/dashboard/dashboard.css">
+</head>
+<body>
+  <header class="top">
+    <div class="logo">
+      <span class="logo-title">PRINT BOOTH</span>
+      <span class="logo-sub">LIVE</span>
+    </div>
+    <div class="pills">
+      <span id="pill-tiktok" class="pill">TikTok : —</span>
+      <span id="pill-overlay" class="pill">Overlay : —</span>
+      <span id="pill-queue" class="pill">File : 0</span>
+      <span id="pill-ws" class="pill bad">Serveur : hors ligne</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- Connexion -->
+    <section class="card">
+      <h2>1 · Connexion au live TikTok</h2>
+      <form id="connect-form" class="row">
+        <label class="grow">
+          <span>Ton pseudo TikTok</span>
+          <input id="username" type="text" placeholder="@tonpseudo" autocomplete="off" spellcheck="false">
+        </label>
+        <button id="btn-connect" class="primary" type="submit">Se connecter</button>
+        <button id="btn-disconnect" type="button">Déconnecter</button>
+      </form>
+      <p id="tiktok-message" class="hint">Lance d'abord ton live sur TikTok, puis clique sur « Se connecter ».</p>
+    </section>
+
+    <!-- Overlay -->
+    <section class="card">
+      <h2>2 · Ajouter l'overlay dans TikTok LIVE Studio</h2>
+      <div class="row">
+        <input id="overlay-url" class="grow mono" type="text" readonly>
+        <button id="btn-copy" type="button">Copier</button>
+        <a id="btn-preview" class="button" target="_blank" rel="noopener">Aperçu</a>
+      </div>
+      <details>
+        <summary>Comment faire ?</summary>
+        <ol class="steps">
+          <li><b>TikTok LIVE Studio</b> : <i>Ajouter une source</i> → <i>Lien</i> (ou « Link »/« Navigateur ») → colle l'adresse ci-dessus → taille <b>1080 × 1920</b> → étire la source pour remplir tout l'écran vertical.</li>
+          <li><b>OBS Studio</b> : <i>Sources</i> → <i>+</i> → <i>Navigateur</i> → URL ci-dessus, largeur 1080, hauteur 1920, coche « Contrôler l'audio via OBS » pour entendre l'imprimante.</li>
+          <li>Garde cette fenêtre et la fenêtre noire ouvertes pendant tout le live.</li>
+        </ol>
+      </details>
+    </section>
+
+    <!-- Tests -->
+    <section class="card">
+      <h2>3 · Tester (même sans live)</h2>
+      <div class="buttons">
+        <button data-sim="join">👋 Arrivée</button>
+        <button data-sim="follow">➕ Follow</button>
+        <button data-sim="comment">💬 Commentaire</button>
+        <button data-sim="share">↗️ Partage</button>
+        <button data-sim="like">❤️ Likes</button>
+      </div>
+      <div id="gift-buttons" class="buttons"></div>
+      <div class="buttons">
+        <button id="btn-burst">⚡ Rafale de 10 spectateurs</button>
+      </div>
+    </section>
+
+    <!-- File -->
+    <section class="card wide">
+      <h2>File d'impression</h2>
+      <div id="current" class="current empty">Aucune impression en cours.</div>
+      <div class="buttons">
+        <button id="btn-pause">⏸ Pause</button>
+        <button id="btn-feed">📜 Avancer le papier</button>
+        <button id="btn-clear-paper">🧽 Effacer le papier</button>
+        <button id="btn-clear-queue" class="danger">🗑 Vider la file</button>
+      </div>
+      <ol id="queue" class="queue"></ol>
+    </section>
+
+    <!-- Réglages -->
+    <section class="card wide">
+      <h2>Réglages</h2>
+      <form id="settings">
+        <fieldset>
+          <legend>Qui est imprimé ?</legend>
+          <div class="checks">
+            <label><input type="checkbox" name="events.join"> Arrivées</label>
+            <label><input type="checkbox" name="events.follow"> Follows</label>
+            <label><input type="checkbox" name="events.share"> Partages</label>
+            <label><input type="checkbox" name="events.comment"> Commentaires</label>
+            <label><input type="checkbox" name="events.like"> Likes</label>
+            <label><input type="checkbox" name="events.gift"> Cadeaux</label>
+          </div>
+          <div class="fields">
+            <label><span>Mot-clé obligatoire dans le commentaire (vide = tous)</span><input name="commentKeyword" type="text" placeholder="ex : dessine"></label>
+            <label><span>Likes nécessaires par spectateur</span><input name="likeThreshold" type="number" min="1"></label>
+            <label><span>Délai avant de réimprimer la même personne (minutes, sauf cadeau)</span><input name="cooldownMinutes" type="number" min="0" step="1"></label>
+            <label><span>Taille maximale de la file</span><input name="maxQueue" type="number" min="1"></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Paliers de cadeaux (coins minimum)</legend>
+          <div id="tiers" class="tiers"></div>
+          <p class="hint">Les cadeaux passent devant tout le monde. Un même spectateur cumule ses coins tant qu'il attend.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Machine &amp; affichage</legend>
+          <div class="fields">
+            <label><span>Vitesse d'impression (1 = normal)</span><input name="speed" type="number" min="0.25" max="4" step="0.25"></label>
+            <label><span>Avance papier auto après inactivité (secondes, 0 = jamais)</span><input name="autoFeedIdleSeconds" type="number" min="0"></label>
+            <label><span>Langue de l'overlay</span>
+              <select name="language"><option value="fr">Français</option><option value="en">English</option></select>
+            </label>
+            <label class="inline"><input type="checkbox" name="sound"> Sons de l'imprimante</label>
+            <label><span>Titre</span><input name="branding.title" type="text" maxlength="40"></label>
+            <label><span>Sous-titre</span><input name="branding.subtitle" type="text" maxlength="40"></label>
+            <label><span>Badge</span><input name="branding.badge" type="text" maxlength="40"></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Connexion avancée</legend>
+          <div class="fields">
+            <label class="inline"><input type="checkbox" name="tiktok.autoConnect"> Se connecter automatiquement au démarrage</label>
+            <label><span>Clé API Euler Stream (optionnelle, en cas de limite de connexions)</span><input name="tiktok.signApiKey" type="password" placeholder="laisser vide" autocomplete="off"></label>
+          </div>
+        </fieldset>
+        <div class="row end">
+          <span id="save-status" class="hint"></span>
+          <button class="primary" type="submit">Enregistrer</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Journal -->
+    <section class="card wide">
+      <h2>Journal</h2>
+      <ul id="log" class="log"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="/static/dashboard/dashboard.js"></script>
+</body>
+</html>

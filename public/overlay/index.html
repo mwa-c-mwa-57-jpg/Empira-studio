@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Print Booth — Overlay</title>
+  <link rel="stylesheet" href="/static/overlay/overlay.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/vendor/three/build/three.module.js",
+        "three/addons/": "/vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div id="hud">
+    <div class="vignette"></div>
+    <div class="brand">
+      <div id="brand-title" class="brand-title" data-text="PRINT BOOTH">PRINT BOOTH</div>
+      <div class="brand-side">
+        <span id="brand-sub" class="brand-sub">PENCIL PRINTS</span>
+        <span id="brand-badge" class="brand-badge">LIVE</span>
+      </div>
+    </div>
+    <div class="feed-column">
+      <div id="status" class="status hidden"></div>
+      <div id="toasts"></div>
+    </div>
+    <div id="legend"></div>
+    <div id="offline" class="offline hidden"></div>
+  </div>
+  <script type="module" src="/static/overlay/main.js"></script>
+</body>
+</html>

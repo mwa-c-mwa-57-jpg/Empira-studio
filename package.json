@@ -1,0 +1,24 @@
+{
+  "name": "print-booth-live",
+  "version": "1.0.0",
+  "description": "Overlay TikTok LIVE interactif : une imprimante 3D dessine la photo de profil des spectateurs.",
+  "private": true,
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js --open",
+    "dev": "node server/index.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@fontsource/anton": "5.2.5",
+    "@fontsource/caveat": "5.2.5",
+    "@fontsource/oswald": "5.2.8",
+    "three": "0.180.0",
+    "tiktok-live-connector": "2.5.0",
+    "ws": "8.21.3"
+  }
+}
