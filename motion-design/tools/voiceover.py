@@ -6,7 +6,7 @@
 4. baisse automatiquement musique et bruitages sous la voix (ducking),
 5. normalise à -14 LUFS (standard TikTok) et assemble les vidéos 9:16 et 16:9.
 
-Usage : python3 tools/voiceover.py [pub|gaming] [fichier_voix] [--dry] [--sans-musique]
+Usage : python3 tools/voiceover.py [pub|gaming|prointer] [fichier_voix] [--dry] [--sans-musique]
         --dry : affiche le calage, sans mixer ; --sans-musique : voix off + bruitages seulement (fichiers suffixés -sans-musique)
 """
 import numpy as np, subprocess, sys, os, wave
@@ -77,14 +77,31 @@ GAMING = [
     ("Retrouve-nous sur TikTok : arobase clarkydog tiret du bas 23.", (24.07, 24.49), None,              None,         25.88, 1.10),
 ]
 
+PROINTER = [
+    ("Voici Pro.",                                         (0.00, 0.00),         (0.72, 1.21),         None,         2.90),
+    ("Chez PRO-INTER, c'est lui qui vise juste.",          (0.72, 1.21),         (3.42, 3.92),         None,         3.85),
+    ("Vous cherchez une mission qui vous correspond ?",    (3.42, 3.92),         (5.37, 5.87),         None,         6.35),
+    ("Nous écoutons vos compétences… et vos envies.",      (5.37, 5.87),         (8.24, 8.87),         None,         12.00),
+    ("Puis notre viseur trouve la mission adaptée :",      (8.24, 8.87),         (10.77, 11.25),       None,         17.20),
+    ("intérim, CDD ou CDI.",                               (10.77, 11.25),       (13.25, 13.80),       None,         19.70),
+    ("Bâtiment, industrie, électricité, chauffage : vous êtes sur le terrain.", (13.25, 13.80), (18.22, 18.68), None, 22.90),
+    ("Et nous restons à vos côtés, du premier au dernier jour.", (18.22, 18.68), (21.43, 22.05),      None,         27.60),
+    ("Trois agences au Luxembourg, et plus de quinze ans d'expertise.", (21.43, 22.05), (25.05, 25.58), None,       32.60),
+    ("PRO-INTER, votre agence d'emploi.",                  (25.05, 25.58),       (27.37, 27.87),       None,         37.60),
+    ("Postulez sur prointer point lu.",                    (27.37, 27.87),       None,                 None,         39.65),
+]
+
 PROJECTS = {
     "pub":    dict(voice="elevenlabs-roger.mp3", stems="empira", master="v3-{ar}-silent.mp4", pieces=PUB,
                    videos={"9x16": "empira-tiktok-9x16-voix.mp4", "16x9": "empira-16x9-voix.mp4"}),
     "gaming": dict(voice="gaming-benjamin.mp3", stems="gaming", master="gaming-{ar}-silent.mp4", pieces=GAMING,
                    videos={"9x16": "gaming-tiktok-9x16-voix.mp4", "16x9": "gaming-16x9-voix.mp4"}),
+    "prointer": dict(voice="prointer-benjamin.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=42.0,
+                   videos={"9x16": "prointer-9x16-voix.mp4"}),
 }
 P = PROJECTS[PROJ]
 SRC = ARGS[1] if len(ARGS) > 1 else os.path.join(ROOT, "assets", "voix", P["voice"])
+DUR = P.get("dur", DUR)
 
 voice = load(SRC)
 # enveloppe d'énergie (fenêtres de 10 ms) pour affiner les points de coupe

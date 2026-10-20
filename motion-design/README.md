@@ -123,7 +123,9 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 | Fichier | Rôle |
 |---|---|
 | `prointer.html` | Animation (SVG, 9:16), lecture et timeline dans le navigateur |
+| `out/prointer-9x16-voix.mp4` / `out/prointer-9x16-voix-sans-musique.mp4` | **Vidéos finales avec voix off** (Benjamin), avec ou sans musique, -14 LUFS |
 | `out/prointer-9x16-60fps.mp4` / `out/prointer-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls) |
+| `assets/voix/prointer-benjamin.mp3` | Voix off brute (ElevenLabs) |
 | `out/prointer-music.wav` / `out/prointer-sfx.wav` / `out/prointer-mix.wav` | Pistes audio |
 | `assets/prointer/logo-officiel.png` → `logo.svg`, `logo-paths.json` | Logo officiel et sa version vectorielle animable |
 | `tools/prointer_logo.py` | Tracé vectoriel (potrace) du logo officiel, cible redessinée en géométrie exacte |
@@ -133,4 +135,5 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 ```bash
 pip install potracer && python3 tools/prointer_logo.py && python3 tools/audio_prointer.py
 node tools/render.mjs --page prointer.html --fps 60 --to 42 --workers 3 --out out/prointer-9x16-silent.mp4
+python3 tools/voiceover.py prointer && python3 tools/voiceover.py prointer --sans-musique
 ```

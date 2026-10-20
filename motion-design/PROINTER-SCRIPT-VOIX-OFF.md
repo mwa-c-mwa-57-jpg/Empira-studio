@@ -31,3 +31,20 @@ Si la prononciation accroche, remplacez :
 | 00:26,8 → 00:31,3 | **05 — Le suivi** : Pro passe sur le chantier, suivi régulier, réactivité, proximité | « Et nous restons à vos côtés, du premier au dernier jour. » |
 | 00:31,3 → 00:36 | **06 — Près de chez vous** : Dudelange, Esch-sur-Alzette, Mondorf-les-Bains, +15 ans | « Trois agences au Luxembourg, et plus de quinze ans d'expertise. » |
 | 00:36 → 00:42 | Pro replonge dans le logo ; « Postulez sur prointer.lu » | « PRO-INTER, votre agence d'emploi. Postulez sur prointer point lu. » |
+
+## Calage final (voix « Benjamin », `assets/voix/prointer-benjamin.mp3`)
+La voix brute dure 29,8 s. `python3 tools/voiceover.py prointer` la découpe aux silences et cale chaque phrase sur son image (tableau `PROINTER`) ; `--sans-musique` donne la version voix + bruitages.
+
+| Parole | Image |
+|---|---|
+| 2,9 s « Voici Pro. » | la cible saute hors du logo et devient Pro |
+| 3,9 s « Chez PRO-INTER, c'est lui qui vise juste. » | Pro atterrit et dit bonjour |
+| 6,4 s « Vous cherchez une mission qui vous correspond ? » | le candidat et ses questions |
+| 12,0 s « Nous écoutons vos compétences… et vos envies. » | les bulles compétences, expérience, envies |
+| 17,2 s « Puis notre viseur trouve la mission adaptée : » | le viseur parcourt les offres et se pose sur « Électricien » |
+| 19,7 s « intérim, CDD ou CDI. » | les trois pastilles apparaissent sur chaque mot |
+| 22,9 s « Bâtiment, industrie, électricité, chauffage : vous êtes sur le terrain. » | les badges métiers sur chaque mot |
+| 27,6 s « Et nous restons à vos côtés, du premier au dernier jour. » | Pro sur le chantier, la liste se coche |
+| 32,6 s « Trois agences au Luxembourg, et plus de quinze ans d'expertise. » | les épingles, puis « +15 ans » sur « quinze ans » |
+| 37,6 s « PRO-INTER, votre agence d'emploi. » | Pro replonge dans le logo |
+| 39,7 s « Postulez sur prointer point lu. » | le bouton « Postulez sur prointer.lu » |
