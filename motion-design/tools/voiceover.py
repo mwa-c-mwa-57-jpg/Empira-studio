@@ -6,7 +6,8 @@
 4. baisse automatiquement musique et bruitages sous la voix (ducking),
 5. normalise à -14 LUFS (standard TikTok) et assemble les vidéos 9:16 et 16:9.
 
-Usage : python3 tools/voiceover.py [pub|gaming] [fichier_voix] [--dry]   (--dry : affiche le calage, sans mixer)
+Usage : python3 tools/voiceover.py [pub|gaming] [fichier_voix] [--dry] [--sans-musique]
+        --dry : affiche le calage, sans mixer ; --sans-musique : voix off + bruitages seulement (fichiers suffixés -sans-musique)
 """
 import numpy as np, subprocess, sys, os, wave
 from scipy.signal import butter, sosfilt
@@ -17,6 +18,8 @@ SR = 48000
 DUR = 30.0
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 PROJ = ARGS[0] if ARGS else "pub"
+NO_MUSIC = "--sans-musique" in sys.argv
+TAG = "-sans-musique" if NO_MUSIC else ""
 
 def load(path, ch=1):
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-ac", str(ch), "-ar", str(SR), "-f", "f32le", "-"], capture_output=True, check=True).stdout
@@ -163,14 +166,14 @@ def smooth(x, att, rel):
 duck = smooth(active, 0.06, 0.35)
 gm = 10 ** (-8 * duck / 20); gs = 10 ** (-4 * duck / 20)
 VOICE_GAIN = 10 ** (2.5 / 20)
-mix = music * gm[:, None] + sfx * gs[:, None] + v * VOICE_GAIN
+mix = music * gm[:, None] * (0 if NO_MUSIC else 1) + sfx * gs[:, None] + v * VOICE_GAIN
 save(os.path.join(OUT, ".mix-pre.wav"), mix / max(1.0, np.max(np.abs(mix)) / 0.95))
 
 # normalisation -14 LUFS / -1 dBTP (deux passes loudnorm)
 import json
 meas = subprocess.run(["ffmpeg", "-hide_banner", "-i", os.path.join(OUT, ".mix-pre.wav"), "-af", "loudnorm=I=-14:TP=-1:LRA=9:print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
 j = json.loads(meas[meas.rindex("{"):meas.rindex("}") + 1])
-final = os.path.join(OUT, f"{P['stems']}-mix-voix.wav")
+final = os.path.join(OUT, f"{P['stems']}-mix-voix{TAG}.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(OUT, ".mix-pre.wav"), "-af",
                 f"loudnorm=I=-14:TP=-1:LRA=9:measured_I={j['input_i']}:measured_TP={j['input_tp']}:measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true",
                 "-ar", str(SR), final], check=True)
@@ -179,6 +182,7 @@ print("mix →", final)
 
 # vidéos finales
 for ar, name in P["videos"].items():
+    name = name.replace(".mp4", f"{TAG}.mp4")
     src = os.path.join(OUT, P["master"].format(ar=ar))
     if not os.path.exists(src): print("absent :", src); continue
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-i", final, "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "slow", "-crf", "19",

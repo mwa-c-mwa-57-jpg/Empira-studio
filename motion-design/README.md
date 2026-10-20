@@ -60,6 +60,7 @@ Même moteur, même charte noir et or, rythme plus nerveux :
 |---|---|
 | `gaming.html` | Source (9:16 par défaut, `?ar=16x9`) |
 | `out/gaming-tiktok-9x16-voix.mp4` / `out/gaming-16x9-voix.mp4` | **Vidéos finales avec voix off** (voix « Benjamin »), -14 LUFS |
+| `out/gaming-tiktok-9x16-voix-sans-musique.mp4` / `out/gaming-16x9-voix-sans-musique.mp4` | Voix off + bruitages, sans musique (pour ajouter un son TikTok) |
 | `out/gaming-tiktok-9x16-60fps.mp4` / `out/gaming-16x9-60fps.mp4` | Vidéos sans voix off (musique + bruitages) |
 | `out/gaming-voix.wav` / `out/gaming-mix-voix.wav` | Voix off calée et traitée / mix final |
 | `assets/voix/gaming-benjamin.mp3` | Voix off brute (ElevenLabs) |
@@ -71,4 +72,5 @@ Même moteur, même charte noir et or, rythme plus nerveux :
 python3 tools/grade_gaming.py && python3 tools/audio_gaming.py
 node tools/render.mjs --page gaming.html --ar 9x16 --fps 60 --workers 3 --out out/gaming-9x16-silent.mp4
 python3 tools/voiceover.py gaming          # voix off : calage dans GAMING, ajouter --dry pour seulement afficher le calage
+python3 tools/voiceover.py gaming --sans-musique   # même chose, voix off + bruitages uniquement
 ```
