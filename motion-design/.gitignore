@@ -14,3 +14,6 @@ out/.chunks*/
 out/gaming-*-silent.mp4
 out/.*.mp4
 out/.*.wav
+assets/jeux-src/
+out/jeux-*-silent.mp4
+tools/__pycache__/

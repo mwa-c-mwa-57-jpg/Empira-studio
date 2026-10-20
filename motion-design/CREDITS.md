@@ -38,3 +38,14 @@ Police : Montserrat (SIL Open Font License).
 | `gaming/g_desk.jpg` | 02 Setup — clavier et souris | https://www.pexels.com/photo/futuristic-gaming-mouse-on-neon-lit-desktop-28779690/ |
 | `gaming/g_arena.jpg` | 03 Coaching — l'arène, LEVEL UP | https://www.pexels.com/photo/people-inside-stadium-2263410/ |
 | `gaming/g_pad.jpg` | Final « Appuie sur A » (logo de la console effacé) | https://www.pexels.com/photo/close-up-shot-of-an-xbox-game-controller-4714924/ |
+
+## Pub « Jeux & interactions » (`jeux.html`)
+Photos Pexels (licence Pexels, usage commercial libre), étalonnées par `tools/grade_jeux.py` :
+| Fichier | Rôle dans la pub | Source |
+|---|---|---|
+| `jeux/s_setup.jpg` | Ouverture : setup néon et ring light (écran flouté, aucun contenu lisible) | https://www.pexels.com/photo/modern-gaming-setup-with-neon-lighting-38498457/ |
+| `jeux/s_la.jpg` | 01 GTA V — de la ville au sommet (« Mont Chiliad ») | https://www.pexels.com/photo/golden-hour-los-angeles-skyline-with-snowy-mountains-30197525/ |
+| `jeux/s_forest.jpg` | 04 Jeux d'horreur — la forêt | https://www.pexels.com/photo/spooky-foggy-forest-road-at-twilight-29547573/ |
+| `jeux/s_arcade.jpg` | 05 Jeux interactifs — arrière-plan flou | https://www.pexels.com/photo/vibrant-neon-arcade-claw-machines-at-night-30351933/ |
+
+Visuels de jeux : extraits du **guide de jeux Empira Gaming** fourni par l'agence (`assets/docs/guide-de-jeux.pdf`), agrandis ×4 par IA (Real-ESRGAN, `tools/upscale.py`), sans les mentions de logiciels, de prix ni de configuration. Les noms, logos et univers des jeux appartiennent à leurs éditeurs respectifs.

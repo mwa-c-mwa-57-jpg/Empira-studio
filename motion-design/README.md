@@ -74,3 +74,34 @@ node tools/render.mjs --page gaming.html --ar 9x16 --fps 60 --workers 3 --out ou
 python3 tools/voiceover.py gaming          # voix off : calage dans GAMING, ajouter --dry pour seulement afficher le calage
 python3 tools/voiceover.py gaming --sans-musique   # même chose, voix off + bruitages uniquement
 ```
+
+---
+
+# Empira Gaming : présentation TikTok 44 s « Jeux & interactions »
+
+Présentation des lives interactifs du guide de jeux, en un plan-séquence 9:16. Aucun logiciel n'est cité, et le logo de l'agence est l'original, intact :
+1. Setup néon : « Et si ton live devenait un jeu ? »
+2. Le principe : like → boost, cadeau → explosion, commentaire → téléportation.
+3. **GTA V** : du point A au Mont Chiliad, le camp qui t'aide et le camp qui t'empêche.
+4. **Minecraft** : mode TNT.
+5. **Roblox** : les six modes.
+6. **Jeux d'horreur** : coupure de courant, screamer.
+7. **Dix jeux interactifs** prêts à lancer.
+8. **Sur demande** : le mur des autres jeux, puis le logo et @clarkydog_23.
+
+| Fichier | Rôle |
+|---|---|
+| `jeux.html` | Source de l'animation (9:16) |
+| `out/jeux-tiktok-9x16-60fps.mp4` | Vidéo (musique + bruitages) |
+| `out/jeux-tiktok-9x16-sans-musique.mp4` | Vidéo avec les bruitages seulement |
+| `out/jeux-music.wav` / `out/jeux-sfx.wav` / `out/jeux-mix.wav` | Pistes audio |
+| `JEUX-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
+| `tools/upscale.py`, `tools/upscale_guide.py` | Agrandissement ×4 des visuels du guide (Real-ESRGAN, CPU) |
+| `tools/grade_jeux.py`, `tools/audio_jeux.py` | Étalonnage, découpe des cartes du guide, bande son |
+
+```bash
+pdfimages -png assets/docs/guide-de-jeux.pdf assets/jeux-src/pages/p
+pip install torch --index-url https://download.pytorch.org/whl/cpu   # + poids RealESRGAN_x4plus.pth (GitHub xinntao/Real-ESRGAN)
+python3 tools/upscale_guide.py && python3 tools/grade_jeux.py && python3 tools/audio_jeux.py
+node tools/render.mjs --page jeux.html --fps 60 --to 44 --workers 3 --out out/jeux-9x16-silent.mp4
+```

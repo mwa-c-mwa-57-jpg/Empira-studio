@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empira Gaming — Jeux & interactions (TikTok 44s)</title>
+<style>
+@font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
+  src:url(assets/fonts/montserrat-latin-ext.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
+  src:url(assets/fonts/montserrat-latin.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+:root{--gold-1:#F6D58E;--gold-2:#E8B65C;--gold-3:#C98A2E;--gold-4:#9A5A0C;--text:#F6F1E7;--muted:#D2C4AD;--help:#5BE38E;--block:#FF5A4E}
+html,body{margin:0;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:"Montserrat",sans-serif}
+#stage{position:relative;overflow:hidden;background:#050403;transform-origin:center center}
+#stage>*{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.plane{position:absolute;left:0;top:0;transform-origin:0 0;display:none;backface-visibility:hidden}
+.plane img{display:block;width:100%;height:100%}
+.plane.card{border-radius:3.2%/5%;overflow:hidden;box-shadow:0 0 0 6px rgba(232,182,92,.9),0 30px 90px rgba(0,0,0,.75),0 0 60px rgba(240,180,80,.35)}
+.plane.tall{border-radius:5%/3%}
+.blk{position:absolute;white-space:nowrap;color:var(--text)}
+.blk.c{transform:translateX(-50%);text-align:center}
+.blk.wrap{white-space:normal}
+.w{display:inline-block}
+.gold{background:linear-gradient(135deg,var(--gold-1) 0%,var(--gold-2) 40%,var(--gold-3) 75%,var(--gold-4) 115%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.label{font-weight:500;font-size:20px;letter-spacing:.45em;color:var(--gold-2)}
+.h1{font-weight:300;font-size:64px;letter-spacing:.005em;line-height:1.12;text-shadow:0 2px 30px rgba(0,0,0,.55)}
+.hook{font-weight:300;font-size:74px;letter-spacing:.005em;line-height:1.15;text-shadow:0 4px 40px rgba(0,0,0,.8)}
+.sub{font-weight:300;font-size:31px;letter-spacing:.02em;line-height:1.35;color:var(--muted);text-shadow:0 2px 20px rgba(0,0,0,.85)}
+/* rangées de cartes d'interaction (visuels du guide) */
+.icard{position:absolute;border-radius:14px;box-shadow:0 0 0 2px rgba(232,182,92,.85),0 10px 30px rgba(0,0,0,.6);opacity:0;transform-origin:50% 100%}
+.ihead{position:absolute;font-weight:600;font-size:17px;letter-spacing:.2em;text-align:center;padding:8px 0;border-radius:999px;opacity:0;white-space:nowrap}
+.ihead.help{color:#0b1a10;background:linear-gradient(135deg,#9BF5BC,#3FCB74);box-shadow:0 0 22px rgba(91,227,142,.45)}
+.ihead.block{color:#1d0806;background:linear-gradient(135deg,#FF9A8E,#E8483B);box-shadow:0 0 22px rgba(255,90,78,.45)}
+.ihead.gold{color:#1a1208;background:linear-gradient(135deg,#F6D58E,#C98A2E);box-shadow:0 0 22px rgba(240,180,80,.45);-webkit-background-clip:border-box;background-clip:border-box}
+/* principe : interaction → action */
+.chip{position:absolute;display:flex;align-items:center;gap:16px;font-weight:600;font-size:34px;letter-spacing:.12em;padding:20px 34px 20px 24px;border-radius:999px;opacity:0;white-space:nowrap}
+.chip svg{width:50px;height:50px;flex:none}
+.chip.in{color:var(--text);background:rgba(14,11,7,.78);border:2px solid rgba(232,182,92,.8);box-shadow:0 8px 30px rgba(0,0,0,.55)}
+.chip.in svg{fill:#F0C066}
+.chip.out{color:#1a1208;background:linear-gradient(135deg,#F6D58E,#C98A2E);box-shadow:0 0 34px rgba(240,180,80,.55)}
+.chip.out svg{fill:#1a1208}
+#logo .lp{position:absolute;display:block;transform-origin:50% 50%}
+#sweep{position:absolute;-webkit-mask-image:url(assets/logo-icon.png);mask-image:url(assets/logo-icon.png);-webkit-mask-size:100% 100%;mask-size:100% 100%;
+  mix-blend-mode:screen;background:linear-gradient(115deg,rgba(255,255,255,0) 35%,rgba(255,244,214,.95) 50%,rgba(255,255,255,0) 65%);background-size:300% 100%;background-repeat:no-repeat}
+.ctaG{font-weight:500;font-size:30px;letter-spacing:.55em}
+.ctaE{font-weight:400;font-size:22px;letter-spacing:.42em;color:var(--muted)}
+.cta1{font-weight:600;font-size:46px;letter-spacing:.06em}
+.cta2{font-weight:400;font-size:25px;letter-spacing:.32em;color:var(--muted)}
+.cta0{font-weight:500;font-size:19px;letter-spacing:.5em;color:var(--text)}
+#bloom,#flash,#leak{mix-blend-mode:screen;opacity:0}
+#tint{mix-blend-mode:multiply;opacity:0}
+#dark{background:#000;opacity:0}
+#hookback{opacity:0}
+#grain{opacity:.085;mix-blend-mode:overlay}
+#fade{background:#000}
+#ui{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:500 13px/1 "Montserrat",sans-serif;color:#e9dcc2;
+  background:rgba(20,16,10,.85);border:1px solid #5a4422;padding:8px 12px;border-radius:999px;z-index:10}
+#ui button{font:inherit;color:#140f08;background:linear-gradient(135deg,#F6D58E,#C98A2E);border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
+#ui input{width:280px;accent-color:#C98A2E}
+body.render #ui{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg"></canvas>
+  <div id="cam"></div>
+  <div id="tint"></div>
+  <canvas id="fx"></canvas>
+  <div id="dark"></div>
+  <div id="bloom"></div>
+  <div id="leak"></div>
+  <div id="scrim"></div>
+  <div id="hookback"></div>
+  <div id="hud"></div>
+  <canvas id="fx2"></canvas>
+  <div id="logo"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <canvas id="grain"></canvas>
+  <div id="fade"></div>
+</div>
+<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="44" step="0.01" value="0"><span id="tc">00.00</span></div>
+<script src="assets/photos/jeux/sizes.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   EMPIRA GAMING — « Jeux & interactions » — 44 s, un seul plan-séquence, 9:16.
+   Même moteur que gaming.html : caméra 3D à travers de vraies photos et les
+   visuels du guide de jeux (agrandis ×4). Tempo 120 BPM, impact logo à 36.0 s.
+   Aucun logiciel n'est nommé ; le logo de l'agence est l'original, intact.
+   ===================================================================== */
+const Q = new URLSearchParams(location.search);
+const W = 1080, H = 1920, DUR = 44, F = 1000;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const bell = (t, a, m, b) => t <= a || t >= b ? 0 : t < m ? E.sine((t - a) / (m - a)) : 1 - E.sine((t - m) / (b - m));
+const win = (t, a0, a1, b0, b1) => E.sine(prog(t, a0, a1)) * (1 - E.sine(prog(t, b0, b1)));
+const E = {
+  lin: t => t, sine: t => -(Math.cos(Math.PI * t) - 1) / 2,
+  inOut: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  in: t => t * t * t, in2: t => t * t,
+  out: t => 1 - Math.pow(1 - t, 3), out4: t => 1 - Math.pow(1 - t, 4),
+  outExpo: t => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t),
+  outBack: t => { const c1 = 1.6, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+};
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const $ = id => document.getElementById(id);
+
+document.body.classList.add("v");
+Object.assign($("stage").style, { width: W + "px", height: H + "px" });
+["bg", "fx", "fx2"].forEach(id => { $(id).width = W; $(id).height = H; });
+$("grain").width = 360; $("grain").height = 640;
+if (Q.has("grain")) $("grain").style.opacity = Q.get("grain");
+$("cam").style.transformOrigin = `${W / 2}px ${H / 2}px`;
+$("vignette").style.background = "radial-gradient(ellipse 80% 62% at 50% 50%,rgba(0,0,0,0) 45%,rgba(0,0,0,.5) 82%,rgba(0,0,0,.88) 100%)";
+$("scrim").style.background = "linear-gradient(180deg,rgba(0,0,0,.94) 0%,rgba(0,0,0,.84) 21%,rgba(0,0,0,.4) 32%,rgba(0,0,0,0) 42%)";
+$("hookback").style.background = "radial-gradient(ellipse 620px 420px at 50% 700px,rgba(0,0,0,.78),rgba(0,0,0,.45) 55%,rgba(0,0,0,0) 100%)";
+$("scrim").style.opacity = 0;
+$("tint").style.background = "radial-gradient(ellipse 70% 60% at 50% 55%,#ff7a6a,#7a0d08 70%,#2a0302 100%)";
+
+/* ---------------------------- Plans 3D (photos et visuels du guide) ---------------------------- */
+const P = {};
+const J = "assets/photos/jeux/";
+const SZ = k => window.SIZES[k] || [1, 1];
+function plane(id, src, iw, ih, w, anchor, at, o = {}) {
+  const key = src.split("/").pop().replace(".jpg", ""); if (window.SIZES[key]) [iw, ih] = window.SIZES[key];
+  const h = w * ih / iw, cx = at[0] + (0.5 - anchor[0]) * w, cy = at[1] + (0.5 - anchor[1]) * h;
+  const el = document.createElement("div"); el.className = "plane" + (o.cls ? " " + o.cls : ""); el.style.width = w + "px"; el.style.height = h + "px";
+  if (o.mask) { el.style.webkitMaskImage = el.style.maskImage = o.mask; if (o.mask.includes("),")) { el.style.webkitMaskComposite = "source-in"; el.style.maskComposite = "intersect"; } }
+  const im = document.createElement("img"); im.src = src; el.appendChild(im);
+  $("cam").appendChild(el);
+  return P[id] = Object.assign({ id, el, w, h, x: cx - w / 2, y: cy - h / 2, z: at[2] }, o);
+}
+const uvw = (p, u, v) => [p.x + u * p.w, p.y + v * p.h, p.z];
+const W_ = (id, u, v) => uvw(P[id], u, v);
+const EDGES = (a = 6) => `linear-gradient(180deg,transparent 0%,#000 ${a}%,#000 ${100 - a}%,transparent 100%), linear-gradient(90deg,transparent 0%,#000 ${a}%,#000 ${100 - a}%,transparent 100%)`;
+
+// 0 — le setup (la caméra plonge dans l'écran)
+plane("setup", J + "s_setup.jpg", 2400, 3200, 4600, [0.485, 0.52], [0, 0, 3000], { mask: EDGES(4), win: [0.0, 0.6, 9, 9] });
+const SCREEN = W_("setup", 0.485, 0.52), RING = W_("setup", 0.387, 0.187);
+// 1 — GTA V : de Los Angeles au sommet
+plane("la", J + "s_la.jpg", 2240, 2566, 4200, [0.5, 0.5], [0, 0, 6600], { mask: EDGES(3), win: [8.35, 8.85, 30, 30] });
+const ROUTE = [[0.31, 0.80], [0.36, 0.755], [0.43, 0.715], [0.51, 0.665], [0.565, 0.59], [0.56, 0.50], [0.525, 0.415], [0.505, 0.355], [0.50, 0.325]];
+// 2 — Minecraft : mode TNT
+plane("tnt_bg", J + "tnt_bg.jpg", 900, 424, 9800, [0.5, 0.5], [0, 0, 9300], { win: [14.0, 14.6, 19.0, 19.3] });
+plane("tnt", J + "tnt.jpg", 1800, 847, 1000, [0.5, 0.5], [0, -170, 8000], { cls: "card", win: [14.15, 14.7, 30, 30] });
+// 3 — Roblox : les six modes
+plane("obby_bg", J + "obby_bg.jpg", 900, 520, 9000, [0.5, 0.5], [0, 0, 12100], { win: [18.75, 19.3, 23.6, 23.9] });
+const RB = ["r_koth", "r_highway", "r_skyrush", "r_ball", "r_parkour", "r_rail"];
+RB.forEach((k, i) => plane(k, J + k + ".jpg", 572, 928, 430, [0.5, 0.5], [-1175 + i * 470, 70 + (i % 2 ? 26 : -26), 10000 + (i % 2) * 60], { cls: "card tall", rot: i % 2 ? 2.5 : -2.5, win: [18.9 + i * 0.32, 19.35 + i * 0.32, 30, 30], pop: 19.0 + i * 0.32 }));
+// 4 — Horreur : la forêt
+plane("forest", J + "s_forest.jpg", 2400, 3200, 3000, [0.5, 0.56], [0, 0, 14200], { win: [23.35, 23.9, 30, 30], flicker: true, dim: 1.35 });
+// 5 — Jeux interactifs : la colonne des dix jeux
+plane("arcade_bg", J + "arcade_bg.jpg", 900, 1350, 3900, [0.5, 0.5], [0, 0, 18600], { win: [28.3, 28.8, 32.2, 32.5] });
+const GJ = Array.from({ length: 10 }, (_, i) => `g${String(i + 1).padStart(2, "0")}`);
+GJ.forEach((k, i) => plane(k, J + k + ".jpg", 1800, 640, 860, [0.5, 0.5], [i % 2 ? 40 : -40, -1640 + i * 380, 16000], { cls: "card", win: [28.4, 28.9, 33, 33], fadeTop: true }));
+// 6 — Sur demande : le mur des jeux
+const DJ = Array.from({ length: 12 }, (_, i) => `d${String(i + 1).padStart(2, "0")}`);
+DJ.forEach((k, i) => plane(k, J + k + ".jpg", 980, 900, 240, [0.5, 0.5], [-390 + (i % 4) * 260, 200 + (Math.floor(i / 4) - 1) * 245, 21000], { cls: "card", win: [31.95, 32.3, 50, 50], pop: 32.35 + (i % 4) * 0.09 + Math.floor(i / 4) * 0.16 }));
+
+/* ---------------------------- Caméra ---------------------------- */
+const RX = (u) => (u - 0.5) * 4200, RY = (v) => (v - 0.5) * 4200 * 2566 / 2240;
+const CAM = [
+  [0.0, 0, 40, 0, 0], [3.1, 30, 20, 1450, 0.3], [4.05, SCREEN[0], SCREEN[1], 2968, 0, "in2"],
+  [4.6, SCREEN[0], SCREEN[1], 3200, -0.5, "out"], [8.15, SCREEN[0] + 20, SCREEN[1], 3650, 0.4],
+  [8.75, -420, 680, 5000, -0.4, "in2"],
+  [11.2, -160, 120, 5150, 0.3, "inOut"], [13.7, -20, -470, 5300, 0, "inOut"],
+  [14.45, -20, -560, 6570, 0, "in2"],
+  [15.0, 0, -40, 6850, 0, "out"], [18.55, 0, -60, 6990, 0.3],
+  [19.05, 0, -190, 7960, 0, "in2"],
+  [19.6, -1175, 40, 8880, -0.4, "out"], [23.2, 1175, 60, 8990, 0.4, "inOut"],
+  [23.75, 0, 0, 12350, 0, "in2"],
+  [24.3, 0, 120, 12450, -0.3, "out"], [28.2, 0, 170, 12950, 0.3],
+  [28.75, 0, 200, 14150, 0, "in2"],
+  [29.25, 0, -1310, 15000, 0, "out"], [31.85, 0, 1190, 15060, 0],
+  [32.35, 0, 160, 19750, 0, "in2"],
+  [32.9, 0, 160, 19850, 0, "out"], [35.5, 0, 160, 20020, 0.2],
+  [36.0, 0, 160, 20950, 0, "in2"], [44.0, 0, 160, 21300, 0],
+];
+const camRaw = t => {
+  let i = 0; while (i < CAM.length - 2 && t > CAM[i + 1][0]) i++;
+  const a = CAM[i], b = CAM[i + 1]; let u = prog(t, a[0], b[0]); u = b[5] ? E[b[5]](u) : u;
+  return [lerp(a[1], b[1], u), lerp(a[2], b[2], u), lerp(a[3], b[3], u), lerp(a[4], b[4], u)];
+};
+const CAM_HZ = 120, CAM_N = DUR * CAM_HZ + 1, camTab = [];
+(function () {
+  const raw = []; for (let i = 0; i < CAM_N; i++) raw.push(camRaw(i / CAM_HZ));
+  const sig = 0.12 * CAM_HZ, R = Math.ceil(sig * 3), k = []; let ks = 0;
+  for (let j = -R; j <= R; j++) { const v = Math.exp(-j * j / (2 * sig * sig)); k.push(v); ks += v; }
+  for (let i = 0; i < CAM_N; i++) { const acc = [0, 0, 0, 0]; for (let j = -R; j <= R; j++) { const s = raw[clamp(i + j, 0, CAM_N - 1)], w = k[j + R] / ks; for (let c = 0; c < 4; c++) acc[c] += s[c] * w; } camTab.push(acc); }
+})();
+// secousses : explosions, TNT, coupure de courant, cadeaux
+const KICKS = [[6.0, 4], [12.05, 6], [16.95, 10], [26.15, 5], [26.8, 7], [36.0, 9]];
+function camera(t) {
+  const f = clamp(t, 0, DUR) * CAM_HZ, i = Math.floor(f), u = f - i, a = camTab[i], b = camTab[Math.min(i + 1, CAM_N - 1)];
+  let [x, y, z, r] = a.map((v, c) => lerp(v, b[c], u));
+  x += Math.sin(t * 0.9) * 5 + Math.sin(t * 2.3 + 1) * 1.5; y += Math.sin(t * 0.7 + 2) * 4 + Math.cos(t * 2.9) * 1.2; r += Math.sin(t * 0.37) * 0.15;
+  for (const [k0, amp0] of KICKS) { const s = prog(t, k0, k0 + 0.5); if (s > 0 && s < 1) { const amp = (1 - s) * (1 - s) * amp0; x += Math.sin(t * 190) * amp; y += Math.cos(t * 230) * amp; } }
+  return { x, y, z, r: r * Math.PI / 180 };
+}
+function proj(c, X, Y, Z) { const d = Z - c.z; if (d <= 1) return null; const s = F / d; return [W / 2 + (X - c.x) * s, H / 2 + (Y - c.y) * s, s, d]; }
+function rollPt(c, p) { const cs = Math.cos(c.r), sn = Math.sin(c.r), dx = p[0] - W / 2, dy = p[1] - H / 2; return [W / 2 + dx * cs - dy * sn, H / 2 + dx * sn + dy * cs]; }
+
+/* ---------------------------- Logo (espace écran, fichiers officiels intacts) ---------------------------- */
+const IMP = 36.0;
+const LS = 0.225, LCX = W / 2, LCY = 760;
+const lpx = (px, py) => [LCX + (px - 2322) * LS, LCY + (py - 1551) * LS];
+const LOGO = {};
+[["icon", 1729, 287, 1187, 1224], ["empira", 949, 1786, 2747, 413], ["agency", 288, 2381, 4069, 160], ["tagline", 288, 2688, 4069, 127]].forEach(([n, px, py, w, h]) => {
+  const [x, y] = lpx(px, py), im = document.createElement("img"); im.src = `assets/logo-${n}.png`; im.className = "lp";
+  Object.assign(im.style, { left: x + "px", top: y + "px", width: w * LS + "px", height: h * LS + "px", opacity: 0 }); $("logo").appendChild(im); LOGO[n] = im;
+  if (n === "icon") { const s = document.createElement("div"); s.id = "sweep"; Object.assign(s.style, { left: x + "px", top: y + "px", width: w * LS + "px", height: h * LS + "px", opacity: 0 }); $("logo").appendChild(s); LOGO.sweep = s; }
+});
+const CTA_Y = lpx(0, 2803)[1] + 52;
+const CTA = [["ctaG gold", "EMPIRA GAMING", 0, 36.55], ["ctaE", "ENSEMBLE, ON VA PLUS LOIN", 56, 37.6], ["cta0", "RETROUVE-NOUS SUR TIKTOK", 150, 39.3], ["cta1 gold", "@clarkydog_23", 184, 39.6], ["cta2", "EMPIRAAGENCY.FR", 256, 39.9]].map(([cls, txt, dy, t0]) => {
+  const d = document.createElement("div"); d.className = "blk c " + cls; d.textContent = txt; Object.assign(d.style, { left: LCX + "px", top: (CTA_Y + dy) + "px", opacity: 0 }); $("logo").appendChild(d); return { el: d, t0 };
+});
+
+/* ---------------------------- Textes ---------------------------- */
+const TEXTS = [];
+function text(cls, html, x, y, t0, t1, o = {}) {
+  const d = document.createElement("div"); d.className = "blk " + cls + (o.center ? " c" : "") + (o.maxw ? " wrap" : "");
+  d.style.left = x + "px"; d.style.top = y + "px"; if (o.maxw) d.style.width = o.maxw + "px";
+  const words = []; html.replace(/<g>(.*?)<\/g>|([^<]+)/g, (m, g, plain) => { (g || plain).trim().split(/\s+/).forEach(w => w && words.push({ w, gold: !!g })); });
+  words.forEach((o2, i) => {
+    if (o2.w === "|") { d.appendChild(document.createElement("br")); return; }
+    const s = document.createElement("span"); s.className = "w" + (o2.gold ? " gold" : ""); s.textContent = o2.w; d.appendChild(s);
+    if (i < words.length - 1 && words[i + 1].w !== "|") d.appendChild(document.createTextNode(" "));
+  });
+  $("hud").appendChild(d);
+  const T = { el: d, spans: [...d.querySelectorAll(".w")], t0, t1, stag: o.stag ?? 0.07, dur: o.dur ?? 0.8, out: o.out ?? 0.5, fly: o.fly };
+  TEXTS.push(T); return T;
+}
+const TX = 80, TY = 250, SUBW = 900;
+text("hook", "Et si ton live | devenait <g>un jeu</g> ?", W / 2, 540, 0.5, 3.4, { center: true, fly: true });
+text("hook", "Contrôlé par | <g>ta communauté.</g>", W / 2, 760, 1.95, 3.4, { center: true, stag: 0.09, fly: true });
+const SECTIONS = [
+  ["JEUX & INTERACTIONS", "Ta communauté | <g>contrôle ton jeu.</g>", "", 4.45, 8.15],
+  ["01 — GTA V", "Objectif : <g>Mont Chiliad.</g>", "Du point A au sommet : ta communauté t'aide… ou te barre la route.", 8.95, 13.95],
+  ["02 — MINECRAFT", "Mode <g>TNT.</g>", "Monte ta tour avant que tes viewers ne la fassent exploser.", 14.75, 18.55],
+  ["03 — ROBLOX", "<g>Six modes</g> de jeu.", "King of the Hill, Highway, Sky Rush, Ball Game, Parkour, Rail Rush.", 19.35, 23.2],
+  ["04 — JEUX D'HORREUR", "Des lives <g>imprévisibles.</g>", "Screamers, ennemis, lumières qui s'éteignent : tes viewers décident.", 23.95, 28.2],
+  ["05 — JEUX INTERACTIFS", "<g>Dix jeux</g> prêts à lancer.", "Course, survie, horreur, multijoueur.", 28.95, 31.85],
+  ["SUR DEMANDE", "Un autre jeu <g>en tête ?</g>", "On met en place ton live interactif, selon ton concept.", 32.55, 35.45],
+];
+SECTIONS.forEach(([lab, h1, sub, t0, t1]) => {
+  text("label", lab, TX + 2, TY, t0, t1, { stag: 0.05 });
+  const two = h1.includes("|");
+  text("h1", h1, TX, TY + 36, t0 + 0.2, t1);
+  if (sub) text("sub", sub, TX + 2, TY + (two ? 196 : 126), t0 + 0.75, t1, { stag: 0.035, maxw: SUBW });
+});
+
+/* ---------------------------- Principe : interaction → action ---------------------------- */
+const ICON = {
+  heart: "M12 21.3l-1.4-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5L12 21.3z",
+  gift: "M20 7h-2.2c.1-.3.2-.7.2-1 0-1.7-1.3-3-3-3-1 0-1.9.5-2.5 1.3L12 5l-.5-.7C10.9 3.5 10 3 9 3 7.3 3 6 4.3 6 6c0 .3.1.7.2 1H4c-1.1 0-2 .9-2 2v3h20V9c0-1.1-.9-2-2-2zM9 7c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm6 0c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zM3 13v7c0 1.1.9 2 2 2h6v-9H3zm10 9h6c1.1 0 2-.9 2-2v-7h-8v9z",
+  chat: "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM7 9h10v2H7V9zm6 5H7v-2h6v2zm4-6H7V6h10v2z",
+  bolt: "M11 21h-1l1-7H7.5c-.6 0-.6-.3-.4-.7C8.5 10.9 10.4 7.5 13 3h1l-1 7h3.5c.5 0 .6.3.5.5C13 17.5 11 21 11 21z",
+  boom: "M12 1l2.2 6.1L20 4.6l-2.6 5.6L23 12l-5.6 1.8L20 19.4l-5.8-2.5L12 23l-2.2-6.1L4 19.4l2.6-5.6L1 12l5.6-1.8L4 4.6l5.8 2.5z",
+  warp: "M12 2a10 10 0 1 0 10 10h-2.5A7.5 7.5 0 1 1 12 4.5V2zm0 5a5 5 0 1 0 5 5h-2.4A2.6 2.6 0 1 1 12 9.4V7z",
+};
+const svg = k => `<svg viewBox="0 0 24 24"><path d="${ICON[k]}"/></svg>`;
+const RULES = [["heart", "LIKE", "bolt", "BOOST", 5.0], ["gift", "CADEAU", "boom", "EXPLOSION", 5.75], ["chat", "COMMENTAIRE", "warp", "TÉLÉPORTATION", 6.5]].map(([i1, t1, i2, t2, t0], r) => {
+  const a = document.createElement("div"); a.className = "chip in"; a.innerHTML = svg(i1) + t1; $("hud").appendChild(a);
+  const b = document.createElement("div"); b.className = "chip out"; b.innerHTML = svg(i2) + t2; $("hud").appendChild(b);
+  return { a, b, t0, y: 880 + r * 175 };
+});
+
+/* ---------------------------- Rangées de cartes d'interaction (visuels du guide) ---------------------------- */
+const ROWS = [];
+function irow(y, w, items, heads, t1) {
+  const gap = 14, ggap = 26; let x = 0; const placed = [];
+  items.forEach(([k, ar, t0, grp], i) => { if (i && grp !== items[i - 1][3]) x += ggap; placed.push({ k, ar, t0, grp, x }); x += w + gap; });
+  const x0 = (W - (x - gap)) / 2;
+  const cards = placed.map(p => { const im = document.createElement("img"); im.src = J + p.k + ".jpg"; im.className = "icard"; Object.assign(im.style, { left: (x0 + p.x) + "px", top: y + "px", width: w + "px", height: (w / p.ar) + "px" }); $("hud").appendChild(im); return { el: im, t0: p.t0, p }; });
+  const hs = (heads || []).map(([grp, cls, txt, t0]) => {
+    const g = placed.filter(p => p.grp === grp), a = x0 + g[0].x, b = x0 + g[g.length - 1].x + w;
+    const d = document.createElement("div"); d.className = "ihead " + cls; d.textContent = txt; Object.assign(d.style, { left: a + "px", width: (b - a) + "px", top: (y - 50) + "px" }); $("hud").appendChild(d); return { el: d, t0 };
+  });
+  ROWS.push({ cards, hs, t1 });
+}
+const AR = k => SZ(k)[0] / SZ(k)[1];
+irow(1330, 160, [["c_vehicule", AR("c_vehicule"), 10.9, 0], ["c_teleport", AR("c_teleport"), 11.3, 0], ["c_destruction", AR("c_destruction"), 11.9, 1], ["c_spawn", AR("c_spawn"), 12.3, 1], ["c_obstacles", AR("c_obstacles"), 12.7, 1]],
+  [[0, "help", "LE CAMP QUI T'AIDE", 10.75], [1, "block", "LE CAMP QUI T'EMPÊCHE", 11.75]], 13.95);
+irow(1290, 190, [["m_cubes", AR("m_cubes"), 15.85, 0], ["m_protect", AR("m_protect"), 16.25, 0], ["m_tnt", AR("m_tnt"), 16.8, 1], ["m_obstacles", AR("m_obstacles"), 17.25, 1]],
+  [[0, "help", "TE PROTÈGE", 15.7], [1, "block", "TE DÉTRUIT", 16.65]], 18.55);
+irow(1330, 200, [["h_screamer", AR("h_screamer"), 25.15, 0], ["h_spawn", AR("h_spawn"), 25.55, 0], ["h_lumieres", AR("h_lumieres"), 25.95, 0], ["h_chaos", AR("h_chaos"), 26.65, 0]],
+  [[0, "gold", "CE QUE TES VIEWERS DÉCLENCHENT", 25.0]], 28.2);
+
+/* ---------------------------- Poussière d'or 3D ---------------------------- */
+const DUST = (() => { const r = rng(11), a = []; for (let i = 0; i < 2600; i++) a.push({ x: -1900 + r() * 3800, y: -2600 + r() * 5200, z: 300 + r() * 21500, s: 0.6 + r() * 2.2, ph: r() * 6.28, sp: .4 + r(), vx: (r() - .5) * 14, vy: -6 - r() * 14 }); return a; })();
+const sprite = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d"); const rg = g.createRadialGradient(32, 32, 0, 32, 32, 32); rg.addColorStop(0, "rgba(255,236,190,1)"); rg.addColorStop(.25, "rgba(246,205,130,.75)"); rg.addColorStop(1, "rgba(232,170,80,0)"); g.fillStyle = rg; g.fillRect(0, 0, 64, 64); return c; })();
+const disc = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"); const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, "rgba(246,205,130,.55)"); rg.addColorStop(.7, "rgba(240,190,110,.35)"); rg.addColorStop(.85, "rgba(240,190,110,.5)"); rg.addColorStop(1, "rgba(240,190,110,0)"); g.fillStyle = rg; g.fillRect(0, 0, 128, 128); return c; })();
+const bg = $("bg").getContext("2d"), fx = $("fx").getContext("2d"), fx2 = $("fx2").getContext("2d"), gc = $("grain").getContext("2d"), grainImg = gc.createImageData(360, 640);
+const heartPath = (() => { const p = new Path2D(); p.moveTo(0, 6); p.bezierCurveTo(-14, -6, -9, -18, 0, -10); p.bezierCurveTo(9, -18, 14, -6, 0, 6); p.closePath(); return p; })();
+const giftPath = new Path2D(ICON.gift);
+
+/* ---------------------------- Rendu ---------------------------- */
+function flickerAt(t) {
+  // la forêt : lumière qui vacille puis coupure (extinction des lumières) et retour en rouge
+  if (t < 24.6 || t > 28.6) return 1;
+  let f = 1 - 0.25 * Math.max(0, Math.sin(t * 37) * Math.sin(t * 11.3)) * bell(t, 24.8, 25.6, 26.1);
+  f *= 1 - 0.92 * bell(t, 26.0, 26.12, 26.45);
+  f *= 1 + 0.6 * bell(t, 26.6, 26.8, 27.4);
+  return f;
+}
+function planeState(p, t, c) {
+  const d = p.z - c.z; const w = p.win || [0, 0, 99, 99];
+  let o = win(t, ...w), blur = p.bgblur ? p.bgblur : 0, bright = p.dim || 1, k = 1;
+  if (p.pop !== undefined) { const u = prog(t, p.pop, p.pop + 0.45); k = 0.82 + 0.18 * E.outBack(u); o *= clamp(u * 2.2); }
+  if (p.flicker) bright *= flickerAt(t);
+  if (p.id === "setup") bright *= 1 + 0.5 * bell(t, 3.4, 3.95, 4.15);
+  if (p.id === "tnt") bright *= 1 + 1.3 * bell(t, 16.9, 16.97, 17.5);
+  if (p.id === "la") bright *= 1 + 0.35 * bell(t, 12.0, 12.08, 12.6);
+  if (p.fadeTop && d > 1) { const top = H / 2 + (p.y - c.y) * (F / d); o *= E.sine(clamp((top - 430) / 190)); }   // s'efface sous le titre
+  if (d < 900) { const q = clamp((d - 60) / 840); o *= E.sine(q); blur += (1 - q) * 14; }
+  return { o, blur, bright, k };
+}
+function drawPlanes(t, c) {
+  $("cam").style.transform = `rotate(${c.r}rad)`;
+  for (const id in P) {
+    const p = P[id], d = p.z - c.z, st = d > 1 ? planeState(p, t, c) : { o: 0 };
+    if (st.o <= 0.003) { p.el.style.display = "none"; continue; }
+    const s = F / d, ks = s * st.k, cxs = W / 2 + (p.x + p.w / 2 - c.x) * s, cys = H / 2 + (p.y + p.h / 2 - c.y) * s;
+    const hw = p.w * ks / 2, hh = p.h * ks / 2;
+    if (cxs - hw > W * 1.3 || cys - hh > H * 1.3 || cxs + hw < -W * .3 || cys + hh < -H * .3) { p.el.style.display = "none"; continue; }
+    p.el.style.display = "block";
+    p.el.style.transform = `translate(${cxs.toFixed(2)}px,${cys.toFixed(2)}px)${p.rot ? ` rotate(${p.rot}deg)` : ""} scale(${ks.toFixed(5)}) translate(${(-p.w / 2).toFixed(1)}px,${(-p.h / 2).toFixed(1)}px)`;
+    p.el.style.opacity = st.o.toFixed(3);
+    let f = ""; if (st.blur > 0.4) f += `blur(${(st.blur / ks).toFixed(2)}px) `; if (Math.abs(st.bright - 1) > 0.01) f += `brightness(${st.bright.toFixed(3)})`;
+    p.el.style.filter = f || "none";
+  }
+}
+function drawBg(t) {
+  const g = bg.createRadialGradient(W / 2, H * .55, 60, W / 2, H * .55, Math.max(W, H) * .65);
+  g.addColorStop(0, "#120d08"); g.addColorStop(.6, "#070504"); g.addColorStop(1, "#020202");
+  bg.setTransform(1, 0, 0, 1, 0, 0); bg.fillStyle = g; bg.fillRect(0, 0, W, H);
+}
+function spark(ctx, x, y, r, a = 1, col = [255, 232, 175]) {
+  const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+  rg.addColorStop(0, `rgba(255,252,240,${a})`); rg.addColorStop(.16, `rgba(${col},${.95 * a})`); rg.addColorStop(.45, `rgba(240,180,80,${.32 * a})`); rg.addColorStop(1, "rgba(240,180,80,0)");
+  ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+}
+function flare(ctx, x, y, k, len = 900) {
+  if (k <= 0.01) return;
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  const g = ctx.createLinearGradient(x - len, y, x + len, y);
+  g.addColorStop(0, "rgba(240,170,70,0)"); g.addColorStop(.5, `rgba(255,226,160,${.55 * k})`); g.addColorStop(1, "rgba(240,170,70,0)");
+  ctx.fillStyle = g; ctx.fillRect(x - len, y - 2.2, 2 * len, 4.4); ctx.globalAlpha = .5 * k; ctx.fillRect(x - len * .6, y - 9, len * 1.2, 18); ctx.globalAlpha = 1;
+  spark(ctx, x, y, 90 * k, .6 * k);
+  ctx.restore();
+}
+function burst(ctx, x, y, t, t0, n = 46, speed = 520, seed = 1, cols = ["#FFF3D6", "#F0C066"]) {
+  const age = t - t0; if (age < 0 || age > 1.1) return;
+  for (let i = 0; i < n; i++) {
+    const a = hash(seed * 31 + i) * 6.283, v = speed * (0.35 + 0.65 * hash(seed * 17 + i * 3)), s = 1.2 + 2.6 * hash(seed + i * 7);
+    const px = x + Math.cos(a) * v * age, py = y + Math.sin(a) * v * age + 260 * age * age;
+    ctx.globalAlpha = Math.pow(1 - age / 1.1, 1.5); ctx.fillStyle = hash(i + seed) > .7 ? cols[0] : cols[1];
+    ctx.beginPath(); ctx.arc(px, py, s * (1 - age / 1.4), 0, 6.283); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+// explosion : boule de feu, onde de choc, débris (carrés pour Minecraft)
+function explosion(ctx, x, y, t, t0, sc = 1, seed = 1, cubes = false) {
+  const age = t - t0; if (age < 0 || age > 1.6) return;
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  const fb = E.out(clamp(age / 0.35)), fa = Math.pow(1 - clamp(age / 1.0), 1.6);
+  const rg = ctx.createRadialGradient(x, y, 0, x, y, 260 * sc * fb + 1);
+  rg.addColorStop(0, `rgba(255,250,225,${fa})`); rg.addColorStop(.3, `rgba(255,190,90,${.85 * fa})`); rg.addColorStop(.65, `rgba(230,90,30,${.45 * fa})`); rg.addColorStop(1, "rgba(120,30,10,0)");
+  ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(x, y, 260 * sc * fb + 1, 0, 6.283); ctx.fill();
+  const sw = clamp(age / 0.7); ctx.globalAlpha = (1 - sw) * .8; ctx.strokeStyle = "#FFD9A0"; ctx.lineWidth = 4 * sc;
+  ctx.beginPath(); ctx.arc(x, y, 40 * sc + 420 * sc * E.outExpo(sw), 0, 6.283); ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.restore();
+  for (let i = 0; i < 38; i++) {
+    const a = hash(seed * 13 + i) * 6.283, v = (300 + 700 * hash(seed * 7 + i)) * sc, s = (cubes ? 10 + 16 * hash(i + seed * 3) : 2 + 3 * hash(i)) * sc;
+    const px = x + Math.cos(a) * v * age, py = y + Math.sin(a) * v * age + 900 * sc * age * age;
+    ctx.globalAlpha = Math.pow(1 - age / 1.6, 1.2);
+    if (cubes) { ctx.save(); ctx.translate(px, py); ctx.rotate(age * (hash(i) - .5) * 12); ctx.fillStyle = ["#6FBF3F", "#8B5A2B", "#D23B2E", "#E9E2D0"][i % 4]; ctx.fillRect(-s / 2, -s / 2, s, s); ctx.restore(); }
+    else { ctx.fillStyle = hash(i + seed) > .6 ? "#FFF0C8" : "#FF9A3C"; ctx.beginPath(); ctx.arc(px, py, s, 0, 6.283); ctx.fill(); }
+  }
+  ctx.globalAlpha = 1;
+}
+// téléportation : anneaux violets qui se resserrent
+function warp(ctx, x, y, t, t0, sc = 1) {
+  const age = t - t0; if (age < 0 || age > 1.2) return;
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  for (let i = 0; i < 4; i++) { const u = clamp((age - i * 0.08) / 0.9); if (u <= 0 || u >= 1) continue; ctx.globalAlpha = (1 - u) * .9; ctx.strokeStyle = i % 2 ? "#C9A3FF" : "#F6D58E"; ctx.lineWidth = 5 * sc * (1 - u) + 1; ctx.beginPath(); ctx.ellipse(x, y, 180 * sc * (1 - E.out(u)) + 10, 60 * sc * (1 - E.out(u)) + 4, 0, 0, 6.283); ctx.stroke(); }
+  spark(ctx, x, y, 120 * sc * bell(age, 0, 0.5, 1.2), 0.9, [210, 170, 255]);
+  ctx.restore(); ctx.globalAlpha = 1;
+}
+// cadeaux et cœurs qui montent (comme sur un live)
+function floaters(ctx, t, t0, t1, x0, y0, n, seed, kind) {
+  for (let i = 0; i < n; i++) {
+    const st = t0 + (t1 - t0) * hash(seed + i * 3.1), age = t - st; if (age < 0 || age > 1.6) continue;
+    const u = age / 1.6, x = x0 + (hash(seed + i) - .5) * 160 + Math.sin(age * 5 + i) * 24, y = y0 - u * 620;
+    const s = (kind === "gift" ? 2.0 : 1.6) * (0.8 + 0.5 * hash(i * 7 + seed)) * (1 - .3 * u);
+    ctx.save(); ctx.translate(x, y); ctx.rotate((hash(i * 3 + seed) - .5) * .5); ctx.scale(s, s); ctx.globalAlpha = Math.min(1, age * 6) * (1 - Math.pow(u, 3));
+    ctx.shadowColor = "rgba(240,180,80,.9)"; ctx.shadowBlur = 14; ctx.fillStyle = hash(i * 9 + seed) > .6 ? "#FFF0CC" : "#E8B65C";
+    if (kind === "gift") { ctx.translate(-12, -12); ctx.fill(giftPath); } else ctx.fill(heartPath);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+}
+function glowPath(ctx, pts, a, w = 4, dash = null) {
+  if (pts.length < 2) return;
+  ctx.save(); ctx.lineJoin = ctx.lineCap = "round"; if (dash) ctx.setLineDash(dash);
+  ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+  ctx.globalAlpha = .5 * a; ctx.strokeStyle = "#E8B65C"; ctx.lineWidth = w * 3; ctx.shadowColor = "rgba(240,180,80,1)"; ctx.shadowBlur = 24; ctx.stroke();
+  ctx.shadowBlur = 0; ctx.globalAlpha = a; ctx.strokeStyle = "#FFF0C8"; ctx.lineWidth = w; ctx.stroke(); ctx.restore();
+}
+function catmull(pts, n = 14) {
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let j = 0; j < n; j++) { const s = j / n, s2 = s * s, s3 = s2 * s; out.push([0, 1].map(c => 0.5 * ((2 * p1[c]) + (-p0[c] + p2[c]) * s + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * s2 + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * s3))); }
+  }
+  out.push(pts[pts.length - 1]); return out;
+}
+const ROUTE_FINE = catmull(ROUTE.map(([u, v]) => [u, v]), 16);
+function pin(ctx, x, y, s, a, label, gold = true) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y); ctx.scale(s, s);
+  ctx.shadowColor = "rgba(240,180,80,.9)"; ctx.shadowBlur = 20;
+  const g = ctx.createLinearGradient(-20, -60, 20, 0); g.addColorStop(0, gold ? "#F6D58E" : "#FF9A8E"); g.addColorStop(1, gold ? "#C98A2E" : "#E8483B");
+  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-8, -18, -22, -30, -22, -44); ctx.arc(0, -44, 22, Math.PI, 0); ctx.bezierCurveTo(22, -30, 8, -18, 0, 0); ctx.fill();
+  ctx.shadowBlur = 0; ctx.fillStyle = "#1a1208"; ctx.beginPath(); ctx.arc(0, -44, 8, 0, 6.283); ctx.fill();
+  ctx.font = "600 26px Montserrat"; ctx.textAlign = "center"; ctx.letterSpacing = "4px"; const tw = ctx.measureText(label).width + 34;
+  ctx.fillStyle = "rgba(14,11,7,.82)"; ctx.strokeStyle = "rgba(232,182,92,.9)"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(-tw / 2, -124, tw, 46, 23); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#F6F1E7"; ctx.fillText(label, 2, -92);
+  ctx.restore();
+}
+
+function drawFx(t, c) {
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.clearRect(0, 0, W, H);
+  fx2.setTransform(1, 0, 0, 1, 0, 0); fx2.clearRect(0, 0, W, H);
+  const cs = Math.cos(c.r), sn = Math.sin(c.r);
+  fx.setTransform(cs, sn, -sn, cs, W / 2 - (W / 2 * cs - H / 2 * sn), H / 2 - (W / 2 * sn + H / 2 * cs));
+  // poussière d'or 3D (plus discrète dans la forêt)
+  const dustA = 1 - 0.6 * win(t, 23.6, 24.2, 28.3, 28.7);
+  for (const d of DUST) {
+    const X = d.x + d.vx * t, Y = d.y + d.vy * t + Math.sin(t * d.sp + d.ph) * 20, dz = d.z - c.z;
+    if (dz < 40 || dz > 6000) continue;
+    const s = F / dz, x = W / 2 + (X - c.x) * s, y = H / 2 + (Y - c.y) * s;
+    if (x < -80 || x > W + 80 || y < -80 || y > H + 80) continue;
+    const tw = .55 + .45 * Math.sin(t * d.sp * 2.2 + d.ph), fade = clamp((6000 - dz) / 1500) * clamp((dz - 40) / 200) * dustA;
+    if (dz < 700) { const r = d.s * s * 9; fx.globalAlpha = .22 * tw * fade; fx.drawImage(disc, x - r, y - r, 2 * r, 2 * r); }
+    else { const r = Math.max(1.2, d.s * s * 7); fx.globalAlpha = .7 * tw * fade; fx.drawImage(sprite, x - r, y - r, 2 * r, 2 * r); }
+  }
+  fx.globalAlpha = 1;
+
+  // 0 : la ring light s'allume, l'écran attire la caméra
+  { const q = proj(c, ...RING); if (q && t < 4.2) flare(fx, q[0], q[1], (0.35 + 0.25 * Math.sin(t * 2)) * prog(t, 0.6, 1.4) * (1 - prog(t, 3.4, 3.9)), 700);
+    const s2 = proj(c, ...SCREEN); if (s2) flare(fx, s2[0], s2[1], bell(t, 3.3, 3.85, 4.3) * 1.1, 1100); }
+
+  // 1 : GTA — le trajet du point A au Mont Chiliad
+  {
+    const a = win(t, 8.9, 9.4, 13.9, 14.3);
+    if (a > 0) {
+      const pts = ROUTE_FINE.map(([u, v]) => proj(c, ...W_("la", u, v))).filter(Boolean);
+      const drawn = E.inOut(prog(t, 9.3, 13.1)), n = Math.max(2, Math.round(drawn * (pts.length - 1)) + 1);
+      glowPath(fx, pts, a * 0.35, 3, [2, 16]);
+      glowPath(fx, pts.slice(0, n), a, 4.5);
+      const head = pts[n - 1]; if (head && drawn < 1) spark(fx, head[0], head[1], 26, a);
+      const A = proj(c, ...W_("la", ...ROUTE[0])), B = proj(c, ...W_("la", ...ROUTE[ROUTE.length - 1]));
+      if (A) pin(fx, A[0], A[1], 1.05, a * E.outBack(prog(t, 9.1, 9.5)), "POINT A");
+      if (B) { pin(fx, B[0], B[1], 1.15, a * E.outBack(prog(t, 12.9, 13.3)), "MONT CHILIAD"); flare(fx, B[0], B[1] - 50, bell(t, 13.0, 13.15, 13.8), 900); }
+      // les viewers interviennent : explosion sur la route, téléportation
+      const X = proj(c, ...W_("la", 0.47, 0.67)); if (X) explosion(fx, X[0], X[1], t, 12.0, 0.8 * X[2] * 1.6, 3);
+      const T = proj(c, ...W_("la", 0.36, 0.73)); if (T) warp(fx, T[0], T[1], t, 11.35, X ? X[2] * 1.6 : 1);
+    }
+  }
+  // 2 : Minecraft — la TNT explose sur la tour
+  { const q = proj(c, ...W_("tnt", 0.43, 0.42)); if (q) { explosion(fx, q[0], q[1], t, 16.95, 1.3, 7, true); flare(fx, q[0], q[1], bell(t, 16.9, 16.97, 17.5), 1100); } }
+  // 3 : Roblox — reflets sur les cartes qui arrivent
+  RB.forEach((k, i) => { const q = proj(c, ...W_(k, 0.5, 0.15)); if (q) flare(fx, q[0], q[1], bell(t, 19.05 + i * 0.32, 19.15 + i * 0.32, 19.6 + i * 0.32) * .6, 600); });
+  // 6 : sur demande — chaque tuile s'allume
+  DJ.forEach((k, i) => { const q = proj(c, ...W_(k, 0.5, 0.5)); if (q) burst(fx, q[0], q[1], t, P[k].pop, 16, 260, 40 + i); });
+
+  // effets en espace écran (au-dessus des textes et des cartes)
+  fx2.setTransform(1, 0, 0, 1, 0, 0);
+  floaters(fx2, t, 1.6, 3.6, 900, 1500, 12, 3, "heart");
+  floaters(fx2, t, 2.2, 3.6, 880, 1560, 5, 9, "gift");
+  RULES.forEach((R, r) => {
+    const yc = R.y + 36, xr = 700;
+    if (r === 0) floaters(fx2, t, R.t0, R.t0 + 0.6, 260, yc, 9, 21, "heart");
+    if (r === 1) { floaters(fx2, t, R.t0, R.t0 + 0.4, 260, yc, 4, 23, "gift"); explosion(fx2, xr + 120, yc, t, R.t0 + 0.38, 0.55, 11); }
+    if (r === 2) warp(fx2, xr + 120, yc, t, R.t0 + 0.38, 0.9);
+  });
+  ROWS.forEach(row => row.cards.forEach((cd, i) => { const el = cd.el, x = parseFloat(el.style.left) + parseFloat(el.style.width) / 2, y = parseFloat(el.style.top) + 20; burst(fx2, x, y, t, cd.t0 + 0.05, 18, 300, 60 + i); }));
+  // écran rouge du screamer
+  burst(fx2, W / 2, 900, t, 26.8, 70, 900, 77, ["#FFE0D0", "#FF5A4E"]);
+  burst(fx2, W / 2, lpx(0, 900)[1], t, IMP, 80, 900, 9);
+}
+
+function drawHud(t) {
+  // principe : interaction → action
+  RULES.forEach((R, r) => {
+    const out = 1 - E.out(prog(t, 8.0, 8.35)), ua = E.outBack(prog(t, R.t0, R.t0 + 0.4)), ub = E.outBack(prog(t, R.t0 + 0.35, R.t0 + 0.75));
+    const aw = R.a.offsetWidth, bw = R.b.offsetWidth, gapA = 70, total = aw + gapA + bw, x0 = (W - total) / 2;
+    R.a.style.opacity = (clamp(ua * 2) * out).toFixed(3); R.a.style.transform = `translate(${x0}px,${R.y}px) scale(${(0.8 + 0.2 * ua).toFixed(3)})`;
+    R.b.style.opacity = (clamp(ub * 2) * out).toFixed(3); R.b.style.transform = `translate(${x0 + aw + gapA}px,${R.y}px) scale(${(0.8 + 0.2 * ub).toFixed(3)})`;
+    const ar = E.inOut(prog(t, R.t0 + 0.2, R.t0 + 0.45)) * out;
+    if (ar > 0) { const y = R.y + R.a.offsetHeight / 2, xa = x0 + aw + 10, xb = xa + (gapA - 20) * ar; fx2.globalAlpha = ar; fx2.strokeStyle = "#F0C066"; fx2.lineWidth = 3; fx2.lineCap = "round";
+      fx2.beginPath(); fx2.moveTo(xa, y); fx2.lineTo(xb, y); fx2.moveTo(xb - 10, y - 9); fx2.lineTo(xb, y); fx2.lineTo(xb - 10, y + 9); fx2.stroke(); fx2.globalAlpha = 1; }
+  });
+  // rangées de cartes du guide
+  ROWS.forEach(row => {
+    const out = 1 - E.out(prog(t, row.t1, row.t1 + 0.35));
+    row.cards.forEach(cd => { const u = prog(t, cd.t0, cd.t0 + 0.45), e = E.outBack(u); cd.el.style.opacity = (clamp(u * 2.5) * out).toFixed(3); cd.el.style.transform = `translateY(${((1 - E.out(u)) * 40).toFixed(1)}px) scale(${(0.7 + 0.3 * e).toFixed(3)})`; });
+    row.hs.forEach(h => { const u = prog(t, h.t0, h.t0 + 0.4); h.el.style.opacity = (E.out(u) * out).toFixed(3); h.el.style.transform = `translateY(${((1 - E.out(u)) * 16).toFixed(1)}px)`; });
+  });
+}
+
+function drawText(t) {
+  for (const T of TEXTS) {
+    const outU = prog(t, T.t1, T.t1 + T.out);
+    T.spans.forEach((s, i) => {
+      const u = prog(t, T.t0 + i * T.stag, T.t0 + i * T.stag + T.dur), e = E.out(u);
+      s.style.opacity = (e * (1 - E.sine(outU))).toFixed(3);
+      s.style.transform = `translateY(${((1 - e) * 34).toFixed(2)}px)`;
+      const blur = (1 - E.out4(u)) * 12 + outU * 10; s.style.filter = blur > .05 ? `blur(${blur.toFixed(2)}px)` : "none";
+    });
+    if (T.fly) { const sc = 1 + E.in2(prog(t, 3.3, 3.95)) * 2.6, yOff = (parseFloat(T.el.style.top) - H / 2) * (sc - 1); T.el.style.transform = `translateX(-50%) translateY(${yOff.toFixed(1)}px) scale(${sc.toFixed(3)})`; }
+  }
+}
+
+const TRANS = [[4.05, 0.5], [8.55, 0.45], [14.35, 0.45], [18.95, 0.45], [23.6, 0.5], [28.6, 0.5], [32.2, 0.45]];
+function drawOverlays(t, c) {
+  let k = 0, bx = W / 2, by = H / 2;
+  for (const [tc, hw] of TRANS) { const b = bell(t, tc - hw, tc, tc + hw); if (b > k) { k = b; bx = W / 2; by = H / 2; if (tc < 5) { const q = proj(c, ...SCREEN); if (q) { bx = q[0]; by = q[1]; } } } }
+  const R = Math.max(W, H);
+  $("bloom").style.opacity = k.toFixed(3);
+  $("bloom").style.background = `radial-gradient(circle ${R}px at ${bx.toFixed(0)}px ${by.toFixed(0)}px, rgba(255,248,230,1) 0%, rgba(255,226,165,.92) ${(18 + 40 * k).toFixed(0)}%, rgba(214,150,60,.55) ${(45 + 40 * k).toFixed(0)}%, rgba(120,70,20,${(.3 * k).toFixed(2)}) 100%)`;
+  const lk = Math.max(bell(t, 9.4, 10.0, 10.8), bell(t, 20.0, 20.8, 21.8), bell(t, 29.6, 30.3, 31.2)) * .3, lx = ((t * 260) % (W + 700)) - 350;
+  $("leak").style.opacity = lk.toFixed(3);
+  $("leak").style.background = `radial-gradient(ellipse 500px 1300px at ${lx.toFixed(0)}px 40%, rgba(255,180,80,.55), rgba(255,140,40,0) 70%)`;
+  // horreur : voile rouge, coupure de courant, flash du screamer
+  $("tint").style.opacity = (win(t, 23.7, 24.4, 28.2, 28.6) * 0.32).toFixed(3);
+  $("hookback").style.opacity = (win(t, 0.3, 1.0, 3.3, 3.7)).toFixed(3);
+  $("dark").style.opacity = (bell(t, 26.0, 26.12, 26.45) * 0.85).toFixed(3);
+  const fl = Math.max(prog(t, IMP - .03, IMP + .6) > 0 && t < IMP + .6 ? Math.pow(1 - prog(t, IMP - .03, IMP + .6), 2.2) : 0, 0);
+  const scr = bell(t, 26.75, 26.8, 27.15) * 0.7, tnt = bell(t, 16.9, 16.95, 17.35) * 0.6, gta = bell(t, 12.0, 12.05, 12.4) * 0.35;
+  const fa = Math.max(fl, scr, tnt, gta);
+  $("flash").style.opacity = fa.toFixed(3);
+  const col = scr >= fa && scr > 0 ? "255,90,70" : "255,246,222";
+  $("flash").style.background = `radial-gradient(circle ${R}px at ${LCX}px ${fl >= fa ? lpx(0, 900)[1].toFixed(0) : 900}px, rgba(${col},.95) 0%, rgba(240,190,100,.55) 18%, rgba(160,100,30,.12) 45%, rgba(0,0,0,0) 70%)`;
+  const sc = Math.max(...SECTIONS.map(s => bell(t, s[3] - 0.1, s[3] + 0.5, s[4] + 0.6)));
+  $("scrim").style.opacity = sc.toFixed(3);
+  $("fade").style.opacity = Math.max(1 - E.out(prog(t, 0, 1.0)), E.in(prog(t, 43.3, 44))).toFixed(3);
+}
+
+function drawLogo(t) {
+  const fill = prog(t, IMP - .05, IMP + .14);
+  LOGO.icon.style.opacity = E.out(fill).toFixed(3); LOGO.icon.style.transformOrigin = "50% 100%";
+  LOGO.icon.style.transform = `scale(${(1 + .06 * (1 - E.out(prog(t, IMP, IMP + .8)))).toFixed(4)})`;
+  const sw = prog(t, IMP + .5, IMP + 1.4); LOGO.sweep.style.opacity = sw > 0 && sw < 1 ? 1 : 0; LOGO.sweep.style.backgroundPosition = `${(100 - sw * 100).toFixed(2)}% 0`;
+  const rev = (el, a, b, mode, ease = E.inOut) => {
+    const u = ease(prog(t, a, b)); el.style.opacity = u > 0 ? 1 : 0;
+    if (mode === "lr") { const X = -15 + u * 130; el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(90deg,#000 ${X - 15}%,transparent ${X}%)`; }
+    else { const X = u * 62; el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(90deg,transparent ${50 - X - 12}%,#000 ${50 - X}%,#000 ${50 + X}%,transparent ${50 + X + 12}%)`; }
+    el.style.transform = `translateY(${((1 - E.out(prog(t, a, b))) * 14).toFixed(2)}px)`;
+  };
+  rev(LOGO.empira, IMP + .35, IMP + 1.4, "lr"); rev(LOGO.agency, IMP + .8, IMP + 1.8, "c"); rev(LOGO.tagline, IMP + 1.3, IMP + 2.5, "c");
+  CTA.forEach(({ el, t0 }) => { const u = E.out(prog(t, t0, t0 + 0.8)); el.style.opacity = u.toFixed(3); el.style.transform = `translateX(-50%) translateY(${((1 - u) * 18).toFixed(1)}px)`; el.style.filter = u < 1 ? `blur(${((1 - u) * 8).toFixed(2)}px)` : "none"; });
+}
+
+function drawGrain(frame) { const r = rng(frame * 7919 + 13), d = grainImg.data; for (let i = 0; i < d.length; i += 4) { const v = r() * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } gc.putImageData(grainImg, 0, 0); }
+
+function seek(t) { const c = camera(t); drawBg(t); drawPlanes(t, c); drawFx(t, c); drawHud(t); drawText(t); drawOverlays(t, c); drawLogo(t); drawGrain(Math.floor(t * 30)); }
+window.seek = seek; window.DUR = DUR;
+
+const render = Q.has("render");
+if (render) document.body.classList.add("render");
+window.ready = (async () => {
+  await document.fonts.load('300 40px "Montserrat"'); await document.fonts.load('400 40px "Montserrat"'); await document.fonts.load('500 40px "Montserrat"'); await document.fonts.load('600 40px "Montserrat"'); await document.fonts.ready;
+  await Promise.all([...document.images].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+  await Promise.all([...document.images].map(im => im.decode ? im.decode().catch(() => 0) : 0));
+  seek(0); return true;
+})();
+if (!render) {
+  const fit = () => { const s = Math.min(innerWidth / W, (innerHeight - 70) / H); $("stage").style.transform = `scale(${s})`; };
+  addEventListener("resize", fit); fit();
+  const audio = new Audio("out/jeux-mix.wav"); let playing = false, t0 = 0, start = 0;
+  const tick = () => { if (!playing) return; let t = audio.readyState > 2 && !audio.paused ? audio.currentTime : (performance.now() - start) / 1000 + t0; if (t >= DUR) { playing = false; t = DUR; $("play").textContent = "▶ Lecture"; } seek(t); $("scrub").value = t; $("tc").textContent = t.toFixed(2).padStart(5, "0"); requestAnimationFrame(tick); };
+  $("play").onclick = () => { playing = !playing; $("play").textContent = playing ? "❚❚ Pause" : "▶ Lecture"; if (playing) { t0 = +$("scrub").value; if (t0 >= DUR - .05) t0 = 0; start = performance.now(); audio.currentTime = t0; audio.play().catch(() => {}); tick(); } else audio.pause(); };
+  $("scrub").oninput = e => { const t = +e.target.value; audio.currentTime = t; t0 = t; start = performance.now(); seek(t); $("tc").textContent = t.toFixed(2).padStart(5, "0"); };
+}
+</script>
+</body>
+</html>
