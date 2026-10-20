@@ -96,7 +96,7 @@ PROJECTS = {
                    videos={"9x16": "empira-tiktok-9x16-voix.mp4", "16x9": "empira-16x9-voix.mp4"}),
     "gaming": dict(voice="gaming-benjamin.mp3", stems="gaming", master="gaming-{ar}-silent.mp4", pieces=GAMING,
                    videos={"9x16": "gaming-tiktok-9x16-voix.mp4", "16x9": "gaming-16x9-voix.mp4"}),
-    "prointer": dict(voice="prointer-benjamin.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=42.0,
+    "prointer": dict(voice="prointer-benjamin.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=42.0, duck=12,
                    videos={"9x16": "prointer-9x16-voix.mp4"}),
 }
 P = PROJECTS[PROJ]
@@ -167,7 +167,7 @@ v = load(proc, 2)
 music, sfx = load(os.path.join(OUT, f"{P['stems']}-music.wav"), 2), load(os.path.join(OUT, f"{P['stems']}-sfx.wav"), 2)
 L = min(len(v), len(music), len(sfx), N); v, music, sfx = v[:L], music[:L], sfx[:L]
 
-# ducking : enveloppe de la voix → gain musique (-8 dB) et bruitages (-4 dB), attaque 60 ms / relâche 350 ms
+# ducking : enveloppe de la voix → gain musique (-8 dB, réglable par projet) et bruitages (-4 dB), attaque 60 ms / relâche 350 ms
 env = np.sqrt(np.convolve(v.mean(1) ** 2, np.ones(SR // 50) / (SR // 50), mode="same"))
 active = (env > 0.02).astype(float)
 def smooth(x, att, rel):
@@ -181,7 +181,7 @@ def smooth(x, att, rel):
     y[: len(yb) * blk] = np.repeat(yb, blk); y[len(yb) * blk:] = yb[-1]
     return y
 duck = smooth(active, 0.06, 0.35)
-gm = 10 ** (-8 * duck / 20); gs = 10 ** (-4 * duck / 20)
+gm = 10 ** (-P.get("duck", 8) * duck / 20); gs = 10 ** (-4 * duck / 20)
 VOICE_GAIN = 10 ** (2.5 / 20)
 mix = music * gm[:, None] * (0 if NO_MUSIC else 1) + sfx * gs[:, None] + v * VOICE_GAIN
 save(os.path.join(OUT, ".mix-pre.wav"), mix / max(1.0, np.max(np.abs(mix)) / 0.95))
