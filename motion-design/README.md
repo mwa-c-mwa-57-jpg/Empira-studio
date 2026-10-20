@@ -105,3 +105,32 @@ pip install torch --index-url https://download.pytorch.org/whl/cpu   # + poids R
 python3 tools/upscale_guide.py && python3 tools/grade_jeux.py && python3 tools/audio_jeux.py
 node tools/render.mjs --page jeux.html --fps 60 --to 44 --workers 3 --out out/jeux-9x16-silent.mp4
 ```
+
+---
+
+# PRO-INTER : motion design 42 s « L'histoire de Pro » (9:16)
+
+Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, un petit bonhomme qui accompagne un intérimaire, en un seul plan qui défile :
+1. Le logo se dessine, la cible prend vie et dit bonjour.
+2. **La recherche** : un candidat cherche une mission qui lui correspond.
+3. **L'écoute** : à l'agence, compétences, expérience et envies ; Pro passe en mode viseur et scanne le CV.
+4. **Le bon poste** : le viseur se pose sur la bonne offre (intérim, CDD, CDI).
+5. **Sur le terrain** : bâtiment, industrie, électricité, chauffage-ventilation.
+6. **Le suivi** : suivi régulier, réactivité, proximité.
+7. **Près de chez vous** : Dudelange, Esch-sur-Alzette, Mondorf-les-Bains, plus de 15 ans d'expertise.
+8. Pro replonge dans le logo : « Postulez sur prointer.lu ».
+
+| Fichier | Rôle |
+|---|---|
+| `prointer.html` | Animation (SVG, 9:16), lecture et timeline dans le navigateur |
+| `out/prointer-9x16-60fps.mp4` / `out/prointer-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls) |
+| `out/prointer-music.wav` / `out/prointer-sfx.wav` / `out/prointer-mix.wav` | Pistes audio |
+| `assets/prointer/logo.svg`, `logo-paths.json` | Logo vectorisé (redessiné depuis le PNG 222×65 du site) |
+| `tools/prointer_logo.py` | Agrandissement IA ×4 puis tracé vectoriel (potrace) du logo |
+| `tools/audio_prointer.py` | Musique (marimba, 120 BPM) et bruitages |
+| `PROINTER-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
+
+```bash
+pip install potracer && python3 tools/prointer_logo.py && python3 tools/audio_prointer.py
+node tools/render.mjs --page prointer.html --fps 60 --to 42 --workers 3 --out out/prointer-9x16-silent.mp4
+```
