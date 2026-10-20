@@ -11,7 +11,7 @@
 @font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
   src:url(assets/fonts/montserrat-latin.woff2) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
-:root{--grey:#505050;--cyan:#00B0E0;--ink:#2F3437;--muted:#6B7780}
+:root{--grey:#4A4A4A;--cyan:#00B8F8;--ink:#2F3437;--muted:#6B7780}
 html,body{margin:0;background:#dfe5e9;overflow:hidden}
 body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:"Montserrat",sans-serif}
 #stage{position:relative;overflow:hidden;background:#F7F9FA;transform-origin:center center}
@@ -26,8 +26,8 @@ svg text{font-family:"Montserrat",sans-serif}
 #fade{width:100%;height:100%;background:#fff}
 #ui{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:500 13px/1 "Montserrat",sans-serif;color:#2F3437;
   background:rgba(255,255,255,.92);border:1px solid #cfd8de;padding:8px 12px;border-radius:999px;z-index:10}
-#ui button{font:inherit;color:#fff;background:#00B0E0;border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
-#ui input{width:280px;accent-color:#00B0E0}
+#ui button{font:inherit;color:#fff;background:#00B8F8;border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
+#ui input{width:280px;accent-color:#00B8F8}
 body.render #ui{display:none}
 </style>
 </head>
@@ -55,7 +55,7 @@ body.render #ui{display:none}
    Le « O » du logo (la cible) saute hors du logo et devient Pro, le petit
    bonhomme qui accompagne un intérimaire : écoute, viseur sur la bonne
    mission, chantier, suivi, 3 agences, puis retour dans le logo.
-   Logo vectorisé depuis le PNG du site (tools/prointer_logo.py).
+   Logo vectorisé depuis le logo officiel fourni par l'agence (tools/prointer_logo.py).
    ===================================================================== */
 const Q = new URLSearchParams(location.search);
 const W = 1080, H = 1920, DUR = 42;
@@ -76,7 +76,7 @@ const NS = "http://www.w3.org/2000/svg";
 const WORLD = $("world"), FAR = $("far");
 function el(tag, at = {}, parent = WORLD) { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); parent.appendChild(e); return e; }
 function set(e, at) { for (const k in at) e.setAttribute(k, typeof at[k] === "number" ? +at[k].toFixed(2) : at[k]); }
-const C = { grey: "#505050", cyan: "#00B0E0", cyanL: "#BDEBF8", cyanXL: "#E4F6FC", ink: "#2F3437", line: "#D3DDE3", ground: "#EDF2F5", skin: "#F1C7A5", hair: "#3B2F2A", jeans: "#47596B", hood: "#9AA8B3", vest: "#FF8A1F", helmet: "#FFC928", white: "#FFFFFF" };
+const C = { grey: "#4A4A4A", cyan: "#00B8F8", cyanL: "#BDEBF8", cyanXL: "#E4F6FC", ink: "#2F3437", line: "#D3DDE3", ground: "#EDF2F5", skin: "#F1C7A5", hair: "#3B2F2A", jeans: "#47596B", hood: "#9AA8B3", vest: "#FF8A1F", helmet: "#FFC928", white: "#FFFFFF" };
 const GY = 1480;                                      // ligne du sol (monde)
 const ICON = {
   wrench: "M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z",
@@ -122,10 +122,11 @@ const LOGO1 = makeLogo(100, 600, 0.99), LOGO2 = makeLogo(9860, 560, 0.99);
 function animLogo(L, t, t0, slotA) {
   L.parts.P.forEach(o => set(o.e, { opacity: prog(t, t0, t0 + .35), transform: `translate(${(1 - E.out(prog(t, t0, t0 + .55))) * -90},0)` }));
   L.parts.R.forEach(o => set(o.e, { opacity: prog(t, t0 + .12, t0 + .47), transform: `translate(${(1 - E.out(prog(t, t0 + .12, t0 + .67))) * -90},0)` }));
-  L.parts.bar.forEach(o => { const u = E.out(prog(t, t0 + .6, t0 + 1.0)); set(o.e, { opacity: u > 0 ? 1 : 0, transform: `translate(0,${132 * (1 - u)}) scale(1,${Math.max(.001, u)})`, "transform-origin": "456 132" }); });
-  L.parts.Inter.forEach((o, i) => { const u = pop(t, t0 + .8 + i * .08, .5), cx = (o.box[0] + o.box[2]) / 2; set(o.e, { opacity: clamp(u * 3), transform: `translate(${cx},208) scale(${Math.max(.001, u)}) translate(${-cx},-208)` }); });
-  const tg = prog(t, t0 + 1.3, t0 + 1.9);
-  L.parts.tagline.forEach(o => set(o.e, { opacity: o.box[0] < 500 + 390 * tg ? E.out(clamp((500 + 390 * tg - o.box[0]) / 40)) : 0 }));
+  L.parts.bar.forEach(o => { const u = E.out(prog(t, t0 + .6, t0 + 1.0)); set(o.e, { opacity: u > 0 ? 1 : 0, transform: `scale(1,${Math.max(.001, u)})`, "transform-origin": `${(o.box[0] + o.box[2]) / 2} ${o.box[1]}` }); });
+  const base = Math.max(...L.parts.Inter.map(o => o.box[3]));
+  L.parts.Inter.forEach((o, i) => { const u = pop(t, t0 + .8 + i * .08, .5), cx = (o.box[0] + o.box[2]) / 2; set(o.e, { opacity: clamp(u * 3), transform: `translate(${cx},${base}) scale(${Math.max(.001, u)}) translate(${-cx},${-base})` }); });
+  const tg = prog(t, t0 + 1.3, t0 + 1.9), tx0 = Math.min(...L.parts.tagline.map(o => o.box[0])), tx1 = Math.max(...L.parts.tagline.map(o => o.box[2]));
+  L.parts.tagline.forEach(o => { const edge = tx0 + (tx1 - tx0 + 40) * tg; set(o.e, { opacity: o.box[0] < edge ? E.out(clamp((edge - o.box[0]) / 40)) : 0 }); });
   set(L.slot, { opacity: slotA, "stroke-dashoffset": -t * 30 });
 }
 
@@ -174,7 +175,7 @@ function drawPro(st) {
   set(PRO.ring, { cx: Hc[0], cy: Hc[1], r: R, "stroke-width": SW });
   set(PRO.face, { cx: Hc[0], cy: Hc[1], r: Math.max(0, R - SW / 2), opacity: E.sine(prog(m, .55, 1)) * (1 - crosshair * .85) });
   // repères extérieurs → bras droit, bras gauche, cou, antenne
-  const tL = d => [[C0[0] + d[0] * r0 * OL.tick_r1 / OL.r * 0 + d[0] * r0 * 82.5 / OL.r, C0[1] + d[1] * r0 * 82.5 / OL.r], [C0[0] + d[0] * r0 * OL.tick_r1 / OL.r, C0[1] + d[1] * r0 * OL.tick_r1 / OL.r]];
+  const tL = d => [[C0[0] + d[0] * r0 * OL.r_out / OL.r, C0[1] + d[1] * r0 * OL.r_out / OL.r], [C0[0] + d[0] * r0 * OL.tick_r1 / OL.r, C0[1] + d[1] * r0 * OL.tick_r1 / OL.r]];
   const headTop = [M.head[0], M.head[1] - 74.5 * s], neckA = [M.head[0], M.head[1] + 70 * s], neckB = [M.hip[0], M.top + 6 * s];
   const tgt = [M.armR, M.armL, [neckA, neckB], [headTop, [headTop[0] + 4 * s * f, headTop[1] - 34 * s]]];
   const ue = [prog(m, .3, .8), prog(m, .3, .8), prog(m, .25, .7), prog(m, .2, .6)].map(E.inOut);
@@ -183,7 +184,7 @@ function drawPro(st) {
   [0, 1].forEach(i => { const p = mix(tL(DIRS[i])[1], tgt[i][1], ue[i]); set(PRO.hands[i], { cx: p[0], cy: p[1], r: 13 * s * prog(m, .6, .9) }); });
   { const p = mix(tL(DIRS[3])[1], tgt[3][1], ue[3]); set(PRO.ball, { cx: p[0], cy: p[1], r: 10 * s * prog(m, .45, .75) }); }
   // repères intérieurs → yeux, bouche ; ils reviennent en mode « viseur »
-  const iL = d => [[C0[0] + d[0] * r0 * OL.tick_r0 / OL.r, C0[1] + d[1] * r0 * OL.tick_r0 / OL.r], [C0[0] + d[0] * r0 * 55 / OL.r, C0[1] + d[1] * r0 * 55 / OL.r]];
+  const iL = d => [[C0[0] + d[0] * r0 * OL.tick_r0 / OL.r, C0[1] + d[1] * r0 * OL.tick_r0 / OL.r], [C0[0] + d[0] * r0 * OL.r_in / OL.r, C0[1] + d[1] * r0 * OL.r_in / OL.r]];
   const eyeY = M.head[1] - 10 * s, eo = 6 * s * f, eh = 9 * s * (1 - blink * .9);
   const eyes = [[[M.head[0] + 21 * s + eo, eyeY - eh / 2], [M.head[0] + 21 * s + eo, eyeY + eh / 2]], [[M.head[0] - 21 * s + eo, eyeY - eh / 2], [M.head[0] - 21 * s + eo, eyeY + eh / 2]]];
   const ui = [prog(m, .6, 1), prog(m, .6, 1)].map(E.inOut);
@@ -408,7 +409,7 @@ function seek(t) {
   ORBIT.forEach((g, i) => { const a = t * 1.3 + i * 2 * Math.PI / ORBIT.length, u = pop(t, 6.2 + i * .12, .4) * (1 - E.in2(prog(t, 8.0, 8.3))); set(g, { opacity: clamp(u * 2), transform: `translate(${cx - 40 + Math.cos(a) * 200},${GY - 620 + Math.sin(a) * 90}) scale(${Math.max(.001, u * .9)})` }); });
   // l'écoute à l'agence
   SAY.forEach((g, i) => place(g, t, 12.4 + i * .55, 15.7, 3120, 790 + i * 122));
-  const cvU = place(CV, t, 13.8, 15.8, 3290, 960, 1);
+  const cvU = place(CV, t, 13.8, 15.8, 3340, 945, 0.8);
   set(SCANLINE, { y: -100 + 200 * ((t * .9) % 1), opacity: win(t, 14.0, 14.2, 15.6, 15.8) });
 
   // le viseur sur les missions

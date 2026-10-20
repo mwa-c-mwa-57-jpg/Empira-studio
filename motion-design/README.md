@@ -125,8 +125,8 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 | `prointer.html` | Animation (SVG, 9:16), lecture et timeline dans le navigateur |
 | `out/prointer-9x16-60fps.mp4` / `out/prointer-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls) |
 | `out/prointer-music.wav` / `out/prointer-sfx.wav` / `out/prointer-mix.wav` | Pistes audio |
-| `assets/prointer/logo.svg`, `logo-paths.json` | Logo vectorisé (redessiné depuis le PNG 222×65 du site) |
-| `tools/prointer_logo.py` | Agrandissement IA ×4 puis tracé vectoriel (potrace) du logo |
+| `assets/prointer/logo-officiel.png` → `logo.svg`, `logo-paths.json` | Logo officiel et sa version vectorielle animable |
+| `tools/prointer_logo.py` | Tracé vectoriel (potrace) du logo officiel, cible redessinée en géométrie exacte |
 | `tools/audio_prointer.py` | Musique (marimba, 120 BPM) et bruitages |
 | `PROINTER-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
 

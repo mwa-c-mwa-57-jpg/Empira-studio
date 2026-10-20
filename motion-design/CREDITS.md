@@ -51,7 +51,7 @@ Photos Pexels (licence Pexels, usage commercial libre), étalonnées par `tools/
 Visuels de jeux : extraits du **guide de jeux Empira Gaming** fourni par l'agence (`assets/docs/guide-de-jeux.pdf`), agrandis ×4 par IA (Real-ESRGAN, `tools/upscale.py`), sans les mentions de logiciels, de prix ni de configuration. Les noms, logos et univers des jeux appartiennent à leurs éditeurs respectifs.
 
 ## Motion design PRO-INTER (`prointer.html`)
-- Logo PRO-INTER : propriété de PRO-INTER, redessiné en vectoriel à partir du logo publié sur https://www.prointer.lu (à remplacer par le fichier source officiel si l'agence le fournit).
+- Logo PRO-INTER : propriété de PRO-INTER. Fichier officiel fourni (`assets/prointer/logo-officiel.png`), vectorisé par `tools/prointer_logo.py` pour être animé (la cible du « O » est redessinée en géométrie exacte).
 - Informations (services, métiers, agences, « plus de 15 ans ») : site https://www.prointer.lu/fr-FR (pages Accueil, À propos, Entreprises, Offres d'emploi).
 - Illustrations (personnages, décors, icônes, carte du Luxembourg simplifiée) : dessinées pour la vidéo, sans ressource tierce.
 - Musique et bruitages : synthétisés par `tools/audio_prointer.py`.
