@@ -212,7 +212,7 @@ const LOGO = {};
   if (n === "icon") { const s = document.createElement("div"); s.id = "sweep"; Object.assign(s.style, { left: x + "px", top: y + "px", width: w * LS + "px", height: h * LS + "px", opacity: 0 }); $("logo").appendChild(s); LOGO.sweep = s; }
 });
 const CTA_Y = lpx(0, 2803)[1] + pick(52, 40);
-const CTA = [["ctaG gold", "EMPIRA GAMING", 0, 25.55], ["cta0", "RETROUVE-NOUS SUR TIKTOK", pick(84, 66), 26.2], ["cta1 gold", "@empiraagency", pick(118, 96), 26.45], ["cta2", "EMPIRAAGENCY.FR", pick(190, 162), 26.7]].map(([cls, txt, dy, t0]) => {
+const CTA = [["ctaG gold", "EMPIRA GAMING", 0, 25.55], ["cta0", "RETROUVE-NOUS SUR TIKTOK", pick(84, 66), 26.2], ["cta1 gold", "@clarkydog_23", pick(118, 96), 26.45], ["cta2", "EMPIRAAGENCY.FR", pick(190, 162), 26.7]].map(([cls, txt, dy, t0]) => {
   const d = document.createElement("div"); d.className = "blk c " + cls; d.textContent = txt; Object.assign(d.style, { left: LCX + "px", top: (CTA_Y + dy) + "px", opacity: 0 }); $("logo").appendChild(d); return { el: d, t0 };
 });
 

@@ -54,7 +54,7 @@ Même moteur, même charte noir et or, rythme plus nerveux :
 2. **Lives interactifs** : le chat et les likes font réagir le jeu.
 3. **Setup gaming** : casque, micro, clavier et souris.
 4. **Coaching** : barre d'XP, puis LEVEL UP.
-5. « Prêt ? Appuie sur A. » : le bouton A de la manette devient le « A » du logo, suivi de EMPIRA GAMING et @empiraagency.
+5. « Prêt ? Appuie sur A. » : le bouton A de la manette devient le « A » du logo, suivi de EMPIRA GAMING et du compte TikTok @clarkydog_23.
 
 | Fichier | Rôle |
 |---|---|

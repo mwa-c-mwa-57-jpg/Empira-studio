@@ -10,7 +10,7 @@ Des lives interactifs : un like, un commentaire… <break time="0.3s" /> et ta c
 Casque, micro, clavier, caméra : on monte ton setup gaming avec toi. <break time="0.8s" />
 Concept, stratégie, formation : on t'aide à faire level up ta chaîne. <break time="0.8s" />
 Prêt ? <break time="0.3s" /> Appuie sur A. <break time="1.0s" />
-Empira Gaming. <break time="0.8s" /> Développer, accompagner, influencer. <break time="0.6s" /> Retrouve-nous sur TikTok : arobase Empira Agency.
+Empira Gaming. <break time="0.8s" /> Développer, accompagner, influencer. <break time="0.6s" /> Retrouve-nous sur TikTok : arobase Clarky dog, underscore vingt-trois.
 ```
 
 Si la prononciation accroche, remplacez :
@@ -18,7 +18,8 @@ Si la prononciation accroche, remplacez :
 - « gaming » par « guéming » ;
 - « level up » par « lèvel eup » ;
 - « setup » par « sètt-eupe » ;
-- « Agency » par « Édjeunsi ».
+- « Agency » par « Édjeunsi » ;
+- si « underscore » est mal dit, écrivez « tiret du bas ».
 
 ## Où tombe chaque phrase (je cale la voix au montage)
 | Timecode | Image | Voix off |
@@ -28,4 +29,4 @@ Si la prononciation accroche, remplacez :
 | 00:10 → 00:15 | **02 — Setup gaming** : casque, micro, clavier et souris | « Casque, micro, clavier, caméra : on monte ton setup gaming avec toi. » |
 | 00:15 → 00:19,5 | **03 — Coaching** : barre d'XP, LEVEL UP | « Concept, stratégie, formation : on t'aide à faire level up ta chaîne. » |
 | 00:20 → 00:21,5 | « Prêt ? Appuie sur A. » | « Prêt ? Appuie sur A. » |
-| 00:22 → 00:30 | Impact, logo, EMPIRA GAMING, CTA | « Empira Gaming. Développer, accompagner, influencer. Retrouve-nous sur TikTok : arobase Empira Agency. » |
+| 00:22 → 00:30 | Impact, logo, EMPIRA GAMING, CTA @clarkydog_23 | « Empira Gaming. Développer, accompagner, influencer. Retrouve-nous sur TikTok : arobase Clarky dog, underscore vingt-trois. » |
