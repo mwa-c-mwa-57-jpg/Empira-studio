@@ -1,4 +1,4 @@
-// Rendu image par image : node tools/render.mjs [--fps 30] [--stills 1,5.5,12] [--out out/video.mp4] [--from 0 --to 30]
+// Rendu image par image : node tools/render.mjs [--fps 30] [--stills 1,5.5,12] [--out out/video.mp4] [--from 0 --to 30] [--query grain=0.03]
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import http from "node:http";
@@ -11,7 +11,7 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => (
 const FPS = +(args.fps || 30);
 const OUT = path.resolve(ROOT, args.out || "out/empira-video-silent.mp4");
 const AR = args.ar || "9x16", VW = AR === "16x9" ? 1920 : 1080, VH = AR === "16x9" ? 1080 : 1920;
-const PAGE = args.page || "index.html", URL_Q = `${PAGE}?render&ar=${AR}`;
+const PAGE = args.page || "index.html", URL_Q = `${PAGE}?render&ar=${AR}${args.query ? "&" + args.query : ""}`;   // --query grain=0.03 : paramètres en plus
 
 const MIME = { ".html": "text/html", ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2", ".wav": "audio/wav", ".js": "text/javascript" };
 const server = http.createServer((req, res) => {

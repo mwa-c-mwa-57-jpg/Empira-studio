@@ -114,6 +114,7 @@ document.body.classList.add(V ? "v" : "h");
 Object.assign($("stage").style, { width: W + "px", height: H + "px" });
 ["bg", "fx"].forEach(id => { $(id).width = W; $(id).height = H; });
 $("grain").width = V ? 360 : 640; $("grain").height = V ? 640 : 360;
+if (Q.has("grain")) $("grain").style.opacity = Q.get("grain");   // grain plus léger pour les plateformes qui recompressent
 $("cam").style.transformOrigin = `${W / 2}px ${H / 2}px`;
 $("vignette").style.background = V
   ? "radial-gradient(ellipse 80% 62% at 50% 50%,rgba(0,0,0,0) 45%,rgba(0,0,0,.5) 82%,rgba(0,0,0,.88) 100%)"
