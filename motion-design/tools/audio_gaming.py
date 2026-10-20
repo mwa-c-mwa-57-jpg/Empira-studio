@@ -207,10 +207,10 @@ place(sb, boom, 22.0); place(sb, hp(rng.standard_normal(int(SR * 3.5)), 3500) * 
 stab = np.zeros(int(SR * 3))
 for nm in ["D4", "A4", "D5", "F5", "A5"]: stab += ping(note(nm), 3.0, 0.05)
 place(sb, stab, 22.0); place(sb, shimmer(2.2, 2000, 0.1, 14), 22.5, pan=0.2)
-place(sb, whoosh(1.0, 1500, 8000, 0.05, -0.6, 0.6), 22.45); place(sb, whoosh(0.9, 1500, 8000, 0.04, 0.0, 0.0), 23.25)
-for k, tm in enumerate((24.05, 24.8, 25.55)): place(sb, ping(note(["A5", "D6", "F6"][k]), 1.2, 0.045), tm, pan=-0.4 + 0.4 * k)
+place(sb, whoosh(1.0, 1500, 8000, 0.05, -0.6, 0.6), 22.45); place(sb, whoosh(0.9, 1500, 8000, 0.04, 0.0, 0.0), 22.95)
+for k, tm in enumerate((23.42, 24.22, 25.11)): place(sb, ping(note(["A5", "D6", "F6"][k]), 1.2, 0.045), tm, pan=-0.4 + 0.4 * k)   # slogan, sur la voix
 place(sb, powerup("D6", 0.018, 0.04), 25.55)                                       # EMPIRA GAMING
-place(sb, ping(note("D6"), 1.6, 0.045), 26.12)                                      # CTA
+place(sb, ping(note("D6"), 1.6, 0.045), 25.9)                                       # CTA
 t = tt(2.0); place(music, np.sin(2 * np.pi * np.cumsum(35 + 40 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.2) * 0.3, 28.0)   # coup final
 sfx = reverb(sb, 2.0, 0.25)
 

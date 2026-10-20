@@ -20,7 +20,7 @@ Un seul plan-séquence. Une caméra 3D vole à travers de vraies photos étalonn
 | `out/empira-mix.wav` | Musique + bruitages mixés |
 | `out/empira-voix.wav` / `out/empira-mix-voix.wav` | Voix off calée et traitée / mix final voix + musique + bruitages |
 | `assets/voix/elevenlabs-roger.mp3` | Voix off brute (ElevenLabs, voix « Roger ») |
-| `tools/voiceover.py` | Découpe la voix aux silences, la cale sur l'image, ducking, -14 LUFS, assemble les vidéos |
+| `tools/voiceover.py` | Découpe la voix aux silences, la cale sur l'image, ducking, -14 LUFS, assemble les vidéos (`pub` ou `gaming`) |
 | `SCRIPT-VOIX-OFF.md` | Texte de la voix off avec les timecodes |
 | `PROMPT.md` | Prompt détaillé pour refaire ou décliner la pub sur une plateforme |
 | `CREDITS.md` | Sources et licences des photos (Pexels, usage commercial libre) |
@@ -39,7 +39,7 @@ node tools/render.mjs --ar 9x16 --fps 60 --workers 3 --out out/v3-9x16-silent.mp
 node tools/render.mjs --ar 16x9 --fps 60 --workers 3 --out out/v3-16x9-silent.mp4
 ffmpeg -i out/v3-9x16-silent.mp4 -i out/empira-mix.wav -map 0:v -map 1:a -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p -c:a aac -b:a 256k -shortest -movflags +faststart out/empira-tiktok-9x16-60fps.mp4
 ```
-Voix off : `python3 tools/voiceover.py [fichier_voix]` (instants de calage dans `PIECES`).
+Voix off : `python3 tools/voiceover.py pub [fichier_voix]` (instants de calage dans `PUB`).
 
 Aperçu en direct : `npx http-server .`, puis ouvrir `index.html` (ou `index.html?ar=16x9`) et cliquer sur « Lecture ».
 
@@ -59,7 +59,10 @@ Même moteur, même charte noir et or, rythme plus nerveux :
 | Fichier | Rôle |
 |---|---|
 | `gaming.html` | Source (9:16 par défaut, `?ar=16x9`) |
-| `out/gaming-tiktok-9x16-60fps.mp4` / `out/gaming-16x9-60fps.mp4` | Vidéos (musique + bruitages, sans voix off) |
+| `out/gaming-tiktok-9x16-voix.mp4` / `out/gaming-16x9-voix.mp4` | **Vidéos finales avec voix off** (voix « Benjamin »), -14 LUFS |
+| `out/gaming-tiktok-9x16-60fps.mp4` / `out/gaming-16x9-60fps.mp4` | Vidéos sans voix off (musique + bruitages) |
+| `out/gaming-voix.wav` / `out/gaming-mix-voix.wav` | Voix off calée et traitée / mix final |
+| `assets/voix/gaming-benjamin.mp3` | Voix off brute (ElevenLabs) |
 | `out/gaming-music.wav` / `out/gaming-sfx.wav` / `out/gaming-mix.wav` | Pistes audio |
 | `GAMING-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
 | `tools/grade_gaming.py`, `tools/audio_gaming.py` | Étalonnage des photos et bande son |
@@ -67,4 +70,5 @@ Même moteur, même charte noir et or, rythme plus nerveux :
 ```bash
 python3 tools/grade_gaming.py && python3 tools/audio_gaming.py
 node tools/render.mjs --page gaming.html --ar 9x16 --fps 60 --workers 3 --out out/gaming-9x16-silent.mp4
+python3 tools/voiceover.py gaming          # voix off : calage dans GAMING, ajouter --dry pour seulement afficher le calage
 ```

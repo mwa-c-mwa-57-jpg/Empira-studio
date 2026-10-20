@@ -212,7 +212,7 @@ const LOGO = {};
   if (n === "icon") { const s = document.createElement("div"); s.id = "sweep"; Object.assign(s.style, { left: x + "px", top: y + "px", width: w * LS + "px", height: h * LS + "px", opacity: 0 }); $("logo").appendChild(s); LOGO.sweep = s; }
 });
 const CTA_Y = lpx(0, 2803)[1] + pick(52, 40);
-const CTA = [["ctaG gold", "EMPIRA GAMING", 0, 25.55], ["cta0", "RETROUVE-NOUS SUR TIKTOK", pick(84, 66), 26.2], ["cta1 gold", "@clarkydog_23", pick(118, 96), 26.45], ["cta2", "EMPIRAAGENCY.FR", pick(190, 162), 26.7]].map(([cls, txt, dy, t0]) => {
+const CTA = [["ctaG gold", "EMPIRA GAMING", 0, 25.55], ["cta0", "RETROUVE-NOUS SUR TIKTOK", pick(84, 66), 25.9], ["cta1 gold", "@clarkydog_23", pick(118, 96), 26.15], ["cta2", "EMPIRAAGENCY.FR", pick(190, 162), 26.4]].map(([cls, txt, dy, t0]) => {
   const d = document.createElement("div"); d.className = "blk c " + cls; d.textContent = txt; Object.assign(d.style, { left: LCX + "px", top: (CTA_Y + dy) + "px", opacity: 0 }); $("logo").appendChild(d); return { el: d, t0 };
 });
 
@@ -543,13 +543,14 @@ function drawLogo(t) {
   LOGO.icon.style.opacity = E.out(fill).toFixed(3); LOGO.icon.style.transformOrigin = "50% 100%";
   LOGO.icon.style.transform = `scale(${(1 + .06 * (1 - E.out(prog(t, imp, imp + .8)))).toFixed(4)})`;
   const sw = prog(t, imp + .5, imp + 1.4); LOGO.sweep.style.opacity = sw > 0 && sw < 1 ? 1 : 0; LOGO.sweep.style.backgroundPosition = `${(100 - sw * 100).toFixed(2)}% 0`;
-  const rev = (el, a, b, mode) => {
-    const u = E.inOut(prog(t, a, b)); el.style.opacity = u > 0 ? 1 : 0;
+  const rev = (el, a, b, mode, ease = E.inOut) => {
+    const u = ease(prog(t, a, b)); el.style.opacity = u > 0 ? 1 : 0;
     if (mode === "lr") { const X = -15 + u * 130; el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(90deg,#000 ${X - 15}%,transparent ${X}%)`; }
     else { const X = u * 62; el.style.webkitMaskImage = el.style.maskImage = `linear-gradient(90deg,transparent ${50 - X - 12}%,#000 ${50 - X}%,#000 ${50 + X}%,transparent ${50 + X + 12}%)`; }
     el.style.transform = `translateY(${((1 - E.out(prog(t, a, b))) * 14).toFixed(2)}px)`;
   };
-  rev(LOGO.empira, imp + .45, imp + 1.6, "lr"); rev(LOGO.agency, imp + 1.25, imp + 2.3, "c"); rev(LOGO.tagline, imp + 2.0, imp + 3.3, "c");
+  rev(LOGO.empira, imp + .45, imp + 1.6, "lr"); rev(LOGO.agency, imp + .95, imp + 1.95, "c");
+  rev(LOGO.tagline, imp + .55, imp + 3.5, "lr", u => u);   // balayage linéaire : chaque mot apparaît quand la voix le dit
   CTA.forEach(({ el, t0 }) => { const u = E.out(prog(t, t0, t0 + 0.8)); el.style.opacity = u.toFixed(3); el.style.transform = `translateX(-50%) translateY(${((1 - u) * 18).toFixed(1)}px)`; el.style.filter = u < 1 ? `blur(${((1 - u) * 8).toFixed(2)}px)` : "none"; });
 }
 
