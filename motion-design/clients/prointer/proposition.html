@@ -28,22 +28,16 @@ html,body{margin:0;background:#fff;font-family:"Montserrat",sans-serif;color:var
 .chip b{color:var(--or);font-weight:600}
 .h2{font-size:7.6pt;font-weight:600;letter-spacing:.3em;color:var(--or);text-transform:uppercase;margin:0 0 2.5mm;display:flex;align-items:center;gap:3mm}
 .h2::after{content:"";flex:1;border-top:.6pt solid var(--rule)}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4.2mm 3.6mm}
-.card{display:flex;flex-direction:column}
-.thumb{position:relative;border-radius:2.4mm;overflow:hidden;border:.6pt solid var(--rule);aspect-ratio:3/4;background:#F3F6F8}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.num{position:absolute;left:2mm;top:2mm;width:6.2mm;height:6.2mm;border-radius:50%;background:var(--noir);color:var(--or3);font-size:8pt;font-weight:700;display:flex;align-items:center;justify-content:center}
-.card h3{font-size:9pt;font-weight:600;margin:2.2mm 0 .8mm}
-.card p{font-size:7.6pt;line-height:1.38;margin:0 0 1mm}
-.card q{display:block;font-size:7.2pt;line-height:1.35;color:var(--muted);font-style:italic;quotes:none}
-.timeline{margin:5mm 0 0}
-.bar{display:flex;height:6mm;border-radius:99px;overflow:hidden;border:.6pt solid var(--rule)}
-.bar div{display:flex;align-items:center;justify-content:center;font-size:7pt;font-weight:700;color:var(--ink);border-right:.6pt solid #fff;background:#F3E6CF}
-.bar div:nth-child(even){background:#EAD5AE}
-.bar div:first-child{background:var(--noir);color:var(--or3)}
-.bar div:last-child{background:var(--or2);color:#fff;border-right:0}
-.scale{display:flex;justify-content:space-between;font-size:7.2pt;color:var(--muted);margin-top:1.2mm}
-.scale b{color:var(--or);font-weight:600}
+.story{width:100%;border-collapse:collapse;font-size:8.6pt}
+.story th{background:var(--noir);color:var(--or3);font-weight:600;text-align:left;padding:2.2mm 3mm;font-size:7.2pt;letter-spacing:.14em;text-transform:uppercase}
+.story td{border-bottom:.6pt solid var(--rule);padding:2.6mm 3mm;vertical-align:top;line-height:1.42}
+.story td.n{width:7%;font-weight:700;color:var(--or);font-size:10pt}
+.story td.s{width:20%;font-weight:600}
+.story td.v{width:43%}
+.story td.o{width:30%;color:var(--muted);font-style:italic}
+.story tr:nth-child(even) td{background:var(--fond)}
+.total{margin:4mm 0 0;font-size:9pt;line-height:1.5}
+.total b{color:var(--or);font-weight:600}
 .foot{position:absolute;left:12mm;right:12mm;bottom:8mm;display:flex;justify-content:space-between;font-size:7.4pt;color:var(--muted);border-top:.6pt solid var(--rule);padding-top:2.4mm;letter-spacing:.04em}
 .foot b{color:var(--or);font-weight:600;letter-spacing:.12em}
 </style>
@@ -71,23 +65,18 @@ html,body{margin:0;background:#fff;font-family:"Montserrat",sans-serif;color:var
   </div>
 
   <p class="h2">Le déroulé de la vidéo</p>
-  <div class="grid">
-    <div class="card"><div class="thumb"><img src="story/s1.jpg" alt=""><span class="num">1</span></div><h3>Le logo prend vie</h3><p>Votre logo se dessine, puis la cible du « O » saute et devient Pro.</p><q>« Voici Pro. Chez PRO-INTER, c'est lui qui vise juste. »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s2.jpg" alt=""><span class="num">2</span></div><h3>La recherche</h3><p>Un candidat cherche une mission, téléphone en main, plein de questions.</p><q>« Vous cherchez une mission qui vous correspond ? »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s3.jpg" alt=""><span class="num">3</span></div><h3>L'écoute</h3><p>À l'agence, Pro écoute ses compétences, son expérience et ses envies.</p><q>« Nous écoutons vos compétences… et vos envies. »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s4.jpg" alt=""><span class="num">4</span></div><h3>Le bon poste</h3><p>Le viseur parcourt vos offres et se pose sur la mission adaptée.</p><q>« …la mission adaptée : intérim, CDD ou CDI. »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s5.jpg" alt=""><span class="num">5</span></div><h3>Sur le terrain</h3><p>Le candidat au travail : bâtiment, industrie, électricité, chauffage.</p><q>« Vous êtes sur le terrain. »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s6.jpg" alt=""><span class="num">6</span></div><h3>Le suivi</h3><p>Pro passe sur le chantier : suivi régulier, réactivité, proximité.</p><q>« Nous restons à vos côtés, du premier au dernier jour. »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s7.jpg" alt=""><span class="num">7</span></div><h3>Près de chez vous</h3><p>Vos 3 agences sur la carte, et plus de 15 ans d'expertise.</p><q>« Trois agences au Luxembourg… »</q></div>
-    <div class="card"><div class="thumb"><img src="story/s8.jpg" alt=""><span class="num">8</span></div><h3>Postulez</h3><p>Pro replonge dans le logo, puis l'appel à postuler sur votre site.</p><q>« Postulez sur prointer.lu. »</q></div>
-  </div>
-
-  <div class="timeline">
-    <div class="bar">
-      <div style="flex:5.5">1</div><div style="flex:4.8">2</div><div style="flex:5.7">3</div><div style="flex:5.4">4</div><div style="flex:5.4">5</div><div style="flex:4.5">6</div><div style="flex:4.7">7</div><div style="flex:6">8</div>
-    </div>
-    <div class="scale"><span>0 s · début</span><span>Une seule histoire, sans coupure</span><span><b>30 à 45 s</b> · fin</span></div>
-  </div>
+  <table class="story">
+    <tr><th></th><th>Scène</th><th>Ce que l'on voit</th><th>La voix off</th></tr>
+    <tr><td class="n">1</td><td class="s">Le logo prend vie</td><td class="v">Votre logo se dessine à l'écran. La cible du « O » s'anime, saute hors du logo et devient Pro, qui dit bonjour.</td><td class="o">« Voici Pro. Chez PRO-INTER, c'est lui qui vise juste. »</td></tr>
+    <tr><td class="n">2</td><td class="s">La recherche</td><td class="v">Un candidat cherche une mission sur son téléphone. Des questions et des métiers tournent au-dessus de sa tête.</td><td class="o">« Vous cherchez une mission qui vous correspond ? »</td></tr>
+    <tr><td class="n">3</td><td class="s">L'écoute</td><td class="v">À l'agence, Pro écoute le candidat : ses compétences, son expérience et ses envies. Il passe son CV au viseur.</td><td class="o">« Nous écoutons vos compétences… et vos envies. »</td></tr>
+    <tr><td class="n">4</td><td class="s">Le bon poste</td><td class="v">Le viseur parcourt vos offres d'emploi et se pose sur la mission adaptée. Intérim, CDD et CDI s'affichent.</td><td class="o">« Puis notre viseur trouve la mission adaptée : intérim, CDD ou CDI. »</td></tr>
+    <tr><td class="n">5</td><td class="s">Sur le terrain</td><td class="v">Le candidat est au travail sur un chantier. Les secteurs apparaissent : bâtiment, industrie, électricité, chauffage.</td><td class="o">« Bâtiment, industrie, électricité, chauffage : vous êtes sur le terrain. »</td></tr>
+    <tr><td class="n">6</td><td class="s">Le suivi</td><td class="v">Pro passe sur le chantier. Une liste se coche : suivi régulier, réactivité, proximité.</td><td class="o">« Et nous restons à vos côtés, du premier au dernier jour. »</td></tr>
+    <tr><td class="n">7</td><td class="s">Près de chez vous</td><td class="v">La carte du Luxembourg montre vos 3 agences : Dudelange, Esch-sur-Alzette et Mondorf-les-Bains, avec « +15 ans ».</td><td class="o">« Trois agences au Luxembourg, et plus de quinze ans d'expertise. »</td></tr>
+    <tr><td class="n">8</td><td class="s">Postulez</td><td class="v">Pro replonge dans le logo, qui se reforme. Le bouton « Postulez sur prointer.lu » apparaît.</td><td class="o">« PRO-INTER, votre agence d'emploi. Postulez sur prointer point lu. »</td></tr>
+  </table>
+  <p class="total"><b>Durée totale : entre 30 et 45 secondes</b>, en une seule histoire sans coupure. Le rythme exact se cale sur la voix off et sur vos retours.</p>
 
   <div class="foot"><span><b>EMPIRA STUDIO</b> · Proposition sans engagement</span><span>empiraagency.fr · TikTok @empiraagency</span></div>
 </section>
