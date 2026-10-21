@@ -137,3 +137,29 @@ pip install potracer && python3 tools/prointer_logo.py && python3 tools/audio_pr
 node tools/render.mjs --page prointer.html --fps 60 --to 40 --workers 3 --out out/prointer-9x16-silent.mp4
 python3 tools/voiceover.py prointer && python3 tools/voiceover.py prointer --sans-musique
 ```
+
+---
+
+# PRO-INTER : motion design 27,5 s « Le viseur » (9:16)
+
+Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La cible du logo devient un **viseur** qui fonce d'info en info. Il « tire » sur chaque mot, en rythme sur une musique électro-pop à 128 BPM, et laisse une traînée cyan :
+1. « Vous cherchez un job ? Un vrai. Près de chez vous. »
+2. Le drop : « Chez PRO-INTER, on vise juste. »
+3. Intérim, CDD, CDI, puis les secteurs : bâtiment, industrie, électricité, chauffage.
+4. « On écoute. On trouve. On vous suit. »
+5. 3 agences sur la carte du Luxembourg, puis le compteur « +15 ans d'expertise ».
+6. Grand dézoom : tout le parcours dessine une cible géante.
+7. Le viseur plonge en spirale au centre (« en plein dans le mille ») et devient le « O » du logo, dans une lunette. Bouton « Postulez sur prointer.lu ».
+
+| Fichier | Rôle |
+|---|---|
+| `prointer-viseur.html` | Animation (SVG, 9:16) : caméra sur ressort amorti, qui suit le viseur et dépasse légèrement sa cible |
+| `out/prointer-viseur-9x16-60fps.mp4` / `out/prointer-viseur-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls), 60 i/s avec flou de mouvement, -14 LUFS |
+| `tools/audio_prointer_viseur.py` | Musique (128 BPM, la mineur) et bruitages calés sur chaque tir |
+| `PROINTER-VISEUR-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
+
+```bash
+python3 tools/audio_prointer_viseur.py
+node tools/render.mjs --page prointer-viseur.html --fps 60 --to 27.5 --workers 4 --mb 6 --out out/prointer-viseur-9x16-silent.mp4
+```
+`--mb 6` : flou de mouvement (6 sous-images par image, obturateur à 180°), utile pour les coups de fouet de caméra.

@@ -1,4 +1,5 @@
-// Rendu image par image : node tools/render.mjs [--fps 30] [--stills 1,5.5,12] [--out out/video.mp4] [--from 0 --to 30] [--query grain=0.03]
+// Rendu image par image : node tools/render.mjs [--fps 30] [--stills 1,5.5,12] [--out out/video.mp4] [--from 0 --to 30] [--query grain=0.03] [--mb 6]
+// --mb N : flou de mouvement, N sous-images par image (obturateur à 180°) moyennées par ffmpeg
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import http from "node:http";
@@ -35,7 +36,7 @@ if (args.stills) {
   }
 } else {
   // rendu parallèle : N pages (processus de rendu distincts), chacune encode un segment, puis concaténation
-  const from = +(args.from || 0), to = +(args.to || 30), WORKERS = +(args.workers || 1);
+  const from = +(args.from || 0), to = +(args.to || 30), WORKERS = +(args.workers || 1), MB = +(args.mb || 1), SHUTTER = .5;
   const n = Math.round((to - from) * FPS), per = Math.ceil(n / WORKERS), t0 = Date.now();
   const tmp = path.join(ROOT, "out/.chunks-" + PAGE.replace(".html", "") + "-" + AR); fs.mkdirSync(tmp, { recursive: true });
   let done = 0;
@@ -43,12 +44,16 @@ if (args.stills) {
     const pg = w === 0 ? page : await browser.newPage({ viewport: { width: VW, height: VH }, deviceScaleFactor: 1 });
     if (w) { pg.on("pageerror", e => console.error("PAGE ERROR", e.message)); await pg.goto(`http://localhost:${port}/${URL_Q}`); await pg.evaluate(() => window.ready); }
     const st = await pg.$("#stage"), a = w * per, b = Math.min(n, a + per), file = path.join(tmp, `c${w}.mp4`);
-    const ff = spawn("ffmpeg", ["-y", "-f", "image2pipe", "-framerate", String(FPS), "-c:v", "mjpeg", "-i", "-",
+    const blur = MB > 1 ? ["-vf", `tmix=frames=${MB},select='eq(mod(n\\,${MB})\\,${MB - 1})',setpts=N/(${FPS}*TB)`, "-r", String(FPS)] : [];
+    const ff = spawn("ffmpeg", ["-y", "-f", "image2pipe", "-framerate", String(FPS * MB), "-c:v", "mjpeg", "-i", "-", ...blur,
       "-c:v", "libx264", "-preset", "medium", "-crf", "13", "-pix_fmt", "yuv420p", file], { stdio: ["pipe", "ignore", "ignore"] });
     for (let i = a; i < b; i++) {
-      await pg.evaluate(t => window.seek(t), from + i / FPS);
-      const buf = await st.screenshot({ type: "jpeg", quality: 96 });
-      if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once("drain", r));
+      for (let k = 0; k < MB; k++) {
+        const t = from + i / FPS + (MB > 1 ? ((k + .5) / MB - .5) * SHUTTER / FPS : 0);
+        await pg.evaluate(t => window.seek(t), Math.min(to, Math.max(from, t)));
+        const buf = await st.screenshot({ type: "jpeg", quality: 96 });
+        if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once("drain", r));
+      }
       if (++done % 60 === 0) process.stdout.write(`frame ${done}/${n}  ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);
     }
     ff.stdin.end(); await new Promise(r => ff.on("close", r));
