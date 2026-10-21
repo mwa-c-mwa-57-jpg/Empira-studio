@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>PRO-INTER × Empira Studio — Proposition de vidéo</title>
+<style>
+@font-face{font-family:"Montserrat";font-weight:200 700;src:url(../../assets/fonts/montserrat-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF;}
+@font-face{font-family:"Montserrat";font-weight:200 700;src:url(../../assets/fonts/montserrat-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+2C60-2C7F;}
+@page{size:A4;margin:0}
+:root{--noir:#0B0907;--or:#AC6F17;--or2:#CB8F2F;--or3:#F0C163;--ink:#1E1B17;--muted:#6E655A;--rule:#E6D9C3;--fond:#FBF7F0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;font-family:"Montserrat",sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;padding:0 12mm}
+.head{margin:0 -12mm;height:36mm;background:radial-gradient(ellipse 120mm 40mm at 18% 50%,#1d150b,#0b0907 70%);display:flex;align-items:center;padding:0 12mm;gap:8mm}
+.head img{height:27mm;mix-blend-mode:lighten}
+.head .t{border-left:.6pt solid #5a4628;padding-left:7mm}
+.head .k{font-size:7pt;letter-spacing:.34em;color:var(--or3);font-weight:600;text-transform:uppercase;margin:0 0 1.6mm}
+.head h1{margin:0;font-size:19pt;font-weight:600;color:#F6F1E7;line-height:1.1}
+.head h1 em{font-style:normal;color:var(--or3)}
+.head .s{margin:1.6mm 0 0;font-size:8.6pt;color:#D8CDBA}
+.concept{display:flex;gap:6mm;align-items:center;margin:5mm 0 3.5mm}
+.concept p{margin:0;font-size:9.6pt;line-height:1.5;flex:1}
+.dur{flex:none;background:var(--noir);color:#fff;border-radius:3mm;padding:2.6mm 4.5mm;text-align:center}
+.dur b{display:block;font-size:15pt;color:var(--or3);font-weight:700;letter-spacing:.01em}
+.dur span{font-size:7pt;letter-spacing:.2em;text-transform:uppercase;color:#D8CDBA}
+.chips{display:flex;gap:2.5mm;margin:0 0 4mm;flex-wrap:wrap}
+.chip{font-size:7.8pt;font-weight:500;border:.7pt solid var(--rule);border-radius:99px;padding:1.4mm 3.2mm;background:var(--fond)}
+.chip b{color:var(--or);font-weight:600}
+.h2{font-size:7.6pt;font-weight:600;letter-spacing:.3em;color:var(--or);text-transform:uppercase;margin:0 0 2.5mm;display:flex;align-items:center;gap:3mm}
+.h2::after{content:"";flex:1;border-top:.6pt solid var(--rule)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4.2mm 3.6mm}
+.card{display:flex;flex-direction:column}
+.thumb{position:relative;border-radius:2.4mm;overflow:hidden;border:.6pt solid var(--rule);aspect-ratio:3/4;background:#F3F6F8}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.num{position:absolute;left:2mm;top:2mm;width:6.2mm;height:6.2mm;border-radius:50%;background:var(--noir);color:var(--or3);font-size:8pt;font-weight:700;display:flex;align-items:center;justify-content:center}
+.card h3{font-size:9pt;font-weight:600;margin:2.2mm 0 .8mm}
+.card p{font-size:7.6pt;line-height:1.38;margin:0 0 1mm}
+.card q{display:block;font-size:7.2pt;line-height:1.35;color:var(--muted);font-style:italic;quotes:none}
+.timeline{margin:5mm 0 0}
+.bar{display:flex;height:6mm;border-radius:99px;overflow:hidden;border:.6pt solid var(--rule)}
+.bar div{display:flex;align-items:center;justify-content:center;font-size:7pt;font-weight:700;color:var(--ink);border-right:.6pt solid #fff;background:#F3E6CF}
+.bar div:nth-child(even){background:#EAD5AE}
+.bar div:first-child{background:var(--noir);color:var(--or3)}
+.bar div:last-child{background:var(--or2);color:#fff;border-right:0}
+.scale{display:flex;justify-content:space-between;font-size:7.2pt;color:var(--muted);margin-top:1.2mm}
+.scale b{color:var(--or);font-weight:600}
+.foot{position:absolute;left:12mm;right:12mm;bottom:8mm;display:flex;justify-content:space-between;font-size:7.4pt;color:var(--muted);border-top:.6pt solid var(--rule);padding-top:2.4mm;letter-spacing:.04em}
+.foot b{color:var(--or);font-weight:600;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<section class="page">
+  <div class="head">
+    <img src="logo-crop.png" alt="Empira Studio">
+    <div class="t">
+      <p class="k">Proposition de vidéo · PRO-INTER</p>
+      <h1>L'histoire de <em>Pro</em></h1>
+      <p class="s">Vidéo motion design verticale, voix off, musique et bruitages sur mesure</p>
+    </div>
+  </div>
+
+  <div class="concept">
+    <p>La cible du « O » de votre logo prend vie : elle devient <strong>Pro</strong>, un petit personnage qui accompagne un intérimaire, de la recherche d'emploi jusqu'au terrain. En une seule histoire, la vidéo montre ce que PRO-INTER apporte à ses candidats.</p>
+    <div class="dur"><b>30 à 45 s</b><span>durée de la vidéo</span></div>
+  </div>
+  <div class="chips">
+    <span class="chip"><b>Format</b> vertical 9:16 · TikTok, Reels, Facebook, stories</span>
+    <span class="chip"><b>Son</b> voix off française, musique et bruitages créés pour la vidéo</span>
+    <span class="chip"><b>Marque</b> votre logo officiel et vos couleurs</span>
+    <span class="chip"><b>Offert</b> par Empira Studio, sans engagement</span>
+  </div>
+
+  <p class="h2">Le déroulé de la vidéo</p>
+  <div class="grid">
+    <div class="card"><div class="thumb"><img src="story/s1.jpg" alt=""><span class="num">1</span></div><h3>Le logo prend vie</h3><p>Votre logo se dessine, puis la cible du « O » saute et devient Pro.</p><q>« Voici Pro. Chez PRO-INTER, c'est lui qui vise juste. »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s2.jpg" alt=""><span class="num">2</span></div><h3>La recherche</h3><p>Un candidat cherche une mission, téléphone en main, plein de questions.</p><q>« Vous cherchez une mission qui vous correspond ? »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s3.jpg" alt=""><span class="num">3</span></div><h3>L'écoute</h3><p>À l'agence, Pro écoute ses compétences, son expérience et ses envies.</p><q>« Nous écoutons vos compétences… et vos envies. »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s4.jpg" alt=""><span class="num">4</span></div><h3>Le bon poste</h3><p>Le viseur parcourt vos offres et se pose sur la mission adaptée.</p><q>« …la mission adaptée : intérim, CDD ou CDI. »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s5.jpg" alt=""><span class="num">5</span></div><h3>Sur le terrain</h3><p>Le candidat au travail : bâtiment, industrie, électricité, chauffage.</p><q>« Vous êtes sur le terrain. »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s6.jpg" alt=""><span class="num">6</span></div><h3>Le suivi</h3><p>Pro passe sur le chantier : suivi régulier, réactivité, proximité.</p><q>« Nous restons à vos côtés, du premier au dernier jour. »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s7.jpg" alt=""><span class="num">7</span></div><h3>Près de chez vous</h3><p>Vos 3 agences sur la carte, et plus de 15 ans d'expertise.</p><q>« Trois agences au Luxembourg… »</q></div>
+    <div class="card"><div class="thumb"><img src="story/s8.jpg" alt=""><span class="num">8</span></div><h3>Postulez</h3><p>Pro replonge dans le logo, puis l'appel à postuler sur votre site.</p><q>« Postulez sur prointer.lu. »</q></div>
+  </div>
+
+  <div class="timeline">
+    <div class="bar">
+      <div style="flex:5.5">1</div><div style="flex:4.8">2</div><div style="flex:5.7">3</div><div style="flex:5.4">4</div><div style="flex:5.4">5</div><div style="flex:4.5">6</div><div style="flex:4.7">7</div><div style="flex:6">8</div>
+    </div>
+    <div class="scale"><span>0 s · début</span><span>Une seule histoire, sans coupure</span><span><b>30 à 45 s</b> · fin</span></div>
+  </div>
+
+  <div class="foot"><span><b>EMPIRA STUDIO</b> · Proposition sans engagement</span><span>empiraagency.fr · TikTok @empiraagency</span></div>
+</section>
+</body>
+</html>
