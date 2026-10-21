@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:"Montserrat";font-weight:200 700;src:url(../assets/fonts/montserrat-latin.woff2) format("woff2");}
+html,body{margin:0;background:#000}
+#b{position:relative;width:1600px;height:480px;overflow:hidden;
+  background:radial-gradient(ellipse 760px 300px at 50% 46%,#1d150b 0%,#0d0a07 55%,#070605 100%)}
+#b img,#b div{position:absolute}
+.rule{height:0;border-top:solid #F2CF6E}
+.l{font-family:"Montserrat";font-weight:500;color:#F7C760;transform:translateX(-50%);line-height:1;
+  background:linear-gradient(180deg,#FCD067 0%,#F5BE45 55%,#FCD067 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+</style></head>
+<body><div id="b"></div>
+<script>
+// Bandeau Empira Studio : logo officiel (cible + EMPIRA), « AGENCY » remplacé par « STUDIO » dans le même style
+const k = 0.18, CX = 800, CY = 37 + (1551 - 287) * k, P = (x, y) => [CX + (x - 2322) * k, CY + (y - 1551) * k], b = document.getElementById("b");
+[["icon", 1729, 287, 1187, 1224], ["empira", 949, 1786, 2747, 413]].forEach(([n, x, y, w, h]) => {
+  const [px, py] = P(x, y), im = document.createElement("img"); im.src = `../assets/logo-${n}.png`;
+  Object.assign(im.style, { left: px + "px", top: py + "px", width: w * k + "px", height: h * k + "px" }); b.appendChild(im); });
+[[288 + 12, 288 + 1107], [288 + 2962, 288 + 4057]].forEach(([x0, x1]) => { const [px, py] = P(x0, 2381 + 73), d = document.createElement("div"); d.className = "rule";
+  Object.assign(d.style, { left: px + "px", top: py + "px", width: (x1 - x0) * k + "px", borderTopWidth: 14 * k + "px" }); b.appendChild(d); });
+"STUDIO".split("").forEach((ch, i) => { const [px, py] = P(288 + 1412 + i * 250, 2381 + 12), d = document.createElement("div"); d.className = "l"; d.textContent = ch;
+  Object.assign(d.style, { left: px + "px", top: (py - 135 * k * 0.18) + "px", fontSize: (135 * k / 0.70) + "px" }); b.appendChild(d); });
+</script></body></html>
