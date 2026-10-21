@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PRO-INTER — L'histoire de Pro (9:16, 42 s)</title>
+<title>PRO-INTER — L'histoire de Pro (9:16, 40 s)</title>
 <style>
 @font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
   src:url(assets/fonts/montserrat-latin-ext.woff2) format("woff2");
@@ -46,19 +46,19 @@ body.render #ui{display:none}
   <div id="hud" style="width:1080px;height:1920px"></div>
   <div id="fade"></div>
 </div>
-<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="42" step="0.01" value="0"><span id="tc">00.00</span></div>
+<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="40" step="0.01" value="0"><span id="tc">00.00</span></div>
 <script src="assets/prointer/logo-paths.js"></script>
 <script>
 "use strict";
 /* =====================================================================
-   PRO-INTER — « L'histoire de Pro » — 42 s, 9:16, un seul plan qui défile.
+   PRO-INTER — « L'histoire de Pro » — 40 s, 9:16, un seul plan qui défile.
    Le « O » du logo (la cible) saute hors du logo et devient Pro, le petit
    bonhomme qui accompagne un intérimaire : écoute, viseur sur la bonne
    mission, chantier, suivi, 3 agences, puis retour dans le logo.
    Logo vectorisé depuis le logo officiel fourni par l'agence (tools/prointer_logo.py).
    ===================================================================== */
 const Q = new URLSearchParams(location.search);
-const W = 1080, H = 1920, DUR = 42;
+const W = 1080, H = 1920, DUR = 40;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, t) => a + (b - a) * t;
 const prog = (t, a, b) => clamp((t - a) / (b - a));
@@ -342,7 +342,7 @@ function text(cls, html, x, y, t0, t1, o = {}) {
 }
 const CAPS = [
   ["01 — LA RECHERCHE", "Vous cherchez une mission | <c>qui vous correspond ?</c>", 5.9, 10.2],
-  ["02 — L'ÉCOUTE", "Nous écoutons | <c>vos compétences</c> et <c>vos envies.</c>", 11.9, 15.9],
+  ["02 — L'ÉCOUTE", "Nous écoutons | <c>vos compétences</c> et <c>vos envies.</c>", 11.6, 15.9],
   ["03 — LE BON POSTE", "Notre viseur trouve | <c>la mission adaptée.</c>", 17.0, 21.3],
   ["04 — SUR LE TERRAIN", "Bâtiment, industrie, | <c>électricité, chauffage…</c>", 22.5, 26.8],
   ["05 — LE SUIVI", "On reste à vos côtés, | <c>du premier au dernier jour.</c>", 27.3, 31.2],
@@ -354,7 +354,7 @@ CAPS.forEach(([k, h, t0, t1]) => { text("kick", k, W / 2, 196, t0, t1, { center:
 // (x, y, zoom) ; le sol arrive toujours vers y = 1620 à l'écran : y = 1480 - 660 / zoom
 const CY = z => GY - 660 / z;
 const CAM = [
-  [0, 540, CY(1.1), 1.1], [3.6, 540, CY(1.1), 1.1], [5.0, 570, CY(1.4), 1.4, "inOut"], [5.3, 590, CY(1.4), 1.4], [6.7, 1900, CY(1.4), 1.4, "inOut"], [10.2, 1910, CY(1.4), 1.4],
+  [0, 540, CY(1.1), 1.1], [3.6, 540, CY(1.1), 1.1], [5.0, 570, CY(1.4), 1.4, "inOut"], [5.3, 590, CY(1.4), 1.4], [6.7, 1900, CY(1.4), 1.4, "inOut"], [10.2, 1900, CY(1.4), 1.4],
   [11.8, 3310, CY(1.3), 1.3, "inOut"], [16.0, 3320, CY(1.3), 1.3], [17.2, 4700, CY(1.15), 1.15, "inOut"], [19.6, 4700, CY(1.15), 1.15], [20.1, 4700, CY(1.15) - 10, 1.2, "inOut"], [21.6, 4700, CY(1.15) - 6, 1.18],
   [22.6, 6100, CY(1.3), 1.3, "inOut"], [31.3, 6110, CY(1.3), 1.3], [32.4, 8955, CY(1.1), 1.1, "inOut"], [35.9, 8965, CY(1.1), 1.1], [37.0, 10300, CY(1.1), 1.1, "inOut"], [42, 10300, CY(1.1), 1.1],
 ];
@@ -371,7 +371,11 @@ function candX(t) { let i = 0; while (i < CPATH.length - 2 && t > CPATH[i + 1][0
 const blinkAt = (t, seed) => { const p = (t + seed) % 3.7; return p < .14 ? Math.sin(p / .14 * Math.PI) : 0; };
 
 /* ---------------------------- rendu ---------------------------- */
-function seek(t) {
+// Les temps ci-dessous suivent la timeline d'origine (42 s). La pause muette après « Vous cherchez… »
+// est retirée : à 8,2 s, la vidéo saute directement à 10,2 s de cette timeline (vidéo finale : 40 s).
+const CUT = [8.2, 10.2];
+function seek(tv) {
+  const t = tv < CUT[0] ? tv : tv + CUT[1] - CUT[0];
   const c = camera(t);
   set(WORLD, { transform: `translate(${W / 2},${H / 2}) scale(${c.z}) translate(${-c.x},${-c.y})` });
   set(FAR, { transform: `translate(${W / 2},${H / 2}) scale(${c.z}) translate(${-c.x * .55 - 120},${-c.y})` });
@@ -404,9 +408,9 @@ function seek(t) {
 
   // le candidat
   const cx = candX(t), cv = speed(candX, t);
-  drawCand(CAND, { x: cx, y: GY, s: 1, f: t < 8.0 ? 1 : -1 + 2 * (t > 10.3), walk: (cx - 2060) / 70, walkAmp: clamp(cv / 300), phone: 1 - prog(t, 7.9, 8.2), armR: t < 8.1 ? 1.25 : (t > 12.1 && t < 16 ? .3 : undefined), blink: blinkAt(t, 1.7), vis: t < 16.6 ? 1 : 0, smile: t < 8 ? -.3 : 1 });
-  place(THINK, t, 5.9, 8.0, cx + 40, GY - 640);
-  ORBIT.forEach((g, i) => { const a = t * 1.3 + i * 2 * Math.PI / ORBIT.length, u = pop(t, 6.2 + i * .12, .4) * (1 - E.in2(prog(t, 8.0, 8.3))); set(g, { opacity: clamp(u * 2), transform: `translate(${cx - 40 + Math.cos(a) * 200},${GY - 620 + Math.sin(a) * 90}) scale(${Math.max(.001, u * .9)})` }); });
+  drawCand(CAND, { x: cx, y: GY, s: 1, f: t < 7.6 ? 1 : -1 + 2 * (t > 10.3), walk: (cx - 2060) / 70, walkAmp: clamp(cv / 300), phone: 1 - prog(t, 7.5, 7.8), armR: t < 7.7 ? 1.25 : (t > 12.1 && t < 16 ? .3 : undefined), blink: blinkAt(t, 1.7), vis: t < 16.6 ? 1 : 0, smile: t < 7.6 ? -.3 : 1 });
+  place(THINK, t, 5.9, 7.5, cx + 40, GY - 640);
+  ORBIT.forEach((g, i) => { const a = t * 1.3 + i * 2 * Math.PI / ORBIT.length, u = pop(t, 6.2 + i * .12, .4) * (1 - E.in2(prog(t, 7.5, 7.8))); set(g, { opacity: clamp(u * 2), transform: `translate(${cx - 40 + Math.cos(a) * 200},${GY - 620 + Math.sin(a) * 90}) scale(${Math.max(.001, u * .9)})` }); });
   // l'écoute à l'agence
   SAY.forEach((g, i) => place(g, t, 12.4 + i * .55, 15.7, 3120, 790 + i * 122));
   const cvU = place(CV, t, 13.8, 15.8, 3340, 945, 0.8);

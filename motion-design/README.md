@@ -108,7 +108,7 @@ node tools/render.mjs --page jeux.html --fps 60 --to 44 --workers 3 --out out/je
 
 ---
 
-# PRO-INTER : motion design 42 s « L'histoire de Pro » (9:16)
+# PRO-INTER : motion design 40 s « L'histoire de Pro » (9:16)
 
 Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, un petit bonhomme qui accompagne un intérimaire, en un seul plan qui défile :
 1. Le logo se dessine, la cible prend vie et dit bonjour.
@@ -134,6 +134,6 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 
 ```bash
 pip install potracer && python3 tools/prointer_logo.py && python3 tools/audio_prointer.py
-node tools/render.mjs --page prointer.html --fps 60 --to 42 --workers 3 --out out/prointer-9x16-silent.mp4
+node tools/render.mjs --page prointer.html --fps 60 --to 40 --workers 3 --out out/prointer-9x16-silent.mp4
 python3 tools/voiceover.py prointer && python3 tools/voiceover.py prointer --sans-musique
 ```
