@@ -10,206 +10,113 @@
 :root{--noir:#0B0907;--or:#AC6F17;--or2:#CB8F2F;--or3:#F0C163;--ink:#1E1B17;--muted:#6E655A;--rule:#E6D9C3;--fond:#FBF7F0}
 *{box-sizing:border-box}
 html,body{margin:0;background:#fff;font-family:"Montserrat",sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;padding:16mm 17mm 20mm}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;padding:14mm 17mm 22mm}
 .page:last-child{page-break-after:auto}
-.banner{margin:-16mm -17mm 9mm;height:63mm;background:#070605 url(entete.png) center/cover no-repeat}
+.banner{margin:-14mm -17mm 6mm;height:50mm;background:#070605 url(entete.png) center/contain no-repeat}
 .foot{position:absolute;left:17mm;right:17mm;bottom:9mm;display:flex;justify-content:space-between;font-size:7.5pt;color:var(--muted);letter-spacing:.06em;border-top:.6pt solid var(--rule);padding-top:2.5mm}
 .foot b{color:var(--or);font-weight:600}
+.mention{position:absolute;left:17mm;right:17mm;bottom:15.5mm;margin:0;font-size:7pt;color:var(--muted);font-style:italic;text-align:right}
 .kicker{font-size:7.5pt;font-weight:600;letter-spacing:.32em;color:var(--or);text-transform:uppercase;margin:0 0 2mm}
-h1{font-size:21pt;font-weight:600;line-height:1.15;margin:0 0 2mm;letter-spacing:-.01em}
+h1{font-size:16.5pt;font-weight:600;line-height:1.15;margin:0 0 1.5mm;letter-spacing:-.01em;white-space:nowrap}
 h1 em{font-style:normal;color:var(--or)}
-.date{font-size:8.5pt;color:var(--muted);margin:0 0 7mm}
-h2{font-size:12.5pt;font-weight:600;margin:7mm 0 2.5mm;padding-bottom:1.6mm;border-bottom:1.2pt solid var(--or3);display:flex;align-items:baseline;gap:3mm}
-h2 .n{font-size:9pt;color:var(--or);font-weight:700;letter-spacing:.08em}
-h3{font-size:9.5pt;font-weight:600;margin:5mm 0 2mm;color:var(--ink);text-transform:uppercase;letter-spacing:.14em}
-p{font-size:9.6pt;line-height:1.5;margin:0 0 2.6mm}
-p.lead{font-size:10.4pt;line-height:1.5}
-ul,ol{margin:0 0 3mm;padding-left:5.5mm}
-li{font-size:9.4pt;line-height:1.48;margin:0 0 1.5mm}
+.date{font-size:8.5pt;color:var(--muted);margin:0 0 4mm}
+.info{background:var(--noir);color:#F4EEE4;border-radius:3mm;padding:3.4mm 5mm;margin:0 0 3mm;font-size:9.3pt;line-height:1.5}
+.info b{color:var(--or3);font-weight:600}
+h2{font-size:11.5pt;font-weight:600;margin:4.4mm 0 2mm;padding-bottom:1.4mm;border-bottom:1.2pt solid var(--or3)}
+p{font-size:9.4pt;line-height:1.5;margin:0 0 2.4mm}
+ul,ol{margin:0 0 2.5mm;padding-left:5.5mm}
+li{font-size:9.2pt;line-height:1.45;margin:0 0 1.2mm}
 li::marker{color:var(--or);font-weight:600}
 strong{font-weight:600}
-.note{font-size:8.6pt;color:var(--muted)}
-table{width:100%;border-collapse:collapse;margin:0 0 3mm;font-size:8.8pt}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:7mm}
+table{width:100%;border-collapse:collapse;font-size:9pt}
 th{background:var(--noir);color:var(--or3);font-weight:600;text-align:left;padding:2mm 2.6mm;font-size:7.6pt;letter-spacing:.12em;text-transform:uppercase}
-td{border-bottom:.6pt solid var(--rule);padding:2.1mm 2.6mm;vertical-align:top;line-height:1.38}
-td.q{width:38%;font-weight:500}
-td.now{width:32%;color:var(--muted);font-size:8.3pt}
-td.a{background:var(--fond);height:9.5mm}
-.form td.a{border-left:.6pt solid var(--rule)}
-.sig td{height:11mm}
-.sig td.big{height:26mm}
+td{border-bottom:.6pt solid var(--rule);padding:2.2mm 2.6mm;vertical-align:top;line-height:1.38}
+td.q{width:32%;font-weight:500}
+td.a{background:var(--fond);height:9mm;border-left:.6pt solid var(--rule)}
+.two th:not(:first-child),.two td:not(.q){width:34%}
+.sig td.big{height:28mm}
+.sig td.a{height:10.5mm}
+.sig td.a.big{height:28mm}
 .box{display:inline-block;width:3.3mm;height:3.3mm;border:.9pt solid var(--or);border-radius:.6mm;vertical-align:-.5mm;margin-right:2.2mm}
-.check li{list-style:none;margin-left:-5.5mm}
-.flow{margin:2mm 0 3mm;width:100%}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin:1mm 0 3mm}
-.card{border:.7pt solid var(--rule);border-radius:2.5mm;padding:3mm 3.4mm;background:#fff}
-.card b{display:block;font-size:9pt;font-weight:600;margin-bottom:1mm}
-.card span{font-size:8.6pt;line-height:1.42;color:var(--ink)}
-.card i{font-style:normal;color:var(--or);font-weight:700;margin-right:1.6mm}
-.highlight{background:var(--noir);color:#F4EEE4;border-radius:3mm;padding:4mm 5mm;margin:3mm 0 0;display:flex;gap:5mm;align-items:center}
-.highlight b{color:var(--or3);font-weight:600}
-.highlight p{margin:0;font-size:9.4pt;color:#F4EEE4}
-.clauses li{font-size:8.9pt;margin-bottom:1.3mm}
-.two th:not(:first-child),.two td:not(.q){width:37%}
+.clauses li{font-size:9pt;margin-bottom:1.6mm}
 </style>
 </head>
 <body>
 
-<!-- PAGE 1 -->
+<!-- PAGE 1 : informations et coordonnées -->
 <section class="page">
   <div class="banner"></div>
   <p class="kicker">Projet motion design offert</p>
-  <h1>PRO-INTER × <em>Empira Studio</em><br>Fiche de renseignements</h1>
+  <h1>PRO-INTER × <em>Empira Studio</em> — Fiche de renseignements</h1>
   <p class="date">21 octobre 2026</p>
+  <div class="info">Cette fiche est <b>à titre informatif</b>. Vous avez seulement à <b>compléter vos coordonnées</b> en bas de cette page et à <b>signer l'autorisation d'utilisation de votre logo</b> en page 2.</div>
 
-  <h2><span class="n">01</span>Le projet en bref</h2>
-  <p class="lead">Empira Studio vous offre une vidéo motion design de 42 secondes qui présente PRO-INTER aux candidats. Elle est réalisée gratuitement et sans engagement.</p>
-  <p>La cible du « O » de votre logo devient <strong>Pro</strong>, un petit personnage qui accompagne un intérimaire : il écoute ses compétences et ses envies, trouve la mission adaptée, le suit sur le terrain, puis présente vos 3 agences au Luxembourg.</p>
-  <p>Une première version est déjà prête. Cette fiche sert à l'ajuster à vos besoins avant la livraison.</p>
+  <h2>Le projet</h2>
+  <p>Empira Studio vous offre une vidéo motion design de 30 à 45 secondes qui présente PRO-INTER aux candidats. La cible du « O » de votre logo devient Pro, un personnage qui accompagne un intérimaire, de la recherche d'emploi jusqu'au terrain.</p>
 
-  <h2><span class="n">02</span>Ce qui vous est offert</h2>
-  <p>Vous recevez une vidéo prête à publier, en deux versions, sans rien à payer.</p>
-  <div class="cards">
-    <div class="card"><b><i>●</i>La vidéo</b><span>42 s au format vertical 9:16 (TikTok, Instagram Reels, Facebook, stories), Full HD 1080 × 1920, 60 images par seconde.</span></div>
-    <div class="card"><b><i>●</i>Votre logo animé</b><span>Votre logo officiel, avec vos couleurs exactes (gris #4A4A4A, cyan #00B8F8).</span></div>
-    <div class="card"><b><i>●</i>La voix off</b><span>En français (voix de synthèse), calée phrase par phrase sur l'animation.</span></div>
-    <div class="card"><b><i>●</i>Musique et bruitages</b><span>Créés spécialement pour la vidéo, sans droits à reverser.</span></div>
-    <div class="card"><b><i>●</i>Deux versions</b><span>Avec musique, et sans musique (voix et bruitages) pour ajouter un son du moment sur TikTok ou Instagram.</span></div>
-    <div class="card"><b><i>●</i>Les ajustements</b><span>Après vos retours : textes, métiers montrés, voix, couleurs.</span></div>
+  <div class="cols">
+    <div>
+      <h2>Ce qui vous est offert</h2>
+      <ul>
+        <li>La vidéo au format vertical 9:16, en Full HD.</li>
+        <li>Votre logo officiel et vos couleurs.</li>
+        <li>Une voix off française, une musique et des bruitages créés pour la vidéo.</li>
+        <li>Une version avec musique et une version sans musique.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Le déroulé</h2>
+      <ol>
+        <li>Vous nous renvoyez cette fiche signée.</li>
+        <li>Nous ajustons la vidéo.</li>
+        <li>Vous faites vos retours (deux séries prévues).</li>
+        <li>Nous livrons les fichiers après votre validation.</li>
+      </ol>
+    </div>
   </div>
-  <p class="note">Une version paysage 16:9 (site internet, LinkedIn, écrans en agence) peut être étudiée sur demande.</p>
-  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>1 / 5</span></div>
-</section>
 
-<!-- PAGE 2 -->
-<section class="page">
-  <h2 style="margin-top:0"><span class="n">03</span>Comment se déroule le projet</h2>
-  <p>Le projet part de votre fiche de renseignements et se termine par la livraison des fichiers, une fois la vidéo validée par vous.</p>
-  <svg class="flow" viewBox="0 0 760 520" role="img" aria-label="La vidéo est livrée dès que vous la validez" font-family="Montserrat">
-    <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#B9A88C"/></marker></defs>
-    <text x="24" y="30" font-size="15" font-weight="600" fill="#1E1B17">La vidéo est livrée dès que vous la validez</text>
-    <g fill="none" stroke="#B9A88C" stroke-width="1.4">
-      <path d="M300 102V126" marker-end="url(#arr)"/><path d="M300 178V202" marker-end="url(#arr)"/><path d="M300 254V278" marker-end="url(#arr)"/>
-      <path d="M300 350V374" marker-end="url(#arr)"/><path d="M300 426V450" marker-end="url(#arr)"/>
-      <path d="M370 314H498" marker-end="url(#arr)"/><path d="M590 288V228H412" marker-end="url(#arr)"/>
-    </g>
-    <g font-size="13" text-anchor="middle">
-      <rect x="190" y="50" width="220" height="52" rx="8" fill="#fff" stroke="#B9A88C" stroke-width="1.3"/><text x="300" y="73" font-weight="600" fill="#1E1B17">Fiche de renseignements</text><text x="300" y="91" font-size="11.5" fill="#AC6F17">PRO-INTER</text>
-      <rect x="190" y="126" width="220" height="52" rx="8" fill="#fff" stroke="#B9A88C" stroke-width="1.3"/><text x="300" y="149" font-weight="600" fill="#1E1B17">Version ajustée</text><text x="300" y="167" font-size="11.5" fill="#6E655A">Empira Studio</text>
-      <rect x="190" y="202" width="220" height="52" rx="8" fill="#fff" stroke="#B9A88C" stroke-width="1.3"/><text x="300" y="225" font-weight="600" fill="#1E1B17">Vos retours</text><text x="300" y="243" font-size="11.5" fill="#AC6F17">PRO-INTER</text>
-      <polygon points="230,314 300,278 370,314 300,350" fill="#fff" stroke="#B9A88C" stroke-width="1.3"/><text x="300" y="318" font-weight="600" fill="#1E1B17">Validée ?</text>
-      <rect x="500" y="288" width="180" height="52" rx="8" fill="#fff" stroke="#B9A88C" stroke-width="1.3"/><text x="590" y="311" font-weight="600" fill="#1E1B17">Ajustements</text><text x="590" y="329" font-size="11.5" fill="#6E655A">Empira Studio</text>
-      <rect x="190" y="374" width="220" height="52" rx="8" fill="#0B0907" stroke="#CB8F2F" stroke-width="2"/><text x="300" y="397" font-weight="600" fill="#F0C163">Livraison des fichiers</text><text x="300" y="415" font-size="11.5" fill="#E9DFCF">Empira Studio</text>
-      <rect x="190" y="450" width="220" height="52" rx="8" fill="#fff" stroke="#B9A88C" stroke-width="1.3"/><text x="300" y="473" font-weight="600" fill="#1E1B17">Diffusion sur vos réseaux</text><text x="300" y="491" font-size="11.5" fill="#AC6F17">PRO-INTER</text>
-    </g>
-    <g font-size="11.5" fill="#6E655A"><text x="312" y="368">oui</text><text x="398" y="306">non</text><text x="422" y="220">deux séries de retours prévues</text></g>
-  </svg>
-  <p>Empira Studio ajuste la première version d'après votre fiche, vous faites vos retours, puis nous corrigeons jusqu'à votre validation. Les délais se fixent ensemble selon votre date de diffusion.</p>
+  <h2>Les conditions</h2>
+  <p>La vidéo est <strong>gratuite et sans engagement</strong>. Une fois validée, vous l'utilisez librement sur tous vos supports. Votre logo et votre marque restent votre propriété.</p>
 
-  <h2><span class="n">04</span>Les conditions de la gratuité</h2>
-  <p>La vidéo est offerte, sans engagement ni obligation d'achat : Empira Studio la réalise pour vous montrer son savoir-faire.</p>
-  <ul>
-    <li><strong>Aucun coût</strong> : ni devis, ni facture pour la vidéo et ses ajustements.</li>
-    <li><strong>Deux séries de retours</strong> sont prévues pour ajuster la vidéo avant la validation.</li>
-    <li><strong>Libre diffusion</strong> : une fois validée, PRO-INTER peut utiliser la vidéo sur tous ses supports (réseaux sociaux, site, écrans en agence). Vous restez libre de la publier ou non.</li>
-    <li><strong>Votre marque reste la vôtre</strong> : votre logo et vos contenus ne sont utilisés que pour ce projet.</li>
-    <li><strong>En contrepartie</strong> : avec votre accord, Empira Studio pourra présenter la vidéo parmi ses réalisations (site et réseaux du studio).</li>
-  </ul>
-  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>2 / 5</span></div>
-</section>
-
-<!-- PAGE 3 -->
-<section class="page">
-  <h2 style="margin-top:0"><span class="n">05</span>Fiche de renseignements à compléter</h2>
-  <p>Complétez la colonne « Votre réponse », à la main ou sur ordinateur. Les cases laissées vides gardent ce qui est déjà dans la vidéo.</p>
-
-  <h3>Vos coordonnées</h3>
-  <table class="form">
-    <tr><th>Rubrique</th><th>Votre réponse</th></tr>
+  <h2>Vos coordonnées</h2>
+  <table>
     <tr><td class="q">Raison sociale</td><td class="a"></td></tr>
     <tr><td class="q">Personne de contact</td><td class="a"></td></tr>
     <tr><td class="q">Fonction</td><td class="a"></td></tr>
     <tr><td class="q">Téléphone</td><td class="a"></td></tr>
     <tr><td class="q">E-mail</td><td class="a"></td></tr>
-    <tr><td class="q">Agence(s) concernée(s)<br><span class="note"><span class="box"></span>Dudelange <span class="box" style="margin-left:2mm"></span>Esch-sur-Alzette <span class="box" style="margin-left:2mm"></span>Mondorf-les-Bains</span></td><td class="a"></td></tr>
-    <tr><td class="q">Personne qui valide la vidéo</td><td class="a"></td></tr>
+    <tr><td class="q">Adresse</td><td class="a"></td></tr>
   </table>
-
-  <h3>Le contenu de la vidéo</h3>
-  <table class="form">
-    <tr><th>Question</th><th>Dans la vidéo aujourd'hui</th><th>Votre réponse</th></tr>
-    <tr><td class="q">Objectif principal</td><td class="now">Attirer des candidats intérimaires</td><td class="a"></td></tr>
-    <tr><td class="q">Public visé</td><td class="now">Candidats aux métiers du bâtiment et de l'industrie</td><td class="a"></td></tr>
-    <tr><td class="q">Messages à mettre en avant</td><td class="now">Plus de 15 ans d'expertise, 3 agences, intérim, CDD, CDI, suivi régulier</td><td class="a"></td></tr>
-    <tr><td class="q">Métiers ou secteurs montrés</td><td class="now">Bâtiment, industrie, électricité, chauffage-ventilation ; offre « Électricien » à l'écran</td><td class="a"></td></tr>
-    <tr><td class="q">Personnage « Pro »</td><td class="now">Nom et idée proposés par Empira Studio</td><td class="a"></td></tr>
-    <tr><td class="q">Voix off</td><td class="now">Voix masculine, ton chaleureux, vouvoiement</td><td class="a"></td></tr>
-    <tr><td class="q">Langues</td><td class="now">Français seulement</td><td class="a"></td></tr>
-    <tr><td class="q">Fin de la vidéo</td><td class="now">« Postulez sur prointer.lu » et les noms des 3 agences</td><td class="a"></td></tr>
-    <tr><td class="q">Mentions obligatoires éventuelles</td><td class="now">Aucune</td><td class="a"></td></tr>
-  </table>
-
-  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>3 / 5</span></div>
+  <p class="mention">Document rédigé par un prestataire pour le compte d'Empira Studio.</p>
+  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>1 / 2</span></div>
 </section>
 
-<!-- PAGE 4 -->
+<!-- PAGE 2 : autorisation à signer -->
 <section class="page">
-  <p class="kicker" style="margin-top:0">05 — Fiche de renseignements (suite)</p>
-  <h3 style="margin-top:2mm">Diffusion et éléments à fournir</h3>
-  <table class="form">
-    <tr><th>Rubrique</th><th>Votre réponse</th></tr>
-    <tr><td class="q">Réseaux de publication<br><span class="note">Facebook des agences, LinkedIn, Instagram, TikTok, site</span></td><td class="a"></td></tr>
-    <tr><td class="q">Formats en plus du 9:16 (16:9, carré)</td><td class="a"></td></tr>
-    <tr><td class="q">Logo vectoriel (AI, SVG, EPS ou PDF), si vous l'avez</td><td class="a"></td></tr>
-    <tr><td class="q">Typographie de votre marque, si elle existe</td><td class="a"></td></tr>
-    <tr><td class="q">Date de diffusion souhaitée ou événement</td><td class="a"></td></tr>
-    <tr><td class="q">Remarques</td><td class="a" style="height:28mm"></td></tr>
-  </table>
-
-  <h2><span class="n">06</span>Prochaines étapes et contact</h2>
-  <p>Tout commence quand vous nous renvoyez cette fiche, complétée même partiellement.</p>
-  <ul class="check">
-    <li><span class="box"></span>Compléter la fiche de renseignements, ou nous appeler pour la remplir ensemble</li>
-    <li><span class="box"></span>Signer l'autorisation d'utilisation du logo (page suivante)</li>
-    <li><span class="box"></span>Envoyer le logo en version vectorielle, si vous l'avez</li>
-    <li><span class="box"></span>Recevoir la version ajustée et faire vos retours</li>
-    <li><span class="box"></span>Valider la vidéo et recevoir les fichiers finaux</li>
-  </ul>
-  <div class="highlight"><p><b>Une question ?</b> Répondez à la personne qui vous a transmis cette fiche, ou contactez Empira Studio sur <b>empiraagency.fr</b> et sur TikTok <b>@empiraagency</b>.</p></div>
-  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>4 / 5</span></div>
-</section>
-
-<!-- PAGE 4 -->
-<section class="page">
-  <h2 style="margin-top:0"><span class="n">07</span>Autorisation d'utilisation du logo et de la marque</h2>
-  <p>Par cette autorisation, PRO-INTER permet à Empira Studio d'utiliser son logo et sa marque pour réaliser la vidéo, et s'il l'accepte, pour la présenter dans ses réalisations.</p>
-  <table class="form two">
-    <tr><th></th><th>Titulaire de la marque</th><th>Bénéficiaire</th></tr>
-    <tr><td class="q" style="width:26%">Société</td><td><strong>PRO-INTER</strong></td><td><strong>Empira Studio</strong></td></tr>
-    <tr><td class="q">Représentée par</td><td class="a"></td><td class="a"></td></tr>
-    <tr><td class="q">Fonction</td><td class="a"></td><td class="a"></td></tr>
-    <tr><td class="q">Adresse</td><td class="a"></td><td class="a"></td></tr>
-  </table>
+  <h2 style="margin-top:0;font-size:13pt">Autorisation d'utilisation du logo et de la marque</h2>
+  <p>Par cette autorisation, PRO-INTER permet à Empira Studio d'utiliser son logo et sa marque pour réaliser la vidéo motion design qui lui est offerte.</p>
   <ol class="clauses">
-    <li><strong>Objet</strong> : PRO-INTER autorise Empira Studio à reproduire et animer son logo, son nom et ses couleurs dans la vidéo motion design réalisée gratuitement pour PRO-INTER, et dans ses différentes versions.</li>
-    <li><strong>Limites</strong> : le logo n'est ni redessiné ni détourné en dehors de l'animation validée par PRO-INTER. Il n'est utilisé pour aucun autre client, produit ou message, et n'est jamais cédé à un tiers.</li>
-    <li><strong>Propriété</strong> : PRO-INTER reste seul propriétaire de son logo et de sa marque. Cette autorisation ne cède aucun autre droit.</li>
-    <li><strong>Garantie</strong> : PRO-INTER déclare détenir les droits sur le logo et la marque qu'il fournit.</li>
-    <li><strong>Durée et retrait</strong> : l'autorisation vaut à partir de sa signature. PRO-INTER peut la retirer à tout moment par écrit ; Empira Studio retire alors le logo de ses réalisations dans les 30 jours.</li>
-    <li><strong>Gratuité</strong> : l'autorisation est donnée à titre gratuit, sans contrepartie financière de part et d'autre.</li>
+    <li><strong>Objet</strong> : PRO-INTER autorise Empira Studio à reproduire et animer son logo, son nom et ses couleurs dans cette vidéo et ses différentes versions.</li>
+    <li><strong>Limites</strong> : le logo n'est utilisé que dans l'animation validée par PRO-INTER, pour aucun autre client, produit ou message, et n'est jamais cédé à un tiers.</li>
+    <li><strong>Propriété</strong> : PRO-INTER reste seul propriétaire de son logo et de sa marque.</li>
+    <li><strong>Retrait</strong> : PRO-INTER peut retirer cette autorisation à tout moment par écrit.</li>
+    <li><strong>Gratuité</strong> : l'autorisation est donnée à titre gratuit.</li>
   </ol>
-  <p><strong>Présentation dans les réalisations d'Empira Studio</strong> (site, réseaux sociaux, présentations commerciales), cochez votre choix :</p>
-  <p style="margin-left:2mm"><span class="box"></span>J'accepte que la vidéo et le logo PRO-INTER y soient présentés<br><span class="box" style="margin-top:2mm"></span>Je refuse : la vidéo reste réservée à l'usage de PRO-INTER</p>
-  <p class="note">Fait en deux exemplaires.</p>
-  <table class="sig two">
+  <p style="margin-top:3mm"><strong>Présentation dans les réalisations d'Empira Studio</strong> (site, réseaux sociaux), cochez votre choix :</p>
+  <p style="margin-left:2mm;line-height:1.9"><span class="box"></span>J'accepte que la vidéo y soit présentée<br><span class="box"></span>Je refuse : la vidéo reste réservée à PRO-INTER</p>
+
+  <table class="sig two" style="margin-top:5mm">
     <tr><th></th><th>Pour PRO-INTER</th><th>Pour Empira Studio</th></tr>
-    <tr><td class="q" style="width:26%">Nom et fonction</td><td class="a"></td><td class="a"></td></tr>
+    <tr><td class="q">Nom et fonction</td><td class="a"></td><td class="a"></td></tr>
     <tr><td class="q">Fait à</td><td class="a"></td><td class="a"></td></tr>
     <tr><td class="q">Le</td><td class="a"></td><td class="a"></td></tr>
     <tr><td class="q">Signature, précédée de « Bon pour accord »</td><td class="a big"></td><td class="a big"></td></tr>
     <tr><td class="q">Cachet de l'entreprise</td><td class="a big"></td><td class="a big"></td></tr>
   </table>
-  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>5 / 5</span></div>
+  <p style="font-size:8.6pt;color:var(--muted);margin-top:4mm">Fait en deux exemplaires. Une question ? Contactez Empira Studio sur empiraagency.fr ou sur TikTok @empiraagency.</p>
+  <p class="mention">Document rédigé par un prestataire pour le compte d'Empira Studio.</p>
+  <div class="foot"><span><b>EMPIRA STUDIO</b> · Fiche de renseignements PRO-INTER</span><span>2 / 2</span></div>
 </section>
 </body>
 </html>
