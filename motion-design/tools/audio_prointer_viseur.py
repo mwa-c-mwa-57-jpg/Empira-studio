@@ -165,9 +165,9 @@ def glass(base, g=0.05):
     return out
 
 # tirs du viseur : (pulsation, durée du déplacement, gros impact)
-LOCKS = [(2, .5, 0), (4.5, .42, 0), (6.5, .42, 0), (8, .45, 1), (11, .3, 0), (12.5, .42, 0), (13.5, .22, 0), (14.5, .22, 0),
-         (16, .42, 0), (17.5, .25, 0), (19, .25, 0), (20.5, .25, 0), (22.5, .42, 0), (25, .3, 0), (27.5, .3, 0),
-         (29.5, .42, 0), (30.5, .3, 0), (31.5, .22, 0), (32.5, .22, 0), (34, .42, 0), (36, 0, 1), (44, bt(3), 1)]
+LOCKS = [(2, .5, 0), (4.5, .42, 0), (6.5, .42, 0), (8, .45, 1), (11, .3, 0), (12.5, .42, 0), (14, .22, 0), (16, .22, 0),
+         (18, .42, 0), (19.5, .25, 0), (21, .25, 0), (23, .25, 0), (25, .42, 0), (27, .3, 0), (29.5, .3, 0),
+         (32, .42, 0), (32.75, .3, 0), (33.5, .22, 0), (35, .42, 0), (36, 0, 1), (44, bt(3), 1)]
 for k, (b, d, big) in enumerate(LOCKS):
     tl = bt(b); pan = -0.35 if k % 2 else 0.35
     if b == 44: pass
@@ -175,20 +175,20 @@ for k, (b, d, big) in enumerate(LOCKS):
     elif d > 0: place(sb, whoosh(d + .08, 1500, 9000, 0.035, -pan * .5, pan * .5), tl - d * .9)
     place(sb, lock_snd(bool(big)), tl, 0.32 if big else 0.22, pan * .3)
 # mots qui claquent
-for b in (1.5, 2.5, 4.2, 6.2, 9, 9.5, 10, 29.75, 38, 39, 39, 40):
+for b in (1.5, 2.5, 4.2, 6.2, 9, 9.5, 10, 32.2, 38.6, 39, 39.5, 40.1):
     place(sb, thud(0.16), bt(b))
 for k in range(3): place(sb, thud(0.12), bt(36) + k * .08)
 # réactions : pastilles, tuiles, coches, épingles
-for k, b in enumerate((12.5, 13.5, 14.5)): place(sb, blip(900 + 220 * k, 0.07), bt(b) + .02, pan=-.2)
-for k, b in enumerate((16, 17.5, 19, 20.5)): place(sb, blip(760 + 160 * k, 0.07), bt(b) + .02, pan=.2)
-for k, b in enumerate((22.5, 25, 27.5)): place(sb, glass(note("E6") * 2 ** (k * 2 / 12), 0.03), bt(b) + .02)
-for k, b in enumerate((30.5, 31.5, 32.5)): place(sb, blip(1100 + 200 * k, 0.07), bt(b) + .03, pan=-.3 + .3 * k)
+for k, b in enumerate((12.5, 14, 16)): place(sb, blip(900 + 220 * k, 0.07), bt(b) + .02, pan=-.2)
+for k, b in enumerate((18, 19.5, 21, 23)): place(sb, blip(760 + 160 * k, 0.07), bt(b) + .02, pan=.2)
+for k, b in enumerate((25, 27, 29.5)): place(sb, glass(note("E6") * 2 ** (k * 2 / 12), 0.03), bt(b) + .02)
+for k, b in enumerate((32, 32.75, 33.5)): place(sb, blip(1100 + 200 * k, 0.07), bt(b) + .03, pan=-.3 + .3 * k)
 place(sb, whoosh(.3, 2500, 9000, .04, -.4, .4), bt(4.6))                                                           # soulignement
 place(sb, glass(note("A5"), 0.035), bt(11) + .02)                                                                  # le point de « JUSTE. »
-t = tt(.6); place(sb, bp(rng.standard_normal(len(t)), 2500, 7000) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t)) * np.sin(np.pi * t / .6) * .05, bt(29) - .1)   # tracé de la carte
+t = tt(.6); place(sb, bp(rng.standard_normal(len(t)), 2500, 7000) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t)) * np.sin(np.pi * t / .6) * .05, bt(31) - .05)   # tracé de la carte
 for k in range(1, 16):                                                                                              # compteur +15
-    u = 1 - (1 - (k - .5) / 15) ** (1 / 3); place(sb, tick(2600 + 60 * k, 0.05), bt(34) + u * (bt(36) - bt(34)))
-place(sb, whoosh(bt(4) - .1, 180, 2600, 0.11, .3, -.3), bt(37))                                                     # grand dézoom
+    u = 1 - (1 - (k - .5) / 15) ** (1 / 3); place(sb, tick(2600 + 60 * k, 0.05), bt(35) + u * (bt(36) - bt(35)))
+place(sb, whoosh(bt(2.7), 180, 2600, 0.11, .3, -.3), bt(37))                                                     # grand dézoom
 t = tt(bt(3)); u = t / t[-1]                                                                                        # plongée en spirale
 sp = bp(rng.standard_normal(len(t)), 600, 6000) * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(2 + 14 * u ** 2.4) / SR)) * u ** 1.8 * 0.1
 place(sb, np.stack([sp * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR)), sp * (0.5 - 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR))], 1) * 1.4, bt(41))

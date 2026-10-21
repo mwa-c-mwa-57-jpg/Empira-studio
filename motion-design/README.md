@@ -154,12 +154,16 @@ Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La c
 | Fichier | Rôle |
 |---|---|
 | `prointer-viseur.html` | Animation (SVG, 9:16) : caméra sur ressort amorti, qui suit le viseur et dépasse légèrement sa cible |
+| `out/prointer-viseur-9x16-voix.mp4` / `out/prointer-viseur-9x16-voix-sans-musique.mp4` | **Vidéos finales avec voix off** (Benjamin), avec ou sans musique, -14 LUFS |
 | `out/prointer-viseur-9x16-60fps.mp4` / `out/prointer-viseur-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls), 60 i/s avec flou de mouvement, -14 LUFS |
+| `assets/voix/prointer-viseur-benjamin.mp3` | Voix off brute (ElevenLabs) |
+| `assets/prointer/luxembourg.js` | Frontière du Luxembourg (OpenStreetMap) et adresses géocodées des agences, pour les cartes des deux vidéos |
 | `tools/audio_prointer_viseur.py` | Musique (128 BPM, la mineur) et bruitages calés sur chaque tir |
 | `PROINTER-VISEUR-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
 
 ```bash
 python3 tools/audio_prointer_viseur.py
 node tools/render.mjs --page prointer-viseur.html --fps 60 --to 27.5 --workers 4 --mb 6 --out out/prointer-viseur-9x16-silent.mp4
+python3 tools/voiceover.py viseur && python3 tools/voiceover.py viseur --sans-musique
 ```
 `--mb 6` : flou de mouvement (6 sous-images par image, obturateur à 180°), utile pour les coups de fouet de caméra.

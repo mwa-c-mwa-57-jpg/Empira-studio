@@ -37,3 +37,22 @@ Si la prononciation accroche, remplacez :
 | 00:19,2 → 00:20,6 | Le viseur plonge en spirale et frappe le centre de la cible | « En plein dans le mille. » (« mille » sur l'impact) |
 | 00:20,6 → 00:22,5 | Le logo se forme autour du viseur, dans la lunette | « PRO-INTER, votre agence d'emploi. » |
 | 00:22,5 → 00:27,5 | Bouton « POSTULEZ SUR PROINTER.LU » | « Postulez sur prointer point lu. » |
+
+## Calage final (voix « Benjamin », `assets/voix/prointer-viseur-benjamin.mp3`)
+La voix brute dure 25,3 s. `python3 tools/voiceover.py viseur` la découpe aux silences et cale chaque phrase sur son tir (tableau `VISEUR`) ; `--sans-musique` donne la version voix + bruitages. Les tirs du milieu (contrats, secteurs, « on écoute / on trouve / on suit », carte) ont été recalés sur les mots, toujours sur la grille de la musique.
+
+| Parole | Image |
+|---|---|
+| 0,35 s « Vous cherchez un job ? » | « UN JOB ? » claque, le viseur tire sur « JOB » |
+| 2,0 s « Un vrai ! » | « UN VRAI. » |
+| 2,7 s « Près de chez vous ! » | « PRÈS DE CHEZ VOUS. » |
+| 3,5 s « Chez PRO-INTER, on vise juste ! » | le drop sur « PRO-INTER », puis « ON VISE JUSTE. » |
+| 5,75 s « Intérim, CDD, CDI. » | un tir sur chaque contrat (5,9 / 6,6 / 7,5 s) |
+| 8,4 s « Bâtiment, industrie, électricité, chauffage. » | un tir sur chaque secteur (8,4 / 9,1 / 9,8 / 10,8 s) |
+| 11,7 s « On vous écoute, on trouve la bonne mission, et on vous suit ! » | une coche par ligne (11,7 / 12,7 / 13,8 s) |
+| 15,0 s « Trois agences au Luxembourg. » | la carte, puis Esch-sur-Alzette, Dudelange et Mondorf-les-Bains |
+| 16,4 s « Plus de quinze ans d'expertise. » | le compteur, « +15 » tombe sur « quinze » |
+| 18,1 s « Votre prochain job ? » | la cible géante et le titre, mot à mot |
+| 19,9 s « En plein dans le mille ! » | la plongée, « mille » sur l'impact au centre (20,6 s) |
+| 21,2 s « PRO-INTER, votre agence d'emploi. » | le logo se forme |
+| 23,1 s « Postulez sur prointer point lu. » | le bouton « POSTULEZ SUR PROINTER.LU » |

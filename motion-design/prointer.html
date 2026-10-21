@@ -48,6 +48,7 @@ body.render #ui{display:none}
 </div>
 <div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="40" step="0.01" value="0"><span id="tc">00.00</span></div>
 <script src="assets/prointer/logo-paths.js"></script>
+<script src="assets/prointer/luxembourg.js"></script>
 <script>
 "use strict";
 /* =====================================================================
@@ -310,14 +311,16 @@ const CHK = ["Suivi régulier", "Réactivité", "Proximité"].map((lab, i) => { 
 const THUMB = bubble(0, 0, 140, 110, -1); icon("check", 0, 0, 64, C.cyan, THUMB);
 // 6 — la carte du Luxembourg et les 3 agences
 const MAPC = { x: 8800, y: 990, k: 9.2 };   // k = px par km
-const LUX = [[6.03, 50.18], [6.13, 50.13], [6.14, 50.05], [6.24, 49.96], [6.32, 49.86], [6.47, 49.81], [6.52, 49.73], [6.43, 49.66], [6.37, 49.56], [6.37, 49.46], [6.28, 49.49], [6.16, 49.50], [6.08, 49.46], [5.98, 49.45], [5.90, 49.50], [5.82, 49.55], [5.87, 49.62], [5.90, 49.69], [5.75, 49.79], [5.75, 49.87], [5.81, 49.96], [5.86, 50.06], [5.95, 50.13]];
+const LUX = window.LUX_BORDER, PL = window.LUX_PLACES;   // frontière OpenStreetMap, adresses des agences géocodées
 const geo = (lon, lat) => [MAPC.x + (lon - 6.13) * 71.9 * MAPC.k, MAPC.y - (lat - 49.80) * 111.0 * MAPC.k];
 const MAP = el("path", { d: "M" + LUX.map(p => geo(...p).map(v => v.toFixed(1)).join(",")).join("L") + "Z", fill: C.cyanXL, stroke: C.cyan, "stroke-width": 6, "stroke-linejoin": "round", filter: "url(#soft)" });
-const LUXV = geo(6.13, 49.61); el("circle", { cx: LUXV[0], cy: LUXV[1], r: 9, fill: "#9FB0BA" }); { const t = el("text", { x: LUXV[0] + 18, y: LUXV[1] + 9, "font-size": 24, "font-weight": 500, fill: "#8A98A2" }); t.textContent = "Luxembourg"; }
-const AGENCES = [["Esch-sur-Alzette", 5.981, 49.495, -1], ["Dudelange", 6.087, 49.480, 0], ["Mondorf-les-Bains", 6.281, 49.505, 1]].map(([n, lon, lat, side], i) => {
+const LUXV = geo(...PL.luxembourg); el("circle", { cx: LUXV[0], cy: LUXV[1], r: 9, fill: "#9FB0BA" }); { const t = el("text", { x: LUXV[0] + 18, y: LUXV[1] + 9, "font-size": 24, "font-weight": 500, fill: "#8A98A2" }); t.textContent = "Luxembourg"; }
+// étiquettes en rangée sous la carte, d'ouest en est comme les agences (les liens ne se croisent pas)
+let rowX = 8955 - (3 * 58 + 42 * 16.5 + 44) / 2;
+const AGENCES = [["Esch-sur-Alzette", ...PL.esch], ["Dudelange", ...PL.dudelange], ["Mondorf-les-Bains", ...PL.mondorf]].map(([n, lon, lat], i) => {
   const [px, py] = geo(lon, lat), g = el("g"); icon("pin", 0, -40, 84, i === 1 ? C.grey : C.cyan, g);
-  const lab = el("g"), w = 58 + n.length * 16.5, lx = MAPC.x + 300, ly = MAPC.y + 40 + i * 88;
-  const lead = el("path", { d: `M${px},${py - 40} C${px + 80},${py - 40} ${lx - 120},${ly} ${lx - 18},${ly}`, fill: "none", stroke: C.cyan, "stroke-width": 3, "stroke-dasharray": "8 8" });
+  const lab = el("g"), w = 58 + n.length * 16.5, lx = rowX + 18, ly = 1420, cx = rowX + w / 2; rowX += w + 22;
+  const lead = el("path", { d: `M${px},${py} C${px},${py + 50} ${cx},${ly - 80} ${cx},${ly - 30}`, fill: "none", stroke: C.cyan, "stroke-width": 3, "stroke-dasharray": "8 8" });
   el("rect", { x: -18, y: -30, width: w, height: 60, rx: 30, fill: "#FFFFFF", stroke: C.line, "stroke-width": 3, filter: "url(#soft)" }, lab); el("circle", { cx: 14, cy: 0, r: 10, fill: i === 1 ? C.grey : C.cyan }, lab);
   const t = el("text", { x: 36, y: 9, "font-size": 26, "font-weight": 600, fill: C.ink }, lab); t.textContent = n;
   return { g, lab, lead, px, py, lx, ly };
@@ -435,7 +438,7 @@ function seek(tv) {
   // la carte
   const mapU = pop(t, 32.2, .6); set(MAP, { opacity: clamp(mapU * 2), transform: `translate(${MAPC.x},${MAPC.y}) scale(${Math.max(.001, mapU)}) translate(${-MAPC.x},${-MAPC.y})` });
   AGENCES.forEach((A, i) => { const t0 = 32.9 + i * .35, u = E.outElastic(prog(t, t0, t0 + .9)); set(A.g, { opacity: prog(t, t0, t0 + .1), transform: `translate(${A.px},${A.py - (1 - u) * 260})` });
-    const lu = E.out(prog(t, t0 + .3, t0 + .65)); set(A.lab, { opacity: lu, transform: `translate(${A.lx + (1 - lu) * 40},${A.ly})` }); set(A.lead, { opacity: lu * .9, "stroke-dashoffset": -t * 20 }); });
+    const lu = E.out(prog(t, t0 + .3, t0 + .65)); set(A.lab, { opacity: lu, transform: `translate(${A.lx},${A.ly + (1 - lu) * 30})` }); set(A.lead, { opacity: lu * .9, "stroke-dashoffset": -t * 20 }); });
   place(BADGE, t, 34.3, 35.9, 9230, 720);
 
   // fin : logo complet + appel à l'action

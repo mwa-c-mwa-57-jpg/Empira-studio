@@ -6,7 +6,7 @@
 4. baisse automatiquement musique et bruitages sous la voix (ducking),
 5. normalise à -14 LUFS (standard TikTok) et assemble les vidéos 9:16 et 16:9.
 
-Usage : python3 tools/voiceover.py [pub|gaming|prointer] [fichier_voix] [--dry] [--sans-musique]
+Usage : python3 tools/voiceover.py [pub|gaming|prointer|viseur] [fichier_voix] [--dry] [--sans-musique]
         --dry : affiche le calage, sans mixer ; --sans-musique : voix off + bruitages seulement (fichiers suffixés -sans-musique)
 """
 import numpy as np, subprocess, sys, os, wave
@@ -91,6 +91,23 @@ PROINTER = [
     ("Postulez sur prointer point lu.",                    (27.37, 27.87),       None,                 None,         37.65),
 ]
 
+# PRO-INTER « Le viseur » : chaque phrase tombe sur son tir (parole à l'instant cible)
+VISEUR = [
+    ("Vous cherchez un job ?",                             (0.00, 0.00),         (0.90, 1.29),         None,         0.35),
+    ("Un vrai !",                                          (0.90, 1.29),         (1.83, 2.27),         None,         1.98),
+    ("Près de chez vous !",                                (1.83, 2.27),         (2.85, 3.33),         None,         2.68),
+    ("Chez PRO-INTER, on vise juste !",                    (2.85, 3.33),         (5.09, 5.45),         None,         3.54),
+    ("Intérim, CDD, CDI.",                                 (5.09, 5.45),         (7.67, 8.14),         None,         5.75),
+    ("Bâtiment, industrie, électricité, chauffage.",       (7.67, 8.14),         (10.95, 11.43),       None,         8.44),
+    ("On vous écoute, on trouve la bonne mission…",        (10.95, 11.43),       (14.11, 14.68),       None,         11.73),
+    ("Trois agences au Luxembourg.",                       (14.11, 14.68),       (15.84, 16.32),       None,         15.00),
+    ("Plus de quinze ans d'expertise.",                    (15.84, 16.32),       (17.78, 18.32),       None,         16.40),
+    ("Votre prochain job ?",                               (17.78, 18.32),       (19.17, 19.50),       None,         18.10),
+    ("En plein dans le mille !",                           (19.17, 19.50),       (20.53, 20.98),       None,         19.89),
+    ("PRO-INTER, votre agence d'emploi.",                  (20.53, 20.98),       (22.76, 23.11),       None,         21.15),
+    ("Postulez sur prointer point lu.",                    (22.76, 23.11),       None,                 None,         23.10),
+]
+
 PROJECTS = {
     "pub":    dict(voice="elevenlabs-roger.mp3", stems="empira", master="v3-{ar}-silent.mp4", pieces=PUB,
                    videos={"9x16": "empira-tiktok-9x16-voix.mp4", "16x9": "empira-16x9-voix.mp4"}),
@@ -98,6 +115,8 @@ PROJECTS = {
                    videos={"9x16": "gaming-tiktok-9x16-voix.mp4", "16x9": "gaming-16x9-voix.mp4"}),
     "prointer": dict(voice="prointer-benjamin.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=40.0, duck=12,
                    videos={"9x16": "prointer-9x16-voix.mp4"}),
+    "viseur": dict(voice="prointer-viseur-benjamin.mp3", stems="prointer-viseur", master="prointer-viseur-{ar}-silent.mp4", pieces=VISEUR, dur=27.5, duck=10,
+                   videos={"9x16": "prointer-viseur-9x16-voix.mp4"}),
 }
 P = PROJECTS[PROJ]
 SRC = ARGS[1] if len(ARGS) > 1 else os.path.join(ROOT, "assets", "voix", P["voice"])
