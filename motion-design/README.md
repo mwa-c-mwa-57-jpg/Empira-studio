@@ -167,3 +167,23 @@ node tools/render.mjs --page prointer-viseur.html --fps 60 --to 27.5 --workers 4
 python3 tools/voiceover.py viseur && python3 tools/voiceover.py viseur --sans-musique
 ```
 `--mb 6` : flou de mouvement (6 sous-images par image, obturateur à 180°), utile pour les coups de fouet de caméra.
+
+---
+
+# Maquettes sans logo (« CIBLO »)
+
+Copies exactes des deux vidéos PRO-INTER, pour montrer le travail sans le logo du client : le nom et le logo sont remplacés par une agence fictive, **CIBLO** (le « O » reste la cible, d'où vient la mascotte). Tout le reste est identique. Les vidéos PRO-INTER restent les versions finales.
+
+| Fichier | Rôle |
+|---|---|
+| `maquette-histoire.html` → `out/maquette-histoire-9x16.mp4` | « L'histoire de Pro » (40 s), musique + bruitages |
+| `maquette-viseur.html` → `out/maquette-viseur-9x16.mp4` | « Le viseur » (27,5 s), musique + bruitages |
+| `tools/maquette_logo.py` → `assets/maquette/logo-paths.js` | Logo fictif CIBLO (Montserrat + cible), au même format que le logo vectorisé PRO-INTER |
+
+Pas de voix off : l'enregistrement de Benjamin prononce « PRO-INTER ». La bande son est celle des vidéos PRO-INTER (`out/prointer-mix-14lufs.wav`, `out/prointer-viseur-mix-14lufs.wav`).
+
+```bash
+python3 tools/maquette_logo.py
+node tools/render.mjs --page maquette-histoire.html --fps 60 --to 40 --workers 4 --out out/maquette-histoire-9x16-silent.mp4
+node tools/render.mjs --page maquette-viseur.html --fps 60 --to 27.5 --workers 4 --mb 6 --out out/maquette-viseur-9x16-silent.mp4
+```
