@@ -6,7 +6,7 @@
   const PARAMS = new URLSearchParams(location.search);
   const CIEL = PARAMS.get('ciel') !== '0'; // ?ciel=0 : ciel transparent (la caméra passe derrière)
   const MUET = PARAMS.get('muet') === '1'; // ?muet=1 : aucun son dans l'overlay
-  const W = 1080, H = 1920, CX = 540, ANCRE_Y = 1060, PX_M = 6;
+  const W = 1080, H = 1920, CX = 540, ANCRE_Y = 980, PX_M = 6;
   const MUR_G = 300, MUR_D = 780;
 
   const $ = id => document.getElementById(id);
@@ -174,6 +174,7 @@
     });
     rendreCordee(e.classement || []);
     rendreSaboteurs(e.saboteurs || []);
+    rendreDuel(e.equipes);
     rendreBoss(e.boss || null);
     rendreTapeurs(e.tapeurs || []);
     $('alt-record-texte').innerHTML = `🚩 Record<br><b>${nf(e.record)} m</b>`;
@@ -322,6 +323,8 @@
     const img = d.image || (d.objectifIndex >= 0 ? CFG.objectifs[d.objectifIndex].image : '');
     el.innerHTML = `${avatarHTML(d.user)}<div class="a-texte"><div class="a-pseudo">@${esc(d.user.pseudo)}</div><div class="a-quoi">${d.sabotage ? (d.renfort ? `renforce le boss 😈 (${esc(d.cadeau)})` : `lâche un ${esc(d.nomBoss)} ! 😈`) : `envoie ${esc(d.cadeau)}${d.repeat > 1 ? ' ×' + d.repeat : ''}`}</div><div class="a-montee">${d.sabotage ? `${esc(d.cadeau)} · 🪙 ${nf(d.valeur)}` : `⬆️ +${nf(d.montee)} m · 🪙 ${nf(d.valeur)}`}</div></div>${img ? `<img class="a-cadeau" src="${esc(img)}" referrerpolicy="no-referrer" alt="">` : ''}`;
     hydrater(el);
+    // Pendant un combat, l'alerte se fait compacte et passe sous le panneau du boss
+    $('alertes').classList.toggle('combat', !!bossL);
     $('alertes').appendChild(el);
     alerteActive = el;
     let duree = [0, 3000, 4000, 5200][d.tier];
@@ -428,7 +431,10 @@
     const classes = ['p2', 'p1', 'p3'];
     const num = [2, 1, 3];
     const podium = ordre.map((u, i) => u ? `<div class="marche ${classes[i]}">${avatarHTML(u, num[i] === 1 ? '<span class="couronne" style="font-size:60px;top:-62px">👑</span>' : '')}<div class="nom">@${esc(u.pseudo)}</div><div class="pts">🪙 ${nf(u.pieces)}</div><div class="bloc">${num[i]}</div></div>` : '').join('');
-    el.innerHTML = `<div class="fin-titre">FIN DE LA GRIMPE</div>
+    const eq = r.equipes || { cordee: 0, chute: 0 };
+    const duel = eq.cordee + eq.chute > 0 ? `<div class="fin-duel"><img src="visuels/cordee.png" alt=""><span class="${eq.cordee >= eq.chute ? 'gagnant' : ''}">${nf(eq.cordee)}</span> VS <span class="${eq.chute > eq.cordee ? 'gagnant' : ''}">${nf(eq.chute)}</span><img src="visuels/chute.png" alt=""></div>
+      <div class="fin-record" style="color:${eq.cordee >= eq.chute ? 'var(--or)' : '#ff8a96'}">${eq.cordee >= eq.chute ? '🪢 La Cordée l\'emporte !' : '😈 La Team Chute l\'emporte !'}</div>` : '';
+    el.innerHTML = `<img class="fin-logo" src="visuels/logo.png" alt="La Grimpe"><div class="fin-titre" style="font-size:64px">FIN DE LA GRIMPE</div>
       <div class="fin-alt">${nf(r.altitude)} m</div>
       <div class="fin-record">${r.recordBattu ? '🎉 NOUVEAU RECORD !' : '🚩 Record : ' + nf(r.record) + ' m'}</div>
       <div class="fin-stats">
@@ -437,7 +443,8 @@
         <div class="fin-stat"><b>${r.chutes}</b><span>chutes 😅</span></div>
         ${(r.bossVaincus || r.bossPerdus) ? `<div class="fin-stat"><b>${r.bossVaincus}/${r.bossVaincus + r.bossPerdus}</b><span>boss vaincus 💥</span></div>` : ''}
       </div>
-      ${r.saboteurs && r.saboteurs[0] ? `<div class="fin-record" style="color:#ff8a96">😈 Saboteur de la soirée : @${esc(r.saboteurs[0].pseudo)} (🪙 ${nf(r.saboteurs[0].pieces)})</div>` : ''}
+      ${duel}
+      ${r.saboteurs && r.saboteurs[0] ? `<div class="fin-record" style="color:#ff8a96;font-size:30px">😈 Saboteur de la soirée : @${esc(r.saboteurs[0].pseudo)} (🪙 ${nf(r.saboteurs[0].pieces)})</div>` : ''}
       <div class="podium">${podium}</div>
       <div class="fin-merci">Merci à tous ❤️ On bat le record au prochain live !</div>`;
     hydrater(el);
@@ -584,14 +591,23 @@
     $('saboteurs').classList.toggle('cache', !liste.length);
     if (!liste.length) return;
     if (!$('sab-cadeaux').children.length) {
-      $('sab-cadeaux').innerHTML = liste.map(x => `<div class="sab-cadeau"><img src="${esc(x.image)}" alt=""><span class="em">${x.emoji}</span> ${nf(x.pieces)}</div>`).join('');
+      $('sab-cadeaux').innerHTML = liste.map(x => `<div class="sab-cadeau"><img src="${esc(x.image)}" alt="">${x.emoji} ${nf(x.pieces)}</div>`).join('');
     }
-    const t0 = top[0];
-    const cle = t0 ? t0.id + ':' + t0.pieces : '';
+    const cle = top.map(u => u.id + ':' + u.pieces).join(',');
     if (cle === cleSab) return;
     cleSab = cle;
-    $('sab-top').innerHTML = t0 ? `${avatarHTML(t0)}<span>@${esc(t0.pseudo)} · 🪙 ${nf(t0.pieces)}</span>` : '';
-    hydrater($('sab-top'));
+    $('sab-vide').classList.toggle('cache', top.length > 0);
+    $('sab-liste').innerHTML = top.map((u, i) => `<div class="saboteur${i === 0 ? ' premier' : ''}"><span class="rang">${i === 0 ? '😈' : i + 1}</span>${avatarHTML(u)}<div class="qui"><div class="pseudo">@${esc(u.pseudo)}</div><div class="pts">🪙 ${nf(u.pieces)}</div></div></div>`).join('');
+    hydrater($('sab-liste'));
+  }
+
+  // Duel des équipes : la barre penche du côté de l'équipe qui a envoyé le plus de pièces
+  function rendreDuel(eq) {
+    if (!eq) return;
+    $('duel-cordee').textContent = nf(eq.cordee);
+    $('duel-chute').textContent = nf(eq.chute);
+    const total = eq.cordee + eq.chute;
+    $('duel-r').style.width = (total ? clamp(eq.cordee / total * 100, 4, 96) : 50) + '%';
   }
 
   let bossL = null;
@@ -1041,6 +1057,12 @@
   // ---------- Décor ----------
   const etoiles = Array.from({ length: 170 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 2.2 + 0.4, tw: Math.random() * 6 }));
   const nuages = Array.from({ length: 16 }, (_, i) => ({ alt: 1100 + i * 150 + Math.random() * 100, x: Math.random() * W, w: 160 + Math.random() * 200, v: 8 + Math.random() * 18 }));
+  // Deux chaînes de montagnes lointaines (profils pré-calculés) pour la profondeur
+  const montagnes = [0, 1].map(c => {
+    const pts = [];
+    for (let x = -40; x <= W + 40; x += 40) pts.push([x, Math.sin(x / (170 - c * 50) + c * 2) * 70 + Math.sin(x / 61 + c) * 28 + hash(x, c) * 30]);
+    return pts;
+  });
   const immeubles = [];
   for (let x = -20; x < W + 40;) { const w = 70 + Math.random() * 110; immeubles.push({ x, w, h: 160 + Math.random() * 420, f: Math.random() }); x += w + 6; }
 
@@ -1083,6 +1105,32 @@
     }
     ctx.globalAlpha = 1;
 
+    // Lune
+    const wL = fenetre(camAlt, -1, 0, 3000, 4200);
+    if (wL > 0) {
+      const ly = 690 + camAlt * PX_M * 0.02;
+      const gl = ctx.createRadialGradient(830, ly, 30, 830, ly, 220);
+      gl.addColorStop(0, `rgba(255,244,214,${0.35 * wL})`);
+      gl.addColorStop(1, 'rgba(255,244,214,0)');
+      ctx.fillStyle = gl;
+      ctx.beginPath(); ctx.arc(830, ly, 220, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgba(255,246,222,${0.95 * wL})`;
+      ctx.beginPath(); ctx.arc(830, ly, 62, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgba(220,206,180,${0.5 * wL})`;
+      ctx.beginPath(); ctx.arc(812, ly - 14, 12, 0, Math.PI * 2); ctx.arc(848, ly + 18, 8, 0, Math.PI * 2); ctx.fill();
+    }
+    // Montagnes lointaines (parallaxe lente : elles descendent quand Gégé monte)
+    montagnes.forEach((pts, c) => {
+      const base = ANCRE_Y + decalageY + 120 + c * 90 + camAlt * PX_M * (0.06 + c * 0.05);
+      if (base - 200 > H) return;
+      ctx.fillStyle = c ? 'rgba(20, 16, 44, .92)' : 'rgba(46, 38, 84, .7)';
+      ctx.beginPath();
+      ctx.moveTo(-40, H + 400);
+      for (const [x, y] of pts) ctx.lineTo(x, base - 180 + y);
+      ctx.lineTo(W + 40, H + 400);
+      ctx.closePath();
+      ctx.fill();
+    });
     // Aurores
     const wA = fenetre(camAlt, 3200, 3700, 4400, 4900);
     if (wA > 0) {
@@ -1193,6 +1241,10 @@
         ctx.fillStyle = v < 0.5 ? `rgba(0,0,0,${0.12 * v})` : `rgba(255,255,255,${0.06 * (v - 0.5)})`;
         const xa = Math.max(MUR_G, x), xb = Math.min(MUR_D, x + 140);
         if (xb > xa) ctx.fillRect(xa, y - hb, xb - xa, hb);
+        if (xb > xa && hash(r + 31, k) < 0.09 && camAlt < 2600) {
+          ctx.fillStyle = 'rgba(92, 160, 72, .55)';
+          ctx.beginPath(); ctx.ellipse((xa + xb) / 2, y - 6, (xb - xa) * 0.35, 9, 0, 0, Math.PI * 2); ctx.fill();
+        }
         ctx.strokeStyle = 'rgba(0,0,0,.28)';
         if (x > MUR_G && x < MUR_D) { ctx.beginPath(); ctx.moveTo(x, y - hb); ctx.lineTo(x, y); ctx.stroke(); }
       }
@@ -1253,6 +1305,16 @@
       ctx.fillRect(MUR_G - 70, yp, MUR_D - MUR_G + 140, 8);
       ctx.strokeStyle = '#3d2410'; ctx.lineWidth = 4;
       ctx.strokeRect(MUR_G - 70, yp, MUR_D - MUR_G + 140, 26);
+      // Lanternes
+      for (const lx of [MUR_G - 50, MUR_D - 34]) {
+        const lg = ctx.createRadialGradient(lx, yp - 30, 4, lx, yp - 30, 70);
+        lg.addColorStop(0, `rgba(255,214,140,${0.75 + Math.sin(t / 300 + lx) * 0.15})`);
+        lg.addColorStop(1, 'rgba(255,214,140,0)');
+        ctx.fillStyle = lg;
+        ctx.beginPath(); ctx.arc(lx, yp - 30, 70, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#3d2410'; ctx.fillRect(lx - 3, yp - 52, 6, 52);
+        ctx.fillStyle = '#ffd88a'; ctx.beginPath(); ctx.roundRect(lx - 10, yp - 46, 20, 24, 5); ctx.fill();
+      }
       // Drapeau
       const fx = MUR_D + 50;
       ctx.fillStyle = '#ddd'; ctx.fillRect(fx, yp - 150, 6, 150);
@@ -1316,10 +1378,10 @@
     ctx.bezierCurveTo(mx + 60, my - 200, mx + 40, my - 500, mx + 30, -40);
     ctx.stroke();
     const liste = (ETAT && ETAT.classement) || [];
-    const ecarts = [300, 470, 630];
+    const ecarts = [210, 330, 450];
     liste.slice(0, 3).forEach((u, i) => {
       const y = my - ecarts[i] * Math.min(1.2, s);
-      if (y < 60) return;
+      if (y < 590) return; // au-dessus, l'interface (refuge, duel) le cacherait
       const x = mx + 52 - i * 4;
       const r = i === 0 ? 46 : 36;
       ctx.save();
@@ -1577,7 +1639,7 @@
       if (span.textContent !== vis) span.textContent = vis;
       const hx = mx, hy = my - 190 * zoom * 1.15 - 30;
       const x = clamp(hx, 320, W - 320);
-      const y = clamp(hy, 330, H - 400);
+      const y = clamp(hy, 640, 1100);
       be.style.left = x + 'px';
       be.style.top = y + 'px';
       be.style.setProperty('--queue', clamp(50 + (hx - x) / 5, 15, 85) + '%');
@@ -1588,7 +1650,7 @@
     const pa = $('pancarte');
     if (t < pancarteFin) {
       pa.style.left = clamp(mx + 250, 220, W - 200) + 'px';
-      pa.style.top = clamp(my - 40, 450, H - 500) + 'px';
+      pa.style.top = clamp(my - 40, 700, 1050) + 'px';
     } else if (!pa.classList.contains('cache')) pa.classList.add('cache');
 
     if (bossL) {

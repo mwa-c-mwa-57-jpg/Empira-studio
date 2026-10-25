@@ -99,6 +99,8 @@ class Jeu {
       recordDebut: record || 0,
       likesTotal: 0,
       piecesTotal: 0,
+      piecesAide: 0,
+      piecesSabotage: 0,
       chutes: 0,
       sommetAtteint: false,
       bossVaincus: 0,
@@ -252,6 +254,7 @@ class Jeu {
     const ancienChef = this.etat.chefId;
     u.pieces += valeur;
     this.etat.piecesTotal += valeur;
+    this.etat.piecesAide += valeur;
 
     const nomNorm = normaliser(g.nom);
     let iMatch = this.aliases.findIndex(set => set.has(nomNorm));
@@ -358,6 +361,7 @@ class Jeu {
     const s = this.saboteurs[i];
     u.sabotage = (u.sabotage || 0) + valeur;
     this.etat.piecesTotal += valeur;
+    this.etat.piecesSabotage += valeur;
     const pv = s.pv * Math.min(repeat, 10);
     const chute = s.chute * Math.min(repeat, 3);
     const type = BOSS[s.boss] ? s.boss : 'pigeon';
@@ -562,7 +566,8 @@ class Jeu {
       podium: this.classement(3),
       bossVaincus: this.etat.bossVaincus,
       bossPerdus: this.etat.bossPerdus,
-      saboteurs: this.saboteursClassement(1),
+      saboteurs: this.saboteursClassement(3),
+      equipes: { cordee: this.etat.piecesAide, chute: this.etat.piecesSabotage },
       tapeurs: this.tapeurs(3),
       duree: Math.round((this.now() - this.etat.debut) / 60000)
     };
@@ -856,7 +861,8 @@ class Jeu {
       sommetAtteint: e.sommetAtteint,
       boss: this.bossPublic(),
       bossEnAttente: this.fileBoss.length,
-      saboteurs: this.saboteursClassement(3)
+      saboteurs: this.saboteursClassement(5),
+      equipes: { cordee: e.piecesAide, chute: e.piecesSabotage }
     };
   }
 }

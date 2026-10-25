@@ -140,6 +140,13 @@ Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17
 
 ⚠️ La reconnaissance d'un cadeau saboteur se fait **par son nom** : un « Tofu » à 5 pièces ne doit pas lâcher un pigeon comme le Cœur avec les doigts. TikTok envoie parfois les noms en anglais : j'ai ajouté les noms anglais probables (`alias` dans `config.json` → `saboteurs`). Au premier vrai live, regarde la fenêtre noire : chaque cadeau y est écrit avec son nom exact (`🎁 @pseudo : « nom »`). Si un saboteur n'est pas reconnu, ajoute ce nom dans ses `alias`.
 
+### L'écran
+
+- La mise en page respecte les zones que TikTok recouvre pendant un live : rien d'important dans le haut (~240 px : ton profil, le nombre de spectateurs) ni dans le bas (~35 % : le chat et les boutons).
+- **Le duel des équipes** sous la carte du refuge : la barre penche du côté de l'équipe qui a envoyé le plus de pièces (🪢 La Cordée contre 😈 Team Chute).
+- **Deux classements** : La Cordée à gauche (ceux qui aident) et la Team Chute à droite (ceux qui sabotent), chacun avec son emblème.
+- Le logo, les emblèmes des équipes et le fond de l'écran de fin ont été créés avec Canva (dossier `public/visuels/`). Remplace ces fichiers par les tiens en gardant les mêmes noms.
+
 ### Mini-jeux (un toutes les 9 minutes avec l'autopilote)
 
 - 🎲 **Vote du destin** : le chat écrit `aide` (échelle géante) ou `piège` (banane, rafale de vent ou pigeon).

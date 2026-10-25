@@ -24,9 +24,16 @@
     </div>
     <div id="pastilles"></div>
 
+    <!-- Duel des deux équipes -->
+    <div id="duel">
+      <div class="duel-cote cordee"><img src="visuels/cordee.png" alt=""><span>LA CORDÉE</span><b id="duel-cordee">0</b></div>
+      <div class="duel-barre"><div id="duel-r"></div><span class="duel-vs">VS</span></div>
+      <div class="duel-cote chute"><b id="duel-chute">0</b><span>TEAM CHUTE</span><img src="visuels/chute.png" alt=""></div>
+    </div>
+
     <!-- Cordée (classement) -->
     <div id="cordee" class="verre">
-      <div class="bloc-titre">🪢 LA CORDÉE</div>
+      <div class="bloc-titre"><img class="badge" src="visuels/cordee.png" alt=""> LA CORDÉE</div>
       <div id="cordee-liste"></div>
       <div id="cordee-vide" class="vide">Le 1er cadeau devient<br>premier de cordée 👑</div>
     </div>
@@ -48,9 +55,10 @@
     </div>
 
     <div id="saboteurs" class="verre cache">
-      <div class="bloc-titre">😈 TEAM CHUTE</div>
+      <div class="bloc-titre"><img class="badge" src="visuels/chute.png" alt=""> TEAM CHUTE</div>
+      <div id="sab-liste"></div>
+      <div id="sab-vide" class="vide">Envoie un cadeau 😈<br>pour faire tomber Gégé</div>
       <div id="sab-cadeaux" class="sab-cadeaux"></div>
-      <div id="sab-top" class="sab-top"></div>
     </div>
 
     <div id="minijeu" class="verre cache"></div>
