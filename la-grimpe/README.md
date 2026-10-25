@@ -126,6 +126,24 @@ La partie est sauvegardée toutes les 3 secondes (dossier `donnees/`). Si le PC 
 
 Les seuils se règlent dans `config.json` → `sons` (`applaudirDesPieces`, `merciVocalDesPieces`, `secondesFinRafalePetitsCadeaux`).
 
+### Le chef d'orchestre des sons
+
+Deux effets sonores ne se superposent jamais. Chaque son a une priorité :
+
+| Priorité | Sons |
+|---|---|
+| 1. Immédiat | La **soundboard de l'animateur** (coupe tout le reste), l'écran de fin, le sommet |
+| 2. Très haute | Le **coffre** (refuge débloqué), nouveau record, « il va lâcher » et la chute |
+| 3. Haute | Applaudissements des **cadeaux de 1 000 puis de 100 pièces**, mini-jeux, toc toc |
+| 4. Moyenne | Nouveau premier de cordée, applaudissement de fin de rafale, atterrissage |
+| 5. Basse | Paliers de taps, bisou, abonnements et partages (un son toutes les 20 s au plus) |
+| 6. Très basse | Les **commandes du chat** (`!prout`…) : elles passent quand c'est calme |
+| 7. Ambiance | Le tonnerre : seulement quand rien d'autre ne joue |
+
+Un son beaucoup plus important coupe celui en cours (par exemple le coffre coupe un `!prout`). Sinon, il attend quelques secondes son tour, et il est abandonné s'il n'est plus d'actualité. Quand Gégé parle, les effets baissent pour qu'on l'entende bien.
+
+Tests : `npm test` vérifie entre autres toutes les paires de sons à tous les décalages, et 3 000 lives simulés au hasard, sans aucune superposition.
+
 ### Commandes du chat
 
 `!prout` `!klaxon` `!applause` `!bravo` `!tambour` `!badum` `!ding` `!laser` `!wah` — 30 secondes d'attente par spectateur et 4 secondes entre deux sons. Modifiable dans `config.json` → `commandesChat`.

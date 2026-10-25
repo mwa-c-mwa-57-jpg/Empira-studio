@@ -64,16 +64,29 @@
 
   // ---------- Sons ----------
   let reglages = { volume: 0.8, sonsAutomatiques: true };
-  function son(nom) { if (!MUET) Sons.jouer(nom); }
-  function sonAuto(nom) { if (reglages.sonsAutomatiques) son(nom); }
-  // Une seule voix à la fois (sauf message important), sinon les bulles qui s'enchaînent se superposent.
-  let voixFin = 0;
-  function voix(texte, prio) {
-    if (MUET || !reglages.sonsAutomatiques) return;
-    const t = performance.now();
-    if (t < voixFin && prio < 4) return;
-    voixFin = t + Sons.charabia(texte) * 1000;
+  // Tous les sons passent par le chef d'orchestre : jamais deux effets en même temps, les plus importants d'abord.
+  const orchestre = Orchestre.creerOrchestre({
+    maintenant: () => performance.now(),
+    planifier: (fn, ms) => setTimeout(fn, ms),
+    annuler: id => clearTimeout(id),
+    jouerEffet: nom => Sons.jouer(nom),
+    jouerVoix: texte => Sons.charabia(texte),
+    attenuer: v => Sons.attenuer(v),
+    journal: e => { if (window.__journalSons) window.__journalSons.push(e); }
+  });
+  function son(nom, raison) { if (!MUET) orchestre.effet(nom, raison); }
+  let dernierSonSocial = 0;
+  function sonAuto(nom, raison) {
+    if (!reglages.sonsAutomatiques) return;
+    if (raison === 'social') {
+      // Abonnements et partages arrivent par vagues : un seul petit son toutes les 20 secondes suffit
+      const t = performance.now();
+      if (t - dernierSonSocial < 20000) return;
+      dernierSonSocial = t;
+    }
+    son(nom, raison);
   }
+  function voix(texte, prio) { if (!MUET && reglages.sonsAutomatiques) orchestre.parler(texte, prio); }
   const boutonSon = $('activer-son');
   function verifierSon() {
     if (MUET) return;
@@ -379,7 +392,7 @@
     $('bisous').appendChild(el);
     while ($('bisous').children.length > 3) $('bisous').firstChild.remove();
     setTimeout(() => el.remove(), 12000);
-    son('bisou');
+    sonAuto('bisou', 'bisou');
   }
 
   // ---------- Bandeau ----------
@@ -420,7 +433,7 @@
       <div class="fin-merci">Merci à tous ❤️ On bat le record au prochain live !</div>`;
     hydrater(el);
     el.classList.remove('cache');
-    son('fanfare');
+    son('fanfare', 'fin');
     confettis(140);
   }
 
@@ -499,29 +512,29 @@
       case 'toctoc':
         forcer('toctoc', 'supplie', 4.6);
         zoomer(1.9, 3.6);
-        setTimeout(() => son('toctoc'), 500);
+        setTimeout(() => son('toctoc', 'appel'), 500);
         [550, 770, 990].forEach(ms => setTimeout(() => { toc = 1; secouer(7); fissure(CX + 120 + Math.random() * 120, 720 + Math.random() * 160); }, ms));
         setTimeout(() => dire(d.texte, { prio: 3, duree: 4 }), 1150);
         break;
       case 'bord':
         dire(d.texte, { prio: 5, crie: true, duree: 6 });
-        sonAuto('alarme');
+        sonAuto('alarme', 'danger');
         break;
       case 'ouf': dire(d.texte, { prio: 4 }); break;
       case 'chute':
         dire(d.texte, { prio: 5, crie: true, duree: 2.6 });
-        sonAuto('chute');
+        sonAuto('chute', 'danger');
         break;
       case 'atterrit':
         dire(d.texte, { prio: 3 });
-        sonAuto('boing');
+        sonAuto('boing', 'scene');
         secouer(12);
         emoji('💨', CX, ANCRE_Y + 130, 8, { vitesse: 200, monte: 50, taille: 40, vie: 1.2, gravite: 0 });
         break;
       case 'frayeur':
         forcer('accroche', 'peur', 1.3);
         dire(d.texte, { prio: 2, crie: true, duree: 2.2 });
-        sonAuto('whoosh');
+        sonAuto('whoosh', 'scene');
         secouer(5);
         break;
       case 'pancarte':
@@ -559,19 +572,17 @@
   function reglesSons() {
     return Object.assign({ applaudirDes: 100, merciVocalDes: 1000, finRafaleSecondes: 3, rafaleMinimum: 2 }, CFG.sonsCadeaux || {});
   }
-  let dernierApplaudissement = 0;
-  function applaudir() {
-    const t = performance.now();
-    if (t - dernierApplaudissement < 3000) return;
-    dernierApplaudissement = t;
-    sonAuto('applaudissements');
+  // Un seul applaudissement à la fois : s'il y en a déjà un (en cours ou en attente), il compte pour tout le monde.
+  function applaudir(raison) {
+    if (orchestre.contient('applaudissements')) return;
+    sonAuto('applaudissements', raison);
   }
   let rafale = { nb: 0, timer: null };
   function rafalePetits(nb) {
     rafale.nb += nb;
     clearTimeout(rafale.timer);
     rafale.timer = setTimeout(() => {
-      if (rafale.nb >= reglesSons().rafaleMinimum) applaudir();
+      if (rafale.nb >= reglesSons().rafaleMinimum) applaudir('rafale');
       rafale.nb = 0;
     }, reglesSons().finRafaleSecondes * 1000);
   }
@@ -580,7 +591,7 @@
   let coffre = null;
   function ouvrirCoffre(force) {
     coffre = { debut: performance.now(), force };
-    son('coffre');
+    son('coffre', 'coffre');
     const pleine = $('cagnotte-rempli');
     pleine.style.width = '100%';
     for (let i = 0; i < 70 * force; i++) {
@@ -673,10 +684,10 @@
           // Gros cadeau : Gégé remercie à voix haute (charabia), l'applaudissement suit à la fin de l'alerte
           forcer('joie', 'joie', 4);
           dire(`MERCI MERCI BEAUCOUP @${d.user.pseudo} !!! 😭❤️`, { prio: 5, crie: true, duree: 4.5 });
-          setTimeout(applaudir, 4600);
+          setTimeout(() => applaudir('merciGros'), 4600);
         } else if (d.valeur >= R.applaudirDes) {
           dire(d.replique, { prio: 3, duree: 3.4 });
-          setTimeout(applaudir, 3400);
+          setTimeout(() => applaudir('merci'), 3400);
         } else {
           // Petits cadeaux (roses, TikTok…) : aucun son un par un, un seul applaudissement à la fin de la rafale
           dire(d.replique, { prio: 2, duree: 2.6, silence: true });
@@ -703,49 +714,49 @@
       }
       case 'scene': sceneRecue(d); break;
       case 'son':
-        son(d.son);
+        son(d.son, d.regie ? 'regie' : 'chat');
         if (d.user) fil(`💬 @${d.user.pseudo} lance ${d.son === 'prout' ? 'un prout 💨' : 'le son « ' + d.son + ' »'}`);
         break;
       case 'arrivee': oiseau(d.user, d.autres); break;
       case 'abonne':
         fil(`⭐ @${d.user.pseudo} s'abonne ! Merci !`);
-        sonAuto('ding');
+        sonAuto('ding', 'social');
         emoji('⭐', 160, 1300, 8, { taille: 36, vie: 1.6 });
         break;
       case 'partage':
         fil(`🔁 @${d.user.pseudo} partage le live !`);
-        sonAuto('pop');
+        sonAuto('pop', 'social');
         break;
       case 'palierLikes':
         fil(`🎉 ${nf(d.total)} TAPS ! Merci à tous !`);
         emoji('❤️', CX, ANCRE_Y, 26, { taille: 54, vitesse: 500 });
-        sonAuto('coeurs');
+        sonAuto('coeurs', 'palier');
         dire(`${nf(d.total)} taps !!! Vous êtes des fous ❤️`, { prio: 2, duree: 3 });
         break;
       case 'nouveauChef':
         banniere(`✂️ @${esc(d.user.pseudo)} COUPE LA CORDE !`, `Nouveau premier de cordée 👑${d.ancien ? ' devant @' + esc(d.ancien.pseudo) : ''}`, { classe: 'rouge', duree: 3600 });
-        if (d.user.pieces >= reglesSons().applaudirDes) sonAuto('ciseaux');
+        if (d.user.pieces >= reglesSons().applaudirDes) sonAuto('ciseaux', 'chef');
         break;
       case 'record':
         banniere('NOUVEAU RECORD !', `${nf(d.altitude)} m — on n'est jamais allés aussi haut !`, { classe: 'vert', duree: 4200 });
-        sonAuto('fanfare');
+        sonAuto('fanfare', 'record');
         confettis(120);
         dire(d.texte, { prio: 3 });
         break;
       case 'sommet':
         banniere('🏔️ SOMMET ATTEINT !!!', 'On l\'a fait ensemble ❤️', { duree: 6000 });
-        son('fanfare');
-        setTimeout(() => son('applaudissements'), 700);
+        son('fanfare', 'sommet');
+        son('applaudissements', 'sommet');
         confettis(260);
         celebrer(d.texte);
         break;
       case 'miniJeu':
         rendreMiniJeu(d);
-        sonAuto(d.type === 'tempete' ? 'tonnerre' : 'tambour');
+        sonAuto(d.type === 'tempete' ? 'tonnerre' : 'tambour', 'miniJeu');
         if (d.type === 'vote') dire('VOTE DU DESTIN ! Vous m\'aidez… ou vous me piégez ?! 😰', { prio: 3 });
         if (d.type === 'course') dire(`Course aux taps ! ${nf(d.cible)} taps en 60 secondes, GO !!`, { prio: 3, crie: true });
         if (d.type === 'mot') dire('Le premier qui écrit le mot gagne !', { prio: 3 });
-        if (d.type === 'tempete') { dire('Oh non… UNE TEMPÊTE !! Tapez pour me tenir !', { prio: 3, crie: true }); setTimeout(() => sonAuto('vent'), 1500); }
+        if (d.type === 'tempete') { dire('Oh non… UNE TEMPÊTE !! Tapez pour me tenir !', { prio: 3, crie: true }); sonAuto('vent', 'miniJeu'); }
         break;
       case 'miniJeuMaj': rendreMiniJeu(d); break;
       case 'miniJeuFin': finMiniJeu(d); break;
@@ -767,28 +778,28 @@
     rendreMiniJeu(null);
     if (!d || d.annule) return;
     if (d.type === 'vote') {
-      if (d.resultat === 'aide') { banniere('L\'ÉQUIPE AIDE GAGNE !', `${d.votes.aide} contre ${d.votes.piege} — une échelle géante 🪜`, { classe: 'vert' }); sonAuto('victoire'); ajouterCompagnon('saut', ''); dire('MERCI ! Je vous adore !!', { prio: 3 }); }
+      if (d.resultat === 'aide') { banniere('L\'ÉQUIPE AIDE GAGNE !', `${d.votes.aide} contre ${d.votes.piege} — une échelle géante 🪜`, { classe: 'vert' }); sonAuto('victoire', 'miniJeu'); ajouterCompagnon('saut', ''); dire('MERCI ! Je vous adore !!', { prio: 3 }); }
       else if (d.resultat === 'piege') {
         const p = { banane: ['🍌 PEAU DE BANANE !', 'Il glisse de 25 m…', '🍌'], vent: ['💨 RAFALE DE VENT !', 'Son énergie s\'envole…', '💨'], pigeon: ['🐦 ATTAQUE DE PIGEON !', 'Il recule de 15 m…', '🐦'] }[d.piege];
         banniere(p[0], `${d.votes.piege} contre ${d.votes.aide} — vous êtes cruels 😭`, { classe: 'rouge' });
         emoji(p[2], CX, ANCRE_Y - 80, 10, { taille: 70, vitesse: 400 });
-        sonAuto(d.piege === 'vent' ? 'vent' : 'echec');
+        sonAuto(d.piege === 'vent' ? 'vent' : 'echec', 'miniJeu');
         secouer(10);
         forcer('accroche', 'peur', 1.6);
         dire('POURQUOIIII ?! 😭', { prio: 4, crie: true });
       } else banniere('PERSONNE N\'A VOTÉ…', 'Le destin hésite 🤷', { duree: 2600 });
     }
     if (d.type === 'course') {
-      if (d.resultat === 'gagne') { banniere('COURSE GAGNÉE !', `${nf(d.progres)} taps — boost de 80 m 🚀`, { classe: 'vert' }); sonAuto('fanfare'); confettis(90); }
-      else { banniere('RATÉ…', `${nf(d.progres)} / ${nf(d.cible)} taps`, { classe: 'rouge' }); sonAuto('echec'); dire('Oh non… on y était presque !', { prio: 3 }); }
+      if (d.resultat === 'gagne') { banniere('COURSE GAGNÉE !', `${nf(d.progres)} taps — boost de 80 m 🚀`, { classe: 'vert' }); sonAuto('fanfare', 'miniJeu'); confettis(90); }
+      else { banniere('RATÉ…', `${nf(d.progres)} / ${nf(d.cible)} taps`, { classe: 'rouge' }); sonAuto('echec', 'miniJeu'); dire('Oh non… on y était presque !', { prio: 3 }); }
     }
     if (d.type === 'mot') {
-      if (d.gagnant) { banniere(`@${esc(d.gagnant.pseudo)} GAGNE !`, `Le mot était « ${esc(d.mot)} » ✨`, { classe: 'vert' }); sonAuto('ding'); dire(`Bravo @${d.gagnant.pseudo} !!`, { prio: 3, user: d.gagnant }); }
+      if (d.gagnant) { banniere(`@${esc(d.gagnant.pseudo)} GAGNE !`, `Le mot était « ${esc(d.mot)} » ✨`, { classe: 'vert' }); sonAuto('ding', 'miniJeu'); dire(`Bravo @${d.gagnant.pseudo} !!`, { prio: 3, user: d.gagnant }); }
       else banniere('PERSONNE…', `Le mot était « ${esc(d.mot)} »`, { duree: 2800 });
     }
     if (d.type === 'tempete') {
-      if (d.resultat === 'gagne') { banniere('IL A TENU BON !', 'La tempête est passée 💪', { classe: 'vert' }); sonAuto('victoire'); }
-      else { banniere('EMPORTÉ PAR LA TEMPÊTE…', 'On remonte ?', { classe: 'rouge' }); sonAuto('echec'); }
+      if (d.resultat === 'gagne') { banniere('IL A TENU BON !', 'La tempête est passée 💪', { classe: 'vert' }); sonAuto('victoire', 'miniJeu'); }
+      else { banniere('EMPORTÉ PAR LA TEMPÊTE…', 'On remonte ?', { classe: 'rouge' }); sonAuto('echec', 'miniJeu'); }
     }
   }
 
@@ -917,7 +928,7 @@
       ctx.stroke();
       if (Math.random() < dt * 0.25 * pluieForce) {
         eclair = 0.8;
-        if (t - dernierTonnerre > 25000) { dernierTonnerre = t; sonAuto('tonnerre'); }
+        if (t - dernierTonnerre > 25000) { dernierTonnerre = t; sonAuto('tonnerre', 'ambiance'); }
       }
     }
   }
