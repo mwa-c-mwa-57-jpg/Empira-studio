@@ -520,7 +520,7 @@
         dire(d.texte, { prio: 5, crie: true, duree: 6 });
         sonAuto('alarme', 'danger');
         break;
-      case 'ouf': dire(d.texte, { prio: 4 }); break;
+      case 'ouf': dire(d.texte, { prio: 5 }); break; // remplace le « TAPEZ, JE LÂCHE ! »
       case 'chute':
         dire(d.texte, { prio: 5, crie: true, duree: 2.6 });
         sonAuto('chute', 'danger');
@@ -734,8 +734,10 @@
         dire(`${nf(d.total)} taps !!! Vous êtes des fous ❤️`, { prio: 2, duree: 3 });
         break;
       case 'nouveauChef':
+        // Petites sommes (début de live) : la cordée se réordonne simplement, sans bannière ni son
+        if (d.user.pieces < reglesSons().applaudirDes) break;
         banniere(`✂️ @${esc(d.user.pseudo)} COUPE LA CORDE !`, `Nouveau premier de cordée 👑${d.ancien ? ' devant @' + esc(d.ancien.pseudo) : ''}`, { classe: 'rouge', duree: 3600 });
-        if (d.user.pieces >= reglesSons().applaudirDes) sonAuto('ciseaux', 'chef');
+        sonAuto('ciseaux', 'chef');
         break;
       case 'record':
         banniere('NOUVEAU RECORD !', `${nf(d.altitude)} m — on n'est jamais allés aussi haut !`, { classe: 'vert', duree: 4200 });
