@@ -6,7 +6,9 @@
   const PARAMS = new URLSearchParams(location.search);
   const CIEL = PARAMS.get('ciel') !== '0'; // ?ciel=0 : ciel transparent (la caméra passe derrière)
   const MUET = PARAMS.get('muet') === '1'; // ?muet=1 : aucun son dans l'overlay
-  const W = 1080, H = 1920, CX = 540, ANCRE_Y = 980, PX_M = 6;
+  const W = 1080, H = 1920, CX = 540, ANCRE_Y = 950, PX_M = 6;
+  // Zone visible sur un vrai live (mesurée) : x 110 → 970, y 296 → 1235
+  const VIS_G = 110, VIS_D = 970;
   const MUR_G = 300, MUR_D = 780;
 
   const $ = id => document.getElementById(id);
@@ -632,6 +634,7 @@
     if (cle === cleSab) return;
     cleSab = cle;
     $('sab-vide').classList.toggle('cache', top.length > 0);
+    $('saboteurs').classList.toggle('occupe', top.length > 0);
     rendreSabListe(top);
   }
 
@@ -1673,8 +1676,8 @@
       const span = $('bulle-texte');
       if (span.textContent !== vis) span.textContent = vis;
       const hx = mx, hy = my - 190 * zoom * 1.15 - 30;
-      const x = clamp(hx, 320, W - 320);
-      const y = clamp(hy, bossL || MJ ? 880 : 760, 1100);
+      const x = clamp(hx, VIS_G + 270, VIS_D - 270);
+      const y = clamp(hy, bossL || MJ ? 860 : 740, 1080);
       be.style.left = x + 'px';
       be.style.top = y + 'px';
       be.style.setProperty('--queue', clamp(50 + (hx - x) / 5, 15, 85) + '%');
@@ -1684,8 +1687,8 @@
     // Pancarte à côté de la mascotte
     const pa = $('pancarte');
     if (t < pancarteFin) {
-      pa.style.left = clamp(mx + 250, 220, W - 200) + 'px';
-      pa.style.top = clamp(my - 40, 700, 1050) + 'px';
+      pa.style.left = clamp(mx + 250, VIS_G + 150, VIS_D - 150) + 'px';
+      pa.style.top = clamp(my - 40, 760, 1000) + 'px';
     } else if (!pa.classList.contains('cache')) pa.classList.add('cache');
 
     if (bossL) {

@@ -419,3 +419,78 @@ body.fond-noir { background: #000; }
 @keyframes annonce { from { transform: scale(.6); } }
 #boss .boss-consigne, #boss .boss-enjeu { font-size: 22px; }
 #boss .boss-enjeu { text-align: right; }
+
+/* =====================================================================
+   Zone visible mesurée sur un vrai live TikTok (téléphone 19,5:9) :
+   - en haut, le profil + « Classement quotidien » vont jusqu'à 280 px ;
+   - en bas, le chat commence vers 1 277 px (et monte avec les messages) ;
+   - sur les côtés, l'image est rognée d'environ 98 px.
+   Tout ce qui compte tient donc entre x 110 → 970 et y 296 → 1 235.
+   ===================================================================== */
+#refuge { top: 296px; left: 110px; width: 860px; height: 180px; gap: 14px; padding: 12px 16px 12px 12px; }
+.medaillon { width: 150px; height: 150px; }
+.medaillon img { width: 124px; height: 124px; }
+.refuge-titre { font-size: 48px; }
+.refuge-nom { font-size: 32px; }
+.cagnotte { height: 38px; margin-top: 6px; }
+.cagnotte span { font-size: 23px; line-height: 34px; }
+.refuge-sous { font-size: 19px; }
+.refuge-alt b { font-size: 40px; }
+.refuge-alt span { font-size: 18px; }
+
+#duel { top: 486px; left: 110px; width: 860px; height: 58px; gap: 8px; }
+.duel-cote img { width: 56px; height: 56px; }
+.duel-cote span { font-size: 15px; }
+.duel-cote b { font-size: 29px; min-width: 56px; }
+
+#boss, #minijeu { top: 552px; left: 110px; width: 860px; }
+
+#cordee { top: 722px; left: 110px; width: 300px; padding: 10px 10px 10px; }
+#saboteurs { top: 722px; right: 110px; width: 300px; padding: 10px 10px 10px; }
+.bloc-titre { font-size: 26px; }
+.bloc-titre .badge { width: 48px; height: 48px; }
+.ligne-cl { gap: 8px; padding: 0 6px; }
+.ligne-cl .rang { width: 24px; font-size: 24px; }
+.ligne-cl .avatar { width: 64px; height: 64px; }
+.ligne-cl .pseudo { font-size: 23px; }
+.ligne-cl .pts { font-size: 20px; }
+.ligne-cl.premier .avatar { width: 90px; height: 90px; }
+.ligne-cl.premier .pseudo { font-size: 26px; }
+.ligne-cl.premier .pts { font-size: 22px; }
+.vide { font-size: 20px; }
+/* Les cadeaux saboteurs ne s'affichent que tant que la Team Chute est vide (le bandeau les rappelle ensuite) */
+#saboteurs.occupe .sab-cadeaux { display: none; }
+.sab-cadeau img { width: 44px; height: 44px; }
+
+#energie { top: 1126px; left: 420px; width: 240px; }
+.energie-cadre { height: 58px; }
+.energie-cadre span { font-size: 22px; line-height: 52px; }
+#protection { position: absolute; left: 100%; margin-left: 8px; }
+#bandeau { top: 1192px; left: 110px; width: 860px; }
+#bandeau-texte { font-size: 24px; padding: 6px 20px; max-width: 860px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#combo { top: 1112px; left: 110px; max-width: 300px; font-size: 22px; }
+
+.alerte { width: 820px; padding: 18px 22px; }
+.alerte .avatar { width: 120px; height: 120px; }
+.alerte .a-pseudo { font-size: 40px; }
+.alerte .a-quoi { font-size: 30px; }
+#alertes.combat { top: 730px; }
+#alertes.combat .alerte { width: 520px; }
+#banniere { width: 860px; top: 740px; }
+#bulle { max-width: 540px; }
+#fin { padding-top: 300px; }
+.fin-logo { width: 300px; }
+.fin-merci { max-width: 860px; }
+.fin-logo { width: 250px; }
+.fin-titre { font-size: 56px !important; }
+.fin-alt { font-size: 100px; margin-top: 6px; }
+.fin-stats { margin-top: 16px; }
+.fin-stat { padding: 12px 18px; }
+.fin-stat b { font-size: 44px; }
+.fin-duel { margin-top: 16px; }
+.podium { margin-top: 22px; }
+.podium .avatar { width: 116px; height: 116px; }
+.podium .marche.p1 .avatar { width: 150px; height: 150px; }
+.podium .p1 .bloc { height: 100px; } .podium .p2 .bloc { height: 72px; } .podium .p3 .bloc { height: 52px; }
+.podium .bloc { font-size: 44px; padding-top: 4px; }
+.fin-merci { font-size: 30px; margin-top: 18px; }

@@ -142,7 +142,12 @@ Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17
 
 ### L'écran
 
-- La mise en page respecte les zones que TikTok recouvre pendant un live : rien d'important dans le haut (~240 px : ton profil, le nombre de spectateurs) ni dans le bas (~35 % : le chat et les boutons).
+- La mise en page a été calée sur la capture d'un vrai live, sur un téléphone allongé (19,5:9). En pixels de l'overlay (1080 × 1920) :
+  - en haut, le profil, les spectateurs et « Classement quotidien » vont jusqu'à **280 px** ;
+  - en bas, le chat commence vers **1 277 px** (et monte quand il y a plus de messages), puis la barre de saisie et les boutons ;
+  - sur les côtés, TikTok étire l'image pour remplir la hauteur et en **coupe environ 98 px de chaque côté**.
+
+  Tout ce qui compte tient donc dans la zone **x 110 → 970, y 296 → 1 235**. Sous 1 240 px, il n'y a que la tour : le chat peut passer dessus sans rien cacher.
 - **Le duel des équipes** sous la carte du refuge : la barre penche du côté de l'équipe qui a envoyé le plus de pièces (🪢 La Cordée contre 😈 Team Chute).
 - **Deux classements, top 3 avec les photos de profil** (le n°1 en plus grand) : La Cordée à gauche (ceux qui aident) et la Team Chute à droite (ceux qui sabotent). Le panneau de gauche alterne toutes les 12 secondes avec les **Top tapeurs**.
 - **Écran allégé et agrandi** pour être lisible sur téléphone : l'altitude et le record sont dans la carte du refuge, le panneau du boss et des mini-jeux s'affiche en pleine largeur sous le duel, les annonces (abonnés, partages, `!prout`…) passent quelques secondes dans le bandeau du bas.
