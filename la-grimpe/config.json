@@ -75,14 +75,14 @@
     "bossAleatoires": true,
     "minutesEntreBossAleatoires": 7,
     "liste": [
-      { "nom": "Réaction excessive", "pieces": 5, "image": "saboteurs/1.png", "alias": ["reaction excessive", "over reaction", "overreaction"],
+      { "nom": "Cœur avec les doigts", "pieces": 5, "image": "saboteurs/1.png", "alias": ["coeur avec les doigts", "finger heart"],
         "boss": "pigeon", "pv": 60, "secondes": 15, "chute": 15 },
-      { "nom": "Poing contre poing", "pieces": 90, "image": "saboteurs/2.png", "alias": ["poing contre poing", "fist bump", "fistbump"],
-        "boss": "araignee", "pv": 540, "secondes": 20, "chute": 40 },
-      { "nom": "Cœur dans les mains", "pieces": 100, "image": "saboteurs/3.png", "alias": ["coeur dans les mains", "heart in hands", "hand heart", "hands heart"],
-        "boss": "orage", "pv": 600, "secondes": 20, "chute": 50 },
-      { "nom": "Pistolet à argent", "pieces": 500, "image": "saboteurs/4.png", "alias": ["pistolet a argent", "money gun"],
-        "boss": "alien", "pv": 3000, "secondes": 25, "chute": 100 },
+      { "nom": "Cœur dans les mains", "pieces": 100, "image": "saboteurs/2.png", "alias": ["coeur dans les mains", "heart in hands", "hand heart", "hands heart"],
+        "boss": "araignee", "pv": 600, "secondes": 20, "chute": 50 },
+      { "nom": "Pistolet à argent", "pieces": 500, "image": "saboteurs/3.png", "alias": ["pistolet a argent", "money gun"],
+        "boss": "orage", "pv": 3000, "secondes": 25, "chute": 100 },
+      { "nom": "Galaxie", "pieces": 1000, "image": "saboteurs/4.png", "alias": ["galaxie", "galaxy"],
+        "boss": "alien", "pv": 6000, "secondes": 25, "chute": 150 },
       { "nom": "Ours dansants", "pieces": 3000, "image": "saboteurs/5.png", "alias": ["ours dansants", "dancing bears", "dancing bear"],
         "boss": "ours", "pv": 18000, "secondes": 30, "chute": 200 }
     ]

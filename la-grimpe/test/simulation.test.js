@@ -240,7 +240,7 @@ const tests = {
 ,
   'un cadeau saboteur lâche un boss, sans entrer dans la cordée ni la cagnotte'() {
     const { jeu, evts } = creer();
-    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
     assert.strictEqual(jeu.boss.type, 'pigeon');
     assert.strictEqual(jeu.boss.saboteur.pseudo, 'tom');
     assert.strictEqual(jeu.etat.cagnotte, 0);
@@ -249,16 +249,16 @@ const tests = {
     assert.strictEqual(jeu.saboteursClassement()[0].pseudo, 'tom');
     assert.ok(types(evts).includes('sabotage') && types(evts).includes('boss'));
   },
-  'le nom anglais est reconnu, et un Tofu à 5 pièces n\'est pas un saboteur'() {
+  'le nom anglais est reconnu, et un Tofu au même prix n\'est pas un saboteur'() {
     const { jeu } = creer();
-    jeu.onCadeau(cadeau(1)); // Tofu, même prix que Réaction excessive
+    jeu.onCadeau(cadeau(1)); // Tofu, même prix que Cœur avec les doigts
     assert.strictEqual(jeu.boss, null);
-    jeu.onCadeau({ user: u('tom'), nom: 'Money Gun', pieces: 500, giftType: 2, repeatCount: 1, repeatEnd: true });
-    assert.strictEqual(jeu.boss.type, 'alien');
+    jeu.onCadeau({ user: u('tom'), nom: 'Finger Heart', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.boss.type, 'pigeon');
   },
   'les taps battent le pigeon'() {
     const { jeu, evts } = creer();
-    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
     for (let i = 0; i < 6; i++) jeu.onLike({ user: u('lea'), nombre: 10 });
     const fin = evts.find(e => e.type === 'bossFin');
     assert.ok(fin.d.gagne);
@@ -268,10 +268,10 @@ const tests = {
   },
   'un cadeau d\'aide frappe le boss (1 pièce = 6 coups)'() {
     const { jeu, evts } = creer();
-    jeu.onCadeau({ user: u('tom'), nom: 'Poing contre poing', pieces: 90, giftType: 2, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur dans les mains', pieces: 100, giftType: 2, repeatCount: 1, repeatEnd: true });
     assert.strictEqual(jeu.boss.type, 'araignee');
     jeu.onCadeau(Object.assign(cadeau(4), { user: u('lea') })); // Donut : 180 coups
-    assert.strictEqual(jeu.boss.pv, 540 - 180);
+    assert.strictEqual(jeu.boss.pv, 600 - 180);
     jeu.onCadeau(Object.assign(cadeau(8), { user: u('karim') })); // Corgi : K.O.
     const fin = evts.find(e => e.type === 'bossFin');
     assert.ok(fin.d.gagne);
@@ -291,18 +291,18 @@ const tests = {
   },
   'un saboteur renforce le boss en cours'() {
     const { jeu, evts } = creer();
-    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
     const fin = jeu.boss.fin;
-    jeu.onCadeau({ user: u('zoe'), nom: 'Poing contre poing', pieces: 90, giftType: 2, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau({ user: u('zoe'), nom: 'Cœur dans les mains', pieces: 100, giftType: 2, repeatCount: 1, repeatEnd: true });
     assert.strictEqual(jeu.boss.type, 'pigeon');
-    assert.strictEqual(jeu.boss.pvMax, 60 + 540);
+    assert.strictEqual(jeu.boss.pvMax, 60 + 600);
     assert.ok(jeu.boss.fin > fin);
     assert.ok(types(evts).includes('bossRenfort'));
   },
   'un boss attend la fin du mini-jeu, et aucun mini-jeu ne démarre pendant un combat'() {
     const { jeu, avancer } = creer();
     jeu.lancerMiniJeu('mot');
-    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
     assert.strictEqual(jeu.boss, null);
     assert.strictEqual(jeu.fileBoss.length, 1);
     avancer(50);

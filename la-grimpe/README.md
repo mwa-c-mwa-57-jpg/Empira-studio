@@ -116,10 +116,10 @@ Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17
 
 | Cadeau saboteur | Pièces | Boss | Vie | Temps pour le battre | S'il gagne |
 |---|---|---|---|---|---|
-| Réaction excessive | 5 | 🐦 Pigeon | 60 | 15 s | −15 m |
-| Poing contre poing | 90 | 🕷️ Araignée (bloque la grimpe) | 540 | 20 s | −40 m |
-| Cœur dans les mains | 100 | ⛈️ Nuage d'orage | 600 | 20 s | −50 m |
-| Pistolet à argent | 500 | 👽 Alien | 3 000 | 25 s | −100 m |
+| Cœur avec les doigts | 5 | 🐦 Pigeon | 60 | 15 s | −15 m |
+| Cœur dans les mains | 100 | 🕷️ Araignée (bloque la grimpe) | 600 | 20 s | −50 m |
+| Pistolet à argent | 500 | ⛈️ Nuage d'orage | 3 000 | 25 s | −100 m |
+| Galaxie | 1 000 | 👽 Alien | 6 000 | 25 s | −150 m |
 | Ours dansants | 3 000 | 🐻 Ours géant | 18 000 | 30 s | −200 m |
 
 - **Pour le battre** : chaque tap = 1 coup, chaque pièce d'un cadeau d'aide = 6 coups (un Donut = 180 coups).
@@ -129,7 +129,7 @@ Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17
 - L'autopilote lâche aussi un **boss sauvage** toutes les 7 minutes environ quand c'est calme (pigeon, chauve-souris, orage ou alien selon l'altitude), avec une vie adaptée au nombre de taps.
 - Dans la régie : bouton **👾 Boss au hasard**, et en mode démo **😈 Saboter**.
 
-⚠️ La reconnaissance d'un cadeau saboteur se fait **par son nom** : un « Tofu » à 5 pièces ne doit pas lâcher un pigeon. TikTok envoie parfois les noms en anglais : j'ai ajouté les noms anglais probables (`alias` dans `config.json` → `saboteurs`). Au premier vrai live, regarde la fenêtre noire : chaque cadeau y est écrit avec son nom exact (`🎁 @pseudo : « nom »`). Si un saboteur n'est pas reconnu, ajoute ce nom dans ses `alias`.
+⚠️ La reconnaissance d'un cadeau saboteur se fait **par son nom** : un « Tofu » à 5 pièces ne doit pas lâcher un pigeon comme le Cœur avec les doigts. TikTok envoie parfois les noms en anglais : j'ai ajouté les noms anglais probables (`alias` dans `config.json` → `saboteurs`). Au premier vrai live, regarde la fenêtre noire : chaque cadeau y est écrit avec son nom exact (`🎁 @pseudo : « nom »`). Si un saboteur n'est pas reconnu, ajoute ce nom dans ses `alias`.
 
 ### Mini-jeux (un toutes les 9 minutes avec l'autopilote)
 
