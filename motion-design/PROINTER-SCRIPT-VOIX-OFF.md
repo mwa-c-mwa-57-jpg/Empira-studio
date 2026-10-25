@@ -5,14 +5,16 @@
 **ElevenLabs** : voix française chaleureuse (par exemple Benjamin ou une voix féminine posée), modèle Multilingual v2, Stability ≈ 45 %, Style ≈ 30 %. La voix doit durer **38 secondes maximum**.
 
 ## Texte à coller dans ElevenLabs (en une fois)
+Mis à jour avec les infos de PRO-INTER : profils qualifiés en bâtiment second œuvre et industrie, 6 secteurs, plus de 20 ans d'expérience.
 ```
 Voici Pro. <break time="0.4s" /> Chez PRO-INTER, c'est lui qui vise juste. <break time="0.8s" />
 Vous cherchez une mission qui vous correspond ? <break time="0.8s" />
 Nous écoutons vos compétences… <break time="0.2s" /> et vos envies. <break time="0.8s" />
 Puis notre viseur trouve la mission adaptée : <break time="0.2s" /> intérim, CDD ou CDI. <break time="0.8s" />
-Bâtiment, industrie, électricité, chauffage : <break time="0.2s" /> vous êtes sur le terrain. <break time="0.8s" />
+Bâtiment second œuvre et industrie : <break time="0.2s" /> des profils qualifiés. <break time="0.6s" />
+Électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance : <break time="0.2s" /> vous êtes sur le terrain. <break time="0.8s" />
 Et nous restons à vos côtés, du premier au dernier jour. <break time="0.8s" />
-Trois agences au Luxembourg, et plus de quinze ans d'expertise. <break time="0.8s" />
+Trois agences au Luxembourg, et plus de vingt ans d'expérience. <break time="0.8s" />
 PRO-INTER, votre agence d'emploi. <break time="0.4s" /> Postulez sur prointer point lu.
 ```
 

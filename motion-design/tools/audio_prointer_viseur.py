@@ -4,7 +4,7 @@ Calée sur prointer-viseur.html (mêmes temps, en pulsations). Sorties : out/pro
 import numpy as np, os, wave
 from scipy.signal import butter, sosfilt, fftconvolve
 
-SR = 48000; DUR = 27.5; N = int(SR * DUR)
+SR = 48000; DUR = 31.25; N = int(SR * DUR)
 B = 60 / 128; BAR = 4 * B
 def bt(n): return n * B
 OUT = os.path.join(os.path.dirname(__file__), "..", "out")
@@ -67,48 +67,48 @@ CH = {"Am": ["A3", "C4", "E4", "A4"], "F": ["F3", "A3", "C4", "F4"], "C": ["G3",
 ROOT = {"Am": "A1", "F": "F1", "C": "C2", "G": "G1"}
 PROG = ["Am", "F", "C", "G"]
 def chord_of(beat):
-    if beat >= 44: return PROG[int((beat - 44) // 4) % 4]
-    if 36 <= beat < 44: return "Am" if beat < 40 else ("F" if beat < 42 else "G")
+    if beat >= 52: return PROG[int((beat - 52) // 4) % 4]
+    if 44 <= beat < 52: return "Am" if beat < 48 else ("F" if beat < 50 else "G")
     return PROG[int(beat // 4) % 4]
 
 drums = np.zeros((N, 2)); bass = np.zeros((N, 2)); chords = np.zeros((N, 2)); arp = np.zeros((N, 2)); pad = np.zeros((N, 2)); fx = np.zeros((N, 2))
-GROOVE = lambda b: (8 <= b < 36) or (44 <= b < 56)
+GROOVE = lambda b: (8 <= b < 44) or (52 <= b < 64)
 
 # batterie
-kicks = [b for b in range(0, 37)] + list(range(44, 57))
+kicks = [b for b in range(0, 45)] + list(range(52, 65))
 for b in kicks: place(drums, kick(0.88 if b < 8 else 0.95), bt(b))
-for b in list(range(9, 36, 2)) + list(range(45, 56, 2)): place(drums, clap(0.42), bt(b), pan=0.03)
-for i in range(int(56 * 4)):
+for b in list(range(9, 44, 2)) + list(range(53, 64, 2)): place(drums, clap(0.42), bt(b), pan=0.03)
+for i in range(int(64 * 4)):
     b = i / 4
-    if b < 36 or b >= 44: place(drums, hat((0.10 if i % 2 else 0.05) * (0.7 if b < 8 else 1)), bt(b), pan=0.25)
+    if b < 44 or b >= 52: place(drums, hat((0.10 if i % 2 else 0.05) * (0.7 if b < 8 else 1)), bt(b), pan=0.25)
     if GROOVE(b) and i % 4 == 2: place(drums, hat(0.09, 0.22), bt(b), pan=-0.2)
 for k in range(8):                                                           # roulement avant le drop
     place(drums, snare(0.06 + 0.03 * k), bt(6 + k * 0.25), pan=-0.1)
-roll = [41 + k * 0.5 for k in range(4)] + [43 + k * 0.25 for k in range(2)] + [43.5 + k * 0.125 for k in range(2)]
+roll = [49 + k * 0.5 for k in range(4)] + [51 + k * 0.25 for k in range(2)] + [51.5 + k * 0.125 for k in range(2)]
 for k, b in enumerate(roll): place(drums, snare(0.12 + 0.045 * k), bt(b), pan=0.1)
-place(drums, crash(0.5), bt(8)); place(drums, crash(0.6), bt(44)); place(drums, crash(0.45), bt(56))
+place(drums, crash(0.5), bt(8)); place(drums, crash(0.6), bt(52)); place(drums, crash(0.45), bt(64))
 
 # basse roulante (doubles croches) et accords « 3-3-2 »
-for i in range(int(56 * 4)):
+for i in range(int(64 * 4)):
     b = i / 4
     if not GROOVE(b): continue
     f = note(ROOT[chord_of(b)]) * (2 if i % 4 == 2 else 1); place(bass, bassnote(f, B / 4 * 0.95, 0.42), bt(b))
-for bar in range(14):
+for bar in range(16):
     b0 = bar * 4
-    if 36 <= b0 < 44: continue
+    if 44 <= b0 < 52: continue
     cut = 1400 + 2200 * (b0 / 8) if b0 < 8 else 3600
     for pos in (0, 3, 6, 8, 11, 14):
         b = b0 + pos / 4; place(chords, supersaw([note(n) for n in CH[chord_of(b)]], 0.17, cut, 0.55 if b0 >= 8 else 0.5), bt(b))
 # arpège pincé à partir de la 4e mesure
-for i in range(int(56 * 4)):
+for i in range(int(64 * 4)):
     b = i / 4
-    if b < 16 or (41 <= b < 44): continue
+    if b < 16 or (49 <= b < 52): continue
     ns = CH[chord_of(b)]; f = note(ns[[0, 2, 1, 3, 2, 1, 3, 2][i % 8]]) * 2
     g = 0.16 if GROOVE(b) else 0.09
     place(arp, pluck(f, g), bt(b), pan=0.35 if i % 2 else -0.35)
-# nappe : pont (36 → 44) puis discrète sur la fin
-for b0, b1, nm in ((36, 40, "Am"), (40, 42, "F"), (42, 44, "G")):
-    s = supersaw([note(n) / 2 for n in CH[nm]] + [note(n) for n in CH[nm]], bt(b1 - b0) + .3, 1300 if b0 < 42 else 2000, 1.0)
+# nappe : pont (44 → 52) puis discrète sur la fin
+for b0, b1, nm in ((44, 48, "Am"), (48, 50, "F"), (50, 52, "G")):
+    s = supersaw([note(n) / 2 for n in CH[nm]] + [note(n) for n in CH[nm]], bt(b1 - b0) + .3, 1300 if b0 < 50 else 2000, 1.0)
     e = np.minimum(1, tt(bt(b1 - b0) + .3) / 0.15)[:, None]; e[-int(.3 * SR):] *= np.linspace(1, 0, int(.3 * SR))[:, None]; place(pad, s * e, bt(b0))
 
 # pompage par la grosse caisse
@@ -126,17 +126,17 @@ def riser(d, g, f0=200, f1=2400):
     tone = np.sin(2 * np.pi * np.cumsum(110 * 2 ** (u * 2)) / SR) * 0.25
     return (out + tone) * u ** 2.2 * g
 place(fx, riser(bt(2), 0.16, 400, 5000), bt(6))
-place(fx, riser(bt(3), 0.5, 200, 7000), bt(41))
-t = tt(1.6); place(fx, np.sin(2 * np.pi * np.cumsum(30 + 70 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.4) * 0.75, bt(44))      # boum au centre
-t = tt(1.2); place(fx, np.sin(2 * np.pi * np.cumsum(35 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.45, bt(36))
-t = tt(1.0); place(fx, np.sin(2 * np.pi * np.cumsum(38 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.4, bt(56))
-place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.4, 3000, 0.7) * np.exp(-tt(1.4) * 2.2)[:, None], bt(44))
-place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.25, 2600, 0.65) * np.exp(-tt(1.25) * 2.6)[:, None], bt(56))
-t = tt(bt(1)); place(fx, lp(rng.standard_normal(len(t)), 3000) * (1 - t / t[-1]) ** 2 * 0.12, bt(36))                      # descente après « +15 »
+place(fx, riser(bt(3), 0.5, 200, 7000), bt(49))
+t = tt(1.6); place(fx, np.sin(2 * np.pi * np.cumsum(30 + 70 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.4) * 0.75, bt(52))      # boum au centre
+t = tt(1.2); place(fx, np.sin(2 * np.pi * np.cumsum(35 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.45, bt(44))
+t = tt(1.0); place(fx, np.sin(2 * np.pi * np.cumsum(38 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.4, bt(64))
+place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.4, 3000, 0.7) * np.exp(-tt(1.4) * 2.2)[:, None], bt(52))
+place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.25, 2600, 0.65) * np.exp(-tt(1.25) * 2.6)[:, None], bt(64))
+t = tt(bt(1)); place(fx, lp(rng.standard_normal(len(t)), 3000) * (1 - t / t[-1]) ** 2 * 0.12, bt(44))                      # descente après « +15 »
 
 music = reverb(drums, 0.6, 0.06) + bass + reverb(chords, 1.3, 0.22) + reverb(arp, 1.1, 0.3) + reverb(pad, 2.4, 0.4) + reverb(fx, 1.8, 0.25)
 # silence d'un huitième juste avant l'impact
-g = np.ones(N); a, b = int(bt(43.75) * SR), int(bt(44) * SR) - 1; g[a:b] = np.linspace(1, 0.08, b - a) ** 0.5; music *= g[:, None]
+g = np.ones(N); a, b = int(bt(51.75) * SR), int(bt(52) * SR) - 1; g[a:b] = np.linspace(1, 0.08, b - a) ** 0.5; music *= g[:, None]
 
 # ---------------------------- BRUITAGES ----------------------------
 sb = np.zeros((N, 2))
@@ -166,40 +166,40 @@ def glass(base, g=0.05):
 
 # tirs du viseur : (pulsation, durée du déplacement, gros impact)
 LOCKS = [(2, .5, 0), (4.5, .42, 0), (6.5, .42, 0), (8, .45, 1), (11, .3, 0), (12.5, .42, 0), (14, .22, 0), (16, .22, 0),
-         (18, .42, 0), (19.5, .25, 0), (21, .25, 0), (23, .25, 0), (25, .42, 0), (27, .3, 0), (29.5, .3, 0),
-         (32, .42, 0), (32.75, .3, 0), (33.5, .22, 0), (35, .42, 0), (36, 0, 1), (44, bt(3), 1)]
+         (18, .42, 0), (20.5, .3, 0), (23, .35, 0), (24.6, .25, 0), (26.2, .25, 0), (27.8, .25, 0), (29.4, .25, 0), (31, .25, 0),
+         (33, .42, 0), (35, .3, 0), (37.5, .3, 0), (40, .42, 0), (40.75, .3, 0), (41.5, .22, 0), (43, .42, 0), (44, 0, 1), (52, bt(3), 1)]
 for k, (b, d, big) in enumerate(LOCKS):
     tl = bt(b); pan = -0.35 if k % 2 else 0.35
-    if b == 44: pass
+    if b == 52: pass
     elif d >= .35: place(sb, whoosh(d + .12, 350, 5200, 0.075, -pan, pan), tl - d * .9)
     elif d > 0: place(sb, whoosh(d + .08, 1500, 9000, 0.035, -pan * .5, pan * .5), tl - d * .9)
     place(sb, lock_snd(bool(big)), tl, 0.32 if big else 0.22, pan * .3)
 # mots qui claquent
-for b in (1.5, 2.5, 4.2, 6.2, 9, 9.5, 10, 32.2, 38.6, 39, 39.5, 40.1):
+for b in (1.5, 2.5, 4.2, 6.2, 9, 9.5, 10, 18.2, 18.4, 20.6, 40.2, 46.6, 47, 47.5, 48.1):
     place(sb, thud(0.16), bt(b))
-for k in range(3): place(sb, thud(0.12), bt(36) + k * .08)
+for k in range(3): place(sb, thud(0.12), bt(44) + k * .08)
 # réactions : pastilles, tuiles, coches, épingles
 for k, b in enumerate((12.5, 14, 16)): place(sb, blip(900 + 220 * k, 0.07), bt(b) + .02, pan=-.2)
-for k, b in enumerate((18, 19.5, 21, 23)): place(sb, blip(760 + 160 * k, 0.07), bt(b) + .02, pan=.2)
-for k, b in enumerate((25, 27, 29.5)): place(sb, glass(note("E6") * 2 ** (k * 2 / 12), 0.03), bt(b) + .02)
-for k, b in enumerate((32, 32.75, 33.5)): place(sb, blip(1100 + 200 * k, 0.07), bt(b) + .03, pan=-.3 + .3 * k)
+for k, b in enumerate((23, 24.6, 26.2, 27.8, 29.4, 31)): place(sb, blip(760 + 120 * k, 0.07), bt(b) + .02, pan=.2 if k % 2 else -.2)
+for k, b in enumerate((33, 35, 37.5)): place(sb, glass(note("E6") * 2 ** (k * 2 / 12), 0.03), bt(b) + .02)
+for k, b in enumerate((40, 40.75, 41.5)): place(sb, blip(1100 + 200 * k, 0.07), bt(b) + .03, pan=-.3 + .3 * k)
 place(sb, whoosh(.3, 2500, 9000, .04, -.4, .4), bt(4.6))                                                           # soulignement
 place(sb, glass(note("A5"), 0.035), bt(11) + .02)                                                                  # le point de « JUSTE. »
-t = tt(.6); place(sb, bp(rng.standard_normal(len(t)), 2500, 7000) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t)) * np.sin(np.pi * t / .6) * .05, bt(31) - .05)   # tracé de la carte
-for k in range(1, 16):                                                                                              # compteur +15
-    u = 1 - (1 - (k - .5) / 15) ** (1 / 3); place(sb, tick(2600 + 60 * k, 0.05), bt(35) + u * (bt(36) - bt(35)))
-place(sb, whoosh(bt(2.7), 180, 2600, 0.11, .3, -.3), bt(37))                                                     # grand dézoom
+t = tt(.6); place(sb, bp(rng.standard_normal(len(t)), 2500, 7000) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t)) * np.sin(np.pi * t / .6) * .05, bt(39) - .05)   # tracé de la carte
+for k in range(1, 21):                                                                                              # compteur +20
+    u = 1 - (1 - (k - .5) / 20) ** (1 / 3); place(sb, tick(2600 + 60 * k, 0.05), bt(43) + u * (bt(44) - bt(43)))
+place(sb, whoosh(bt(2.7), 180, 2600, 0.11, .3, -.3), bt(45))                                                     # grand dézoom
 t = tt(bt(3)); u = t / t[-1]                                                                                        # plongée en spirale
 sp = bp(rng.standard_normal(len(t)), 600, 6000) * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(2 + 14 * u ** 2.4) / SR)) * u ** 1.8 * 0.1
-place(sb, np.stack([sp * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR)), sp * (0.5 - 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR))], 1) * 1.4, bt(41))
-place(sb, glass(note("A5"), 0.05), bt(44) + .03)
-TL = bt(44)                                                                                                         # le logo se monte
+place(sb, np.stack([sp * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR)), sp * (0.5 - 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR))], 1) * 1.4, bt(49))
+place(sb, glass(note("A5"), 0.05), bt(52) + .03)
+TL = bt(52)                                                                                                         # le logo se monte
 place(sb, whoosh(.35, 800, 6000, .04, -.6, 0), TL); place(sb, whoosh(.35, 800, 6000, .035, -.6, 0), TL + .06)
 place(sb, tick(1800, .06), TL + .14)
 for i in range(5): place(sb, blip(1300 + 140 * i, .035), TL + .2 + i * .05, pan=.3)
 for i in range(3): place(sb, thud(.1), TL + .25 + i * .12)
-place(sb, blip(700, .08), bt(48)); place(sb, tick(2200, .07), bt(48))
-for k in range(4): place(sb, glass(note("E6"), .012), bt(49) + k * 4 * B + 0.9)
+place(sb, blip(700, .08), bt(56)); place(sb, tick(2200, .07), bt(56))
+for k in range(4): place(sb, glass(note("E6"), .012), bt(57) + k * 4 * B + 0.9)
 sfx = reverb(sb, 1.0, 0.14)
 
 fade = np.ones(N); fN = int(SR * 0.6); fade[-fN:] = np.linspace(1, 0, fN) ** 1.5
