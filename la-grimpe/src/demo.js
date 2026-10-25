@@ -13,6 +13,12 @@ const MESSAGES = [
   'premier !', 'coucou', 'le pigeon 😭', 'go go go', '!badum', 'il est trop mignon'
 ];
 
+// Photos de profil de démo (illustrations générées avec Canva) pour voir le rendu des classements
+const AVATARS = new Set(['sarah.lmn', 'karim_92', 'ines.music', 'yanis_off', 'lea.dance', 'tom_gamer']);
+function avatarDemo(pseudo) {
+  return AVATARS.has(pseudo) ? `demo/${pseudo}.jpg` : '';
+}
+
 class Bots {
   constructor(jeu, objectifs, random = Math.random) {
     this.jeu = jeu;
@@ -29,7 +35,7 @@ class Bots {
 
   user() {
     const p = PSEUDOS[Math.floor(this.random() * PSEUDOS.length)];
-    return { id: 'demo-' + p, pseudo: p, nom: p.replace(/[._]/g, ' '), avatar: '' };
+    return { id: 'demo-' + p, pseudo: p, nom: p.replace(/[._]/g, ' '), avatar: avatarDemo(p) };
   }
 
   boucle(fn, min, max) {
@@ -98,4 +104,4 @@ class Bots {
   }
 }
 
-module.exports = { Bots };
+module.exports = { Bots, avatarDemo };

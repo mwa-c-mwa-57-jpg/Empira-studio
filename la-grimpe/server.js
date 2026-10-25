@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { Jeu, BOSS } = require('./src/jeu');
-const { Bots } = require('./src/demo');
+const { Bots, avatarDemo } = require('./src/demo');
 const { ConnexionTikTok } = require('./src/tiktok');
 
 const RACINE = __dirname;
@@ -193,7 +193,7 @@ function commande(c) {
 
 function simuler(c) {
   const user = c.pseudo
-    ? { id: 'sim-' + c.pseudo, pseudo: String(c.pseudo).slice(0, 24), nom: String(c.pseudo).slice(0, 24), avatar: '' }
+    ? { id: 'sim-' + c.pseudo, pseudo: String(c.pseudo).slice(0, 24), nom: String(c.pseudo).slice(0, 24), avatar: avatarDemo(String(c.pseudo)) }
     : bots.user();
   if (c.type === 'cadeau') bots.simulerCadeau(user, Number(c.index) || 0, Math.max(1, Math.min(50, Number(c.repeat) || 1)));
   if (c.type === 'sabotage') bots.simulerSabotage(user, Number(c.index) || 0);

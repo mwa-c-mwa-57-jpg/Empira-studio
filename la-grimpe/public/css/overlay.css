@@ -282,3 +282,140 @@ body.fond-noir { background: #000; }
 #alertes.combat .a-quoi { font-size: 21px; }
 #alertes.combat .a-montee { font-size: 18px; }
 #alertes.combat img.a-cadeau { width: 80px; height: 80px; }
+
+/* =====================================================================
+   Version allégée et agrandie (lisible sur téléphone)
+   Zones : 250 → 690 refuge + duel + panneau central ; 700 → 1140 classements
+   à gauche et à droite, la mascotte au centre ; rien d'important sous 1290 (chat TikTok).
+   ===================================================================== */
+#pastilles, #altimetre { display: none !important; }
+
+#refuge { top: 246px; left: 30px; width: 1020px; height: 206px; gap: 20px; padding: 16px 22px 16px 18px; }
+.medaillon { width: 170px; height: 170px; }
+.medaillon img { width: 140px; height: 140px; }
+.refuge-titre { font-size: 54px; }
+.refuge-nom { font-size: 38px; }
+.cagnotte { height: 42px; border-radius: 21px; margin-top: 8px; }
+.cagnotte span { font-size: 26px; line-height: 38px; }
+.refuge-sous { font-size: 22px; }
+.refuge-alt { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; padding-left: 6px; }
+.refuge-alt b { font-size: 46px; line-height: 1; color: #fff; text-shadow: 0 0 16px var(--led), 0 3px 0 rgba(0,0,0,.5); }
+.refuge-alt span { font-size: 20px; color: var(--led); font-family: 'Nunito', sans-serif; font-weight: 800; }
+
+#duel { top: 466px; left: 26px; width: 1028px; height: 68px; gap: 12px; }
+.duel-cote img { width: 66px; height: 66px; }
+.duel-cote span { font-size: 19px; }
+.duel-cote b { font-size: 34px; min-width: 70px; }
+.duel-barre { height: 28px; border-radius: 14px; }
+.duel-vs { font-size: 18px; }
+
+/* Panneau central : boss et mini-jeux, en pleine largeur */
+#boss, #minijeu { top: 546px; left: 40px; width: 1000px; padding: 12px 26px 14px; }
+.boss-emoji { font-size: 54px; }
+.boss-nom { font-size: 44px; }
+.boss-par { font-size: 22px; margin-top: 2px; }
+.boss-par .avatar { width: 40px; height: 40px; }
+.boss-pv { height: 44px; border-radius: 22px; margin-top: 8px; }
+.boss-pv span { font-size: 26px; line-height: 40px; }
+.boss-consigne { font-size: 23px; margin-top: 6px; }
+.boss-enjeu { font-size: 22px; margin-top: 4px; }
+.mj-titre { font-size: 46px; }
+.mj-consigne { font-size: 26px; }
+.mj-mot { font-size: 72px; margin: 2px 0; }
+.mj-vote b { font-size: 30px; }
+.mj-vote span { font-size: 44px; }
+.mj-barre { height: 48px; border-radius: 24px; }
+.mj-barre span { font-size: 28px; line-height: 44px; }
+
+/* Classements : top 3, le premier plus grand */
+#cordee { top: 700px; left: 14px; width: 344px; padding: 12px 12px 12px; }
+#saboteurs { top: 700px; right: 14px; width: 344px; padding: 12px 12px 10px; }
+.bloc-titre { font-size: 30px; margin-bottom: 10px; }
+.bloc-titre .badge { width: 54px; height: 54px; }
+.badge-emoji { font-size: 40px; line-height: 1; }
+#cordee.bascule { animation: bascule .5s ease-in-out; }
+@keyframes bascule { 50% { transform: rotateX(90deg); opacity: .3; } }
+.classement { position: relative; height: 0; transition: height .4s; }
+.ligne-cl { position: absolute; left: 0; right: 0; height: 86px; display: flex; align-items: center; gap: 10px; padding: 0 8px; border-radius: 20px; transition: top .7s cubic-bezier(.3,1.4,.4,1), height .4s; background: rgba(255,255,255,.04); }
+.ligne-cl .rang { width: 30px; text-align: center; font-size: 28px; font-weight: 800; flex: none; }
+.ligne-cl .avatar { width: 70px; height: 70px; font-size: 30px; border-width: 3px; }
+.ligne-cl .qui { flex: 1; min-width: 0; }
+.ligne-cl .pseudo { font-size: 25px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
+.ligne-cl .pts { font-size: 22px; font-weight: 800; font-family: 'Nunito', sans-serif; }
+.ligne-cl.premier { height: 116px; }
+.ligne-cl.premier .avatar { width: 96px; height: 96px; font-size: 42px; border-width: 4px; }
+.ligne-cl.premier .pseudo { font-size: 29px; }
+.ligne-cl.premier .pts { font-size: 25px; }
+.ligne-cl.premier .couronne { font-size: 36px; top: -30px; }
+.ligne-cl.cordee .pts { color: var(--or); }
+.ligne-cl.cordee.premier { background: linear-gradient(90deg, rgba(255,201,74,.38), rgba(255,201,74,.05)); }
+.ligne-cl.cordee.premier .avatar { border-color: var(--or); box-shadow: 0 0 18px var(--or); }
+.ligne-cl.tapeurs .pts { color: #ff9ecb; }
+.ligne-cl.tapeurs.premier { background: linear-gradient(90deg, rgba(255,110,190,.35), rgba(255,110,190,.05)); }
+.ligne-cl.tapeurs.premier .avatar { border-color: #ff6ebe; box-shadow: 0 0 18px #ff6ebe; }
+.ligne-cl.chute .pts { color: #ff9aa5; }
+.ligne-cl.chute .avatar { border-color: #ff4d5e; }
+.ligne-cl.chute.premier { background: linear-gradient(90deg, rgba(255,77,94,.4), rgba(255,77,94,.05)); }
+.ligne-cl.chute.premier .avatar { box-shadow: 0 0 18px #ff4d5e; }
+.ligne-cl.monte { animation: monte .9s; }
+.vide { font-size: 22px; padding: 8px 4px 10px; }
+.sab-cadeaux { margin-top: 10px; padding-top: 10px; }
+.sab-cadeau { font-size: 16px; }
+.sab-cadeau img { width: 50px; height: 50px; }
+
+/* Photos de profil : la lettre reste visible tant que la photo n'est pas chargée */
+.avatar img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; opacity: 0; transition: opacity .3s; }
+.avatar.photo img { opacity: 1; }
+.avatar.photo .lettre { visibility: hidden; }
+.avatar .couronne { z-index: 2; }
+
+/* Bas de l'écran */
+#energie { top: 1160px; left: 362px; width: 356px; }
+.energie-cadre { height: 66px; border-radius: 33px; }
+.energie-cadre span { font-size: 25px; line-height: 60px; }
+.protection { font-size: 24px; padding: 8px 12px; }
+#bandeau { top: 1244px; left: 20px; width: 1040px; }
+#bandeau-texte { font-size: 27px; padding: 7px 24px; }
+#combo { top: 1158px; left: 14px; font-size: 26px; max-width: 344px; }
+#fil { top: 1158px; right: 14px; width: 344px; }
+.fil-item { font-size: 20px; padding: 7px 14px; }
+
+/* Alertes, bannières, bulle : un peu plus grandes */
+.alerte { width: 760px; padding: 22px 28px; }
+.alerte .avatar { width: 132px; height: 132px; }
+.alerte .a-pseudo { font-size: 44px; }
+.alerte .a-quoi { font-size: 33px; }
+.alerte .a-montee { font-size: 28px; }
+.alerte img.a-cadeau { width: 140px; height: 140px; }
+#alertes.combat { top: 760px; }
+#alertes.combat .alerte { width: 540px; }
+#banniere { top: 760px; }
+#banniere .b-titre { font-size: 100px; }
+#banniere .b-sous { font-size: 44px; }
+#bulle { font-size: 40px; max-width: 620px; }
+#bulle.crie { font-size: 46px; }
+#pancarte { width: 300px; }
+
+/* Ajustements : panneau du boss compact sur deux lignes, classements un peu plus bas */
+#cordee, #saboteurs { top: 736px; }
+#boss { display: flex; flex-wrap: wrap; align-items: center; column-gap: 16px; text-align: left; padding: 10px 24px 12px; }
+#boss .boss-tete { flex: 0 0 auto; justify-content: flex-start; }
+#boss .boss-par { flex: 1 1 auto; justify-content: flex-end; margin: 0; }
+#boss .boss-pv { flex: 1 1 100%; margin-top: 6px; }
+#boss .boss-consigne { flex: 1 1 auto; margin-top: 6px; }
+#boss .boss-enjeu { flex: 0 1 auto; margin-top: 6px; }
+#boss .boss-timer { flex: 1 1 100%; margin-top: 6px; }
+#minijeu { padding: 10px 24px 12px; }
+.mj-titre { font-size: 40px; }
+.mj-consigne { font-size: 23px; margin-top: 2px; }
+.mj-votes { margin-top: 8px; }
+.mj-vote { padding: 4px 8px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+.mj-vote b { font-size: 26px; display: inline; }
+.mj-vote span { font-size: 38px; }
+.mj-mot { font-size: 60px; }
+#combo { top: 1112px; }
+#fil { display: none; }
+#bandeau-texte.annonce { background: linear-gradient(90deg, rgba(255,201,74,.9), rgba(255,140,60,.9)); color: #2b1600; text-shadow: none; animation: annonce .4s cubic-bezier(.3,1.6,.5,1); }
+@keyframes annonce { from { transform: scale(.6); } }
+#boss .boss-consigne, #boss .boss-enjeu { font-size: 22px; }
+#boss .boss-enjeu { text-align: right; }

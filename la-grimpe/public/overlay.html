@@ -21,6 +21,7 @@
         <div class="cagnotte"><div id="cagnotte-rempli" class="cagnotte-rempli"></div><span id="cagnotte-texte"></span></div>
         <div id="refuge-sous" class="refuge-sous"></div>
       </div>
+      <div class="refuge-alt"><b id="ra-alt">0 m</b><span id="ra-record"></span></div>
     </div>
     <div id="pastilles"></div>
 
@@ -33,13 +34,12 @@
 
     <!-- Cordée (classement) -->
     <div id="cordee" class="verre">
-      <div class="bloc-titre"><img class="badge" src="visuels/cordee.png" alt=""> LA CORDÉE</div>
-      <div id="cordee-liste"></div>
-      <div id="cordee-vide" class="vide">Le 1er cadeau devient<br>premier de cordée 👑</div>
-    </div>
-    <div id="tapeurs" class="verre">
-      <div class="bloc-titre">👆 TOP TAPEURS</div>
-      <div id="tapeurs-liste"></div>
+      <div class="bloc-titre" id="gauche-titre"><img class="badge" src="visuels/cordee.png" alt=""> LA CORDÉE</div>
+      <div id="page-cordee">
+        <div id="cordee-liste" class="classement"></div>
+        <div id="cordee-vide" class="vide">Le 1er cadeau devient<br>premier de cordée 👑</div>
+      </div>
+      <div id="page-tapeurs" class="cache"><div id="tapeurs-liste" class="classement"></div></div>
     </div>
 
     <!-- Altimètre -->
@@ -56,7 +56,7 @@
 
     <div id="saboteurs" class="verre cache">
       <div class="bloc-titre"><img class="badge" src="visuels/chute.png" alt=""> TEAM CHUTE</div>
-      <div id="sab-liste"></div>
+      <div id="sab-liste" class="classement"></div>
       <div id="sab-vide" class="vide">Envoie un cadeau 😈<br>pour faire tomber Gégé</div>
       <div id="sab-cadeaux" class="sab-cadeaux"></div>
     </div>

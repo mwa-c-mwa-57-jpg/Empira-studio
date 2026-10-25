@@ -48,17 +48,17 @@
   const prete = i => i && i.complete && i.naturalWidth > 0;
 
   function avatarHTML(u, extra = '') {
-    return `<div class="avatar" style="background-color:${couleurDe(u.pseudo || u.id)}" data-src="${esc(u.avatar || '')}"><span class="lettre">${esc(lettreDe(u))}</span>${extra}</div>`;
+    const photo = u.avatar ? `<img alt="" referrerpolicy="no-referrer" data-src="${esc(u.avatar)}">` : '';
+    return `<div class="avatar" style="background-color:${couleurDe(u.pseudo || u.id)}"><span class="lettre">${esc(lettreDe(u))}</span>${photo}${extra}</div>`;
   }
-  // Remplace la lettre par la vraie photo de profil quand elle est chargée.
+  // Charge la photo de profil ; la lettre reste affichée tant que la photo n'est pas prête (ou si elle échoue).
   function hydrater(racine) {
-    racine.querySelectorAll('.avatar[data-src]').forEach(el => {
-      const src = el.getAttribute('data-src');
-      el.removeAttribute('data-src');
-      if (!src) return;
-      const i = image(src);
-      const ok = () => { el.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`; const l = el.querySelector('.lettre'); if (l) l.remove(); };
-      if (prete(i)) ok(); else i.addEventListener('load', ok, { once: true });
+    racine.querySelectorAll('.avatar img[data-src]').forEach(img => {
+      const src = img.getAttribute('data-src');
+      img.removeAttribute('data-src');
+      img.onload = () => img.parentNode && img.parentNode.classList.add('photo');
+      img.onerror = () => img.remove();
+      img.src = src;
     });
   }
 
@@ -165,7 +165,7 @@
       document.querySelector('.cagnotte').classList.toggle('pillee', pillee);
       $('cagnotte-texte').textContent = pillee ? `😈 Pillée : ${nf(e.cagnotte)} 🪙` : `${nf(e.cagnotte)} / ${nf(o.pieces)} 🪙`;
       $('refuge-sous').textContent = pillee
-        ? `Les saboteurs ont pillé la cagnotte : ${nf(o.pieces - e.cagnotte)} pièces pour ouvrir`
+        ? `😈 Pillée : ${nf(o.pieces - e.cagnotte)} pièces pour ouvrir`
         : `Envoyez un ${o.nom}, ou ${nf(o.pieces)} pièces en cadeaux`;
     }
     document.querySelectorAll('.pastille').forEach((p, i) => {
@@ -178,54 +178,76 @@
     rendreBoss(e.boss || null);
     rendreTapeurs(e.tapeurs || []);
     $('alt-record-texte').innerHTML = `🚩 Record<br><b>${nf(e.record)} m</b>`;
+    $('ra-record').textContent = `🚩 record ${nf(e.record)} m`;
     if (!ancien || ancien.objIndex !== idx || ancien.record !== e.record) rendreReperes();
     if (!ancien || JSON.stringify(ancien.miniJeu) !== JSON.stringify(e.miniJeu)) rendreMiniJeu(e.miniJeu);
     if (e.ecranFin && $('fin').classList.contains('cache')) afficherFin(e.ecranFin);
     if (!e.ecranFin && ancien && ancien.ecranFin) $('fin').classList.add('cache');
   }
 
-  const noeudsCordee = new Map();
-  const HAUTEUR_LIGNE = 74;
+  // Classement animé (top 3) : le premier a une ligne et une photo plus grandes.
+  const HAUTEURS = [116, 86, 86];
+  function creerClassement(cont, options) {
+    const noeuds = new Map();
+    return function rendre(liste) {
+      liste = liste.slice(0, 3);
+      let y = 0;
+      const tops = liste.map((u, i) => { const v = y; y += HAUTEURS[i] + 6; return v; });
+      cont.style.height = Math.max(0, y - 6) + 'px';
+      const vus = new Set();
+      liste.forEach((u, i) => {
+        let n = noeuds.get(u.id);
+        if (!n) {
+          n = document.createElement('div');
+          n.className = 'ligne-cl ' + options.classe;
+          n.style.top = y + 'px';
+          n._rang = 99;
+          cont.appendChild(n);
+          noeuds.set(u.id, n);
+        }
+        const val = options.valeur(u);
+        const cle = [i, u.pseudo, u.avatar, val].join('|');
+        if (n._cle !== cle) {
+          n.innerHTML = `<div class="rang">${options.rang(i)}</div>${avatarHTML(u, i === 0 && options.couronne ? `<span class="couronne">${options.couronne}</span>` : '')}<div class="qui"><div class="pseudo">@${esc(u.pseudo)}</div><div class="pts">${val}</div></div>`;
+          hydrater(n);
+          n._cle = cle;
+        }
+        if (i < n._rang && n._rang !== 99) { n.classList.remove('monte'); void n.offsetWidth; n.classList.add('monte'); }
+        n._rang = i;
+        n.classList.toggle('premier', i === 0);
+        requestAnimationFrame(() => { n.style.top = tops[i] + 'px'; });
+        vus.add(u.id);
+      });
+      for (const [id, n] of noeuds) if (!vus.has(id)) { n.remove(); noeuds.delete(id); }
+    };
+  }
+  const rendreCordeeListe = creerClassement($('cordee-liste'), { classe: 'cordee', couronne: '👑', rang: i => i + 1, valeur: u => `🪙 ${nf(u.pieces)}` });
+  const rendreTapeursListe = creerClassement($('tapeurs-liste'), { classe: 'tapeurs', couronne: '👆', rang: i => ['🥇', '🥈', '🥉'][i], valeur: u => `❤️ ${nf(u.taps)} taps` });
+  const rendreSabListe = creerClassement($('sab-liste'), { classe: 'chute', couronne: '😈', rang: i => i + 1, valeur: u => `🪙 ${nf(u.pieces)}` });
   function rendreCordee(liste) {
-    const cont = $('cordee-liste');
     $('cordee-vide').classList.toggle('cache', liste.length > 0);
-    cont.style.height = liste.length * HAUTEUR_LIGNE + 'px';
-    const vus = new Set();
-    liste.forEach((u, i) => {
-      let n = noeudsCordee.get(u.id);
-      if (!n) {
-        n = document.createElement('div');
-        n.className = 'grimpeur';
-        n.style.top = liste.length * HAUTEUR_LIGNE + 'px';
-        n._rang = 99;
-        cont.appendChild(n);
-        noeudsCordee.set(u.id, n);
-      }
-      const cle = [i, u.pseudo, u.avatar, u.pieces].join('|');
-      if (n._cle !== cle) {
-        n.innerHTML = `<div class="rang">${i + 1}</div>${avatarHTML(u, i === 0 ? '<span class="couronne">👑</span>' : '')}<div class="qui"><div class="pseudo">@${esc(u.pseudo)}</div><div class="pts">🪙 ${nf(u.pieces)}</div></div>`;
-        hydrater(n);
-        n._cle = cle;
-      }
-      if (i < n._rang && n._rang !== 99) { n.classList.remove('monte'); void n.offsetWidth; n.classList.add('monte'); }
-      n._rang = i;
-      n.classList.toggle('chef', i === 0);
-      requestAnimationFrame(() => { n.style.top = i * HAUTEUR_LIGNE + 'px'; });
-      vus.add(u.id);
-    });
-    for (const [id, n] of noeudsCordee) if (!vus.has(id)) { n.remove(); noeudsCordee.delete(id); }
+    rendreCordeeListe(liste);
   }
-
-  let cleTapeurs = '';
+  let tapeursConnus = [];
   function rendreTapeurs(liste) {
-    $('tapeurs').classList.toggle('cache', liste.length === 0);
-    const cle = liste.map(u => u.id + ':' + u.taps).join(',');
-    if (cle === cleTapeurs) return;
-    cleTapeurs = cle;
-    const med = ['🥇', '🥈', '🥉'];
-    $('tapeurs-liste').innerHTML = liste.map((u, i) => `<div class="tapeur"><span>${med[i]}</span>${avatarHTML(u)}<span class="pseudo">@${esc(u.pseudo)}</span><span class="nb">${nf(u.taps)}</span></div>`).join('');
-    hydrater($('tapeurs-liste'));
+    tapeursConnus = liste;
+    rendreTapeursListe(liste);
   }
+  // Le panneau de gauche alterne entre la Cordée (cadeaux) et les Top tapeurs, pour alléger l'écran.
+  let pageGauche = 'cordee';
+  setInterval(() => {
+    const vers = pageGauche === 'cordee' && tapeursConnus.length ? 'tapeurs' : 'cordee';
+    if (vers === pageGauche) return;
+    pageGauche = vers;
+    const panneau = $('cordee');
+    panneau.classList.add('bascule');
+    setTimeout(() => {
+      $('page-cordee').classList.toggle('cache', vers !== 'cordee');
+      $('page-tapeurs').classList.toggle('cache', vers !== 'tapeurs');
+      $('gauche-titre').innerHTML = vers === 'cordee' ? '<img class="badge" src="visuels/cordee.png" alt=""> LA CORDÉE' : '<span class="badge-emoji">👆</span> TOP TAPEURS';
+      panneau.classList.remove('bascule');
+    }, 250);
+  }, 12000);
 
   function altMax() { return Math.max(N * ESP, (ETAT && ETAT.record) || 0, TICK.alt) * 1.04; }
   function rendreReperes() {
@@ -349,19 +371,30 @@
     const el = $('banniere');
     el.className = opts.classe || '';
     el.innerHTML = `${opts.img ? `<img src="${esc(opts.img)}" referrerpolicy="no-referrer" alt="">` : ''}<div class="b-titre">${titre}</div>${sous ? `<div class="b-sous">${sous}</div>` : ''}`;
+    const longueur = el.querySelector('.b-titre').textContent.length;
+    el.querySelector('.b-titre').style.fontSize = longueur > 22 ? '64px' : longueur > 15 ? '78px' : '';
     banniereActive = true;
     setTimeout(() => { el.className = 'cache'; banniereActive = false; setTimeout(suivanteBanniere, 250); }, opts.duree || 3600);
   }
 
   // ---------- Fil d'actualité, oiseaux, combo ----------
+  // Les petites annonces (abonnés, partages, commandes du chat) s'affichent quelques secondes dans le bandeau.
+  let annonceFin = 0;
+  const fileAnnonces = [];
   function fil(texte) {
-    const el = document.createElement('div');
-    el.className = 'fil-item';
+    fileAnnonces.push(texte);
+    if (fileAnnonces.length > 3) fileAnnonces.shift();
+    if (performance.now() >= annonceFin) annonceSuivante();
+  }
+  function annonceSuivante() {
+    const texte = fileAnnonces.shift();
+    const el = $('bandeau-texte');
+    if (!texte) { el.classList.remove('annonce'); el.textContent = bandeauActuel; annonceFin = 0; return; }
+    annonceFin = performance.now() + 3500;
+    el.classList.remove('annonce'); void el.offsetWidth; el.classList.add('annonce');
+    el.style.opacity = 1;
     el.textContent = texte;
-    const f = $('fil');
-    f.appendChild(el);
-    while (f.children.length > 4) f.firstChild.remove();
-    setTimeout(() => { el.classList.add('sortie'); setTimeout(() => el.remove(), 600); }, 7000);
+    setTimeout(annonceSuivante, 3500);
   }
 
   function oiseau(u, autres) {
@@ -406,7 +439,7 @@
   }
 
   // ---------- Bandeau ----------
-  let bandeauTimer = null, bandeauI = 0;
+  let bandeauTimer = null, bandeauI = 0, bandeauActuel = '';
   function demarrerBandeau() {
     clearInterval(bandeauTimer);
     const changer = () => {
@@ -417,8 +450,10 @@
         phrases = [`🔒 Refuge bloqué : un ${o.nom} pour passer !`, phrases[bandeauI % phrases.length]];
       }
       bandeauI++;
+      bandeauActuel = phrases[bandeauI % phrases.length];
+      if (annonceFin) return; // une annonce est en cours : la phrase s'affichera après
       el.style.opacity = 0;
-      setTimeout(() => { el.textContent = phrases[bandeauI % phrases.length]; el.style.opacity = 1; }, 500);
+      setTimeout(() => { if (!annonceFin) { el.textContent = bandeauActuel; el.style.opacity = 1; } }, 500);
     };
     changer();
     bandeauTimer = setInterval(changer, (CFG.secondesEntrePhrasesBandeau || 35) * 1000);
@@ -597,8 +632,7 @@
     if (cle === cleSab) return;
     cleSab = cle;
     $('sab-vide').classList.toggle('cache', top.length > 0);
-    $('sab-liste').innerHTML = top.map((u, i) => `<div class="saboteur${i === 0 ? ' premier' : ''}"><span class="rang">${i === 0 ? '😈' : i + 1}</span>${avatarHTML(u)}<div class="qui"><div class="pseudo">@${esc(u.pseudo)}</div><div class="pts">🪙 ${nf(u.pieces)}</div></div></div>`).join('');
-    hydrater($('sab-liste'));
+    rendreSabListe(top);
   }
 
   // Duel des équipes : la barre penche du côté de l'équipe qui a envoyé le plus de pièces
@@ -629,7 +663,7 @@
       el.innerHTML = `<div class="boss-tete"><span class="boss-emoji">${b.emoji}</span><span class="boss-nom">${esc(b.nom).toUpperCase()}</span></div>
         <div class="boss-par">${par}</div>
         <div class="boss-pv"><div id="boss-pv-r"></div><span id="boss-pv-t"></span></div>
-        <div class="boss-consigne">👆 Tapez pour frapper${((ETAT && ETAT.reglages && ETAT.reglages.cadeauxContreBoss) || CFG.cadeauxContreBoss) === 'non' ? '' : ` · 🎁 1 pièce = ${CFG.degatsParPiece || 6} coups`}</div>
+        <div class="boss-consigne">👆 Tapez${((ETAT && ETAT.reglages && ETAT.reglages.cadeauxContreBoss) || CFG.cadeauxContreBoss) === 'non' ? ' pour frapper' : ` · 🎁 1 pièce = ${CFG.degatsParPiece || 6} coups`}</div>
         <div class="boss-enjeu" id="boss-enjeu"></div>
         <div class="boss-timer"><div id="boss-timer"></div></div>`;
       hydrater(el);
@@ -638,7 +672,7 @@
     const en = b.enjeu || { metres: 0, pieces: 0 };
     const morceaux = [];
     if (en.metres > 0) morceaux.push(`−${nf(en.metres)} m`);
-    if (en.pieces > 0) morceaux.push(`−${nf(en.pieces)} 🪙 dans la cagnotte`);
+    if (en.pieces > 0) morceaux.push(`−${nf(en.pieces)} 🪙`);
     $('boss-enjeu').textContent = morceaux.length ? `⚠️ S'il gagne : ${morceaux.join(' · ')}` : '🛡️ Le refuge protège Gégé';
   }
   function majPvBoss(pv, pvMax) {
@@ -1615,7 +1649,7 @@
     r.style.width = e + '%';
     r.style.background = e > 60 ? 'linear-gradient(90deg,#16a34a,#4ade80)' : e > 30 ? 'linear-gradient(90deg,#ca8a04,#facc15)' : 'linear-gradient(90deg,#b91c1c,#ff4d5e)';
     const st = TICK.statut;
-    const txt = st === 'accroche' ? '🆘 IL LÂCHE ! TAPEZ !!' : st === 'chute' ? '😱 AAAAAH !' : TICK.protection > 0 ? '🛡️ PROTÉGÉ !' : e < 30 ? '⚡ TAPEZ VITE !! ⚡' : st === 'bloque' ? '🔒 BLOQUÉ : IL FAUT LE CADEAU !' : '⚡ TAPEZ L\'ÉCRAN POUR GRIMPER';
+    const txt = st === 'accroche' ? '🆘 IL LÂCHE ! TAPEZ !!' : st === 'chute' ? '😱 AAAAAH !' : TICK.protection > 0 ? '🛡️ PROTÉGÉ !' : e < 30 ? '⚡ TAPEZ VITE !!' : st === 'bloque' ? '🔒 IL FAUT LE CADEAU' : '⚡ TAPEZ L\'ÉCRAN !';
     if ($('energie-texte').textContent !== txt) $('energie-texte').textContent = txt;
     $('energie').classList.toggle('faible', (e < 30 && TICK.protection <= 0) || st === 'accroche');
     const pr = $('protection');
@@ -1626,6 +1660,7 @@
 
     // Altimètre
     $('alt-valeur').textContent = nf(altAff) + ' m';
+    $('ra-alt').textContent = nf(altAff) + ' m';
     const max = altMax();
     $('alt-rempli').style.height = `calc(${clamp(altAff / max * 100, 0, 100)}% - 6px)`;
     $('alt-moi').style.bottom = clamp(altAff / max * 100, 0, 100) + '%';
@@ -1639,7 +1674,7 @@
       if (span.textContent !== vis) span.textContent = vis;
       const hx = mx, hy = my - 190 * zoom * 1.15 - 30;
       const x = clamp(hx, 320, W - 320);
-      const y = clamp(hy, 640, 1100);
+      const y = clamp(hy, bossL || MJ ? 880 : 760, 1100);
       be.style.left = x + 'px';
       be.style.top = y + 'px';
       be.style.setProperty('--queue', clamp(50 + (hx - x) / 5, 15, 85) + '%');
