@@ -10,7 +10,7 @@
     ['badumtss', '🎭', 'Ba-dum-tss'], ['echec', '😢', 'Wah wah'], ['caisse', '💰', 'Ka-ching'], ['ding', '🔔', 'Ding'],
     ['fanfare', '🎺', 'Fanfare'], ['laser', '⚡', 'Laser'], ['toctoc', '🚪', 'Toc toc'], ['chute', '😱', 'Chute'],
     ['boing', '🦘', 'Boing'], ['bisou', '💋', 'Bisou'], ['tonnerre', '⛈️', 'Tonnerre'], ['vent', '🌬️', 'Vent'],
-    ['alarme', '🚨', 'Alarme'], ['coeurs', '💕', 'Cœurs'], ['ciseaux', '✂️', 'Ciseaux'], ['whoosh', '🌀', 'Whoosh']
+    ['alarme', '🚨', 'Alarme'], ['coeurs', '💕', 'Cœurs'], ['ciseaux', '✂️', 'Ciseaux'], ['whoosh', '🌀', 'Whoosh'], ['coffre', '🪙', 'Coffre']
   ];
   const PHRASES = [
     'Merci à tous !! ❤️', 'Bienvenue aux nouveaux ! 👋', 'On lâche rien !!', 'Tapez tapez tapez !!!',

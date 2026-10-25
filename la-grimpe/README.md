@@ -117,6 +117,15 @@ La partie est sauvegardée toutes les 3 secondes (dossier `donnees/`). Si le PC 
 - 🔤 **Mot magique** : le premier qui écrit le mot affiché gagne, avec sa photo à l'écran.
 - 🌪️ **Tempête** : l'énergie fond 3 fois plus vite pendant 40 secondes.
 
+### Les sons des cadeaux (sans spam)
+
+- **Petits cadeaux** (roses, TikTok…) : aucun son un par un. Quand une rafale se termine (3 secondes sans nouveau petit cadeau), **un seul applaudissement**.
+- **Cadeau de 100 pièces ou plus** : applaudissement à la fin de son alerte.
+- **Cadeau de 1 000 pièces ou plus** : Gégé crie « MERCI MERCI BEAUCOUP @pseudo !!! » dans son charabia, puis applaudissement.
+- **Cagnotte pleine** (refuge débloqué) : un **coffre** s'ouvre sous la carte du refuge et les pièces s'écroulent sur l'écran, avec le bruit de la cascade de pièces.
+
+Les seuils se règlent dans `config.json` → `sons` (`applaudirDesPieces`, `merciVocalDesPieces`, `secondesFinRafalePetitsCadeaux`).
+
 ### Commandes du chat
 
 `!prout` `!klaxon` `!applause` `!bravo` `!tambour` `!badum` `!ding` `!laser` `!wah` — 30 secondes d'attente par spectateur et 4 secondes entre deux sons. Modifiable dans `config.json` → `commandesChat`.

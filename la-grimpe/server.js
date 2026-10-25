@@ -100,7 +100,12 @@ function configPublique() {
     phrasesBandeau: config.autopilote.phrasesBandeau.map(p => p.replace(/\{mascotte\}/g, config.mascotte.nom)),
     secondesEntrePhrasesBandeau: config.autopilote.secondesEntrePhrasesBandeau,
     commandes: Object.keys(config.commandesChat.liste),
-    fichiersPerso: config.sons.fichiersPerso || {}
+    fichiersPerso: config.sons.fichiersPerso || {},
+    sonsCadeaux: {
+      applaudirDes: config.sons.applaudirDesPieces ?? 100,
+      merciVocalDes: config.sons.merciVocalDesPieces ?? 1000,
+      finRafaleSecondes: config.sons.secondesFinRafalePetitsCadeaux ?? 3
+    }
   };
 }
 function etatComplet() {

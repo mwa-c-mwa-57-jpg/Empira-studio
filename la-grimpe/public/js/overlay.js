@@ -13,6 +13,7 @@
   const scene = $('scene');
   const cv = $('monde');
   const ctx = cv.getContext('2d');
+  const ctxFx = $('effets').getContext('2d'); // calque au-dessus des alertes : coffre et pièces
 
   function ajuster() {
     const s = Math.min(innerWidth / W, innerHeight / H);
@@ -179,7 +180,7 @@
         cont.appendChild(n);
         noeudsCordee.set(u.id, n);
       }
-      const cle = [i === 0, u.pseudo, u.avatar, u.pieces].join('|');
+      const cle = [i, u.pseudo, u.avatar, u.pieces].join('|');
       if (n._cle !== cle) {
         n.innerHTML = `<div class="rang">${i + 1}</div>${avatarHTML(u, i === 0 ? '<span class="couronne">👑</span>' : '')}<div class="qui"><div class="pseudo">@${esc(u.pseudo)}</div><div class="pts">🪙 ${nf(u.pieces)}</div></div>`;
         hydrater(n);
@@ -287,7 +288,9 @@
   const fileAlertes = [];
   let alerteActive = null;
   function ajouterAlerte(d) {
-    fileAlertes.push(d);
+    // Les gros cadeaux passent devant les petits qui attendent encore leur alerte.
+    const i = d.valeur >= reglesSons().applaudirDes ? fileAlertes.findIndex(x => x.valeur < d.valeur) : -1;
+    if (i >= 0) fileAlertes.splice(i, 0, d); else fileAlertes.push(d);
     if (fileAlertes.length > 15) fileAlertes.splice(0, fileAlertes.length - 15);
     suivanteAlerte();
   }
@@ -362,7 +365,7 @@
     el.classList.remove('cache', 'boum'); void el.offsetWidth; el.classList.add('boum');
     clearTimeout(comboTimer);
     comboTimer = setTimeout(() => el.classList.add('cache'), 2500);
-    if (d.repeat % 5 === 0) sonAuto('pop');
+    rafalePetits(0);
   }
 
   function bisou() {
@@ -552,7 +555,106 @@
     if (texte) setTimeout(() => dire(texte, { prio: 4, duree: 3.5 }), 500);
   }
 
-  const STYLE_SONS = { saut: 'boing', vol: 'whoosh', porte: 'whoosh', girafe: 'whoosh', arbre: 'whoosh', bulle: 'pop', corde: 'whoosh', charge: 'tonnerre', final: 'tambour', mange: 'pop', calin: 'coeurs', foule: 'applaudissements', pluie: 'coeurs', bouclier: 'ding', tete: 'pop', encourage: 'pop' };
+  // ---------- Sons des cadeaux (sans spam) ----------
+  function reglesSons() {
+    return Object.assign({ applaudirDes: 100, merciVocalDes: 1000, finRafaleSecondes: 3, rafaleMinimum: 2 }, CFG.sonsCadeaux || {});
+  }
+  let dernierApplaudissement = 0;
+  function applaudir() {
+    const t = performance.now();
+    if (t - dernierApplaudissement < 3000) return;
+    dernierApplaudissement = t;
+    sonAuto('applaudissements');
+  }
+  let rafale = { nb: 0, timer: null };
+  function rafalePetits(nb) {
+    rafale.nb += nb;
+    clearTimeout(rafale.timer);
+    rafale.timer = setTimeout(() => {
+      if (rafale.nb >= reglesSons().rafaleMinimum) applaudir();
+      rafale.nb = 0;
+    }, reglesSons().finRafaleSecondes * 1000);
+  }
+
+  // Le coffre de la cagnotte : il s'ouvre et les pièces s'écroulent sur l'écran.
+  let coffre = null;
+  function ouvrirCoffre(force) {
+    coffre = { debut: performance.now(), force };
+    son('coffre');
+    const pleine = $('cagnotte-rempli');
+    pleine.style.width = '100%';
+    for (let i = 0; i < 70 * force; i++) {
+      setTimeout(() => {
+        const a = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+        const v = 500 + Math.random() * 700;
+        pieces.push({ type: 'piece', x: CX + (Math.random() - 0.5) * 60, y: COFFRE_Y - 30, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 1400, r: 16 + Math.random() * 10, rot: Math.random() * 6, vr: 8 + Math.random() * 10, vie: 4 });
+      }, 650 + Math.random() * 900 * force);
+    }
+  }
+  const COFFRE_Y = 380;
+  const pieces = [];
+  function dessinerCoffre(t, dt) {
+    const ctx = ctxFx;
+    ctx.clearRect(0, 0, W, H);
+    for (let i = pieces.length - 1; i >= 0; i--) {
+      const p = pieces[i];
+      p.vie -= dt;
+      if (p.vie <= 0 || p.y > H + 60) { pieces.splice(i, 1); continue; }
+      p.x += p.vx * dt; p.y += p.vy * dt; p.vy += p.g * dt; p.rot += p.vr * dt;
+      const larg = Math.abs(Math.cos(p.rot)) * p.r + 2;
+      ctx.save(); ctx.translate(p.x, p.y);
+      ctx.fillStyle = Math.cos(p.rot) > 0 ? '#ffd34d' : '#e0a100';
+      ctx.beginPath(); ctx.ellipse(0, 0, larg, p.r, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.lineWidth = 3; ctx.strokeStyle = '#a06a00'; ctx.stroke();
+      if (larg > p.r * 0.6) { ctx.fillStyle = '#fff3b0'; ctx.beginPath(); ctx.ellipse(-larg * 0.3, -p.r * 0.3, larg * 0.25, p.r * 0.2, 0, 0, Math.PI * 2); ctx.fill(); }
+      ctx.restore();
+    }
+    if (!coffre) return;
+    const e = (t - coffre.debut) / 1000;
+    if (e > 3.6) { coffre = null; return; }
+    const entree = Math.min(1, e / 0.35);
+    const sortie = e > 3 ? 1 - (e - 3) / 0.6 : 1;
+    const ouverture = Math.min(1, Math.max(0, (e - 0.5) / 0.25));
+    const s = 1.1 * (0.4 + 0.6 * (1 - Math.pow(1 - entree, 3)));
+    const tremble = e > 0.3 && e < 0.55 ? Math.sin(e * 90) * 6 : 0;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, sortie);
+    ctx.translate(CX + tremble, COFFRE_Y);
+    ctx.scale(s, s);
+    // Halo
+    const g = ctx.createRadialGradient(0, -30, 10, 0, -30, 200);
+    g.addColorStop(0, `rgba(255,214,90,${0.7 * ouverture})`);
+    g.addColorStop(1, 'rgba(255,214,90,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(0, -30, 200, 0, Math.PI * 2); ctx.fill();
+    // Caisse
+    ctx.lineWidth = 6; ctx.strokeStyle = '#3d2410';
+    ctx.fillStyle = '#8a5a2b';
+    ctx.beginPath(); ctx.roundRect(-110, -40, 220, 120, 14); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ffc94a';
+    ctx.fillRect(-110, -6, 220, 16); ctx.fillRect(-86, -40, 16, 120); ctx.fillRect(70, -40, 16, 120);
+    ctx.strokeRect(-110, -6, 220, 16);
+    // Serrure
+    ctx.fillStyle = '#ffe28a'; ctx.beginPath(); ctx.roundRect(-18, -14, 36, 34, 6); ctx.fill(); ctx.stroke();
+    // Couvercle qui bascule vers l'arrière
+    ctx.save();
+    ctx.translate(0, -40);
+    ctx.scale(1, 1 - ouverture * 1.6);
+    ctx.fillStyle = '#9c6a35';
+    ctx.beginPath(); ctx.moveTo(-110, 0); ctx.lineTo(-110, -40); ctx.quadraticCurveTo(0, -95, 110, -40); ctx.lineTo(110, 0); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ffc94a'; ctx.fillRect(-86, -62, 16, 62); ctx.fillRect(70, -62, 16, 62);
+    ctx.restore();
+    // Tas de pièces qui dépasse quand c'est ouvert
+    if (ouverture > 0) {
+      for (let i = 0; i < 9; i++) {
+        ctx.fillStyle = i % 2 ? '#ffd34d' : '#f5b400';
+        ctx.beginPath(); ctx.ellipse(-80 + i * 20, -44 - Math.sin(i * 1.3) * 10 * ouverture, 16, 8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = '#a06a00'; ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
 
   function evenement(type, d) {
     switch (type) {
@@ -566,9 +668,20 @@
         if (d.style === 'final') { confettis(160); pluie('🌹', 30, 3); }
         if (d.tier === 3) { confettis(90); secouer(14); }
         if (d.tier === 2) emoji('✨', CX, ANCRE_Y - 60, 14, { taille: 40 });
-        sonAuto(d.tier === 3 ? 'fanfare' : d.tier === 2 ? 'caisse' : 'coeurs');
-        if (STYLE_SONS[d.style]) setTimeout(() => sonAuto(STYLE_SONS[d.style]), 350);
-        dire(d.replique, { prio: 3, duree: 3.4 });
+        const R = reglesSons();
+        if (d.valeur >= R.merciVocalDes) {
+          // Gros cadeau : Gégé remercie à voix haute (charabia), l'applaudissement suit à la fin de l'alerte
+          forcer('joie', 'joie', 4);
+          dire(`MERCI MERCI BEAUCOUP @${d.user.pseudo} !!! 😭❤️`, { prio: 5, crie: true, duree: 4.5 });
+          setTimeout(applaudir, 4600);
+        } else if (d.valeur >= R.applaudirDes) {
+          dire(d.replique, { prio: 3, duree: 3.4 });
+          setTimeout(applaudir, 3400);
+        } else {
+          // Petits cadeaux (roses, TikTok…) : aucun son un par un, un seul applaudissement à la fin de la rafale
+          dire(d.replique, { prio: 2, duree: 2.6, silence: true });
+          rafalePetits(d.repeat);
+        }
         if (!$('combo').classList.contains('cache') && comboCle === d.user.id + '|' + d.cadeau) $('combo').classList.add('cache');
         break;
       }
@@ -578,14 +691,12 @@
         const qui = d.user ? 'Merci @' + esc(d.user.pseudo) + ' !' : '';
         if (d.mega && d.rang === 1) {
           banniere(`MÉGA SAUT ×${d.total} !`, `${qui} ${d.total} refuges d'un coup 🚀`, { img: d.objectif.image, duree: 4200 });
-          son('klaxon');
         } else if (!d.mega) {
           banniere(d.dernier ? 'DERNIER REFUGE !' : `REFUGE ${d.index + 1} DÉBLOQUÉ !`, d.dernier ? `${qui} Direction le sommet 🏔️` : qui, { img: d.objectif.image });
         }
         if (d.rang === 1) {
-          confettis(d.mega ? 200 : 110);
-          sonAuto('victoire');
-          setTimeout(() => sonAuto('applaudissements'), 500);
+          confettis(d.mega ? 120 : 60);
+          ouvrirCoffre(d.mega ? 2 : 1);
         }
         if (d.rang === d.total) celebrer(d.texte);
         break;
@@ -613,7 +724,7 @@
         break;
       case 'nouveauChef':
         banniere(`✂️ @${esc(d.user.pseudo)} COUPE LA CORDE !`, `Nouveau premier de cordée 👑${d.ancien ? ' devant @' + esc(d.ancien.pseudo) : ''}`, { classe: 'rouge', duree: 3600 });
-        sonAuto('ciseaux');
+        if (d.user.pieces >= reglesSons().applaudirDes) sonAuto('ciseaux');
         break;
       case 'record':
         banniere('NOUVEAU RECORD !', `${nf(d.altitude)} m — on n'est jamais allés aussi haut !`, { classe: 'vert', duree: 4200 });
@@ -1174,6 +1285,7 @@
       flash = Math.max(0, flash - dt * 2);
     }
 
+    dessinerCoffre(t, dt);
     majInterface(t, mx, my, zoom);
   }
 

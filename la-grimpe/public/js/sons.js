@@ -230,6 +230,23 @@
       souffle(t + 0.05, 0.06, 0.3, 'highpass', 3000, 1);
       return 0.2;
     },
+    coffre(t) {
+      // Grincement du couvercle, puis cascade de pièces et « ka-ching »
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'bandpass'; lp.frequency.value = 700; lp.Q.value = 4;
+      lp.connect(master);
+      osc('sawtooth', 90, t, 0.5, 0.25, lp, { vers: 210, tenue: 0.35, attaque: 0.05 });
+      souffle(t + 0.45, 0.12, 0.6, 'lowpass', 600, 1);
+      osc('sine', 110, t + 0.45, 0.25, 0.7, master, { vers: 60 });
+      for (let i = 0; i < 38; i++) {
+        const d = t + 0.55 + Math.pow(Math.random(), 1.6) * 1.6;
+        const f = 2400 + Math.random() * 3200;
+        osc('sine', f, d, 0.18 + Math.random() * 0.2, 0.12, master);
+        osc('triangle', f * 1.5, d, 0.08, 0.05, master);
+      }
+      for (const f of [2093, 2637, 3136]) osc('sine', f, t + 0.6, 1.3, 0.18);
+      return 2.3;
+    },
     coeurs(t) {
       [1047, 1319, 1568, 2093].forEach((f, i) => osc('sine', f, t + i * 0.07, 0.4, 0.2));
       return 0.7;

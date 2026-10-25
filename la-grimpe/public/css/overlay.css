@@ -16,6 +16,7 @@ body.fond-noir { background: #000; }
 
 #scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; overflow: hidden; }
 #monde { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+#effets { position: absolute; inset: 0; width: 1080px; height: 1920px; z-index: 10; pointer-events: none; }
 .cache { display: none !important; }
 
 .verre {
@@ -83,7 +84,7 @@ body.fond-noir { background: #000; }
 .alt-record-texte { margin-top: 12px; font-size: 18px; font-family: 'Nunito', sans-serif; text-align: center; opacity: .9; line-height: 1.2; }
 
 /* ---------- Bulle de la mascotte ---------- */
-#bulle { position: absolute; max-width: 560px; min-width: 120px; padding: 18px 26px; background: #fff; color: #23140d; border-radius: 34px; border: 5px solid #23140d; font-size: 36px; font-weight: 800; line-height: 1.15; text-align: center; box-shadow: 0 10px 0 rgba(0,0,0,.25); transform: translate(-50%, -100%); display: flex; align-items: center; gap: 12px; z-index: 6; }
+#bulle { position: absolute; max-width: 560px; min-width: 120px; padding: 18px 26px; background: #fff; color: #23140d; border-radius: 34px; border: 5px solid #23140d; font-size: 36px; font-weight: 800; line-height: 1.15; text-align: center; box-shadow: 0 10px 0 rgba(0,0,0,.25); transform: translate(-50%, -100%); display: flex; align-items: center; gap: 12px; z-index: 11; }
 #bulle::after { content: ''; position: absolute; left: var(--queue, 50%); bottom: -26px; border: 14px solid transparent; border-top: 18px solid #23140d; transform: translateX(-50%); }
 #bulle.crie { background: #fff2a8; font-size: 42px; animation: tremble .12s infinite; }
 #bulle.entree { animation: pop .35s cubic-bezier(.3,1.6,.5,1); }

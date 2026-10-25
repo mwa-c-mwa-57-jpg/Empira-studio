@@ -46,6 +46,9 @@
   "sons": {
     "volume": 0.8,
     "sonsAutomatiques": true,
+    "applaudirDesPieces": 100,
+    "merciVocalDesPieces": 1000,
+    "secondesFinRafalePetitsCadeaux": 3,
     "aussiSurLaRegie": false,
     "fichiersPerso": {}
   },
