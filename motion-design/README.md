@@ -117,7 +117,7 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 4. **Le bon poste** : le viseur se pose sur la bonne offre (intérim, CDD, CDI).
 5. **Profils qualifiés et sur le terrain** : bâtiment second œuvre et industrie ; électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.
 6. **Le suivi** : suivi régulier, réactivité, proximité.
-7. **Près de chez vous** : Dudelange, Esch-sur-Alzette, Mondorf-les-Bains, plus de 20 ans d'expérience.
+7. **Près de chez vous** : l'agence d'Esch-sur-Alzette mise en avant (adresse), Dudelange et Mondorf-les-Bains citées ; plus de 20 ans d'expérience.
 8. Pro replonge dans le logo : « Postulez sur prointer.lu ».
 
 | Fichier | Rôle |
@@ -147,7 +147,7 @@ Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La c
 2. Le drop : « Chez PRO-INTER, on vise juste. »
 3. Intérim, CDD, CDI, puis les profils qualifiés (bâtiment second œuvre, industrie) et les 6 secteurs : électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.
 4. « On écoute. On trouve. On vous suit. »
-5. 3 agences sur la carte du Luxembourg, puis le compteur « +20 ans d'expérience ».
+5. 3 agences sur la carte du Luxembourg (Esch-sur-Alzette mise en avant avec son adresse), puis le compteur « +20 ans d'expérience ».
 6. Grand dézoom : tout le parcours dessine une cible géante.
 7. Le viseur plonge en spirale au centre (« en plein dans le mille ») et devient le « O » du logo, dans une lunette. Bouton « Postulez sur prointer.lu ».
 
@@ -157,7 +157,7 @@ Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La c
 | `out/prointer-viseur-9x16-voix.mp4` / `out/prointer-viseur-9x16-voix-sans-musique.mp4` | **Vidéos finales avec voix off** (Benjamin), avec ou sans musique, -14 LUFS |
 | `out/prointer-viseur-9x16-60fps.mp4` / `out/prointer-viseur-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls), 60 i/s avec flou de mouvement, -14 LUFS |
 | `assets/voix/prointer-viseur-benjamin-v2.mp3` | Voix off brute (ElevenLabs), avec les profils qualifiés, les 6 secteurs et les 20 ans |
-| `assets/prointer/luxembourg.js` | Frontière du Luxembourg (OpenStreetMap) et adresses géocodées des agences, pour les cartes des deux vidéos |
+| `assets/prointer/luxembourg.js` | Frontière du Luxembourg (OpenStreetMap), agences géocodées, adresse et téléphone de l'agence d'Esch-sur-Alzette (mise en avant dans les deux vidéos) |
 | `tools/audio_prointer_viseur.py` | Musique (128 BPM, la mineur) et bruitages calés sur chaque tir |
 | `PROINTER-VISEUR-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
 
