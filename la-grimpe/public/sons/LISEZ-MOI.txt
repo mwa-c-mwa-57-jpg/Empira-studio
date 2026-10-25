@@ -1,0 +1,2 @@
+Mets ici tes propres sons (MP3) et déclare-les dans config.json > sons > fichiersPerso.
+Exemple : "fichiersPerso": { "prout": "sons/mon-prout.mp3" }

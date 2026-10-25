@@ -1,0 +1,107 @@
+{
+  "tiktok": {
+    "pseudo": "",
+    "signApiKey": "",
+    "reconnexionSecondes": 15
+  },
+  "serveur": {
+    "port": 3000
+  },
+  "mascotte": {
+    "nom": "Gégé"
+  },
+  "jeu": {
+    "metresEntreRefuges": 300,
+    "vitesseMaxMetresParSeconde": 5,
+    "tapsParSecondePourVitesseMax": 12,
+    "energieParTap": 0.8,
+    "perteEnergieParSeconde": 2.2,
+    "secondesAccrocheAvantChute": 7,
+    "vitesseChuteMetresParSeconde": 9,
+    "surplusEnchaineLesRefuges": true,
+    "paliersLikes": 1000,
+    "frayeursAleatoires": true
+  },
+  "autopilote": {
+    "actifAuDemarrage": true,
+    "minutesEntreMiniJeux": 9,
+    "secondesMiniEntreScenes": 25,
+    "secondesEntrePancartes": 200,
+    "secondesEntreAppelsPseudo": 120,
+    "secondesInactivitePourBouder": 90,
+    "phrasesBandeau": [
+      "👆 Tapez l'écran pour faire grimper {mascotte} !",
+      "🎁 Chaque cadeau le fait monter, même les petits !",
+      "💬 Écrivez !prout ou !klaxon dans le chat 😏",
+      "🪢 Le plus gros donateur devient premier de cordée",
+      "🏔️ Objectif ce soir : battre le record !",
+      "⚠️ S'il n'y a plus de taps… il glisse !"
+    ],
+    "secondesEntrePhrasesBandeau": 35
+  },
+  "presence": {
+    "minutesAvantAlerte": 20,
+    "minutesAvantPause": 5
+  },
+  "sons": {
+    "volume": 0.8,
+    "sonsAutomatiques": true,
+    "aussiSurLaRegie": false,
+    "fichiersPerso": {}
+  },
+  "commandesChat": {
+    "actives": true,
+    "secondesEntreDeuxParSpectateur": 30,
+    "secondesEntreDeuxAuTotal": 4,
+    "liste": {
+      "!prout": "prout",
+      "!klaxon": "klaxon",
+      "!applause": "applaudissements",
+      "!bravo": "applaudissements",
+      "!tambour": "tambour",
+      "!badum": "badumtss",
+      "!ding": "ding",
+      "!laser": "laser",
+      "!wah": "echec"
+    }
+  },
+  "miniJeux": {
+    "motsMagiques": ["banane", "sommet", "piolet", "chaussette", "pigeon", "fromage", "escalade", "nuage", "baguette", "licorne"]
+  },
+  "objectifs": [
+    { "nom": "TikTok", "pieces": 1, "image": "cadeaux/01.png", "alias": ["tiktok"],
+      "effet": { "style": "encourage", "montee": 5, "energie": 15, "replique": "Merci {pseudo} ! Allez allez !" } },
+    { "nom": "Tofu", "pieces": 5, "image": "cadeaux/02.png", "alias": ["tofu"],
+      "effet": { "style": "tete", "montee": 10, "energie": 25, "replique": "Un chat sur ma tête ?! Bon… on monte à deux !" } },
+    { "nom": "Rosa", "pieces": 10, "image": "cadeaux/03.png", "alias": ["rosa"],
+      "effet": { "style": "saut", "montee": 15, "energie": 30, "replique": "Une rose pour moi ?! Hop, petit saut !" } },
+    { "nom": "Fleurs S", "pieces": 20, "image": "cadeaux/04.png", "alias": ["fleurs s", "fleurs", "flowers", "bouquet"],
+      "effet": { "style": "pluie", "montee": 20, "energie": 45, "replique": "Pluie de pétales ! Je reprends des forces !" } },
+    { "nom": "Donut", "pieces": 30, "image": "cadeaux/05.png", "alias": ["donut", "doughnut"],
+      "effet": { "style": "mange", "montee": 25, "energie": 100, "replique": "Miam ! Énergie à fond !!" } },
+    { "nom": "Amour en langage des signes", "pieces": 49, "image": "cadeaux/06.png", "alias": ["amour en langage des signes", "sign language love", "love you", "i love you"],
+      "effet": { "style": "foule", "montee": 35, "energie": 60, "replique": "Je vous aime aussi !! 🤟" } },
+    { "nom": "Le petit Ourson", "pieces": 100, "image": "cadeaux/07.png", "alias": ["le petit ourson", "petit ourson", "ourson", "little bear", "teddy bear"],
+      "effet": { "style": "calin", "montee": 40, "energie": 80, "protection": 30, "replique": "Un câlin ! Je ne glisse plus pendant 30 secondes !" } },
+    { "nom": "Panda Climb", "pieces": 199, "image": "cadeaux/08.png", "alias": ["panda climb", "panda"],
+      "effet": { "style": "porte", "montee": 50, "energie": 80, "replique": "Le panda me porte sur son dos !!" } },
+    { "nom": "Corgi", "pieces": 299, "image": "cadeaux/09.png", "alias": ["corgi"],
+      "effet": { "style": "corde", "montee": 70, "energie": 80, "replique": "Le corgi me tire avec une corde ! Wouf !" } },
+    { "nom": "Rose à jamais", "pieces": 399, "image": "cadeaux/10.png", "alias": ["rose a jamais", "rose à jamais", "forever rosa", "forever rose"],
+      "effet": { "style": "bouclier", "montee": 60, "energie": 100, "protection": 60, "replique": "Bouclier doré ! Impossible de tomber pendant 1 minute !" } },
+    { "nom": "Corail", "pieces": 499, "image": "cadeaux/11.png", "alias": ["corail", "coral"],
+      "effet": { "style": "bulle", "montee": 100, "energie": 100, "replique": "Je flotte dans une bulle !! Blub blub !" } },
+    { "nom": "Cygne", "pieces": 699, "image": "cadeaux/12.png", "alias": ["cygne", "swan"],
+      "effet": { "style": "vol", "montee": 150, "energie": 100, "replique": "Le cygne m'emporte dans les airs !!" } },
+    { "nom": "Arbre à diamants", "pieces": 1088, "image": "cadeaux/13.png", "alias": ["arbre a diamants", "arbre à diamants", "diamond tree"],
+      "effet": { "style": "arbre", "montee": 200, "energie": 100, "protection": 30, "replique": "Un arbre pousse sous mes pieds !! WOUAH !" } },
+    { "nom": "Couple puissant", "pieces": 2000, "image": "cadeaux/14.png", "alias": ["couple puissant", "power couple"],
+      "effet": { "style": "girafe", "montee": 250, "energie": 100, "protection": 30, "replique": "La girafe me monte sur son cou !!" } },
+    { "nom": "Taureau", "pieces": 2999, "image": "cadeaux/15.png", "alias": ["taureau", "bull"],
+      "effet": { "style": "charge", "montee": 400, "energie": 100, "protection": 45, "replique": "CHARGE ULTIME !!! AAAAAAH !" } },
+    { "nom": "Léon le chaton", "pieces": 4888, "image": "cadeaux/16.png", "alias": ["leon le chaton", "léon le chaton", "leon the kitten"],
+      "effet": { "style": "porte", "montee": 600, "energie": 100, "protection": 60, "replique": "LÉON ! Le roi de la tour me porte !!" } },
+    { "nom": "Léon et Lili", "pieces": 9699, "image": "cadeaux/17.png", "alias": ["leon et lili", "léon et lili", "leon and lili", "leon & lili"],
+      "effet": { "style": "final", "montee": 1000, "energie": 100, "protection": 90, "replique": "Léon et Lili m'emmènent au SOMMET !!!" } }
+  ]
+}

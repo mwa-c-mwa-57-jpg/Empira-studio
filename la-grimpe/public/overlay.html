@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Grimpe — Overlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@700;900&display=swap">
+  <link rel="stylesheet" href="css/overlay.css">
+</head>
+<body>
+  <div id="scene">
+    <canvas id="monde" width="1080" height="1920"></canvas>
+
+    <!-- Objectif en cours -->
+    <div id="refuge" class="verre">
+      <div class="medaillon"><img id="refuge-img" alt=""></div>
+      <div class="refuge-infos">
+        <div id="refuge-titre" class="refuge-titre">REFUGE 1/17</div>
+        <div id="refuge-nom" class="refuge-nom">—</div>
+        <div class="cagnotte"><div id="cagnotte-rempli" class="cagnotte-rempli"></div><span id="cagnotte-texte"></span></div>
+        <div id="refuge-sous" class="refuge-sous"></div>
+      </div>
+    </div>
+    <div id="pastilles"></div>
+
+    <!-- Cordée (classement) -->
+    <div id="cordee" class="verre">
+      <div class="bloc-titre">🪢 LA CORDÉE</div>
+      <div id="cordee-liste"></div>
+      <div id="cordee-vide" class="vide">Le 1er cadeau devient<br>premier de cordée 👑</div>
+    </div>
+    <div id="tapeurs" class="verre">
+      <div class="bloc-titre">👆 TOP TAPEURS</div>
+      <div id="tapeurs-liste"></div>
+    </div>
+
+    <!-- Altimètre -->
+    <div id="altimetre">
+      <div id="alt-valeur" class="alt-valeur">0 m</div>
+      <div id="alt-barre" class="alt-barre">
+        <div id="alt-rempli" class="alt-rempli"></div>
+        <div id="alt-reperes"></div>
+        <div id="alt-record" class="alt-record">🚩</div>
+        <div id="alt-moi" class="alt-moi"></div>
+      </div>
+      <div id="alt-record-texte" class="alt-record-texte"></div>
+    </div>
+
+    <div id="minijeu" class="verre cache"></div>
+    <div id="alertes"></div>
+    <div id="banniere" class="cache"></div>
+    <div id="bulle" class="cache"><div id="bulle-avatar"></div><span id="bulle-texte"></span></div>
+    <div id="pancarte" class="cache"></div>
+    <div id="combo" class="cache"></div>
+    <div id="oiseaux"></div>
+    <div id="fil"></div>
+    <div id="bisous"></div>
+
+    <!-- Énergie + bandeau -->
+    <div id="energie">
+      <div class="energie-cadre"><div id="energie-rempli" class="energie-rempli"></div><span id="energie-texte">⚡ TAPEZ L'ÉCRAN !</span></div>
+      <div id="protection" class="protection cache">🛡️ 0 s</div>
+    </div>
+    <div id="bandeau"><span id="bandeau-texte"></span></div>
+
+    <div id="fin" class="cache"></div>
+    <div id="voile-alerte"></div>
+  </div>
+
+  <button id="activer-son" class="cache">🔊 Cliquer ici pour activer le son</button>
+  <div id="hors-ligne" class="cache">Connexion au serveur La Grimpe…</div>
+
+  <script src="js/sons.js"></script>
+  <script src="js/mascotte.js"></script>
+  <script src="js/overlay.js"></script>
+</body>
+</html>
