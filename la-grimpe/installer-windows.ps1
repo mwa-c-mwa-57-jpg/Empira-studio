@@ -32,7 +32,8 @@ try {
     }
     if (-not $ok) {
       Write-Host 'Telechargement de Node.js LTS depuis nodejs.org...'
-      $lts = (Invoke-RestMethod 'https://nodejs.org/dist/index.json' | Where-Object { $_.lts } | Select-Object -First 1).version
+      $versions = Invoke-RestMethod 'https://nodejs.org/dist/index.json'
+      $lts = ($versions | Where-Object { $_.lts } | Select-Object -First 1).version
       $msi = Join-Path $env:TEMP "node-$lts-x64.msi"
       Invoke-WebRequest "https://nodejs.org/dist/$lts/node-$lts-x64.msi" -OutFile $msi
       Start-Process msiexec.exe -ArgumentList '/i', "`"$msi`"", '/passive', '/norestart' -Wait
