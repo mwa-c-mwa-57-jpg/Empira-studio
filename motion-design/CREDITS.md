@@ -52,12 +52,12 @@ Visuels de jeux : extraits du **guide de jeux Empira Gaming** fourni par l'agenc
 
 ## Motion design PRO-INTER (`prointer.html`)
 - Logo PRO-INTER : propriété de PRO-INTER. Fichier officiel fourni (`assets/prointer/logo-officiel.png`), vectorisé par `tools/prointer_logo.py` pour être animé (la cible du « O » est redessinée en géométrie exacte).
-- Informations (services, métiers, agences, « plus de 15 ans ») : site https://www.prointer.lu/fr-FR (pages Accueil, À propos, Entreprises, Offres d'emploi).
+- Informations (services, agences) : site https://www.prointer.lu/fr-FR ; profils qualifiés (bâtiment second œuvre, industrie), 6 secteurs et « plus de 20 ans d'expérience » : indiqués par PRO-INTER (notes transmises par l'agence) ; site (pages Accueil, À propos, Entreprises, Offres d'emploi).
 - Illustrations (personnages, décors, icônes) : dessinées pour la vidéo, sans ressource tierce.
 - Carte du Luxembourg : frontière © contributeurs OpenStreetMap (licence ODbL, https://www.openstreetmap.org/copyright), simplifiée à ~350 m (`assets/prointer/luxembourg.js`). Agences placées à leur adresse (16 rue du Commerce à Dudelange, 17 rue de la Libération à Esch-sur-Alzette, 3 avenue Lou Hemmer à Mondorf-les-Bains), géocodées avec OpenStreetMap Nominatim.
 - Musique et bruitages : synthétisés par `tools/audio_prointer.py`.
 
 ## Motion design PRO-INTER « Le viseur » (`prointer-viseur.html`)
 - Logo, informations et carte : mêmes sources que ci-dessus.
-- Voix off : ElevenLabs, voix « Benjamin » (`assets/voix/prointer-viseur-benjamin.mp3`), fournie par l'agence.
+- Voix off : ElevenLabs, voix « Benjamin » (`assets/voix/prointer-viseur-benjamin-v2.mp3`), fournie par l'agence.
 - Musique et bruitages : synthétisés par `tools/audio_prointer_viseur.py`.

@@ -108,16 +108,16 @@ node tools/render.mjs --page jeux.html --fps 60 --to 44 --workers 3 --out out/je
 
 ---
 
-# PRO-INTER : motion design 40 s « L'histoire de Pro » (9:16)
+# PRO-INTER : motion design 44 s « L'histoire de Pro » (9:16)
 
 Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, un petit bonhomme qui accompagne un intérimaire, en un seul plan qui défile :
 1. Le logo se dessine, la cible prend vie et dit bonjour.
 2. **La recherche** : un candidat cherche une mission qui lui correspond.
 3. **L'écoute** : à l'agence, compétences, expérience et envies ; Pro passe en mode viseur et scanne le CV.
 4. **Le bon poste** : le viseur se pose sur la bonne offre (intérim, CDD, CDI).
-5. **Sur le terrain** : bâtiment, industrie, électricité, chauffage-ventilation.
+5. **Profils qualifiés et sur le terrain** : bâtiment second œuvre et industrie ; électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.
 6. **Le suivi** : suivi régulier, réactivité, proximité.
-7. **Près de chez vous** : Dudelange, Esch-sur-Alzette, Mondorf-les-Bains, plus de 15 ans d'expertise.
+7. **Près de chez vous** : Dudelange, Esch-sur-Alzette, Mondorf-les-Bains, plus de 20 ans d'expérience.
 8. Pro replonge dans le logo : « Postulez sur prointer.lu ».
 
 | Fichier | Rôle |
@@ -125,7 +125,7 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 | `prointer.html` | Animation (SVG, 9:16), lecture et timeline dans le navigateur |
 | `out/prointer-9x16-voix.mp4` / `out/prointer-9x16-voix-sans-musique.mp4` | **Vidéos finales avec voix off** (Benjamin), avec ou sans musique, -14 LUFS |
 | `out/prointer-9x16-60fps.mp4` / `out/prointer-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls) |
-| `assets/voix/prointer-benjamin.mp3` | Voix off brute (ElevenLabs) |
+| `assets/voix/prointer-benjamin-v2.mp3` | Voix off brute (ElevenLabs), avec les profils qualifiés, les 6 secteurs et les 20 ans |
 | `out/prointer-music.wav` / `out/prointer-sfx.wav` / `out/prointer-mix.wav` | Pistes audio |
 | `assets/prointer/logo-officiel.png` → `logo.svg`, `logo-paths.json` | Logo officiel et sa version vectorielle animable |
 | `tools/prointer_logo.py` | Tracé vectoriel (potrace) du logo officiel, cible redessinée en géométrie exacte |
@@ -134,20 +134,20 @@ Le « O » du logo PRO-INTER, la cible, saute hors du logo et devient **Pro**, u
 
 ```bash
 pip install potracer && python3 tools/prointer_logo.py && python3 tools/audio_prointer.py
-node tools/render.mjs --page prointer.html --fps 60 --to 40 --workers 3 --out out/prointer-9x16-silent.mp4
+node tools/render.mjs --page prointer.html --fps 60 --to 44 --workers 4 --out out/prointer-9x16-silent.mp4
 python3 tools/voiceover.py prointer && python3 tools/voiceover.py prointer --sans-musique
 ```
 
 ---
 
-# PRO-INTER : motion design 27,5 s « Le viseur » (9:16)
+# PRO-INTER : motion design 31,6 s « Le viseur » (9:16)
 
 Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La cible du logo devient un **viseur** qui fonce d'info en info. Il « tire » sur chaque mot, en rythme sur une musique électro-pop à 128 BPM, et laisse une traînée cyan :
 1. « Vous cherchez un job ? Un vrai. Près de chez vous. »
 2. Le drop : « Chez PRO-INTER, on vise juste. »
-3. Intérim, CDD, CDI, puis les secteurs : bâtiment, industrie, électricité, chauffage.
+3. Intérim, CDD, CDI, puis les profils qualifiés (bâtiment second œuvre, industrie) et les 6 secteurs : électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.
 4. « On écoute. On trouve. On vous suit. »
-5. 3 agences sur la carte du Luxembourg, puis le compteur « +15 ans d'expertise ».
+5. 3 agences sur la carte du Luxembourg, puis le compteur « +20 ans d'expérience ».
 6. Grand dézoom : tout le parcours dessine une cible géante.
 7. Le viseur plonge en spirale au centre (« en plein dans le mille ») et devient le « O » du logo, dans une lunette. Bouton « Postulez sur prointer.lu ».
 
@@ -156,14 +156,14 @@ Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La c
 | `prointer-viseur.html` | Animation (SVG, 9:16) : caméra sur ressort amorti, qui suit le viseur et dépasse légèrement sa cible |
 | `out/prointer-viseur-9x16-voix.mp4` / `out/prointer-viseur-9x16-voix-sans-musique.mp4` | **Vidéos finales avec voix off** (Benjamin), avec ou sans musique, -14 LUFS |
 | `out/prointer-viseur-9x16-60fps.mp4` / `out/prointer-viseur-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls), 60 i/s avec flou de mouvement, -14 LUFS |
-| `assets/voix/prointer-viseur-benjamin.mp3` | Voix off brute (ElevenLabs) |
+| `assets/voix/prointer-viseur-benjamin-v2.mp3` | Voix off brute (ElevenLabs), avec les profils qualifiés, les 6 secteurs et les 20 ans |
 | `assets/prointer/luxembourg.js` | Frontière du Luxembourg (OpenStreetMap) et adresses géocodées des agences, pour les cartes des deux vidéos |
 | `tools/audio_prointer_viseur.py` | Musique (128 BPM, la mineur) et bruitages calés sur chaque tir |
 | `PROINTER-VISEUR-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
 
 ```bash
 python3 tools/audio_prointer_viseur.py
-node tools/render.mjs --page prointer-viseur.html --fps 60 --to 27.5 --workers 4 --mb 6 --out out/prointer-viseur-9x16-silent.mp4
+node tools/render.mjs --page prointer-viseur.html --fps 60 --to 31.6 --workers 4 --mb 6 --out out/prointer-viseur-9x16-silent.mp4
 python3 tools/voiceover.py viseur && python3 tools/voiceover.py viseur --sans-musique
 ```
 `--mb 6` : flou de mouvement (6 sous-images par image, obturateur à 180°), utile pour les coups de fouet de caméra.
@@ -172,7 +172,7 @@ python3 tools/voiceover.py viseur && python3 tools/voiceover.py viseur --sans-mu
 
 # Maquettes sans logo (« CIBLO »)
 
-Copies exactes des deux vidéos PRO-INTER, pour montrer le travail sans le logo du client : le nom et le logo sont remplacés par une agence fictive, **CIBLO** (le « O » reste la cible, d'où vient la mascotte). Tout le reste est identique. Les vidéos PRO-INTER restent les versions finales.
+Copies des deux vidéos PRO-INTER (première version, avant les nouvelles infos), pour montrer le travail sans le logo du client : le nom et le logo sont remplacés par une agence fictive, **CIBLO** (le « O » reste la cible, d'où vient la mascotte). Tout le reste est identique. Les vidéos PRO-INTER restent les versions finales.
 
 | Fichier | Rôle |
 |---|---|

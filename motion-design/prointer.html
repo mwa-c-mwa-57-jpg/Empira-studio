@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PRO-INTER — L'histoire de Pro (9:16, 40 s)</title>
+<title>PRO-INTER — L'histoire de Pro (9:16, 44 s)</title>
 <style>
 @font-face{font-family:"Montserrat";font-style:normal;font-weight:200 700;font-display:block;
   src:url(assets/fonts/montserrat-latin-ext.woff2) format("woff2");
@@ -46,20 +46,20 @@ body.render #ui{display:none}
   <div id="hud" style="width:1080px;height:1920px"></div>
   <div id="fade"></div>
 </div>
-<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="40" step="0.01" value="0"><span id="tc">00.00</span></div>
+<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="44" step="0.01" value="0"><span id="tc">00.00</span></div>
 <script src="assets/prointer/logo-paths.js"></script>
 <script src="assets/prointer/luxembourg.js"></script>
 <script>
 "use strict";
 /* =====================================================================
-   PRO-INTER — « L'histoire de Pro » — 40 s, 9:16, un seul plan qui défile.
+   PRO-INTER — « L'histoire de Pro » — 44 s, 9:16, un seul plan qui défile.
    Le « O » du logo (la cible) saute hors du logo et devient Pro, le petit
    bonhomme qui accompagne un intérimaire : écoute, viseur sur la bonne
    mission, chantier, suivi, 3 agences, puis retour dans le logo.
    Logo vectorisé depuis le logo officiel fourni par l'agence (tools/prointer_logo.py).
    ===================================================================== */
 const Q = new URLSearchParams(location.search);
-const W = 1080, H = 1920, DUR = 40;
+const W = 1080, H = 1920, DUR = 44;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, t) => a + (b - a) * t;
 const prog = (t, a, b) => clamp((t - a) / (b - a));
@@ -348,18 +348,18 @@ function text(cls, html, x, y, t0, t1, o = {}) {
   d.style.left = x + "px"; d.style.top = y + "px";
   const words = []; html.replace(/<c>(.*?)<\/c>|([^<]+)/g, (m, g, plain) => { (g || plain).trim().split(/\s+/).forEach(w => w && words.push({ w, c: !!g })); });
   words.forEach((o2, i) => { if (o2.w === "|") { d.appendChild(document.createElement("br")); return; } const s = document.createElement("span"); s.className = "w" + (o2.c ? " cy" : ""); s.textContent = o2.w; d.appendChild(s); if (i < words.length - 1 && words[i + 1].w !== "|") d.appendChild(document.createTextNode(" ")); });
-  $("hud").appendChild(d); TEXTS.push({ el: d, spans: [...d.querySelectorAll(".w")], t0, t1, stag: o.stag ?? 0.06 });
+  $("hud").appendChild(d); TEXTS.push({ el: d, spans: [...d.querySelectorAll(".w")], t0, t1, stag: o.stag ?? 0.06, c4: !!o.c4 });
 }
 const CAPS = [
   ["01 — LA RECHERCHE", "Vous cherchez une mission | <c>qui vous correspond ?</c>", 5.9, 10.2],
   ["02 — L'ÉCOUTE", "Nous écoutons | <c>vos compétences</c> et <c>vos envies.</c>", 11.6, 15.9],
   ["03 — LE BON POSTE", "Notre viseur trouve | <c>la mission adaptée.</c>", 17.0, 21.3],
-  ["04 — PROFILS QUALIFIÉS", "Bâtiment second œuvre | <c>et industrie.</c>", 22.5, 24.3],
-  ["05 — SUR LE TERRAIN", "Six secteurs, | <c>vous êtes sur le terrain.</c>", 24.75, 26.8],
+  ["04 — PROFILS QUALIFIÉS", "Bâtiment second œuvre | <c>et industrie.</c>", 22.75, 25.6, 1],          // horloge du chantier (t4)
+  ["05 — SUR LE TERRAIN", "Six secteurs, | <c>vous êtes sur le terrain.</c>", 26.0, 30.8, 1],
   ["06 — LE SUIVI", "On reste à vos côtés, | <c>du premier au dernier jour.</c>", 27.3, 31.2],
   ["07 — PRÈS DE CHEZ VOUS", "3 agences au Luxembourg, | <c>plus de 20 ans d'expérience.</c>", 32.4, 35.8],
 ];
-CAPS.forEach(([k, h, t0, t1]) => { text("kick", k, W / 2, 196, t0, t1, { center: true, stag: .03 }); text("h1", h, W / 2, 240, t0 + .15, t1, { center: true }); });
+CAPS.forEach(([k, h, t0, t1, c4]) => { text("kick", k, W / 2, 196, t0, t1, { center: true, stag: .03, c4 }); text("h1", h, W / 2, 240, t0 + .15, t1, { center: true, c4 }); });
 
 /* ---------------------------- caméra ---------------------------- */
 // (x, y, zoom) ; le sol arrive toujours vers y = 1620 à l'écran : y = 1480 - 660 / zoom
@@ -382,11 +382,14 @@ function candX(t) { let i = 0; while (i < CPATH.length - 2 && t > CPATH[i + 1][0
 const blinkAt = (t, seed) => { const p = (t + seed) % 3.7; return p < .14 ? Math.sin(p / .14 * Math.PI) : 0; };
 
 /* ---------------------------- rendu ---------------------------- */
-// Les temps ci-dessous suivent la timeline d'origine (42 s). La pause muette après « Vous cherchez… »
-// est retirée : à 8,2 s, la vidéo saute directement à 10,2 s de cette timeline (vidéo finale : 40 s).
-const CUT = [8.2, 10.2];
+// Les temps ci-dessous suivent la timeline d'origine (42 s), avec deux retouches de montage (vidéo finale : 44 s) :
+// - la pause muette après « Vous cherchez… » est retirée : à 8,2 s, la vidéo saute directement à 10,2 s de cette timeline ;
+// - le chantier dure 4 s de plus (profils qualifiés, puis les 6 secteurs) : de 21 à 25 s (vidéo), la timeline d'origine
+//   s'arrête pendant que le chantier (légendes, cloison, badges, ouvrier) suit sa propre horloge t4, continue.
+const CUT = [8.2, 10.2], HOLD = [21.0, 4.0];
 function seek(tv) {
-  const t = tv < CUT[0] ? tv : tv + CUT[1] - CUT[0];
+  const t4 = tv + CUT[1] - CUT[0];
+  const t = tv < CUT[0] ? tv : tv < HOLD[0] ? t4 : tv < HOLD[0] + HOLD[1] ? HOLD[0] + CUT[1] - CUT[0] : t4 - HOLD[1];
   const c = camera(t);
   set(WORLD, { transform: `translate(${W / 2},${H / 2}) scale(${c.z}) translate(${-c.x},${-c.y})` });
   set(FAR, { transform: `translate(${W / 2},${H / 2}) scale(${c.z}) translate(${-c.x * .55 - 120},${-c.y})` });
@@ -435,10 +438,10 @@ function seek(tv) {
   CHIPS.forEach((g, i) => place(g, t, [19.75, 20.55, 21.3][i], 21.75, 4700 + (i - 1) * 230, 1385));     // sur la voix : intérim, CDD, CDI
 
   // le chantier
-  PANELS.forEach(p => p.e.setAttribute("opacity", clamp((t - 22.7 - p.t0) / .15)));
-  const hit = Math.max(0, Math.sin(t * 9));
-  drawCand(WORK, { x: 6150, y: GY, s: 1, f: t < 28.0 ? 1 : -1, worker: 1, tool: 1, toolRot: t < 28 ? -30 + hit * 60 : 0, armR: t < 28.1 ? 1.6 - hit * .6 : (t < 29.4 ? 2.7 : .25), blink: blinkAt(t, 2.2), vis: t > 21.4 && t < 31.6 ? 1 : 0 });
-  TRADES.forEach((g, i) => place(g, t, [24.6, 24.95, 25.3, 25.65, 26.0, 26.35][i], 26.7, 6100 + (i % 2 ? 190 : -190), 700 + Math.floor(i / 2) * 120));    // sur la voix
+  PANELS.forEach(p => p.e.setAttribute("opacity", clamp((t4 - 22.7 - p.t0) / .15)));
+  const hit = Math.max(0, Math.sin(t4 * 9));
+  drawCand(WORK, { x: 6150, y: GY, s: 1, f: t < 28.0 ? 1 : -1, worker: 1, tool: 1, toolRot: t < 28 ? -30 + hit * 60 : 0, armR: t < 28.1 ? 1.6 - hit * .6 : (t < 29.4 ? 2.7 : .25), blink: blinkAt(t4, 2.2), vis: t > 21.4 && t < 31.6 ? 1 : 0 });
+  TRADES.forEach((g, i) => place(g, t4, [26.07, 26.89, 27.59, 28.33, 29.01, 29.65][i], 30.8, 6100 + (i % 2 ? 190 : -190), 700 + Math.floor(i / 2) * 120));    // sur chaque mot de la voix
   place(CHECK, t, 28.0, 31.1, 6150, 760);
   CHK.forEach((k, i) => { const u = prog(t, 28.6 + i * .6, 28.8 + i * .6); set(k.c, { fill: u > .5 ? C.cyan : "#FFFFFF", stroke: u > .5 ? C.cyan : C.line }); set(k.ic, { opacity: u }); });
   place(THUMB, t, 28.3, 29.6, 5900, 930);
@@ -453,7 +456,7 @@ function seek(tv) {
   place(CTA, t, 38.3, 50, 10300, 1060); place(CTA2, t, 38.7, 50, 10300, 1180); place(CTA3, t, 39.0, 50, 10300, 1250);
 
   // légendes
-  for (const T of TEXTS) { const outU = prog(t, T.t1, T.t1 + .4); T.spans.forEach((s, i) => { const u = prog(t, T.t0 + i * T.stag, T.t0 + i * T.stag + .55), e = E.out(u); s.style.opacity = (e * (1 - outU)).toFixed(3); s.style.transform = `translateY(${((1 - e) * 26 + outU * -12).toFixed(1)}px)`; }); }
+  for (const T of TEXTS) { const tc = T.c4 ? t4 : t, outU = prog(tc, T.t1, T.t1 + .4); T.spans.forEach((s, i) => { const u = prog(tc, T.t0 + i * T.stag, T.t0 + i * T.stag + .55), e = E.out(u); s.style.opacity = (e * (1 - outU)).toFixed(3); s.style.transform = `translateY(${((1 - e) * 26 + outU * -12).toFixed(1)}px)`; }); }
   $("fade").style.opacity = Math.max(1 - E.out(prog(t, 0, .5)), E.in2(prog(t, 41.4, 42))).toFixed(3);
 }
 window.seek = seek; window.DUR = DUR;

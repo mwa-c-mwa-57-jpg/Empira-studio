@@ -78,34 +78,37 @@ GAMING = [
 ]
 
 PROINTER = [
-    ("Voici Pro.",                                         (0.00, 0.00),         (0.72, 1.21),         None,         2.90),
-    ("Chez PRO-INTER, c'est lui qui vise juste.",          (0.72, 1.21),         (3.42, 3.92),         None,         3.85),
-    ("Vous cherchez une mission qui vous correspond ?",    (3.42, 3.92),         (5.37, 5.87),         None,         6.60),
-    ("Nous écoutons vos compétences… et vos envies.",      (5.37, 5.87),         (8.24, 8.87),         None,         9.50),
-    ("Puis notre viseur trouve la mission adaptée :",      (8.24, 8.87),         (10.77, 11.25),       None,         15.20),
-    ("intérim, CDD ou CDI.",                               (10.77, 11.25),       (13.25, 13.80),       None,         17.70),
-    ("Bâtiment, industrie, électricité, chauffage : vous êtes sur le terrain.", (13.25, 13.80), (18.22, 18.68), None, 20.90),
-    ("Et nous restons à vos côtés, du premier au dernier jour.", (18.22, 18.68), (21.43, 22.05),      None,         25.60),
-    ("Trois agences au Luxembourg, et plus de quinze ans d'expertise.", (21.43, 22.05), (25.05, 25.58), None,       30.60),
-    ("PRO-INTER, votre agence d'emploi.",                  (25.05, 25.58),       (27.37, 27.87),       None,         35.60),
-    ("Postulez sur prointer point lu.",                    (27.37, 27.87),       None,                 None,         37.65),
+    ("Voici Pro.",                                         (0.00, 0.00),         (0.74, 1.06),         None,         2.90),
+    ("Chez PRO-INTER, c'est lui qui vise juste.",          (0.74, 1.06),         (3.18, 3.54),         None,         3.85),
+    ("Vous cherchez une mission qui vous correspond ?",    (3.18, 3.54),         (5.06, 5.40),         None,         6.60),
+    ("Nous écoutons vos compétences… et vos envies.",      (5.06, 5.40),         (7.61, 8.01),         None,         9.50),
+    ("Puis notre viseur trouve la mission adaptée.",       (7.61, 8.01),         (9.89, 10.20),        None,         15.20),
+    ("Intérim, CDD ou CDI.",                               (9.89, 10.20),        (12.08, 12.38),       None,         17.70),
+    ("Bâtiment second œuvre et industrie : des profils qualifiés.", (12.08, 12.38), (15.40, 15.74), None,        20.75),
+    ("Électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance :", (15.40, 15.74), (19.97, 20.29), None, 23.95),
+    ("vous êtes sur le terrain.",                          (19.97, 20.29),       (21.33, 21.67),       None,         28.30),
+    ("Et nous restons à vos côtés, du premier au dernier jour.", (21.33, 21.67), (24.43, 24.74),      None,         29.60),
+    ("Trois agences au Luxembourg, et plus de vingt ans d'expérience.", (24.43, 24.74), (27.67, 27.98), None,       34.60),
+    ("PRO-INTER, votre agence d'emploi.",                  (27.67, 27.98),       (29.80, 30.10),       None,         39.60),
+    ("Postulez sur prointer point lu.",                    (29.80, 30.10),       None,                 None,         41.65),
 ]
 
 # PRO-INTER « Le viseur » : chaque phrase tombe sur son tir (parole à l'instant cible)
 VISEUR = [
-    ("Vous cherchez un job ?",                             (0.00, 0.00),         (0.90, 1.29),         None,         0.35),
-    ("Un vrai !",                                          (0.90, 1.29),         (1.83, 2.27),         None,         1.98),
-    ("Près de chez vous !",                                (1.83, 2.27),         (2.85, 3.33),         None,         2.68),
-    ("Chez PRO-INTER, on vise juste !",                    (2.85, 3.33),         (5.09, 5.45),         None,         3.54),
-    ("Intérim, CDD, CDI.",                                 (5.09, 5.45),         (7.67, 8.14),         None,         5.75),
-    ("Bâtiment, industrie, électricité, chauffage.",       (7.67, 8.14),         (10.95, 11.43),       None,         8.44),
-    ("On vous écoute, on trouve la bonne mission…",        (10.95, 11.43),       (14.11, 14.68),       None,         11.73),
-    ("Trois agences au Luxembourg.",                       (14.11, 14.68),       (15.84, 16.32),       None,         15.00),
-    ("Plus de quinze ans d'expertise.",                    (15.84, 16.32),       (17.78, 18.32),       None,         16.40),
-    ("Votre prochain job ?",                               (17.78, 18.32),       (19.17, 19.50),       None,         18.10),
-    ("En plein dans le mille !",                           (19.17, 19.50),       (20.53, 20.98),       None,         19.89),
-    ("PRO-INTER, votre agence d'emploi.",                  (20.53, 20.98),       (22.76, 23.11),       None,         21.15),
-    ("Postulez sur prointer point lu.",                    (22.76, 23.11),       None,                 None,         23.10),
+    ("Vous cherchez un job ?",                             (0.00, 0.00),         (0.94, 1.49),         None,         0.40),
+    ("Un vrai.",                                           (0.94, 1.49),         (1.89, 2.41),         None,         2.00),
+    ("Près de chez vous.",                                 (1.89, 2.41),         (2.87, 3.54),         None,         2.74),
+    ("Chez PRO-INTER, on vise juste.",                     (2.87, 3.54),         (5.35, 5.81),         None,         3.55),
+    ("Intérim. CDD. CDI.",                                 (5.35, 5.81),         (8.12, 8.66),         None,         6.00),
+    ("Des profils qualifiés, en bâtiment second œuvre et en industrie.", (8.12, 8.66), (11.73, 12.20), None,      8.95),
+    ("Électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.", (11.73, 12.20), (16.83, 17.23), None, 12.46),
+    ("On vous écoute, on trouve la bonne mission…",        (16.83, 17.23),       (20.07, 20.50),       None,         17.53),
+    ("Trois agences au Luxembourg.",                       (20.07, 20.50),       (21.64, 22.05),       None,         20.81),
+    ("Plus de vingt ans d'expérience.",                    (21.64, 22.05),       (23.48, 23.92),       None,         22.33),
+    ("Votre prochain job ?",                               (23.48, 23.92),       (24.76, 25.07),       None,         24.21),
+    ("En plein dans le mille !",                           (24.76, 25.07),       (26.12, 26.44),       None,         25.54),
+    ("PRO-INTER, votre agence d'emploi.",                  (26.12, 26.44),       (28.16, 28.50),       None,         26.75),
+    ("Postulez sur prointer point lu.",                    (28.16, 28.50),       None,                 None,         28.75),
 ]
 
 PROJECTS = {
@@ -113,9 +116,9 @@ PROJECTS = {
                    videos={"9x16": "empira-tiktok-9x16-voix.mp4", "16x9": "empira-16x9-voix.mp4"}),
     "gaming": dict(voice="gaming-benjamin.mp3", stems="gaming", master="gaming-{ar}-silent.mp4", pieces=GAMING,
                    videos={"9x16": "gaming-tiktok-9x16-voix.mp4", "16x9": "gaming-16x9-voix.mp4"}),
-    "prointer": dict(voice="prointer-benjamin.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=40.0, duck=12,
+    "prointer": dict(voice="prointer-benjamin-v2.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=44.0, duck=12,
                    videos={"9x16": "prointer-9x16-voix.mp4"}),
-    "viseur": dict(voice="prointer-viseur-benjamin.mp3", stems="prointer-viseur", master="prointer-viseur-{ar}-silent.mp4", pieces=VISEUR, dur=27.5, duck=10,
+    "viseur": dict(voice="prointer-viseur-benjamin-v2.mp3", stems="prointer-viseur", master="prointer-viseur-{ar}-silent.mp4", pieces=VISEUR, dur=31.6, duck=10,
                    videos={"9x16": "prointer-viseur-9x16-voix.mp4"}),
 }
 P = PROJECTS[PROJ]

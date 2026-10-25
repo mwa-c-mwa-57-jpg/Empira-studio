@@ -4,10 +4,12 @@ Calée sur prointer.html. Sorties : out/prointer-music.wav, out/prointer-sfx.wav
 import numpy as np, os, wave
 from scipy.signal import butter, sosfilt, fftconvolve
 
-SR = 48000; DUR = 40.0; N = int(SR * DUR)
+SR = 48000; DUR = 44.0; N = int(SR * DUR)
 # la vidéo retire 2 s de pause (8,2 → 10,2 s de la timeline d'origine) : les bruitages sont posés sur la
 # timeline d'origine puis coupés au même endroit ; la musique est générée directement sur 40 s (même grille de mesures)
 CUT0, CUT1 = 8.2, 10.2
+# et le chantier dure 4 s de plus (2 mesures) : la timeline d'origine s'arrête à 23 s ; ses bruitages sont posés directement en temps vidéo
+HOLD0, HOLD = 23.0, 4.0
 OUT = os.path.join(os.path.dirname(__file__), "..", "out")
 rng = np.random.default_rng(7)
 
@@ -106,25 +108,25 @@ ROOT = {"F": "F2", "C": "C2", "Dm": "D2", "Bb": "Bb1"}
 pad = np.zeros((N, 2)); mar = np.zeros((N, 2)); bass = np.zeros((N, 2)); drums = np.zeros((N, 2))
 for k in range(int(DUR / BAR)):
     t0 = k * BAR; name, chord, arp = PROG[k % 4]
-    if t0 >= 38: name, chord, arp = PROG[0]
+    if t0 >= 42: name, chord, arp = PROG[0]
     tp = tt(BAR + 0.4); L = sum(saw(note(n) * 1.003, tp, rng.random()) for n in chord); R = sum(saw(note(n) * 0.997, tp, rng.random()) for n in chord)
     place(pad, np.stack([lp(L, 900, 4), lp(R, 900, 4)], 1) * env(len(tp), 0.3, 0.4)[:, None] * 0.018, t0)
-    for i in range(16 if t0 < 38 else 4):
+    for i in range(16 if t0 < 42 else 4):
         tb = t0 + i * 0.125
         if i % 2 == 0 or t0 >= 5.0: place(mar, marimba(note(arp[(i // 2) % 4]) * (2 if i % 2 else 1), 0.45, 0.07 if i % 2 == 0 else 0.035), tb, pan=-0.25 if (i // 2) % 2 else 0.25)
-    if t0 >= 4.0 and t0 < 39.0:
+    if t0 >= 4.0 and t0 < 43.0:
         f = note(ROOT[name])
         for q, d in ((0, 0.45), (0.75, 0.2), (1.0, 0.45), (1.5, 0.4)):
             tq = tt(d); place(bass, (np.sin(2 * np.pi * f * 2 * tq) * 0.8 + np.sin(2 * np.pi * f * 4 * tq) * 0.15) * env(len(tq), 0.005, 0.08) * 0.22, t0 + q)
-    if 5.0 <= t0 < 39.0:
+    if 5.0 <= t0 < 43.0:
         place(drums, kick(0.42), t0); place(drums, kick(0.32), t0 + 1.0)
         place(drums, clap(0.13), t0 + 0.5, pan=0.05); place(drums, clap(0.13), t0 + 1.5, pan=0.05)
         for i in range(16): place(drums, shaker(0.05 if i % 2 else 0.028), t0 + i * 0.125, pan=0.3)
 music += reverb(pad, 2.4, 0.4) + reverb(mar, 1.4, 0.22) + bass + reverb(drums, 0.8, 0.08)
 # motif de glockenspiel sur le logo (début et fin)
 for k, nm in enumerate(["C5", "F5", "A5", "C6"]): place(music, glock(note(nm), 1.4, 0.05), 1.05 + k * 0.12)
-for k, nm in enumerate(["C5", "F5", "A5", "C6", "F6"]): place(music, glock(note(nm), 1.6, 0.05), 35.9 + k * 0.1)
-t = tt(2.0); place(music, np.sin(2 * np.pi * np.cumsum(40 + 40 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.2) * 0.25, 39.0)
+for k, nm in enumerate(["C5", "F5", "A5", "C6", "F6"]): place(music, glock(note(nm), 1.6, 0.05), 39.9 + k * 0.1)
+t = tt(2.0); place(music, np.sin(2 * np.pi * np.cumsum(40 + 40 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.2) * 0.25, 43.0)
 
 # ---------------------------- BRUITAGES ----------------------------
 def boing(f0=180, f1=520, d=0.4, g=0.08):
@@ -181,9 +183,6 @@ place(sb, tick(3200, 0.07), 19.62); place(sb, chime("C6", 0.04), 19.8)
 for i, tm in enumerate((19.75, 20.55, 21.3)): place(sb, pop(900 + 200 * i, 0.05), tm, pan=-0.3 + 0.3 * i)
 # le chantier
 place(sb, whoosh(1.2, 300, 3000, 0.06, -0.5, 0.5), 21.45)
-for i in range(36): place(sb, clack(0.025), 22.7 + i * 0.1, pan=0.35)
-for k in range(9): place(sb, tok(0.05), 22.6 + (np.pi / 2 + 2 * np.pi * k) / 9 - 0.0, pan=0.1)
-for i, tm in enumerate((22.95, 23.75, 24.5, 25.4)): place(sb, pop(800 + 150 * i, 0.06), tm, pan=0.0)
 steps(26.8, 27.8, 0.18); place(sb, pop(900, 0.06), 28.0); place(sb, pop(1300, 0.05), 28.3)
 for i in range(3): place(sb, tick(2400 + 300 * i, 0.06), 28.6 + i * 0.6); place(sb, glock(note(["C6", "E6", "G6"][i]), 0.8, 0.035), 28.62 + i * 0.6)
 # la carte
@@ -195,7 +194,13 @@ place(sb, whoosh(1.2, 300, 3000, 0.06, -0.5, 0.5), 35.9); steps(36.3, 36.95, 0.1
 place(sb, boing(220, 700, 0.6, 0.08), 37.15); place(sb, whoosh(0.6, 1000, 8000, 0.05, -0.2, 0.2), 37.3)
 place(sb, tick(3000, 0.08), 37.9); place(sb, shimmer(1.6, 2000, 0.06, 12), 37.92)
 for i, tm in enumerate((38.3, 38.7, 39.0)): place(sb, pop(1000 + 150 * i, 0.05), tm)
-sb = np.concatenate([sb[:int(SR * CUT0)], sb[int(SR * CUT1):]])
+sb = np.concatenate([sb[:int(SR * CUT0)], sb[int(SR * CUT1):int(SR * HOLD0)], np.zeros((int(SR * HOLD), 2)), sb[int(SR * HOLD0):]])[:N]
+# le chantier, en temps vidéo (horloge t4 de l'animation = vidéo + 2 s) : cloison, coups de marteau, badges des 6 secteurs
+for i in range(4): place(sb, clack(0.04), 20.7 + i * .12, pan=0.35)
+for i in range(3): place(sb, tok(0.05), 21.25 + i * .3, pan=0.3)
+place(sb, tick(2200, 0.05), 22.3); place(sb, tick(2600, 0.05), 22.5)
+for k in range(33, 46): place(sb, tok(0.045), (2 * k + 1) * np.pi / 9 - 2.0, pan=0.1)
+for i, tm in enumerate((24.07, 24.89, 25.59, 26.33, 27.01, 27.65)): place(sb, pop(800 + 110 * i, 0.06), tm, pan=-0.2 if i % 2 == 0 else 0.2)
 sfx = reverb(sb, 1.2, 0.15)
 
 fade = np.ones(N); fN = int(SR * 0.8); fade[-fN:] = np.linspace(1, 0, fN) ** 1.5
