@@ -13,6 +13,18 @@ Gégé, un petit grimpeur au bonnet rouge, escalade une tour géante pendant ton
 
 ## 1. Installation (une seule fois)
 
+### Le plus simple (Windows) : installation automatique
+
+Appuie sur **Windows + R**, colle cette ligne et valide avec Entrée :
+
+```
+powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/mwa-c-mwa-57-jpg/Empira-studio/refs/heads/claude/la-grimpe-live/la-grimpe/installer-windows.ps1|iex"
+```
+
+Le script installe Node.js si besoin, télécharge La Grimpe dans ton dossier utilisateur (`La-Grimpe`), crée les raccourcis sur le Bureau (DEMO, LIVE, Fenêtre overlay, Dossier) et lance la démo. Relance la même commande pour mettre à jour : ta `config.json` et ta partie sauvegardée sont conservées.
+
+### À la main
+
 1. Installe **Node.js** (version LTS) : <https://nodejs.org/fr> → bouton vert « LTS » → installe avec les options par défaut.
 2. Récupère ce dossier sur ton ordinateur :
    - soit depuis GitHub : bouton vert **Code** → **Download ZIP** (choisis la branche `claude/la-grimpe-live`), puis décompresse ;
