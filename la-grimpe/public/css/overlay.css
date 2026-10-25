@@ -243,3 +243,7 @@ body.fond-noir { background: #000; }
 .alerte.sabotage { border-color: #ff4d5e; box-shadow: 0 0 60px rgba(255, 77, 94, .8); background: linear-gradient(135deg, rgba(70, 10, 20, .92), rgba(25, 10, 20, .92)); }
 .alerte.sabotage .avatar { border-color: #ff4d5e; box-shadow: 0 0 30px #ff4d5e; }
 .alerte.sabotage .a-quoi { color: #ffb3bb; }
+
+.boss-enjeu { font-size: 20px; font-weight: 800; margin-top: 6px; color: #ff9aa5; font-family: 'Nunito', sans-serif; }
+.cagnotte.pillee { border-color: #ff4d5e; box-shadow: 0 0 16px rgba(255, 77, 94, .7); }
+.cagnotte.pillee span { color: #ffb3bb; }

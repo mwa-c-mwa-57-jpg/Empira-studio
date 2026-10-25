@@ -316,6 +316,53 @@ const tests = {
     assert.ok(b, 'un boss au hasard est apparu');
     assert.strictEqual(b.d.saboteur, null);
   }
+,
+  'économie : 3 000 pièces de saboteur annulent 3 000 pièces d\'aide (cagnotte et mètres)'() {
+    const { jeu, evts, avancer } = creer();
+    jeu.etat.objIndex = 14; // refuge 15 : Taureau, 2 999 pièces pour 300 m
+    jeu.etat.alt = 4499;
+    jeu.energie = 100;
+    jeu.onCadeau({ user: u('tom'), nom: 'Ours dansants', pieces: 3000, giftType: 2, repeatCount: 1, repeatEnd: true });
+    avancer(31);
+    const fin = evts.find(e => e.type === 'bossFin');
+    assert.ok(!fin.d.gagne);
+    assert.strictEqual(fin.d.dette, 3000);
+    assert.strictEqual(jeu.etat.cagnotte, -3000);
+    assert.ok(fin.d.perte >= 290, 'perte ' + fin.d.perte); // ≈ 300 m, le prix d'un refuge
+    // Il faut maintenant 3 000 + 2 999 pièces pour ouvrir le refuge
+    jeu.onCadeau(Object.assign(cadeau(14), { user: u('lea') }));
+    assert.strictEqual(jeu.etat.objIndex, 14);
+    jeu.onCadeau({ user: u('lea'), nom: 'x', pieces: 3000, giftType: 2, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.etat.objIndex, 15);
+  },
+  'économie : au début, un petit pigeon pèse plus lourd (les mètres y coûtent moins cher)'() {
+    const { jeu, evts, avancer } = creer();
+    jeu.etat.objIndex = 2; // refuge 3 : Rosa, 10 pièces pour 300 m
+    jeu.etat.alt = 750;
+    jeu.energie = 100;
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    avancer(16);
+    const fin = evts.find(e => e.type === 'bossFin');
+    assert.strictEqual(fin.d.perte, 150); // 5 pièces × 300 m / 10 pièces
+    assert.strictEqual(jeu.etat.cagnotte, -5);
+  },
+  'réglage « partage » : le cadeau bat d\'abord le boss, le reste va dans la cagnotte'() {
+    const { jeu, config } = creer();
+    config.saboteurs.cadeauxContreBoss = 'partage';
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau(Object.assign(cadeau(4), { user: u('lea') })); // Donut 30 : 10 pièces pour le pigeon (60 PV)
+    assert.strictEqual(jeu.boss, null);
+    // Les 20 pièces restantes vont dans la cagnotte : TikTok (1) + Tofu (5) + Rosa (10) = 16, il reste 4
+    assert.strictEqual(jeu.etat.objIndex, 3);
+    assert.strictEqual(jeu.etat.cagnotte, 4);
+  },
+  'réglage « non » : seuls les taps frappent le boss'() {
+    const { jeu, config } = creer();
+    config.saboteurs.cadeauxContreBoss = 'non';
+    jeu.onCadeau({ user: u('tom'), nom: 'Cœur avec les doigts', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    jeu.onCadeau(Object.assign(cadeau(13), { user: u('lea') }));
+    assert.ok(jeu.boss && jeu.boss.pv === 60);
+  }
 };
 
 let ok = 0, ko = 0;

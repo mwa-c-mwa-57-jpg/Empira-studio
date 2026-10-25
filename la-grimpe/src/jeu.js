@@ -280,6 +280,20 @@ class Jeu {
       objectifIndex: iMatch
     }));
 
+    // Pendant un combat, le cadeau frappe le boss (réglage saboteurs.cadeauxContreBoss) :
+    //   "double"  : il frappe le boss ET remplit la cagnotte (par défaut)
+    //   "partage" : ses pièces servent d'abord à battre le boss, le reste va dans la cagnotte
+    //   "non"     : seuls les taps frappent le boss
+    const RS = this.reglesSaboteurs();
+    let pourCagnotte = valeur;
+    let coupsBoss = 0;
+    if (this.boss && RS.cadeauxContreBoss !== 'non') {
+      const besoin = Math.ceil(Math.max(0, this.boss.pv) / RS.degatsParPiece);
+      const utilise = RS.cadeauxContreBoss === 'partage' ? Math.min(valeur, besoin) : valeur;
+      coupsBoss = utilise * RS.degatsParPiece;
+      if (RS.cadeauxContreBoss === 'partage') pourCagnotte = valeur - utilise;
+    }
+
     // Cagnotte de l'objectif en cours (le bon cadeau, ou n'importe quel cadeau de valeur égale ou supérieure).
     const refuges = [];
     if (this.etat.objIndex < this.N) {
@@ -287,7 +301,7 @@ class Jeu {
       if (nomNorm && this.aliases[this.etat.objIndex].has(nomNorm) && !(g.pieces > 0)) {
         this.etat.cagnotte = Math.max(this.etat.cagnotte, obj.pieces);
       }
-      this.etat.cagnotte += valeur;
+      this.etat.cagnotte += pourCagnotte;
       while (this.etat.objIndex < this.N && this.etat.cagnotte >= this.objectifs[this.etat.objIndex].pieces) {
         this.etat.cagnotte -= this.objectifs[this.etat.objIndex].pieces;
         refuges.push(this.etat.objIndex);
@@ -326,12 +340,12 @@ class Jeu {
       }
     }
     // Pendant un combat, chaque cadeau d'aide frappe le boss (1 pièce = plusieurs coups)
-    if (this.boss) this.frapper(u, valeur * this.reglesSaboteurs().degatsParPiece);
+    if (coupsBoss) this.frapper(u, coupsBoss);
   }
 
   // ---------- Saboteurs et boss ----------
   reglesSaboteurs() {
-    return Object.assign({ degatsParTap: 1, degatsParPiece: 6, bossAleatoires: true, minutesEntreBossAleatoires: 7 }, this.config.saboteurs || {});
+    return Object.assign({ degatsParTap: 1, degatsParPiece: 6, bossAleatoires: true, minutesEntreBossAleatoires: 7, cadeauxContreBoss: 'double', detteCagnotte: true }, this.config.saboteurs || {});
   }
 
   trouverSaboteur(nom) {
@@ -348,7 +362,7 @@ class Jeu {
     const chute = s.chute * Math.min(repeat, 3);
     const type = BOSS[s.boss] ? s.boss : 'pigeon';
     this.emit('sabotage', Object.assign(infos, { valeur, boss: type, nomBoss: BOSS[type].nom, image: infos.image || s.image, renfort: !!this.boss }));
-    const demande = { type, pv, secondes: s.secondes || 20, chute, saboteur: this.publicUser(u), image: s.image };
+    const demande = { type, pv, secondes: s.secondes || 20, chute, valeur, saboteur: this.publicUser(u), image: s.image };
     if (this.boss) this.renforcer(demande);
     else if (this.miniJeu || this.fileBoss.length || this.now() < this.prochainBossApres) {
       if (this.fileBoss.length < 5) this.fileBoss.push(demande);
@@ -358,7 +372,7 @@ class Jeu {
   lancerBoss(d) {
     const t = this.now();
     const info = BOSS[d.type];
-    this.boss = { type: d.type, nom: info.nom, emoji: info.emoji, pv: d.pv, pvMax: d.pv, debut: t, fin: t + d.secondes * 1000, chute: d.chute, saboteur: d.saboteur || null, image: d.image || '', degats: {} };
+    this.boss = { type: d.type, nom: info.nom, emoji: info.emoji, pv: d.pv, pvMax: d.pv, debut: t, fin: t + d.secondes * 1000, chute: d.chute, valeur: d.valeur || 0, saboteur: d.saboteur || null, image: d.image || '', degats: {} };
     const cle = 'boss' + d.type.charAt(0).toUpperCase() + d.type.slice(1);
     this.emit('boss', Object.assign(this.bossPublic(), { texte: this.texte(cle) }));
   }
@@ -369,7 +383,8 @@ class Jeu {
     b.pv += d.pv;
     b.pvMax += d.pv;
     b.fin = Math.min(b.fin + 5000, t + 45000);
-    b.chute += Math.round(d.chute / 2);
+    b.chute = Math.max(b.chute, d.chute);
+    b.valeur += d.valeur || 0;
     this.emit('bossRenfort', Object.assign(this.bossPublic(), { par: d.saboteur }));
   }
 
@@ -389,7 +404,7 @@ class Jeu {
     this.prochainBossApres = t + 4000;
     const meilleurs = Object.entries(b.degats).sort((x, y) => y[1] - x[1]).slice(0, 3)
       .map(([id, d]) => Object.assign(this.publicUser(this.etat.users[id]), { degats: Math.round(d) }));
-    let perte = 0;
+    let perte = 0, dette = 0;
     if (gagne) {
       this.etat.bossVaincus++;
       this.boostRestant += 15;
@@ -397,17 +412,35 @@ class Jeu {
     } else {
       this.etat.bossPerdus++;
       // Jamais sous le dernier refuge débloqué : les cadeaux des autres ne sont jamais annulés
+      const enjeu = this.enjeuBoss(b);
       const avant = this.etat.alt;
-      this.etat.alt = Math.max(this.sol(), this.etat.alt - b.chute);
+      this.etat.alt = Math.max(this.sol(), this.etat.alt - enjeu.metres);
       perte = Math.round(avant - this.etat.alt);
+      dette = enjeu.pieces;
+      this.etat.cagnotte -= dette;
       this.energie = Math.max(10, this.energie - 30);
       this.boostRestant = 0;
     }
     this.emit('bossFin', {
-      gagne, type: b.type, nom: b.nom, emoji: b.emoji, saboteur: b.saboteur, perte,
+      gagne, type: b.type, nom: b.nom, emoji: b.emoji, saboteur: b.saboteur, perte, dette,
       coupFinal: gagne && coupFinal ? this.publicUser(coupFinal) : null, meilleurs,
       texte: this.texte(gagne ? 'bossGagne' : 'bossPerdu')
     });
+  }
+
+  // Ce que coûte un boss qui gagne. Règle : 1 pièce de saboteur annule 1 pièce d'aide.
+  //  - la cagnotte du refuge en cours perd la valeur du sabotage (elle peut passer en négatif) ;
+  //  - la mascotte perd les mètres que ces pièces auraient fait gagner au prix du refuge en cours
+  //    (prix du refuge / 300 m), au moins la chute minimum du boss, jamais sous le dernier refuge.
+  enjeuBoss(b) {
+    const RS = this.reglesSaboteurs();
+    const prix = (this.objectifCourant() || this.objectifs[this.N - 1]).pieces;
+    const metres = Math.max(b.chute, Math.round(b.valeur * this.esp / Math.max(1, prix)));
+    const possible = Math.max(0, Math.floor(this.etat.alt - this.sol()));
+    return {
+      metres: Math.min(metres, possible),
+      pieces: RS.detteCagnotte && this.etat.objIndex < this.N ? b.valeur : 0
+    };
   }
 
   bossAleatoire() {
@@ -420,13 +453,13 @@ class Jeu {
     const secondes = 18;
     const pv = Math.max(40, Math.min(800, Math.round(parSeconde * secondes * 0.7)));
     this.dernierBossAleatoire = t;
-    this.lancerBoss({ type, pv, secondes, chute: 10, saboteur: null });
+    this.lancerBoss({ type, pv, secondes, chute: 10, valeur: 0, saboteur: null });
   }
 
   bossPublic() {
     const b = this.boss;
     if (!b) return null;
-    return { type: b.type, nom: b.nom, emoji: b.emoji, pv: Math.max(0, Math.ceil(b.pv)), pvMax: b.pvMax, debut: b.debut, fin: b.fin, maintenant: this.now(), chute: b.chute, saboteur: b.saboteur, image: b.image };
+    return { type: b.type, nom: b.nom, emoji: b.emoji, pv: Math.max(0, Math.ceil(b.pv)), pvMax: b.pvMax, debut: b.debut, fin: b.fin, maintenant: this.now(), chute: b.chute, valeur: b.valeur, enjeu: this.enjeuBoss(b), saboteur: b.saboteur, image: b.image };
   }
 
   saboteursClassement(n = 3) {

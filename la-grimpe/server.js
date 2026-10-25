@@ -102,6 +102,7 @@ function configPublique() {
     phrasesBandeau: config.autopilote.phrasesBandeau.map(p => p.replace(/\{mascotte\}/g, config.mascotte.nom)).concat(phrasesSaboteurs()),
     saboteurs: listeSaboteurs().map(s => ({ nom: s.nom, pieces: s.pieces, image: s.image, boss: s.boss, nomBoss: (BOSS[s.boss] || BOSS.pigeon).nom, emoji: (BOSS[s.boss] || BOSS.pigeon).emoji })),
     degatsParPiece: (config.saboteurs || {}).degatsParPiece || 6,
+    cadeauxContreBoss: (config.saboteurs || {}).cadeauxContreBoss || 'double',
     secondesEntrePhrasesBandeau: config.autopilote.secondesEntrePhrasesBandeau,
     commandes: Object.keys(config.commandesChat.liste),
     fichiersPerso: config.sons.fichiersPerso || {},
@@ -128,7 +129,7 @@ function etatComplet() {
   return Object.assign(jeu.etatPublic(), {
     connexion,
     spectateurs,
-    reglages,
+    reglages: Object.assign({}, reglages, { cadeauxContreBoss: (config.saboteurs || {}).cadeauxContreBoss || 'double' }),
     bots: bots.actif,
     ecranFin
   });
@@ -160,6 +161,11 @@ function commande(c) {
     case 'present': break;
     case 'autopilote': jeu.autopilote = !!c.valeur; break;
     case 'reglage':
+      if (c.cle === 'cadeauxContreBoss' && ['double', 'partage', 'non'].includes(c.valeur)) {
+        config.saboteurs = config.saboteurs || {};
+        config.saboteurs.cadeauxContreBoss = c.valeur;
+        break;
+      }
       if (c.cle in reglages) reglages[c.cle] = c.cle === 'volume' ? Math.max(0, Math.min(1, Number(c.valeur))) : !!c.valeur;
       break;
     case 'son': diffuser({ t: 'evt', type: 'son', d: { son: String(c.son), regie: true } }); break;

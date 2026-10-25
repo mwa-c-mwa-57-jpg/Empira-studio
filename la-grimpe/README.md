@@ -114,7 +114,7 @@ La partie est sauvegardée toutes les 3 secondes (dossier `donnees/`). Si le PC 
 
 Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17 refuges**, lâchent un boss sur lui :
 
-| Cadeau saboteur | Pièces | Boss | Vie | Temps pour le battre | S'il gagne |
+| Cadeau saboteur | Pièces | Boss | Vie | Temps pour le battre | Chute minimum |
 |---|---|---|---|---|---|
 | Cœur avec les doigts | 5 | 🐦 Pigeon | 60 | 15 s | −15 m |
 | Cœur dans les mains | 100 | 🕷️ Araignée (bloque la grimpe) | 600 | 20 s | −50 m |
@@ -122,9 +122,18 @@ Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17
 | Galaxie | 1 000 | 👽 Alien | 6 000 | 25 s | −150 m |
 | Ours dansants | 3 000 | 🐻 Ours géant | 18 000 | 30 s | −200 m |
 
-- **Pour le battre** : chaque tap = 1 coup, chaque pièce d'un cadeau d'aide = 6 coups (un Donut = 180 coups).
-- **Un saboteur pendant un combat renforce le boss** (plus de vie et 5 secondes de plus).
-- **Jamais sous le dernier refuge** : un boss fait perdre de l'altitude, jamais un refuge déjà payé.
+- **Pour le battre** : chaque tap = 1 coup, chaque pièce d'un cadeau d'aide = 6 coups. La vie d'un boss vaut 6 fois son prix : il faut donc **autant de pièces pour le battre qu'il en a coûté au saboteur**. Les taps, gratuits, suffisent pour les petits boss.
+- **Si le boss gagne, 1 pièce de saboteur annule 1 pièce d'aide** :
+  - la **cagnotte** du refuge en cours perd la valeur du sabotage, et peut passer en négatif (« pillée ») ;
+  - Gégé perd **les mètres que ces pièces auraient fait gagner** au prix du refuge en cours (prix du refuge ÷ 300 m), au moins la chute minimum du boss ;
+  - **jamais sous le dernier refuge** : un refuge déjà payé n'est jamais perdu.
+- Exemple : au refuge 15 (Taureau, 2 999 pièces pour 300 m), un Ours dansants à 3 000 pièces qui gagne coûte **300 m et 3 000 pièces de cagnotte**, exactement ce qu'il a coûté. Au refuge 3 (Rosa, 10 pièces pour 300 m), un pigeon à 5 pièces coûte 150 m et 5 pièces.
+- Le panneau du boss affiche l'enjeu en direct : « ⚠️ S'il gagne : −120 m · −500 🪙 dans la cagnotte ».
+- **Les cadeaux pendant un combat** (réglable dans la régie, ou `cadeauxContreBoss` dans `config.json`) :
+  - `double` (par défaut) : ils frappent le boss **et** remplissent la cagnotte ;
+  - `partage` : leurs pièces battent d'abord le boss, le reste va dans la cagnotte ;
+  - `non` : seuls les taps frappent le boss.
+- **Un saboteur pendant un combat renforce le boss** (plus de vie, 5 secondes de plus, et un enjeu plus gros).
 - Les cadeaux saboteurs ne remplissent pas la cagnotte et n'entrent pas dans la cordée : ils ont leur propre classement, « Team Chute ». L'écran de fin affiche le saboteur de la soirée.
 - L'autopilote lâche aussi un **boss sauvage** toutes les 7 minutes environ quand c'est calme (pigeon, chauve-souris, orage ou alien selon l'altitude), avec une vie adaptée au nombre de taps.
 - Dans la régie : bouton **👾 Boss au hasard**, et en mode démo **😈 Saboter**.

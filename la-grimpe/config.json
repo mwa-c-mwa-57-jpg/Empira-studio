@@ -74,6 +74,8 @@
     "degatsParPiece": 6,
     "bossAleatoires": true,
     "minutesEntreBossAleatoires": 7,
+    "cadeauxContreBoss": "double",
+    "detteCagnotte": true,
     "liste": [
       { "nom": "Cœur avec les doigts", "pieces": 5, "image": "saboteurs/1.png", "alias": ["coeur avec les doigts", "finger heart"],
         "boss": "pigeon", "pv": 60, "secondes": 15, "chute": 15 },

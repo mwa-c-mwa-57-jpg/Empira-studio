@@ -79,3 +79,6 @@ button:disabled { opacity: .4; }
 .ap-texte { font-size: 18px; max-width: 520px; }
 .present.grand { margin: 0; font-size: 30px; padding: 26px 40px; min-height: 90px; }
 #deconnecte { position: fixed; left: 10px; right: 10px; bottom: 10px; z-index: 60; padding: 12px 16px; border-radius: 12px; background: #991b1b; font-weight: 700; text-align: center; }
+
+.choix { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; font-weight: 600; }
+.choix select { min-height: 48px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--bord); background: #0f0b12; color: var(--texte); font-size: 15px; }

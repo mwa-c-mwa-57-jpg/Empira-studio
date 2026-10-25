@@ -161,8 +161,12 @@
       $('refuge-nom').textContent = o.nom;
       if ($('refuge-img').getAttribute('src') !== o.image) $('refuge-img').src = o.image;
       $('cagnotte-rempli').style.width = clamp(e.cagnotte / o.pieces * 100, 0, 100) + '%';
-      $('cagnotte-texte').textContent = `${nf(e.cagnotte)} / ${nf(o.pieces)} 🪙`;
-      $('refuge-sous').textContent = `Envoyez un ${o.nom}, ou ${nf(o.pieces)} pièces en cadeaux`;
+      const pillee = e.cagnotte < 0;
+      document.querySelector('.cagnotte').classList.toggle('pillee', pillee);
+      $('cagnotte-texte').textContent = pillee ? `😈 Pillée : ${nf(e.cagnotte)} 🪙` : `${nf(e.cagnotte)} / ${nf(o.pieces)} 🪙`;
+      $('refuge-sous').textContent = pillee
+        ? `Les saboteurs ont pillé la cagnotte : ${nf(o.pieces - e.cagnotte)} pièces pour ouvrir`
+        : `Envoyez un ${o.nom}, ou ${nf(o.pieces)} pièces en cadeaux`;
     }
     document.querySelectorAll('.pastille').forEach((p, i) => {
       p.classList.toggle('ok', i < idx);
@@ -609,11 +613,17 @@
       el.innerHTML = `<div class="boss-tete"><span class="boss-emoji">${b.emoji}</span><span class="boss-nom">${esc(b.nom).toUpperCase()}</span></div>
         <div class="boss-par">${par}</div>
         <div class="boss-pv"><div id="boss-pv-r"></div><span id="boss-pv-t"></span></div>
-        <div class="boss-consigne">👆 Tapez pour frapper · 🎁 1 pièce = ${CFG.degatsParPiece || 6} coups</div>
+        <div class="boss-consigne">👆 Tapez pour frapper${((ETAT && ETAT.reglages && ETAT.reglages.cadeauxContreBoss) || CFG.cadeauxContreBoss) === 'non' ? '' : ` · 🎁 1 pièce = ${CFG.degatsParPiece || 6} coups`}</div>
+        <div class="boss-enjeu" id="boss-enjeu"></div>
         <div class="boss-timer"><div id="boss-timer"></div></div>`;
       hydrater(el);
     }
     majPvBoss(b.pv, b.pvMax);
+    const en = b.enjeu || { metres: 0, pieces: 0 };
+    const morceaux = [];
+    if (en.metres > 0) morceaux.push(`−${nf(en.metres)} m`);
+    if (en.pieces > 0) morceaux.push(`−${nf(en.pieces)} 🪙 dans la cagnotte`);
+    $('boss-enjeu').textContent = morceaux.length ? `⚠️ S'il gagne : ${morceaux.join(' · ')}` : '🛡️ Le refuge protège Gégé';
   }
   function majPvBoss(pv, pvMax) {
     if (!bossL) return;
@@ -909,7 +919,10 @@
           emoji(d.emoji, bossPos.x, bossPos.y, 1, { taille: 120, vitesse: 300, monte: -200, gravite: 900 });
           forcer('joie', 'joie', 3);
         } else {
-          banniere('😈 PERDU…', d.perte > 0 ? `${d.emoji} ${esc(d.nom)} a gagné : ${esc(CFG.mascotte)} redescend de ${nf(d.perte)} m 😭` : `${d.emoji} ${esc(d.nom)} a gagné, mais le refuge l'a protégé 😅`, { classe: 'rouge' });
+          const pertes = [];
+          if (d.perte > 0) pertes.push(`−${nf(d.perte)} m`);
+          if (d.dette > 0) pertes.push(`cagnotte −${nf(d.dette)} 🪙`);
+          banniere('😈 PERDU…', `${d.emoji} ${esc(d.nom)} a gagné${pertes.length ? ' : ' + pertes.join(' et ') + ' 😭' : ', mais le refuge a protégé Gégé 😅'}`, { classe: 'rouge' });
           son('echec', 'boss');
           forcer('accroche', 'peur', 1.8);
           secouer(14);

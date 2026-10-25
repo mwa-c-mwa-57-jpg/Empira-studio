@@ -68,6 +68,7 @@
     $('r-auto').checked = e.autopilote;
     $('r-sons').checked = e.reglages.sonsAutomatiques;
     $('r-regie').checked = e.reglages.aussiSurLaRegie;
+    if (document.activeElement !== $('r-contre-boss')) $('r-contre-boss').value = e.reglages.cadeauxContreBoss || 'double';
     if (document.activeElement !== $('r-volume')) $('r-volume').value = e.reglages.volume;
     Sons.setVolume(e.reglages.volume);
     $('sim-bots').checked = e.bots;
@@ -76,7 +77,7 @@
     if (e.objIndex < N) {
       const o = CFG.objectifs[e.objIndex];
       $('i-refuge').textContent = `🏔️ Refuge ${e.objIndex + 1}/${N}`;
-      $('obj-courant').innerHTML = `<img src="${esc(o.image)}" alt=""><div style="flex:1"><b>${e.objIndex + 1}. ${esc(o.nom)}</b><div>Cagnotte : ${nf(e.cagnotte)} / ${nf(o.pieces)} 🪙</div><div class="barre"><div style="width:${Math.min(100, e.cagnotte / o.pieces * 100)}%"></div></div></div>`;
+      $('obj-courant').innerHTML = `<img src="${esc(o.image)}" alt=""><div style="flex:1"><b>${e.objIndex + 1}. ${esc(o.nom)}</b><div>Cagnotte : ${nf(e.cagnotte)} / ${nf(o.pieces)} 🪙${e.cagnotte < 0 ? ' 😈 pillée' : ''}</div><div class="barre"><div style="width:${Math.min(100, e.cagnotte / o.pieces * 100)}%"></div></div></div>`;
     } else {
       $('i-refuge').textContent = '🏔️ Tous les refuges';
       $('obj-courant').innerHTML = '<b>🎉 Tous les refuges sont débloqués !</b>';
@@ -148,6 +149,7 @@
   $('r-auto').addEventListener('change', e => envoyer('autopilote', { valeur: e.target.checked }));
   $('r-sons').addEventListener('change', e => envoyer('reglage', { cle: 'sonsAutomatiques', valeur: e.target.checked }));
   $('r-regie').addEventListener('change', e => envoyer('reglage', { cle: 'aussiSurLaRegie', valeur: e.target.checked }));
+  $('r-contre-boss').addEventListener('change', e => envoyer('reglage', { cle: 'cadeauxContreBoss', valeur: e.target.value }));
   $('r-volume').addEventListener('change', e => envoyer('reglage', { cle: 'volume', valeur: Number(e.target.value) }));
 
   $('btn-obj-plus').addEventListener('click', () => { if (confirm('Valider le refuge en cours sans cadeau ?')) envoyer('objectif', { delta: 1 }); });

@@ -66,6 +66,13 @@
       <label class="interrupteur"><input type="checkbox" id="r-sons"><span></span> Sons automatiques (cadeaux, voix)</label>
       <label class="interrupteur"><input type="checkbox" id="r-regie"><span></span> Jouer aussi les sons sur cet appareil</label>
       <label class="volume">🔈 <input type="range" id="r-volume" min="0" max="1" step="0.05"> 🔊</label>
+      <label class="choix">⚔️ Cadeaux pendant un boss
+        <select id="r-contre-boss">
+          <option value="double">Frappent le boss ET remplissent la cagnotte</option>
+          <option value="partage">Battent d'abord le boss, le reste va dans la cagnotte</option>
+          <option value="non">Ne frappent pas le boss (taps seulement)</option>
+        </select>
+      </label>
     </section>
 
     <section class="carte">
