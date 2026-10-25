@@ -494,3 +494,9 @@ body.fond-noir { background: #000; }
 .podium .p1 .bloc { height: 100px; } .podium .p2 .bloc { height: 72px; } .podium .p3 .bloc { height: 52px; }
 .podium .bloc { font-size: 44px; padding-top: 4px; }
 .fin-merci { font-size: 30px; margin-top: 18px; }
+
+/* Un seul événement au premier plan : pendant un boss ou un mini-jeu, les classements s'effacent */
+#cordee, #saboteurs, #duel { transition: opacity .5s, transform .5s; }
+#scene.focus #cordee { opacity: .12; transform: translateX(-30px) scale(.94); }
+#scene.focus #saboteurs { opacity: .12; transform: translateX(30px) scale(.94); }
+#scene.focus #duel { opacity: .55; }

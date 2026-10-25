@@ -728,13 +728,13 @@
         ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(bx, -60); ctx.lineTo(bx, by - 50); ctx.stroke();
         // Toile autour de la mascotte
-        ctx.strokeStyle = 'rgba(255,255,255,.5)';
+        ctx.strokeStyle = 'rgba(255,255,255,.32)';
         const cy = my - 40;
         for (let k = 0; k < 12; k++) {
           const a = k / 12 * Math.PI * 2;
-          ctx.beginPath(); ctx.moveTo(mx, cy); ctx.lineTo(mx + Math.cos(a) * 240, cy + Math.sin(a) * 270); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(mx, cy); ctx.lineTo(mx + Math.cos(a) * 190, cy + Math.sin(a) * 210); ctx.stroke();
         }
-        for (let r = 60; r <= 240; r += 60) {
+        for (let r = 55; r <= 190; r += 45) {
           ctx.beginPath();
           for (let k = 0; k <= 12; k++) {
             const a = k / 12 * Math.PI * 2;
@@ -923,7 +923,8 @@
   function evenement(type, d) {
     switch (type) {
       case 'cadeau': {
-        ajouterAlerte(d);
+        if (d.tier >= 2) ajouterAlerte(d);
+        else fil(`🎁 @${d.user.pseudo} envoie ${d.cadeau}${d.repeat > 1 ? ' ×' + d.repeat : ''}`);
         const img = d.image || (d.objectifIndex >= 0 ? CFG.objectifs[d.objectifIndex].image : '');
         ajouterCompagnon(d.style, img);
         if (d.style === 'pluie') pluie('🌸', 40, 2.5);
@@ -950,7 +951,8 @@
         break;
       }
       case 'combo': combo(d); break;
-      case 'sabotage': ajouterAlerte(Object.assign({}, d, { sabotage: true })); break;
+      // Le panneau du boss montre déjà le saboteur : une simple annonce suffit
+      case 'sabotage': if (!d.renfort) fil(`😈 @${d.user.pseudo} lâche un ${d.nomBoss} sur ${CFG.mascotte} !`); break;
       case 'boss':
         rendreBoss(d);
         son('boss', 'boss');
@@ -1021,7 +1023,7 @@
       case 'nouveauChef':
         // Petites sommes (début de live) : la cordée se réordonne simplement, sans bannière ni son
         if (d.user.pieces < reglesSons().applaudirDes) break;
-        banniere(`✂️ @${esc(d.user.pseudo)} COUPE LA CORDE !`, `Nouveau premier de cordée 👑${d.ancien ? ' devant @' + esc(d.ancien.pseudo) : ''}`, { classe: 'rouge', duree: 3600 });
+        fil(`✂️ @${d.user.pseudo} coupe la corde : nouveau premier de cordée 👑`);
         sonAuto('ciseaux', 'chef');
         break;
       case 'record':
@@ -1659,6 +1661,7 @@
     pr.classList.toggle('cache', !(TICK.protection > 0));
     if (TICK.protection > 0) pr.textContent = `🛡️ ${TICK.protection} s`;
     $('voile-alerte').classList.toggle('danger', st === 'accroche');
+    scene.classList.toggle('focus', !!(bossL || MJ));
     $('refuge').classList.toggle('pulse', st === 'bloque');
 
     // Altimètre

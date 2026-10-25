@@ -150,6 +150,7 @@ Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17
   Tout ce qui compte tient donc dans la zone **x 110 → 970, y 296 → 1 235**. Sous 1 240 px, il n'y a que la tour : le chat peut passer dessus sans rien cacher.
 - **Le duel des équipes** sous la carte du refuge : la barre penche du côté de l'équipe qui a envoyé le plus de pièces (🪢 La Cordée contre 😈 Team Chute).
 - **Deux classements, top 3 avec les photos de profil** (le n°1 en plus grand) : La Cordée à gauche (ceux qui aident) et la Team Chute à droite (ceux qui sabotent). Le panneau de gauche alterne toutes les 12 secondes avec les **Top tapeurs**.
+- **Un seul événement au premier plan** : pendant un boss ou un mini-jeu, les classements s'effacent. Les petits cadeaux (moins de 30 pièces), les nouveaux premiers de cordée et les sabotages s'annoncent dans le bandeau du bas au lieu de grandes cartes ; les grandes cartes sont réservées aux cadeaux de 30 pièces et plus.
 - **Écran allégé et agrandi** pour être lisible sur téléphone : l'altitude et le record sont dans la carte du refuge, le panneau du boss et des mini-jeux s'affiche en pleine largeur sous le duel, les annonces (abonnés, partages, `!prout`…) passent quelques secondes dans le bandeau du bas.
 - En mode démo, quelques faux spectateurs ont une photo (illustrations Canva, dossier `public/demo/`) pour voir le rendu des classements.
 - Le logo, les emblèmes des équipes et le fond de l'écran de fin ont été créés avec Canva (dossier `public/visuels/`). Remplace ces fichiers par les tiens en gardant les mêmes noms.
