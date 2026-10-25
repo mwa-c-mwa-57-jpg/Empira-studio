@@ -18,6 +18,7 @@
     regie:      { prio: 92, attente: 0, coupeTout: true }, // l'animateur appuie sur la soundboard : immédiat
     coffre:     { prio: 88, attente: 6000 },  // cagnotte pleine, refuge débloqué
     record:     { prio: 86, attente: 6000 },
+    boss:       { prio: 84, attente: 4000 },  // arrivée et fin d'un boss
     danger:     { prio: 82, attente: 2500 },  // il va lâcher / il tombe
     merciGros:  { prio: 76, attente: 7000 },  // applaudissement d'un cadeau de 1 000 pièces ou plus
     merci:      { prio: 70, attente: 6000 },  // applaudissement d'un cadeau de 100 pièces ou plus

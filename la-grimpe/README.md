@@ -110,6 +110,27 @@ La partie est sauvegardée toutes les 3 secondes (dossier `donnees/`). Si le PC 
 
 ⚠️ Vérifie dans l'appli les prix de **TikTok, Donut, Corgi, Couple puissant, Léon le chaton** et **Léon et Lili**, puis corrige `config.json` si besoin.
 
+### 😈 Team Chute : les saboteurs et les boss
+
+Certains spectateurs préfèrent voir Gégé tomber. Cinq cadeaux, **hors des 17 refuges**, lâchent un boss sur lui :
+
+| Cadeau saboteur | Pièces | Boss | Vie | Temps pour le battre | S'il gagne |
+|---|---|---|---|---|---|
+| Réaction excessive | 5 | 🐦 Pigeon | 60 | 15 s | −15 m |
+| Poing contre poing | 90 | 🕷️ Araignée (bloque la grimpe) | 540 | 20 s | −40 m |
+| Cœur dans les mains | 100 | ⛈️ Nuage d'orage | 600 | 20 s | −50 m |
+| Pistolet à argent | 500 | 👽 Alien | 3 000 | 25 s | −100 m |
+| Ours dansants | 3 000 | 🐻 Ours géant | 18 000 | 30 s | −200 m |
+
+- **Pour le battre** : chaque tap = 1 coup, chaque pièce d'un cadeau d'aide = 6 coups (un Donut = 180 coups).
+- **Un saboteur pendant un combat renforce le boss** (plus de vie et 5 secondes de plus).
+- **Jamais sous le dernier refuge** : un boss fait perdre de l'altitude, jamais un refuge déjà payé.
+- Les cadeaux saboteurs ne remplissent pas la cagnotte et n'entrent pas dans la cordée : ils ont leur propre classement, « Team Chute ». L'écran de fin affiche le saboteur de la soirée.
+- L'autopilote lâche aussi un **boss sauvage** toutes les 7 minutes environ quand c'est calme (pigeon, chauve-souris, orage ou alien selon l'altitude), avec une vie adaptée au nombre de taps.
+- Dans la régie : bouton **👾 Boss au hasard**, et en mode démo **😈 Saboter**.
+
+⚠️ La reconnaissance d'un cadeau saboteur se fait **par son nom** : un « Tofu » à 5 pièces ne doit pas lâcher un pigeon. TikTok envoie parfois les noms en anglais : j'ai ajouté les noms anglais probables (`alias` dans `config.json` → `saboteurs`). Au premier vrai live, regarde la fenêtre noire : chaque cadeau y est écrit avec son nom exact (`🎁 @pseudo : « nom »`). Si un saboteur n'est pas reconnu, ajoute ce nom dans ses `alias`.
+
 ### Mini-jeux (un toutes les 9 minutes avec l'autopilote)
 
 - 🎲 **Vote du destin** : le chat écrit `aide` (échelle géante) ou `piège` (banane, rafale de vent ou pigeon).
@@ -133,7 +154,7 @@ Deux effets sonores ne se superposent jamais. Chaque son a une priorité :
 | Priorité | Sons |
 |---|---|
 | 1. Immédiat | La **soundboard de l'animateur** (coupe tout le reste), l'écran de fin, le sommet |
-| 2. Très haute | Le **coffre** (refuge débloqué), nouveau record, « il va lâcher » et la chute |
+| 2. Très haute | Le **coffre** (refuge débloqué), nouveau record, **arrivée et fin d'un boss**, « il va lâcher » et la chute |
 | 3. Haute | Applaudissements des **cadeaux de 1 000 puis de 100 pièces**, mini-jeux, toc toc |
 | 4. Moyenne | Nouveau premier de cordée, applaudissement de fin de rafale, atterrissage |
 | 5. Basse | Paliers de taps, bisou, abonnements et partages (un son toutes les 20 s au plus) |

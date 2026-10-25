@@ -237,6 +237,85 @@ const tests = {
     assert.strictEqual(jeu.statut, 'bloque');
     assert.ok(evts.some(e => e.type === 'scene' && e.d.type === 'pancarte'));
   }
+,
+  'un cadeau saboteur lâche un boss, sans entrer dans la cordée ni la cagnotte'() {
+    const { jeu, evts } = creer();
+    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.boss.type, 'pigeon');
+    assert.strictEqual(jeu.boss.saboteur.pseudo, 'tom');
+    assert.strictEqual(jeu.etat.cagnotte, 0);
+    assert.strictEqual(jeu.etat.objIndex, 0);
+    assert.strictEqual(jeu.classement().length, 0);
+    assert.strictEqual(jeu.saboteursClassement()[0].pseudo, 'tom');
+    assert.ok(types(evts).includes('sabotage') && types(evts).includes('boss'));
+  },
+  'le nom anglais est reconnu, et un Tofu à 5 pièces n\'est pas un saboteur'() {
+    const { jeu } = creer();
+    jeu.onCadeau(cadeau(1)); // Tofu, même prix que Réaction excessive
+    assert.strictEqual(jeu.boss, null);
+    jeu.onCadeau({ user: u('tom'), nom: 'Money Gun', pieces: 500, giftType: 2, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.boss.type, 'alien');
+  },
+  'les taps battent le pigeon'() {
+    const { jeu, evts } = creer();
+    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    for (let i = 0; i < 6; i++) jeu.onLike({ user: u('lea'), nombre: 10 });
+    const fin = evts.find(e => e.type === 'bossFin');
+    assert.ok(fin.d.gagne);
+    assert.strictEqual(fin.d.coupFinal.pseudo, 'lea');
+    assert.strictEqual(jeu.boss, null);
+    assert.strictEqual(jeu.etat.bossVaincus, 1);
+  },
+  'un cadeau d\'aide frappe le boss (1 pièce = 6 coups)'() {
+    const { jeu, evts } = creer();
+    jeu.onCadeau({ user: u('tom'), nom: 'Poing contre poing', pieces: 90, giftType: 2, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.boss.type, 'araignee');
+    jeu.onCadeau(Object.assign(cadeau(4), { user: u('lea') })); // Donut : 180 coups
+    assert.strictEqual(jeu.boss.pv, 540 - 180);
+    jeu.onCadeau(Object.assign(cadeau(8), { user: u('karim') })); // Corgi : K.O.
+    const fin = evts.find(e => e.type === 'bossFin');
+    assert.ok(fin.d.gagne);
+    assert.strictEqual(fin.d.meilleurs[0].pseudo, 'karim');
+  },
+  'boss non vaincu : il redescend, mais jamais sous le dernier refuge'() {
+    const { jeu, evts, avancer } = creer();
+    jeu.onCadeau(cadeau(0));
+    jeu.etat.alt = 320;
+    jeu.energie = 100;
+    jeu.onCadeau({ user: u('tom'), nom: 'Ours dansants', pieces: 3000, giftType: 2, repeatCount: 1, repeatEnd: true });
+    for (let s = 0; s < 35; s++) { jeu.onLike({ user: u('lea'), nombre: 3 }); avancer(1); }
+    const fin = evts.find(e => e.type === 'bossFin');
+    assert.ok(!fin.d.gagne);
+    assert.ok(jeu.etat.alt >= 300, 'altitude ' + jeu.etat.alt);
+    assert.strictEqual(jeu.etat.objIndex, 1, 'le refuge payé reste débloqué');
+  },
+  'un saboteur renforce le boss en cours'() {
+    const { jeu, evts } = creer();
+    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    const fin = jeu.boss.fin;
+    jeu.onCadeau({ user: u('zoe'), nom: 'Poing contre poing', pieces: 90, giftType: 2, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.boss.type, 'pigeon');
+    assert.strictEqual(jeu.boss.pvMax, 60 + 540);
+    assert.ok(jeu.boss.fin > fin);
+    assert.ok(types(evts).includes('bossRenfort'));
+  },
+  'un boss attend la fin du mini-jeu, et aucun mini-jeu ne démarre pendant un combat'() {
+    const { jeu, avancer } = creer();
+    jeu.lancerMiniJeu('mot');
+    jeu.onCadeau({ user: u('tom'), nom: 'Réaction excessive', pieces: 5, giftType: 1, repeatCount: 1, repeatEnd: true });
+    assert.strictEqual(jeu.boss, null);
+    assert.strictEqual(jeu.fileBoss.length, 1);
+    avancer(50);
+    assert.ok(jeu.boss, 'le boss arrive après le mini-jeu');
+    assert.strictEqual(jeu.lancerMiniJeu('vote'), false);
+  },
+  'l\'autopilote lâche un boss au hasard quand c\'est calme'() {
+    const { jeu, evts, avancer } = creer({ autopilote: { actifAuDemarrage: true, minutesEntreMiniJeux: 999 } });
+    for (let s = 0; s < 8 * 60; s++) { jeu.onLike({ user: u(), nombre: 3 }); jeu.present(); avancer(1); }
+    const b = evts.find(e => e.type === 'boss');
+    assert.ok(b, 'un boss au hasard est apparu');
+    assert.strictEqual(b.d.saboteur, null);
+  }
 };
 
 let ok = 0, ko = 0;

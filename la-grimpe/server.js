@@ -7,7 +7,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { Jeu } = require('./src/jeu');
+const { Jeu, BOSS } = require('./src/jeu');
 const { Bots } = require('./src/demo');
 const { ConnexionTikTok } = require('./src/tiktok');
 
@@ -64,7 +64,9 @@ const jeu = new Jeu(config, {
     etatModifie = true;
     diffuser({ t: 'evt', type, d: donnees });
     if (type === 'refuge') log(`🏁 Refuge ${donnees.index + 1} débloqué${donnees.user ? ' par @' + donnees.user.pseudo : ''}`);
-    if (type === 'cadeau') log(`🎁 @${donnees.user.pseudo} : ${donnees.cadeau} x${donnees.repeat} (${donnees.valeur} pièces)`);
+    if (type === 'cadeau') log(`🎁 @${donnees.user.pseudo} : « ${donnees.cadeau} » x${donnees.repeat} (${donnees.valeur} pièces)`);
+    if (type === 'sabotage') log(`🦹 @${donnees.user.pseudo} sabote avec « ${donnees.cadeau} » : ${donnees.nomBoss}${donnees.renfort ? ' (renfort)' : ''}`);
+    if (type === 'bossFin') log(`${donnees.gagne ? '💥 Boss vaincu' : '😈 Boss gagnant'} : ${donnees.nom}${donnees.perte ? ' (-' + donnees.perte + ' m)' : ''}`);
   }
 });
 
@@ -97,7 +99,9 @@ function configPublique() {
     mascotte: config.mascotte.nom,
     metresEntreRefuges: config.jeu.metresEntreRefuges,
     objectifs: config.objectifs.map(o => ({ nom: o.nom, pieces: o.pieces, image: o.image })),
-    phrasesBandeau: config.autopilote.phrasesBandeau.map(p => p.replace(/\{mascotte\}/g, config.mascotte.nom)),
+    phrasesBandeau: config.autopilote.phrasesBandeau.map(p => p.replace(/\{mascotte\}/g, config.mascotte.nom)).concat(phrasesSaboteurs()),
+    saboteurs: listeSaboteurs().map(s => ({ nom: s.nom, pieces: s.pieces, image: s.image, boss: s.boss, nomBoss: (BOSS[s.boss] || BOSS.pigeon).nom, emoji: (BOSS[s.boss] || BOSS.pigeon).emoji })),
+    degatsParPiece: (config.saboteurs || {}).degatsParPiece || 6,
     secondesEntrePhrasesBandeau: config.autopilote.secondesEntrePhrasesBandeau,
     commandes: Object.keys(config.commandesChat.liste),
     fichiersPerso: config.sons.fichiersPerso || {},
@@ -107,6 +111,18 @@ function configPublique() {
       finRafaleSecondes: config.sons.secondesFinRafalePetitsCadeaux ?? 3
     }
   };
+}
+function listeSaboteurs() {
+  const S = config.saboteurs || {};
+  return S.actifs === false ? [] : (S.liste || []);
+}
+// Le bandeau rappelle aux spectateurs comment saboter… et comment se défendre
+function phrasesSaboteurs() {
+  const liste = listeSaboteurs();
+  if (!liste.length) return [];
+  const p = liste.map(s => `😈 Un ${s.nom} (${s.pieces} 🪙) lâche ${(BOSS[s.boss] || BOSS.pigeon).emoji} sur ${config.mascotte.nom} !`);
+  p.push(`⚔️ Contre un boss : tapez, ou envoyez un cadeau (1 pièce = ${(config.saboteurs || {}).degatsParPiece || 6} coups)`);
+  return p;
 }
 function etatComplet() {
   return Object.assign(jeu.etatPublic(), {
@@ -151,6 +167,7 @@ function commande(c) {
     case 'parler': if (c.texte) jeu.parler(c.texte); break;
     case 'miniJeu': jeu.lancerMiniJeu(String(c.type || '')); break;
     case 'stopMiniJeu': jeu.arreterMiniJeu(); break;
+    case 'boss': if (!jeu.boss && !jeu.miniJeu) jeu.bossAleatoire(); break;
     case 'objectif': jeu.changerObjectif(c.delta > 0 ? 1 : -1); break;
     case 'finLive': ecranFin = jeu.recap(); diffuser({ t: 'evt', type: 'finLive', d: ecranFin }); break;
     case 'masquerFin': ecranFin = null; diffuser({ t: 'evt', type: 'masquerFin', d: {} }); break;
@@ -173,6 +190,7 @@ function simuler(c) {
     ? { id: 'sim-' + c.pseudo, pseudo: String(c.pseudo).slice(0, 24), nom: String(c.pseudo).slice(0, 24), avatar: '' }
     : bots.user();
   if (c.type === 'cadeau') bots.simulerCadeau(user, Number(c.index) || 0, Math.max(1, Math.min(50, Number(c.repeat) || 1)));
+  if (c.type === 'sabotage') bots.simulerSabotage(user, Number(c.index) || 0);
   if (c.type === 'taps') jeu.onLike({ user, nombre: Math.max(1, Math.min(500, Number(c.nombre) || 10)) });
   if (c.type === 'chat') jeu.onChat({ user, texte: String(c.texte || '').slice(0, 120) });
   if (c.type === 'arrivee') jeu.onArrivee({ user });

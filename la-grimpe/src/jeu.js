@@ -5,6 +5,17 @@
 
 const DUREES_MINIJEUX = { vote: 30, course: 60, mot: 45, tempete: 40 };
 
+// Les boss : envoyés par les saboteurs (cadeaux « méchants ») ou au hasard par l'autopilote.
+// ralentit : vitesse de grimpe pendant le combat (l'araignée l'emprisonne dans sa toile).
+const BOSS = {
+  pigeon: { nom: 'Pigeon', emoji: '🐦', ralentit: 0.6 },
+  chauvesouris: { nom: 'Chauve-souris', emoji: '🦇', ralentit: 0.6 },
+  araignee: { nom: 'Araignée', emoji: '🕷️', ralentit: 0.2 },
+  orage: { nom: "Nuage d'orage", emoji: '⛈️', ralentit: 0.5 },
+  alien: { nom: 'Alien', emoji: '👽', ralentit: 0.4 },
+  ours: { nom: 'Ours géant', emoji: '🐻', ralentit: 0.2 }
+};
+
 const TEXTES = {
   toctoc: [
     "Euh… y'a quelqu'un ? Tapotez s'il vous plaît, je glisse 😰",
@@ -40,6 +51,14 @@ const TEXTES = {
   victoire: ["OUIIII ! MERCI {pseudo} !!! 😘", "ON EST PASSÉS !!! JE VOUS AIME !", "REFUGE DÉBLOQUÉ !!! 😘"],
   merci: ["MERCI {pseudo} !! ❤️", "{pseudo} tu es un(e) héros ! ❤️", "Merci {pseudo} !!! Je t'aime !"],
   sommet: ["LE SOMMET !!! ON L'A FAIT ENSEMBLE !!!"],
+  bossPigeon: ['NOOON, un pigeon ! Tapez pour le chasser !!', 'Un pigeon me picore le bonnet ! TAPEZ !'],
+  bossChauvesouris: ['Une chauve-souris ! Allez, tapez-la !!', 'Elle me tourne autour… TAPEZ !'],
+  bossAraignee: ['Une ARAIGNÉE !!! Je suis coincé dans sa toile, TAPEZ !!', 'Aaah une toile ! Je peux plus bouger !!'],
+  bossOrage: ['Un orage arrive… protégez-moi !! TAPEZ !', 'Les éclairs !!! Tapez pour chasser le nuage !'],
+  bossAlien: ['Un ALIEN veut m\'enlever !! TAPEZ VITE !!', 'Le rayon m\'aspire !!! AU SECOURS !'],
+  bossOurs: ["L'OURS GÉANT !!! Tout le monde TAPE !!!", 'Un ours… UN OURS !!! Envoyez des cadeaux !!'],
+  bossGagne: ['DÉGAGE ! Haha, merci la team !!', 'K.O. !!! Vous êtes trop forts !', 'Et BIM ! Personne ne m\'arrête !'],
+  bossPerdu: ['Aïe aïe aïe… il m\'a eu…', 'Noooon… je redescends…', 'Les saboteurs ont gagné… vengez-moi !'],
   record: ["NOUVEAU RECORD !!! On n'est jamais allés aussi haut !"]
 };
 
@@ -62,6 +81,9 @@ class Jeu {
     this.objectifs = config.objectifs;
     this.N = this.objectifs.length;
     this.aliases = this.objectifs.map(o => new Set([o.nom, ...(o.alias || [])].map(normaliser)));
+    const S = config.saboteurs || {};
+    this.saboteurs = S.actifs === false ? [] : (S.liste || []);
+    this.aliasSaboteurs = this.saboteurs.map(x => [x.nom, ...(x.alias || [])].map(normaliser));
     this.etat = this.etatInitial(0);
     this.runtimeInitial();
   }
@@ -79,6 +101,8 @@ class Jeu {
       piecesTotal: 0,
       chutes: 0,
       sommetAtteint: false,
+      bossVaincus: 0,
+      bossPerdus: 0,
       users: {},
       chefId: null,
       validations: []
@@ -111,6 +135,10 @@ class Jeu {
     this.dernierArrivee = 0;
     this.arriveesEnAttente = [];
     this.accDirecteur = 0;
+    this.boss = null;
+    this.fileBoss = [];
+    this.prochainBossApres = 0;
+    this.dernierBossAleatoire = t;
   }
 
   // ---------- Persistance ----------
@@ -198,6 +226,7 @@ class Jeu {
       this.miniJeu.progres += n;
       if (this.miniJeu.progres >= this.miniJeu.cible) this.finirMiniJeu();
     }
+    if (this.boss) this.frapper(u, n * this.reglesSaboteurs().degatsParTap);
     if (apres > avant) this.emit('palierLikes', { total: apres * this.config.jeu.paliersLikes });
   }
 
@@ -218,6 +247,8 @@ class Jeu {
       return;
     }
     const valeur = (g.pieces | 0) * repeat;
+    const iSab = this.trouverSaboteur(g.nom);
+    if (iSab >= 0) { this.sabotage(u, iSab, repeat, valeur, infos); return; }
     const ancienChef = this.etat.chefId;
     u.pieces += valeur;
     this.etat.piecesTotal += valeur;
@@ -294,6 +325,114 @@ class Jeu {
         this.emit('nouveauChef', { user: chef, ancien: ancien ? this.publicUser(ancien) : null });
       }
     }
+    // Pendant un combat, chaque cadeau d'aide frappe le boss (1 pièce = plusieurs coups)
+    if (this.boss) this.frapper(u, valeur * this.reglesSaboteurs().degatsParPiece);
+  }
+
+  // ---------- Saboteurs et boss ----------
+  reglesSaboteurs() {
+    return Object.assign({ degatsParTap: 1, degatsParPiece: 6, bossAleatoires: true, minutesEntreBossAleatoires: 7 }, this.config.saboteurs || {});
+  }
+
+  trouverSaboteur(nom) {
+    const n = normaliser(nom);
+    if (!n) return -1;
+    return this.aliasSaboteurs.findIndex(liste => liste.some(a => n === a || (a.length >= 5 && n.startsWith(a + ' '))));
+  }
+
+  sabotage(u, i, repeat, valeur, infos) {
+    const s = this.saboteurs[i];
+    u.sabotage = (u.sabotage || 0) + valeur;
+    this.etat.piecesTotal += valeur;
+    const pv = s.pv * Math.min(repeat, 10);
+    const chute = s.chute * Math.min(repeat, 3);
+    const type = BOSS[s.boss] ? s.boss : 'pigeon';
+    this.emit('sabotage', Object.assign(infos, { valeur, boss: type, nomBoss: BOSS[type].nom, image: infos.image || s.image, renfort: !!this.boss }));
+    const demande = { type, pv, secondes: s.secondes || 20, chute, saboteur: this.publicUser(u), image: s.image };
+    if (this.boss) this.renforcer(demande);
+    else if (this.miniJeu || this.fileBoss.length || this.now() < this.prochainBossApres) {
+      if (this.fileBoss.length < 5) this.fileBoss.push(demande);
+    } else this.lancerBoss(demande);
+  }
+
+  lancerBoss(d) {
+    const t = this.now();
+    const info = BOSS[d.type];
+    this.boss = { type: d.type, nom: info.nom, emoji: info.emoji, pv: d.pv, pvMax: d.pv, debut: t, fin: t + d.secondes * 1000, chute: d.chute, saboteur: d.saboteur || null, image: d.image || '', degats: {} };
+    const cle = 'boss' + d.type.charAt(0).toUpperCase() + d.type.slice(1);
+    this.emit('boss', Object.assign(this.bossPublic(), { texte: this.texte(cle) }));
+  }
+
+  renforcer(d) {
+    const b = this.boss;
+    const t = this.now();
+    b.pv += d.pv;
+    b.pvMax += d.pv;
+    b.fin = Math.min(b.fin + 5000, t + 45000);
+    b.chute += Math.round(d.chute / 2);
+    this.emit('bossRenfort', Object.assign(this.bossPublic(), { par: d.saboteur }));
+  }
+
+  frapper(u, degats) {
+    const b = this.boss;
+    if (!b || degats <= 0) return;
+    b.pv -= degats;
+    b.degats[u.id] = (b.degats[u.id] || 0) + degats;
+    if (b.pv <= 0) this.finirBoss(true, u);
+  }
+
+  finirBoss(gagne, coupFinal) {
+    const b = this.boss;
+    if (!b) return;
+    const t = this.now();
+    this.boss = null;
+    this.prochainBossApres = t + 4000;
+    const meilleurs = Object.entries(b.degats).sort((x, y) => y[1] - x[1]).slice(0, 3)
+      .map(([id, d]) => Object.assign(this.publicUser(this.etat.users[id]), { degats: Math.round(d) }));
+    let perte = 0;
+    if (gagne) {
+      this.etat.bossVaincus++;
+      this.boostRestant += 15;
+      this.energie = 100;
+    } else {
+      this.etat.bossPerdus++;
+      // Jamais sous le dernier refuge débloqué : les cadeaux des autres ne sont jamais annulés
+      const avant = this.etat.alt;
+      this.etat.alt = Math.max(this.sol(), this.etat.alt - b.chute);
+      perte = Math.round(avant - this.etat.alt);
+      this.energie = Math.max(10, this.energie - 30);
+      this.boostRestant = 0;
+    }
+    this.emit('bossFin', {
+      gagne, type: b.type, nom: b.nom, emoji: b.emoji, saboteur: b.saboteur, perte,
+      coupFinal: gagne && coupFinal ? this.publicUser(coupFinal) : null, meilleurs,
+      texte: this.texte(gagne ? 'bossGagne' : 'bossPerdu')
+    });
+  }
+
+  bossAleatoire() {
+    const t = this.now();
+    const alt = this.etat.alt;
+    const type = alt < 900 ? 'pigeon' : alt < 2600 ? 'chauvesouris' : alt < 3600 ? 'orage' : 'alien';
+    const lim = t - 5 * 60000;
+    this.historiqueTaps = this.historiqueTaps.filter(([x]) => x >= lim);
+    const parSeconde = this.historiqueTaps.reduce((s, [, c]) => s + c, 0) / 300;
+    const secondes = 18;
+    const pv = Math.max(40, Math.min(800, Math.round(parSeconde * secondes * 0.7)));
+    this.dernierBossAleatoire = t;
+    this.lancerBoss({ type, pv, secondes, chute: 10, saboteur: null });
+  }
+
+  bossPublic() {
+    const b = this.boss;
+    if (!b) return null;
+    return { type: b.type, nom: b.nom, emoji: b.emoji, pv: Math.max(0, Math.ceil(b.pv)), pvMax: b.pvMax, debut: b.debut, fin: b.fin, maintenant: this.now(), chute: b.chute, saboteur: b.saboteur, image: b.image };
+  }
+
+  saboteursClassement(n = 3) {
+    return Object.values(this.etat.users).filter(u => u.sabotage > 0)
+      .sort((a, b) => b.sabotage - a.sabotage).slice(0, n)
+      .map(({ id, pseudo, nom, avatar, sabotage }) => ({ id, pseudo, nom, avatar, pieces: sabotage }));
   }
 
   onChat({ user, texte }) {
@@ -388,6 +527,9 @@ class Jeu {
       pieces: this.etat.piecesTotal,
       chutes: this.etat.chutes,
       podium: this.classement(3),
+      bossVaincus: this.etat.bossVaincus,
+      bossPerdus: this.etat.bossPerdus,
+      saboteurs: this.saboteursClassement(1),
       tapeurs: this.tapeurs(3),
       duree: Math.round((this.now() - this.etat.debut) / 60000)
     };
@@ -414,7 +556,7 @@ class Jeu {
 
   // ---------- Mini-jeux ----------
   lancerMiniJeu(type) {
-    if (this.miniJeu) return false;
+    if (this.miniJeu || this.boss || this.fileBoss.length) return false;
     if (!DUREES_MINIJEUX[type]) {
       const types = Object.keys(DUREES_MINIJEUX).filter(t => t !== this.miniJeuPrecedent);
       type = types[Math.floor(this.random() * types.length)];
@@ -521,8 +663,10 @@ class Jeu {
     const protege = this.protege();
     const tempete = this.miniJeu && this.miniJeu.type === 'tempete';
     const tapRate = this.tapsParSeconde();
+    const facteurPerte = (tempete ? 3 : 1) * (this.boss ? 1.4 : 1);
+    const ralenti = this.boss ? BOSS[this.boss.type].ralentit : 1;
 
-    if (!protege) this.energie = Math.max(0, this.energie - J.perteEnergieParSeconde * (tempete ? 3 : 1) * dt);
+    if (!protege) this.energie = Math.max(0, this.energie - J.perteEnergieParSeconde * facteurPerte * dt);
 
     const porte = this.porte();
     const sol = this.sol();
@@ -552,7 +696,7 @@ class Jeu {
         this.scene('bord', { texte: this.texte('bord') });
       } else {
         let monte = 0;
-        if (this.energie > 0) monte += J.vitesseMaxMetresParSeconde * Math.min(1, tapRate / J.tapsParSecondePourVitesseMax) * dt;
+        if (this.energie > 0) monte += J.vitesseMaxMetresParSeconde * Math.min(1, tapRate / J.tapsParSecondePourVitesseMax) * ralenti * dt;
         if (this.boostRestant > 0) {
           const pas = Math.min(this.boostRestant, Math.min(250, Math.max(25, this.boostRestant * 0.8)) * dt);
           this.boostRestant -= pas;
@@ -582,6 +726,8 @@ class Jeu {
     }
 
     if (this.miniJeu && t >= this.miniJeu.fin) this.finirMiniJeu();
+    if (this.boss && t >= this.boss.fin) this.finirBoss(false, null);
+    if (!this.boss && !this.miniJeu && this.fileBoss.length && t >= this.prochainBossApres) this.lancerBoss(this.fileBoss.shift());
 
     // Présence de l'animateur
     const minutes = (t - this.dernierePresence) / 60000;
@@ -629,7 +775,13 @@ class Jeu {
       this.scene('boude', { texte: this.texte('boude') });
       return;
     }
-    if (!this.miniJeu && (t - this.dernierMiniJeu) / 60000 >= A.minutesEntreMiniJeux) {
+    const RS = this.reglesSaboteurs();
+    if (RS.bossAleatoires && !this.boss && !this.miniJeu && !this.fileBoss.length && t >= this.prochainBossApres &&
+        (t - this.dernierBossAleatoire) / 60000 >= RS.minutesEntreBossAleatoires) {
+      this.bossAleatoire();
+      return;
+    }
+    if (!this.miniJeu && !this.boss && (t - this.dernierMiniJeu) / 60000 >= A.minutesEntreMiniJeux) {
       this.lancerMiniJeu();
       return;
     }
@@ -649,7 +801,8 @@ class Jeu {
       statut: this.statut,
       protection: Math.max(0, Math.ceil((this.protectionJusqua - this.now()) / 1000)),
       boost: this.boostRestant > 0.5,
-      tapRate: Math.round(this.tapsParSeconde() * 10) / 10
+      tapRate: Math.round(this.tapsParSeconde() * 10) / 10,
+      boss: this.boss ? { pv: Math.max(0, Math.ceil(this.boss.pv)), pvMax: this.boss.pvMax, fin: this.boss.fin, maintenant: this.now() } : null
     };
   }
 
@@ -667,9 +820,12 @@ class Jeu {
       miniJeu: this.miniJeuPublic(),
       presence: this.presence,
       autopilote: this.autopilote,
-      sommetAtteint: e.sommetAtteint
+      sommetAtteint: e.sommetAtteint,
+      boss: this.bossPublic(),
+      bossEnAttente: this.fileBoss.length,
+      saboteurs: this.saboteursClassement(3)
     };
   }
 }
 
-module.exports = { Jeu, normaliser, TEXTES, DUREES_MINIJEUX };
+module.exports = { Jeu, normaliser, TEXTES, DUREES_MINIJEUX, BOSS };

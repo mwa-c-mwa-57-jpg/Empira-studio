@@ -64,6 +64,16 @@ class Bots {
       this.simulerCadeau(this.user(), i, 1 + (i < 3 && this.random() < 0.4 ? Math.floor(this.random() * 8) : 0));
     }, 9000, 22000);
     this.boucle(() => this.jeu[this.random() < 0.7 ? 'onAbonne' : 'onPartage']({ user: this.user() }), 15000, 40000);
+    // De temps en temps, un saboteur (surtout des petits)
+    this.boucle(() => this.simulerSabotage(this.user(), this.random() < 0.6 ? 0 : this.random() < 0.85 ? 1 : 2), 40000, 90000);
+  }
+
+  // Envoie un cadeau saboteur (config.json > saboteurs)
+  simulerSabotage(user, index) {
+    const liste = this.jeu.saboteurs;
+    if (!liste.length) return;
+    const s = liste[Math.max(0, Math.min(liste.length - 1, index))];
+    this.jeu.onCadeau({ user, nom: s.nom, pieces: s.pieces, image: s.image, giftType: 2, repeatCount: 1, repeatEnd: true });
   }
 
   // Envoie un cadeau de la liste ; les petits cadeaux en série imitent les combos TikTok.

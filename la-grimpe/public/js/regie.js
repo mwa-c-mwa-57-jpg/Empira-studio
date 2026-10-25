@@ -10,7 +10,7 @@
     ['badumtss', '🎭', 'Ba-dum-tss'], ['echec', '😢', 'Wah wah'], ['caisse', '💰', 'Ka-ching'], ['ding', '🔔', 'Ding'],
     ['fanfare', '🎺', 'Fanfare'], ['laser', '⚡', 'Laser'], ['toctoc', '🚪', 'Toc toc'], ['chute', '😱', 'Chute'],
     ['boing', '🦘', 'Boing'], ['bisou', '💋', 'Bisou'], ['tonnerre', '⛈️', 'Tonnerre'], ['vent', '🌬️', 'Vent'],
-    ['alarme', '🚨', 'Alarme'], ['coeurs', '💕', 'Cœurs'], ['ciseaux', '✂️', 'Ciseaux'], ['whoosh', '🌀', 'Whoosh'], ['coffre', '🪙', 'Coffre']
+    ['alarme', '🚨', 'Alarme'], ['coeurs', '💕', 'Cœurs'], ['ciseaux', '✂️', 'Ciseaux'], ['whoosh', '🌀', 'Whoosh'], ['coffre', '🪙', 'Coffre'], ['boss', '👾', 'Boss'], ['ko', '💥', 'K.O.']
   ];
   const PHRASES = [
     'Merci à tous !! ❤️', 'Bienvenue aux nouveaux ! 👋', 'On lâche rien !!', 'Tapez tapez tapez !!!',
@@ -44,6 +44,7 @@
     document.querySelectorAll('#nom-mascotte, .nom-m').forEach(el => { el.textContent = CFG.mascotte; });
     document.title = 'Régie — ' + CFG.mascotte;
     $('sim-cadeau').innerHTML = CFG.objectifs.map((o, i) => `<option value="${i}">${i + 1}. ${esc(o.nom)} — ${nf(o.pieces)} 🪙</option>`).join('');
+    $('sim-saboteur').innerHTML = (CFG.saboteurs || []).map((s, i) => `<option value="${i}">${s.emoji} ${esc(s.nom)} — ${nf(s.pieces)} 🪙 → ${esc(s.nomBoss)}</option>`).join('');
     $('carte-simulation').classList.toggle('cache', false);
     $('sim-bloquee').classList.toggle('cache', CFG.mode === 'demo');
     $('sim-zone').classList.toggle('cache', CFG.mode !== 'demo');
@@ -85,7 +86,7 @@
     $('stats').innerHTML = `<div>❤️ Taps : <b>${nf(e.likesTotal)}</b></div><div>🪙 Pièces : <b>${nf(e.piecesTotal)}</b></div><div>😅 Chutes : <b>${e.chutes}</b></div><div>🚩 Record : <b>${nf(e.record)} m</b></div>`;
     $('classement').innerHTML = e.classement.length ? e.classement.map(u => `<li>@${esc(u.pseudo)} <span>🪙 ${nf(u.pieces)}</span></li>`).join('') : '<li style="list-style:none;margin-left:-26px;color:var(--doux)">Aucun cadeau pour l\'instant</li>';
     const MJN = { vote: '🎲 Vote du destin', course: '⚡ Course aux taps', mot: '🔤 Mot magique', tempete: '🌪️ Tempête' };
-    $('mj-etat').textContent = e.miniJeu ? 'en cours : ' + MJN[e.miniJeu.type] : 'aucun en cours';
+    $('mj-etat').textContent = e.boss ? `combat : ${e.boss.emoji} ${e.boss.nom} (${nf(e.boss.pv)} PV)` : e.miniJeu ? 'en cours : ' + MJN[e.miniJeu.type] : 'aucun en cours';
     presence(e.presence);
   }
 
@@ -142,6 +143,7 @@
   document.querySelectorAll('[data-scene]').forEach(b => b.addEventListener('click', () => envoyer('scene', { type: b.dataset.scene })));
   document.querySelectorAll('[data-mj]').forEach(b => b.addEventListener('click', () => envoyer('miniJeu', { type: b.dataset.mj })));
   $('btn-stop-mj').addEventListener('click', () => envoyer('stopMiniJeu'));
+  $('btn-boss').addEventListener('click', () => envoyer('boss'));
 
   $('r-auto').addEventListener('change', e => envoyer('autopilote', { valeur: e.target.checked }));
   $('r-sons').addEventListener('change', e => envoyer('reglage', { cle: 'sonsAutomatiques', valeur: e.target.checked }));
@@ -159,6 +161,7 @@
   // Simulation (le serveur l'ignore en mode live)
   const pseudoSim = () => $('sim-pseudo').value.trim();
   $('sim-bots').addEventListener('change', e => envoyer('bots', { valeur: e.target.checked }));
+  $('sim-saboter').addEventListener('click', () => envoyer('simuler', { type: 'sabotage', index: Number($('sim-saboteur').value), pseudo: pseudoSim() }));
   $('sim-envoyer').addEventListener('click', () => envoyer('simuler', { type: 'cadeau', index: Number($('sim-cadeau').value), repeat: Number($('sim-repeat').value), pseudo: pseudoSim() }));
   document.querySelectorAll('[data-taps]').forEach(b => b.addEventListener('click', () => envoyer('simuler', { type: 'taps', nombre: Number(b.dataset.taps), pseudo: pseudoSim() })));
   document.querySelectorAll('[data-sim]').forEach(b => b.addEventListener('click', () => envoyer('simuler', { type: b.dataset.sim, pseudo: pseudoSim() })));

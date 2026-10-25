@@ -255,6 +255,27 @@
       for (const f of [2093, 2637, 3136]) osc('sine', f, t + 0.6, 1.3, 0.18);
       return 2.3;
     },
+    boss(t) {
+      // « Dun dun duuun » menaçant + timbale
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 900; lp.Q.value = 2;
+      lp.connect(sortie);
+      for (const [f, d, l] of [[147, 0, 0.32], [139, 0.38, 0.32], [110, 0.76, 1.3]]) {
+        osc('sawtooth', f, t + d, l, 0.32, lp, { tenue: l - 0.1, attaque: 0.02 });
+        osc('sawtooth', f * 1.5, t + d, l, 0.12, lp, { tenue: l - 0.1, attaque: 0.02 });
+        osc('sine', 55, t + d, 0.5, 0.7, sortie, { vers: 40 });
+      }
+      souffle(t + 0.76, 1.2, 0.25, 'lowpass', 300, 1, sortie);
+      return 2.1;
+    },
+    ko(t) {
+      // Coup de poing + cloche de victoire
+      souffle(t, 0.12, 0.9, 'lowpass', 1800, 1, sortie);
+      osc('sine', 130, t, 0.35, 1, sortie, { vers: 45 });
+      for (const f of [1047, 1319, 1568]) osc('triangle', f, t + 0.25, 0.9, 0.18, sortie);
+      [784, 988, 1175, 1568].forEach((f, i) => osc('square', f, t + 0.3 + i * 0.08, 0.25, 0.06, sortie));
+      return 1.3;
+    },
     coeurs(t) {
       [1047, 1319, 1568, 2093].forEach((f, i) => osc('sine', f, t + i * 0.07, 0.4, 0.2));
       return 0.7;

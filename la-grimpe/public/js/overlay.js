@@ -128,6 +128,7 @@
       demarrerBandeau();
     } else if (m.t === 'tick') {
       TICK = m.d;
+      if (m.d.boss && bossL) majPvBoss(m.d.boss.pv, m.d.boss.pvMax);
     } else if (m.t === 'etat') {
       appliquerEtat(m.d);
     } else if (m.t === 'evt') {
@@ -168,6 +169,8 @@
       p.classList.toggle('encours', i === idx);
     });
     rendreCordee(e.classement || []);
+    rendreSaboteurs(e.saboteurs || []);
+    rendreBoss(e.boss || null);
     rendreTapeurs(e.tapeurs || []);
     $('alt-record-texte').innerHTML = `🚩 Record<br><b>${nf(e.record)} m</b>`;
     if (!ancien || ancien.objIndex !== idx || ancien.record !== e.record) rendreReperes();
@@ -302,7 +305,7 @@
   let alerteActive = null;
   function ajouterAlerte(d) {
     // Les gros cadeaux passent devant les petits qui attendent encore leur alerte.
-    const i = d.valeur >= reglesSons().applaudirDes ? fileAlertes.findIndex(x => x.valeur < d.valeur) : -1;
+    const i = d.valeur >= reglesSons().applaudirDes || d.sabotage ? fileAlertes.findIndex(x => x.valeur < d.valeur) : -1;
     if (i >= 0) fileAlertes.splice(i, 0, d); else fileAlertes.push(d);
     if (fileAlertes.length > 15) fileAlertes.splice(0, fileAlertes.length - 15);
     suivanteAlerte();
@@ -311,9 +314,9 @@
     if (alerteActive || !fileAlertes.length) return;
     const d = fileAlertes.shift();
     const el = document.createElement('div');
-    el.className = 'alerte t' + d.tier;
+    el.className = 'alerte t' + d.tier + (d.sabotage ? ' sabotage' : '');
     const img = d.image || (d.objectifIndex >= 0 ? CFG.objectifs[d.objectifIndex].image : '');
-    el.innerHTML = `${avatarHTML(d.user)}<div class="a-texte"><div class="a-pseudo">@${esc(d.user.pseudo)}</div><div class="a-quoi">envoie ${esc(d.cadeau)}${d.repeat > 1 ? ' ×' + d.repeat : ''}</div><div class="a-montee">⬆️ +${nf(d.montee)} m · 🪙 ${nf(d.valeur)}</div></div>${img ? `<img class="a-cadeau" src="${esc(img)}" referrerpolicy="no-referrer" alt="">` : ''}`;
+    el.innerHTML = `${avatarHTML(d.user)}<div class="a-texte"><div class="a-pseudo">@${esc(d.user.pseudo)}</div><div class="a-quoi">${d.sabotage ? (d.renfort ? `renforce le boss 😈 (${esc(d.cadeau)})` : `lâche un ${esc(d.nomBoss)} ! 😈`) : `envoie ${esc(d.cadeau)}${d.repeat > 1 ? ' ×' + d.repeat : ''}`}</div><div class="a-montee">${d.sabotage ? `${esc(d.cadeau)} · 🪙 ${nf(d.valeur)}` : `⬆️ +${nf(d.montee)} m · 🪙 ${nf(d.valeur)}`}</div></div>${img ? `<img class="a-cadeau" src="${esc(img)}" referrerpolicy="no-referrer" alt="">` : ''}`;
     hydrater(el);
     $('alertes').appendChild(el);
     alerteActive = el;
@@ -428,7 +431,9 @@
         <div class="fin-stat"><b>${r.refuges}/${r.total}</b><span>refuges</span></div>
         <div class="fin-stat"><b>${nf(r.likes)}</b><span>taps</span></div>
         <div class="fin-stat"><b>${r.chutes}</b><span>chutes 😅</span></div>
+        ${(r.bossVaincus || r.bossPerdus) ? `<div class="fin-stat"><b>${r.bossVaincus}/${r.bossVaincus + r.bossPerdus}</b><span>boss vaincus 💥</span></div>` : ''}
       </div>
+      ${r.saboteurs && r.saboteurs[0] ? `<div class="fin-record" style="color:#ff8a96">😈 Saboteur de la soirée : @${esc(r.saboteurs[0].pseudo)} (🪙 ${nf(r.saboteurs[0].pieces)})</div>` : ''}
       <div class="podium">${podium}</div>
       <div class="fin-merci">Merci à tous ❤️ On bat le record au prochain live !</div>`;
     hydrater(el);
@@ -568,6 +573,191 @@
     if (texte) setTimeout(() => dire(texte, { prio: 4, duree: 3.5 }), 500);
   }
 
+  // ---------- Saboteurs et boss ----------
+  let cleSab = '';
+  function rendreSaboteurs(top) {
+    const liste = CFG.saboteurs || [];
+    $('saboteurs').classList.toggle('cache', !liste.length);
+    if (!liste.length) return;
+    if (!$('sab-cadeaux').children.length) {
+      $('sab-cadeaux').innerHTML = liste.map(x => `<div class="sab-cadeau"><img src="${esc(x.image)}" alt=""><span class="em">${x.emoji}</span> ${nf(x.pieces)}</div>`).join('');
+    }
+    const t0 = top[0];
+    const cle = t0 ? t0.id + ':' + t0.pieces : '';
+    if (cle === cleSab) return;
+    cleSab = cle;
+    $('sab-top').innerHTML = t0 ? `${avatarHTML(t0)}<span>@${esc(t0.pseudo)} · 🪙 ${nf(t0.pieces)}</span>` : '';
+    hydrater($('sab-top'));
+  }
+
+  let bossL = null;
+  let bossPos = { x: CX, y: ANCRE_Y - 250 };
+  let bossTouche = 0, eclairBoss = 0;
+  function rendreBoss(b) {
+    const el = $('boss');
+    if (!b) {
+      if (bossL) { bossL = null; el.classList.add('cache'); }
+      return;
+    }
+    const nouveau = !bossL || bossL.debut !== b.debut;
+    const pvAvant = nouveau ? null : bossL.pv;
+    bossL = Object.assign({}, b, { finLocale: Date.now() + (b.fin - b.maintenant), dureeTotale: b.fin - b.debut, pv: pvAvant });
+    if (nouveau) {
+      el.classList.remove('cache');
+      el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+      const par = b.saboteur ? `${avatarHTML(b.saboteur)}<span>envoyé par @${esc(b.saboteur.pseudo)} 😈</span>` : '<span>Un boss sauvage apparaît !</span>';
+      el.innerHTML = `<div class="boss-tete"><span class="boss-emoji">${b.emoji}</span><span class="boss-nom">${esc(b.nom).toUpperCase()}</span></div>
+        <div class="boss-par">${par}</div>
+        <div class="boss-pv"><div id="boss-pv-r"></div><span id="boss-pv-t"></span></div>
+        <div class="boss-consigne">👆 Tapez pour frapper · 🎁 1 pièce = ${CFG.degatsParPiece || 6} coups</div>
+        <div class="boss-timer"><div id="boss-timer"></div></div>`;
+      hydrater(el);
+    }
+    majPvBoss(b.pv, b.pvMax);
+  }
+  function majPvBoss(pv, pvMax) {
+    if (!bossL) return;
+    const avant = bossL.pv;
+    bossL.pv = pv;
+    bossL.pvMax = pvMax;
+    $('boss-pv-r').style.width = clamp(pv / pvMax * 100, 0, 100) + '%';
+    $('boss-pv-t').textContent = `${nf(pv)} / ${nf(pvMax)} PV`;
+    if (avant != null && pv < avant) {
+      bossTouche = 1;
+      const el = $('boss');
+      el.classList.remove('touche'); void el.offsetWidth; el.classList.add('touche');
+      const d = avant - pv;
+      particules.push({ type: 'texte', texte: '-' + nf(d), x: bossPos.x + (Math.random() - 0.5) * 90, y: bossPos.y - 60, vx: 0, vy: -170, g: 0, taille: d >= 100 ? 66 : 44, vie: 1.1, vie0: 1.1 });
+    } else if (avant != null && pv > avant) {
+      particules.push({ type: 'texte', texte: '+' + nf(pv - avant) + ' PV 😈', x: bossPos.x, y: bossPos.y - 80, vx: 0, vy: -120, g: 0, taille: 50, vie: 1.6, vie0: 1.6, couleur: '#ff4d5e' });
+    }
+  }
+
+  // Les boss sont dessinés autour de la mascotte (le zoom de la scène s'applique aussi à eux).
+  function dessinerBoss(t, mx, my) {
+    if (!bossL) return;
+    bossTouche = Math.max(0, bossTouche - 0.07);
+    const sh = bossTouche * 14 * (Math.random() - 0.5);
+    const e = t / 1000;
+    let bx = mx, by = my - 250, taille = 150;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    switch (bossL.type) {
+      case 'pigeon':
+      case 'chauvesouris': {
+        bx = mx + Math.cos(e * 2.2) * 175;
+        by = my - 175 + Math.sin(e * 4.4) * 50;
+        taille = 125;
+        ctx.save();
+        ctx.translate(bx + sh, by);
+        if (Math.sin(e * 2.2) > 0) ctx.scale(-1, 1);
+        ctx.font = `${taille}px serif`;
+        ctx.fillText(bossL.emoji, 0, 0);
+        ctx.restore();
+        break;
+      }
+      case 'araignee': {
+        bx = mx + 130;
+        by = my - 310 + Math.sin(e * 2) * 25;
+        taille = 135;
+        ctx.strokeStyle = 'rgba(255,255,255,.85)';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(bx, -60); ctx.lineTo(bx, by - 50); ctx.stroke();
+        // Toile autour de la mascotte
+        ctx.strokeStyle = 'rgba(255,255,255,.5)';
+        const cy = my - 40;
+        for (let k = 0; k < 12; k++) {
+          const a = k / 12 * Math.PI * 2;
+          ctx.beginPath(); ctx.moveTo(mx, cy); ctx.lineTo(mx + Math.cos(a) * 240, cy + Math.sin(a) * 270); ctx.stroke();
+        }
+        for (let r = 60; r <= 240; r += 60) {
+          ctx.beginPath();
+          for (let k = 0; k <= 12; k++) {
+            const a = k / 12 * Math.PI * 2;
+            const x = mx + Math.cos(a) * r, y = cy + Math.sin(a) * r * 1.12;
+            if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+        }
+        ctx.font = `${taille}px serif`;
+        ctx.fillText(bossL.emoji, bx + sh, by);
+        break;
+      }
+      case 'orage': {
+        bx = mx;
+        by = my - 410;
+        taille = 240;
+        ctx.font = `${taille}px serif`;
+        ctx.fillText(bossL.emoji, bx + sh, by);
+        if (eclairBoss <= 0 && Math.random() < 0.012) { eclairBoss = 0.3; flash = Math.max(flash, 0.3); }
+        if (eclairBoss > 0) {
+          eclairBoss -= 0.016;
+          ctx.strokeStyle = '#fff59a';
+          ctx.lineWidth = 10;
+          ctx.shadowColor = '#fff59a';
+          ctx.shadowBlur = 30;
+          ctx.beginPath();
+          let x = bx, y = by + 90;
+          ctx.moveTo(x, y);
+          while (y < my - 130) { x += (Math.random() - 0.5) * 70; y += 45; ctx.lineTo(x, y); }
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+        break;
+      }
+      case 'alien': {
+        bx = mx + Math.sin(e * 1.5) * 60;
+        by = my - 430;
+        taille = 190;
+        const g = ctx.createLinearGradient(0, by, 0, my + 140);
+        g.addColorStop(0, 'rgba(120,255,140,.55)');
+        g.addColorStop(1, 'rgba(120,255,140,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.moveTo(bx - 50, by + 50); ctx.lineTo(bx + 50, by + 50); ctx.lineTo(mx + 180, my + 150); ctx.lineTo(mx - 180, my + 150); ctx.closePath(); ctx.fill();
+        ctx.font = '84px serif';
+        ctx.fillText('👽', bx + sh, by - 60);
+        ctx.font = `${taille}px serif`;
+        ctx.fillText('🛸', bx + sh, by);
+        break;
+      }
+      case 'ours': {
+        bx = mx - 215;
+        by = my + 20 - Math.abs(Math.sin(e * 3)) * 25;
+        taille = 300;
+        if (Math.sin(e * 3) > 0.97) secouer(9);
+        ctx.font = `${taille}px serif`;
+        ctx.fillText(bossL.emoji, bx + sh, by);
+        break;
+      }
+      default:
+        ctx.font = `${taille}px serif`;
+        ctx.fillText(bossL.emoji, bx, by);
+    }
+    // Signature du saboteur sous le boss
+    const sab = bossL.saboteur;
+    if (sab) {
+      const ax = bx, ay = by + taille * 0.55 + 10, r = 26;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(ax - 70, ay, r, 0, Math.PI * 2); ctx.closePath();
+      ctx.fillStyle = couleurDe(sab.pseudo); ctx.fill();
+      ctx.clip();
+      const im = image(sab.avatar);
+      if (prete(im)) ctx.drawImage(im, ax - 70 - r, ay - r, r * 2, r * 2);
+      else { ctx.fillStyle = '#fff'; ctx.font = '800 26px "Baloo 2", sans-serif'; ctx.fillText(lettreDe(sab), ax - 70, ay + 2); }
+      ctx.restore();
+      ctx.lineWidth = 4; ctx.strokeStyle = '#ff4d5e';
+      ctx.beginPath(); ctx.arc(ax - 70, ay, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.font = '800 24px "Baloo 2", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.fillStyle = '#ffb3bb';
+      ctx.strokeText('😈 @' + sab.pseudo, ax - 38, ay + 2);
+      ctx.fillText('😈 @' + sab.pseudo, ax - 38, ay + 2);
+    }
+    ctx.restore();
+    bossPos = { x: bx, y: by };
+  }
+
   // ---------- Sons des cadeaux (sans spam) ----------
   function reglesSons() {
     return Object.assign({ applaudirDes: 100, merciVocalDes: 1000, finRafaleSecondes: 3, rafaleMinimum: 2 }, CFG.sonsCadeaux || {});
@@ -697,6 +887,35 @@
         break;
       }
       case 'combo': combo(d); break;
+      case 'sabotage': ajouterAlerte(Object.assign({}, d, { sabotage: true })); break;
+      case 'boss':
+        rendreBoss(d);
+        son('boss', 'boss');
+        secouer(14);
+        forcer(null, 'peur', 3);
+        dire(d.texte, { prio: 4, crie: true, duree: 4 });
+        break;
+      case 'bossRenfort':
+        rendreBoss(d);
+        if (d.par) fil(`😈 @${d.par.pseudo} renforce le ${d.nom} !`);
+        break;
+      case 'bossFin':
+        rendreBoss(null);
+        if (d.gagne) {
+          banniere('💥 K.O. !!!', d.coupFinal ? `Coup final : @${esc(d.coupFinal.pseudo)} 👊` : `Le ${esc(d.nom)} est vaincu !`, { classe: 'vert' });
+          son('ko', 'boss');
+          confettis(70);
+          emoji('💥', bossPos.x, bossPos.y, 10, { taille: 70, vitesse: 420 });
+          emoji(d.emoji, bossPos.x, bossPos.y, 1, { taille: 120, vitesse: 300, monte: -200, gravite: 900 });
+          forcer('joie', 'joie', 3);
+        } else {
+          banniere('😈 PERDU…', d.perte > 0 ? `${d.emoji} ${esc(d.nom)} a gagné : ${esc(CFG.mascotte)} redescend de ${nf(d.perte)} m 😭` : `${d.emoji} ${esc(d.nom)} a gagné, mais le refuge l'a protégé 😅`, { classe: 'rouge' });
+          son('echec', 'boss');
+          forcer('accroche', 'peur', 1.8);
+          secouer(14);
+        }
+        dire(d.texte, { prio: 4, duree: 3.5 });
+        break;
       case 'refuge': {
         ouvertures[d.index + 1] = performance.now();
         const qui = d.user ? 'Merci @' + esc(d.user.pseudo) + ' !' : '';
@@ -768,6 +987,7 @@
         compagnons.length = 0;
         altAff = camAlt = 0;
         for (const k in ouvertures) delete ouvertures[k];
+        rendreBoss(null);
         $('fin').classList.add('cache');
         break;
       case 'finLive': afficherFin(d); break;
@@ -1166,7 +1386,16 @@
       p.vie -= dt;
       if (p.vie <= 0 || p.y > H + 120) { particules.splice(i, 1); continue; }
       p.x += p.vx * dt; p.y += p.vy * dt;
-      if (p.type === 'confetti') {
+      if (p.type === 'texte') {
+        ctx.save();
+        ctx.globalAlpha = clamp(p.vie / Math.min(0.6, p.vie0), 0, 1);
+        ctx.font = `800 ${p.taille}px "Baloo 2", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,.8)';
+        ctx.fillStyle = p.couleur || '#fff35c';
+        ctx.strokeText(p.texte, p.x, p.y); ctx.fillText(p.texte, p.x, p.y);
+        ctx.restore();
+      } else if (p.type === 'confetti') {
         p.rot += p.vr * dt; p.vx += Math.sin(p.y / 60) * 6;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
         ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
@@ -1248,6 +1477,7 @@
     if (forcage && forcage.mode === 'boude' && (st === 'grimpe' || st === 'chute' || st === 'accroche')) forcage = null;
     mode = st === 'grimpe' ? 'grimpe' : st === 'accroche' ? 'accroche' : st === 'chute' ? 'chute' : st === 'bloque' ? 'bloque' : 'repos';
     if (st === 'accroche' || st === 'chute') expression = 'peur';
+    else if (bossL) expression = 'peur';
     else if (TICK.energie < 25) expression = 'fatigue';
     else if (TICK.protection > 0 || TICK.boost) expression = 'joie';
     if (forcage && st !== 'chute') {
@@ -1287,6 +1517,7 @@
       regard: mode === 'bloque' ? { x: 0, y: -1 } : st === 'accroche' ? { x: 0, y: 1 } : { x: Math.sin(t / 2000) * 0.5, y: 0 }
     });
     dessinerCompagnons(t, mx, my, echelle, true);
+    dessinerBoss(t, mx, my);
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     dessinerParticules(dt);
@@ -1347,6 +1578,10 @@
       pa.style.top = clamp(my - 40, 450, H - 500) + 'px';
     } else if (!pa.classList.contains('cache')) pa.classList.add('cache');
 
+    if (bossL) {
+      const el = $('boss-timer');
+      if (el) el.style.width = clamp((bossL.finLocale - Date.now()) / bossL.dureeTotale, 0, 1) * 100 + '%';
+    }
     // Minuteur du mini-jeu
     if (MJ) {
       const reste = clamp((MJ.finLocale - Date.now()) / MJ.dureeTotale, 0, 1);
