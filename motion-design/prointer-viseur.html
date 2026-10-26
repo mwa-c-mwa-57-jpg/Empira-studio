@@ -79,6 +79,7 @@ const ICON = {
   saw: "M19.73 14.23L7 1.5 3.11 5.39l8.13 11.67c-.78.78-.78 2.05 0 2.83l1.41 1.41c.78.78 2.05.78 2.83 0l4.24-4.24c.79-.78.79-2.05.01-2.83zm-5.66 5.65l-1.41-1.41 4.24-4.24 1.41 1.41-4.24 4.24z",
   key: "M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z",
   beam: "M4 3h16v4h-6v10h6v4H4v-4h6V7H4z",
+  work: "M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z",
   wrench: "M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z",
 };
 function icon(name, x, y, size, fill, parent) { const g = el("g", { transform: `translate(${x - size / 2},${y - size / 2}) scale(${size / 24})` }, parent); el("path", { d: ICON[name], fill }, g); return g; }
@@ -128,7 +129,7 @@ const LD = window.LOGO_DATA, OL = LD.O;
 const ST = [-90, -15, 60, 135, 210, 285, 360, 400, 520].map((a, i) => { const th = a * Math.PI / 180, r = 3700 - 270 * i; return [r * Math.cos(th), r * Math.sin(th)]; });
 const ZR = .115, CYR = -1739;                          // cadre du grand dézoom
 const ZF = .8, CYF = 150;                              // cadre final
-const T_R0 = bt(49), T_RV = bt(51.5), T_R1 = bt(53), T_LAND = bt(56);  // dézoom (puis la cible reste à l'écran), plongée, impact au centre
+const T_R0 = bt(49), T_RV = bt(51.5), T_R1 = bt(53), T_LAND = bt(56), T_ROLL = bt(58.5);  // T_ROLL : début du défilement des métiers  // dézoom (puis la cible reste à l'écran), plongée, impact au centre
 const LOCKS = [], ANIMS = [], STATIONS = [];
 function lock(t, x, y, o = {}) { LOCKS.push({ t, x, y, d: o.d ?? .42, kind: o.kind ?? (o.arc ? "arc" : "line"), big: !!o.big, cam: o.cam || null }); }
 let START, LOGO, CUR, TRAIL, FX = [], END = {};
@@ -188,30 +189,26 @@ function build() {
         set(p.r, { fill: on ? C.cyan : "none", stroke: on ? C.cyan : "#2E3A42" }); p.w.t.setAttribute("fill", on ? C.dark : C.white); }); });
     P.forEach((p, i) => lock(p.tl, p.x, p.y, i ? { d: .22 } : { cam: [ax, ay - 50, 1], arc: true })); }
 
-  /* 6 — profils qualifiés, puis les 6 secteurs */
+  /* 6 — trois secteurs, deux métiers chacun (un tir sur le secteur, puis sur chaque métier) */
   { const [ax, ay] = ST[5], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
-    const TP = [20, 23.5, 24.75], TS = [26.75, 28.75, 30.25, 32, 33.75, 35.25];   // tirs (pulsations), calés sur la voix
-    const pq = line(g, [["PROFILS"], ["QUALIFIÉS", C.cyan]], ax, ay - 530, { size: 124, max: 900, ghost: true });
-    const p1 = line(g, [["BÂTIMENT"], ["SECOND", C.cyan], ["ŒUVRE", C.cyan]], ax, ay - 390, { size: 88, max: 900, ghost: true });
-    const p2 = line(g, [["ET"], ["INDUSTRIE", C.cyan]], ax, ay - 280, { size: 88, max: 900, ghost: true });
-    const kk = line(g, "VOS SECTEURS", ax, ay - 120, { size: 46, w: 700, fill: C.dim, ls: .3, gap: .6 });
-    const T = [["ÉLECTRICITÉ", "bolt"], ["CHAUFFAGE", "flame"], ["MENUISERIE", "saw"], ["SERRURERIE", "key"], ["MÉTALLERIE", "beam"], ["MAINTENANCE", "wrench"]].map(([s, ic], i) => {
-      const x = ax + (i % 2 ? 228 : -228), y = ay + 60 + Math.floor(i / 2) * 300, tg = el("g", { opacity: 0 }, g);
-      const r = el("rect", { x: -210, y: -135, width: 420, height: 270, rx: 28, fill: C.tile, stroke: C.tileLine, "stroke-width": 5 }, tg);
-      const ig = el("g", {}, tg); icon(ic, 0, 0, 110, C.cyan, ig);
-      fixed(line(tg, s, 0, 84, { size: 42, w: 800, max: 370 }));
-      return { tg, r, ig, x, y, tl: bt(TS[i]) }; });
-    ANIMS.push(t => { pq.forEach((w, i) => show(w, t, bt(TP[0]) - .38 * (1 - i), "slam"));
-      p1.forEach((w, i) => show(w, t, bt([21.85, 22.6, 23.4][i]), "slam")); p2.forEach((w, i) => show(w, t, bt([24, 24.75][i]), "slam"));
-      kk.forEach((w, i) => show(w, t, bt(TS[0]) - .55 + i * .06));
-      T.forEach((o, i) => { const u = prog(t, bt(TS[0]) - .5 + i * .05, bt(TS[0]) - .1 + i * .05), on = t >= o.tl;
-        set(o.tg, { opacity: clamp(u * 4), transform: `translate(${o.x},${o.y}) scale(${Math.max(.001, lerp(.6, 1, E.outBack(u)))})` });
-        set(o.r, { fill: on ? C.tileOn : C.tile, stroke: on ? C.cyan : C.tileLine });
-        const b = on ? 1 + .45 * (1 - E.outElastic(prog(t, o.tl, o.tl + .6))) : 1; set(o.ig, { transform: `translate(0,-36) scale(${b})` }); }); });
-    lock(bt(TP[0]), pq[1].x, pq[1].y, { cam: [ax, ay - 340, 1], arc: true });
-    lock(bt(TP[1]), p1[2].x, p1[2].y, { d: .3 });
-    lock(bt(TP[2]), p2[1].x, p2[1].y, { d: .3 });
-    T.forEach((o, i) => lock(o.tl, o.x, o.y - 36, i ? { d: .25 } : { cam: [ax, ay + 360, .9], d: .35 })); }
+    const TSEC = [[20, 21.5, 23], [25, 26.5, 28.25], [30.25, 31.75, 33.75]];        // tirs (pulsations) : secteur, métier 1, métier 2
+    const kk = line(g, "NOS SECTEURS", ax, ay - 600, { size: 46, w: 700, fill: C.dim, ls: .3, gap: .6 });
+    const SEC = [["BÂTIMENT", "helmet", ["ÉLECTRICIEN", "SERRURIER"]], ["INDUSTRIE", "gear", ["SOUDEUR", "TECHNICIEN DE MAINTENANCE"]], ["TERTIAIRE", "work", ["GESTIONNAIRE DE PAIE", "ASSISTANT ADMINISTRATIF"]]];
+    const B = SEC.map(([name, ic, jobs], b) => { const yb = ay - 470 + b * 360, tb = TSEC[b];
+      const h = line(g, [[name, C.cyan]], ax + 40, yb, { size: 100, ghost: true })[0];
+      const ig = el("g", { opacity: 0 }, g); icon(ic, 0, 0, 84, C.cyan, ig); const ix = h.x - h.w / 2 - 70;
+      const J = jobs.map((s, k) => { const y = yb + 118 + k * 92, pg = el("g", { opacity: 0 }, g);
+        const w = word(pg, s, 0, 0, { size: 40, w: 800 }); set(w.g, { opacity: 1 });
+        const r = el("rect", { x: -w.w / 2 - 45, y: -38, width: w.w + 90, height: 76, rx: 38, fill: "none", stroke: "#2E3A42", "stroke-width": 5 }, pg); pg.insertBefore(r, w.g);
+        return { pg, r, w, x: ax, y, tl: bt(tb[k + 1]) }; });
+      return { h, ig, ix, yb, tl: bt(tb[0]), J }; });
+    ANIMS.push(t => { kk.forEach((w, i) => show(w, t, B[0].tl - .5 + i * .06));
+      B.forEach(o => { show(o.h, t, o.tl, "slam"); const u = E.outBack(prog(t, o.tl - .05, o.tl + .3)); set(o.ig, { opacity: u > 0 ? 1 : 0, transform: `translate(${o.ix},${o.yb}) scale(${Math.max(.001, u)})` });
+        o.J.forEach((j, k) => { const v = E.outExpo(prog(t, o.tl + .12 + k * .08, o.tl + .45 + k * .08)), on = t >= j.tl, pu = 1 + .1 * Math.exp(-(t - j.tl) / .08) * on;
+          set(j.pg, { opacity: clamp(v * 3), transform: `translate(${j.x},${j.y}) scale(${Math.max(.001, v) * pu},${pu})` });
+          set(j.r, { fill: on ? C.cyan : "none", stroke: on ? C.cyan : "#2E3A42" }); j.w.t.setAttribute("fill", on ? C.dark : C.white); }); }); });
+    B.forEach((o, b) => { lock(o.tl, o.h.x, o.h.y, b ? { cam: [ax, o.yb + 110, 1], d: .3 } : { cam: [ax, o.yb + 110, 1], arc: true });
+      o.J.forEach(j => lock(j.tl, j.x, j.y, { d: .25 })); }); }
 
   /* 7 — écoute, trouve, suit */
   { const [ax, ay] = ST[6], g = el("g", {}, L.st), X0 = ax - 330; STATIONS.push({ g, first: LOCKS.length });
@@ -233,19 +230,17 @@ function build() {
     const map = el("path", { d: "M" + LUX.map(p => geo(...p).map(v => v.toFixed(1)).join(",")).join("L") + "Z", fill: "#121A1F", stroke: C.white, "stroke-width": 6, "stroke-linejoin": "round" }, g), ML = map.getTotalLength();
     const [cx0, cy0] = geo(...PL.luxembourg), capG = el("g", { opacity: 0 }, g); el("circle", { cx: cx0, cy: cy0, r: 10, fill: C.sub }, capG);
     { const ct = el("text", { x: cx0 + 20, y: cy0 + 10, "font-size": 30, "font-weight": 600, fill: C.sub }, capG); ct.textContent = "Luxembourg"; }
-    // Esch-sur-Alzette mise en avant (grosse épingle, adresse) ; Dudelange et Mondorf-les-Bains citées sans adresse
     const PINS = [["Esch-sur-Alzette", ...PL.esch, "end"], ["Dudelange", ...PL.dudelange, "middle"], ["Mondorf-les-Bains", ...PL.mondorf, "start"]].map(([n, lon, lat, an], i) => {
-      const main = i === 0, R = main ? 24 : 13, [x, y] = geo(lon, lat), pg = el("g", { opacity: 0 }, g);
-      const pulse = el("circle", { r: R, fill: "none", stroke: C.cyan, "stroke-width": 5, opacity: 0 }, pg); el("circle", { r: R, fill: main ? C.cyan : C.sub, stroke: C.white, "stroke-width": main ? 7 : 4 }, pg);
-      const lg = el("g", { opacity: 0 }, g), lx = an === "end" ? x - 44 : an === "start" ? x + 30 : x, ly = an === "middle" ? y + 62 : y + 11;
-      const lt = el("text", { x: lx, y: main ? y - 2 : ly, "font-size": main ? 38 : 29, "font-weight": main ? 800 : 600, fill: main ? C.white : C.sub, "text-anchor": an }, lg); lt.textContent = n;
-      if (main) { const la = el("text", { x: lx, y: y + 36, "font-size": 27, "font-weight": 600, fill: C.cyan, "text-anchor": an }, lg); la.textContent = window.AGENCE_ESCH.adresse; }
-      return { pg, pulse, lg, x, y, main, tl: bt([44.5, 45.1, 45.6][i]) }; });
+      const [x, y] = geo(lon, lat), pg = el("g", { opacity: 0 }, g);
+      const pulse = el("circle", { r: 18, fill: "none", stroke: C.cyan, "stroke-width": 5 }, pg); el("circle", { r: 18, fill: C.cyan, stroke: C.white, "stroke-width": 6 }, pg);
+      const lg = el("g", { opacity: 0 }, g), lx = an === "end" ? x - 36 : an === "start" ? x + 36 : x, ly = an === "middle" ? y + 70 : y + 12;
+      const lt = el("text", { x: lx, y: ly, "font-size": 36, "font-weight": 700, fill: C.white, "text-anchor": an }, lg); lt.textContent = n;
+      return { pg, pulse, lg, x, y, tl: bt([44.5, 45.75, 47][i]) }; });
     ANIMS.push(t => { const u = prog(t, bt(43.5) - .05, bt(43.5) + .55); set(map, { "stroke-dasharray": `${ML * E.out(u)} ${ML}`, "fill-opacity": E.out(prog(t, bt(43.8), bt(43.8) + .5)), opacity: u > 0 ? 1 : 0 });
       set(capG, { opacity: E.out(prog(t, bt(44.1), bt(44.1) + .3)) });
       show(k1[0], t, bt(44.4), "slam", { from: 2.6 }); show(k1[1], t, bt(44.7), "slam"); k2.forEach((w, i) => show(w, t, bt(45) + i * .05));
       PINS.forEach(p => { const v = prog(t, p.tl, p.tl + .5), q = ((t - p.tl) % .9) / .9; set(p.pg, { opacity: v > 0 ? 1 : 0, transform: `translate(${p.x},${p.y}) scale(${Math.max(.001, E.outElastic(v))})` });
-        if (p.main) set(p.pulse, { r: 24 + q * 64, opacity: (1 - q) * .9 }); const lu = E.outExpo(prog(t, p.tl + .06, p.tl + .4)); set(p.lg, { opacity: lu, transform: `translate(0,${(1 - lu) * 26})` }); }); });
+        set(p.pulse, { r: 18 + q * 46, opacity: (1 - q) * .8 }); const lu = E.outExpo(prog(t, p.tl + .06, p.tl + .4)); set(p.lg, { opacity: lu, transform: `translate(0,${(1 - lu) * 26})` }); }); });
     PINS.forEach((p, i) => lock(p.tl, p.x, p.y, [{ cam: [ax, ay - 120, .8], arc: true }, { cam: [ax, ay + 180, .95], d: .22 }, { d: .22 }][i])); }
 
   /* 9 — plus de 20 ans */
@@ -267,15 +262,20 @@ function build() {
   { const g = L.center, k = .855;
     el("circle", { r: 520, fill: "#FFFFFF" }, g);
     [[0, -1], [1, 0], [0, 1], [-1, 0]].forEach(([dx, dy]) => el("line", { x1: dx * 535, y1: dy * 535, x2: dx * 615, y2: dy * 615, stroke: C.cyan, "stroke-width": 9 }, g));
-    const lg = el("g", { transform: `translate(${-LD.w * k / 2},${-30 - LD.h * k / 2}) scale(${k})` }, g), parts = { P: [], R: [], bar: [], Inter: [], tagline: [] };
+    const lg = el("g", { transform: `translate(${-LD.w * k / 2},${-60 - LD.h * k / 2}) scale(${k})` }, g), parts = { P: [], R: [], bar: [], Inter: [], tagline: [] };
     LD.paths.forEach(p => parts[p.g].push({ e: el("path", { d: p.d, "fill-rule": "evenodd", fill: p.g === "Inter" ? C.cyan : p.g === "tagline" ? LD.tag : C.grey, opacity: 0 }, lg), box: p.box }));
-    LOGO = { parts, k, O: [-LD.w * k / 2 + OL.cx * k, -30 - LD.h * k / 2 + OL.cy * k] };
-    END.slogan = line(g, [["EN"], ["PLEIN"], ["DANS"], ["LE", C.cyan], ["MILLE.", C.cyan]], 0, -250, { size: 46, w: 800, fill: C.grey, max: 760 });
-    END.contrats = line(g, "INTÉRIM · CDD · CDI", 0, 145, { size: 30, w: 800, fill: C.cyan, ls: .12, gap: .4 });
-    const AE = window.AGENCE_ESCH;
-    END.villes = [...line(g, "Agence d'Esch-sur-Alzette", 0, 196, { size: 27, w: 800, fill: C.grey, ls: 0, gap: .28 }),
-      ...line(g, AE.adresse + " · Tél. " + AE.tel, 0, 234, { size: 23, w: 600, fill: "#6B7780", ls: 0, gap: .3 }),
-      ...line(g, "Aussi à Dudelange et Mondorf-les-Bains", 0, 268, { size: 21, w: 600, fill: "#8A96A0", ls: 0, gap: .3 })];
+    LOGO = { parts, k, O: [-LD.w * k / 2 + OL.cx * k, -60 - LD.h * k / 2 + OL.cy * k] };
+    END.slogan = line(g, [["EN"], ["PLEIN"], ["DANS"], ["LE", C.cyan], ["MILLE.", C.cyan]], 0, -275, { size: 46, w: 800, fill: C.grey, max: 760 });
+    // les métiers défilent de plus en plus vite, puis « + des dizaines d'autres sur notre site internet »
+    const rg = el("g", {}, g), rc = el("clipPath", { id: "rollclip" }, g); el("rect", { x: -500, y: 110, width: 1000, height: 108 }, rc); rg.setAttribute("clip-path", "url(#rollclip)");
+    const ROLL = ["Électricien", "Soudeur", "Gestionnaire de paie", "Serrurier", "Technicien de maintenance", "Assistant administratif", "Chauffagiste", "Menuisier",
+      "Métallier", "Électricien", "Soudeur", "Serrurier", "Gestionnaire de paie", "Assistant administratif", "Technicien de maintenance", "Menuisier"];
+    const rt = el("text", { x: 0, y: 182, "font-size": 54, "font-weight": 800, fill: C.grey, "text-anchor": "middle", "letter-spacing": -1 }, rg);
+    const rr = Math.pow(.05 / .3, 1 / (ROLL.length - 1)), RD = ROLL.map((_, k) => .3 * Math.pow(rr, k)), RS = RD.map((_, k) => RD.slice(0, k).reduce((a, b) => a + b, 0));
+    END.roll = { rt, ROLL, RD, RS, total: RD.reduce((a, b) => a + b, 0) };
+    END.more = line(g, [["+"], ["DES"], ["DIZAINES"], ["D’AUTRES", C.cyan]], 0, 165, { size: 48, w: 900, fill: C.grey, max: 820 });
+    END.site = line(g, "SUR NOTRE SITE INTERNET", 0, 228, { size: 26, w: 700, fill: "#6B7780", ls: .14, gap: .5 });
+    END.villes = line(g, "Dudelange · Esch-sur-Alzette · Mondorf-les-Bains", 0, 300, { size: 22, w: 600, fill: "#8A96A0", ls: 0, gap: .3 });
     END.top = line(L.top, [["VOTRE"], ["PROCHAIN"], ["JOB,", C.cyan]], 0, -720, { size: 84, max: 900, ghost: true });
     const cta = el("g", { opacity: 0 }, L.top); el("rect", { x: -370, y: -60, width: 740, height: 120, rx: 60, fill: C.cyan }, cta);
     const clip = el("clipPath", { id: "ctaclip" }, cta); el("rect", { x: -370, y: -60, width: 740, height: 120, rx: 60 }, clip);
@@ -418,8 +418,13 @@ function seek(t) {
   animLogo(t, T_LAND);
   END.top.forEach((w, i) => show(w, t, T_LAND + .25 + i * .12, "slam"));
   END.slogan.forEach((w, i) => show(w, t, bt(57.5) + i * .07));
-  END.contrats.forEach((w, i) => show(w, t, bt(58.5) + i * .05));
-  END.villes.forEach((w, i) => show(w, t, bt(59) + i * .03));
+  END.villes.forEach((w, i) => show(w, t, T_LAND + .9 + i * .03));
+  { const R = END.roll, a = t - T_ROLL; let k = -1; if (a >= 0) { k = 0; while (k < R.ROLL.length - 1 && a >= R.RS[k + 1]) k++; }
+    const on = a >= 0 && a < R.total, lu = on ? clamp((a - R.RS[k]) / Math.max(.04, R.RD[k] * .45)) : 0;
+    if (on) R.rt.textContent = R.ROLL[k];
+    set(R.rt, { opacity: on ? 1 : 0, transform: `translate(0,${((1 - E.outExpo(lu)) * 70).toFixed(1)})` });
+    END.more.forEach((w, i) => show(w, t, T_ROLL + R.total + i * .07, "slam"));
+    END.site.forEach((w, i) => show(w, t, T_ROLL + R.total + .3 + i * .06)); }
   { const u = prog(t, bt(60), bt(60) + .5), pu = t >= bt(60) ? 1 + .035 * Math.exp(-((t - bt(60)) % (2 * B)) / .1) : 1;
     set(END.cta, { opacity: clamp(u * 4), transform: `translate(0,690) scale(${(Math.max(.001, E.outBack(u)) * pu).toFixed(4)})` });
     const sw = ((t - bt(61)) % (4 * B)) / (4 * B); set(END.shine, { x: t > bt(61) ? -460 + sw * 1100 : -900 }); }

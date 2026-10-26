@@ -6,17 +6,19 @@
 **ElevenLabs** : voix française énergique (par exemple Benjamin), modèle Multilingual v2, Stability ≈ 35 %, Style ≈ 45 %, vitesse 1,1. La voix doit durer **31 secondes maximum**.
 
 ## Texte à coller dans ElevenLabs (en une fois)
-Mis à jour avec les infos de PRO-INTER : profils qualifiés en bâtiment second œuvre et industrie, 6 secteurs, plus de 20 ans d'expérience.
+Version 3 : 3 secteurs (bâtiment, industrie, tertiaire) avec 2 métiers chacun, 3 agences à égalité, défilement des métiers à la fin.
 ```
 Vous cherchez un job ? <break time="0.3s" /> Un vrai. <break time="0.2s" /> Près de chez vous. <break time="0.3s" />
 Chez PRO-INTER, on vise juste. <break time="0.3s" />
 Intérim. <break time="0.15s" /> CDD. <break time="0.15s" /> CDI. <break time="0.3s" />
-Des profils qualifiés, en bâtiment second œuvre et en industrie. <break time="0.3s" />
-Électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance. <break time="0.3s" />
+Bâtiment : <break time="0.15s" /> électricien, serrurier. <break time="0.3s" />
+Industrie : <break time="0.15s" /> soudeur, technicien de maintenance. <break time="0.3s" />
+Tertiaire : <break time="0.15s" /> gestionnaire de paie, assistant administratif. <break time="0.3s" />
 On vous écoute, on trouve la bonne mission, et on vous suit. <break time="0.3s" />
-Trois agences au Luxembourg. <break time="0.3s" /> Plus de vingt ans d'expérience. <break time="0.4s" />
+Trois agences au Luxembourg. <break time="0.6s" /> Plus de vingt ans d'expérience. <break time="0.4s" />
 Votre prochain job ? <break time="0.3s" /> En plein dans le mille. <break time="0.3s" />
-PRO-INTER, votre agence d'emploi. <break time="0.2s" /> Postulez sur prointer point lu.
+PRO-INTER, votre agence d'emploi. <break time="0.3s" />
+Et des dizaines d'autres métiers vous attendent. <break time="0.2s" /> Postulez sur prointer point lu.
 ```
 
 Si la prononciation accroche, remplacez :
