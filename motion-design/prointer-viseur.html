@@ -214,9 +214,9 @@ function build() {
     const ROLL = ["CHAUFFAGISTE", "MENUISIER", "MÉTALLIER", "ÉLECTRICIEN", "SOUDEUR", "GESTIONNAIRE DE PAIE", "SERRURIER", "TECHNICIEN DE MAINTENANCE",
       "ASSISTANT ADMINISTRATIF", "MENUISIER", "CHAUFFAGISTE", "MÉTALLIER", "SOUDEUR", "ÉLECTRICIEN", "SERRURIER", "GESTIONNAIRE DE PAIE"];
     const ry = ay + 700, rt = el("text", { x: ax, y: ry + 45, "font-size": 100, "font-weight": 900, fill: C.white, "text-anchor": "middle", "letter-spacing": -2, opacity: 0 }, g);
-    const RZ = ROLL.map(n => { rt.textContent = n; return Math.min(130, 100 * 900 / rt.getComputedTextLength()); });
+    const RZ = ROLL.map(n => { rt.textContent = n; return Math.min(130, 100 * 800 / rt.getComputedTextLength()); });
     const rr = Math.pow(.05 / .3, 1 / (ROLL.length - 1)), RD = ROLL.map((_, k) => .3 * Math.pow(rr, k)), RS = RD.map((_, k) => RD.slice(0, k).reduce((a, b) => a + b, 0)), RT = RD.reduce((a, b) => a + b, 0);
-    const more = line(g, [["+", C.cyan], ["DES"], ["DIZAINES"], ["D’AUTRES", C.cyan]], ax, ay + 680, { size: 108, max: 920, ghost: true });
+    const more = line(g, [["+", C.cyan], ["DES"], ["DIZAINES"], ["D’AUTRES", C.cyan]], ax, ay + 680, { size: 108, max: 800, ghost: true });
     const site = line(g, "SUR NOTRE SITE INTERNET", ax, ay + 790, { size: 46, w: 700, fill: "#B8C4CB", ls: .18, gap: .5 });
     const t0r = bt(TROLL);
     ANIMS.push(t => { const a = t - t0r; let k = -1; if (a >= 0) { k = 0; while (k < ROLL.length - 1 && a >= RS[k + 1]) k++; }
@@ -224,7 +224,7 @@ function build() {
       if (on) { rt.textContent = ROLL[k]; rt.setAttribute("font-size", RZ[k].toFixed(1)); rt.setAttribute("fill", k % 2 ? C.cyan : C.white); rt.setAttribute("y", (ry + RZ[k] * .355).toFixed(1)); }
       set(rt, { opacity: on ? 1 : 0, transform: `translate(0,${((1 - E.outExpo(lu)) * 110).toFixed(1)})` });
       more.forEach((w, i) => show(w, t, t0r + RT + i * .06, "slam")); site.forEach((w, i) => show(w, t, t0r + RT + .25 + i * .05)); });
-    lock(t0r, ax, ry, { cam: [ax, ay + 700, 1.18], d: .3 });
+    lock(t0r, ax, ry, { cam: [ax, ay + 690, 1.1], d: .3 });
     lock(t0r + RT, more[3].x, more[3].y, { d: .22 }); }
 
   /* 7 — écoute, trouve, suit */
