@@ -94,21 +94,23 @@ PROINTER = [
 ]
 
 # PRO-INTER « Le viseur » : chaque phrase tombe sur son tir (parole à l'instant cible)
-VISEUR = [
+VISEUR = [                                             # voix assemblée : prise v2 + les phrases des secteurs (v3)
     ("Vous cherchez un job ?",                             (0.00, 0.00),         (0.94, 1.49),         None,         0.40),
     ("Un vrai.",                                           (0.94, 1.49),         (1.89, 2.41),         None,         2.00),
     ("Près de chez vous.",                                 (1.89, 2.41),         (2.87, 3.54),         None,         2.74),
     ("Chez PRO-INTER, on vise juste.",                     (2.87, 3.54),         (5.35, 5.81),         None,         3.55),
-    ("Intérim. CDD. CDI.",                                 (5.35, 5.81),         (8.12, 8.66),         None,         6.00),
-    ("Des profils qualifiés, en bâtiment second œuvre et en industrie.", (8.12, 8.66), (11.73, 12.20), None,      8.95),
-    ("Électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.", (11.73, 12.20), (16.83, 17.23), None, 12.46),
-    ("On vous écoute, on trouve la bonne mission…",        (16.83, 17.23),       (20.07, 20.50),       None,         17.53),
-    ("Trois agences au Luxembourg.",                       (20.07, 20.50),       (21.64, 22.05),       None,         20.81),
-    ("Plus de vingt ans d'expérience.",                    (21.64, 22.05),       (23.48, 23.92),       None,         22.33),
-    ("Votre prochain job ?",                               (23.48, 23.92),       (24.76, 25.07),       None,         24.21),
-    ("En plein dans le mille !",                           (24.76, 25.07),       (26.12, 26.44),       None,         25.54),
-    ("PRO-INTER, votre agence d'emploi.",                  (26.12, 26.44),       (28.16, 28.50),       None,         26.75),
-    ("Postulez sur prointer point lu.",                    (28.16, 28.50),       None,                 None,         28.75),
+    ("Intérim. CDD. CDI.",                                 (5.35, 5.81),         (8.15, 8.95),         None,         6.00),
+    ("Bâtiment : électricien, serrurier.",                 (8.15, 8.95),         (11.70, 12.30),       None,         8.75),
+    ("Industrie : soudeur, technicien de maintenance.",    (11.70, 12.30),       (15.23, 15.62),       None,         12.05),
+    ("Tertiaire : gestionnaire de paie, assistant administratif.", (15.23, 15.62), (18.99, 19.22), None,          15.37),
+    ("Et des dizaines d'autres métiers vous attendent.",   (18.99, 19.22),       (21.36, 21.80),       None,         18.97),
+    ("On vous écoute, on trouve la bonne mission…",        (21.36, 21.80),       (24.70, 25.08),       None,         21.60),
+    ("Trois agences au Luxembourg.",                       (24.70, 25.08),       (26.27, 26.63),       None,         24.86),
+    ("Plus de vingt ans d'expérience.",                    (26.27, 26.63),       (28.11, 28.50),       None,         27.60),
+    ("Votre prochain job ?",                               (28.11, 28.50),       (29.39, 29.65),       None,         29.50),
+    ("En plein dans le mille !",                           (29.39, 29.65),       (30.75, 31.02),       None,         31.165),
+    ("PRO-INTER, votre agence d'emploi.",                  (30.75, 31.02),       (32.79, 33.08),       None,         32.40),
+    ("Postulez sur prointer point lu.",                    (32.79, 33.08),       None,                 None,         34.40),
 ]
 
 PROJECTS = {
@@ -118,7 +120,7 @@ PROJECTS = {
                    videos={"9x16": "gaming-tiktok-9x16-voix.mp4", "16x9": "gaming-16x9-voix.mp4"}),
     "prointer": dict(voice="prointer-benjamin-v2.mp3", stems="prointer", master="prointer-{ar}-silent.mp4", pieces=PROINTER, dur=44.0, duck=12,
                    videos={"9x16": "prointer-9x16-voix.mp4"}),
-    "viseur": dict(voice="prointer-viseur-benjamin-v2.mp3", stems="prointer-viseur", master="prointer-viseur-{ar}-silent.mp4", pieces=VISEUR, dur=31.6, duck=10,
+    "viseur": dict(voice="prointer-viseur-benjamin-v3.flac", stems="prointer-viseur", master="prointer-viseur-{ar}-silent.mp4", pieces=VISEUR, dur=37.5, duck=10,
                    videos={"9x16": "prointer-viseur-9x16-voix.mp4"}),
 }
 P = PROJECTS[PROJ]

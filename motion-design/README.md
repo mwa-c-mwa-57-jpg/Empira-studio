@@ -140,14 +140,14 @@ python3 tools/voiceover.py prointer && python3 tools/voiceover.py prointer --san
 
 ---
 
-# PRO-INTER : motion design 31,6 s « Le viseur » (9:16)
+# PRO-INTER : motion design 37,5 s « Le viseur » (9:16)
 
 Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La cible du logo devient un **viseur** qui fonce d'info en info. Il « tire » sur chaque mot, en rythme sur une musique électro-pop à 128 BPM, et laisse une traînée cyan :
 1. « Vous cherchez un job ? Un vrai. Près de chez vous. »
 2. Le drop : « Chez PRO-INTER, on vise juste. »
-3. Intérim, CDD, CDI, puis les profils qualifiés (bâtiment second œuvre, industrie) et les 6 secteurs : électricité, chauffage, menuiserie, serrurerie, métallerie, maintenance.
+3. Intérim, CDD, CDI, puis 3 secteurs avec 2 métiers chacun (bâtiment : électricien, serrurier ; industrie : soudeur, technicien de maintenance ; tertiaire : gestionnaire de paie, assistant administratif), et tout de suite d'autres métiers qui défilent de plus en plus vite jusqu'à « + des dizaines d'autres sur notre site internet ».
 4. « On écoute. On trouve. On vous suit. »
-5. 3 agences sur la carte du Luxembourg (Esch-sur-Alzette mise en avant avec son adresse), puis le compteur « +20 ans d'expérience ».
+5. 3 agences à égalité sur la carte du Luxembourg (scène plus longue), puis le compteur « +20 ans d'expérience ».
 6. Grand dézoom : tout le parcours dessine une cible géante.
 7. Le viseur plonge en spirale au centre (« en plein dans le mille ») et devient le « O » du logo, dans une lunette. Bouton « Postulez sur prointer.lu ».
 
@@ -156,14 +156,14 @@ Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La c
 | `prointer-viseur.html` | Animation (SVG, 9:16) : caméra sur ressort amorti, qui suit le viseur et dépasse légèrement sa cible |
 | `out/prointer-viseur-9x16-voix.mp4` / `out/prointer-viseur-9x16-voix-sans-musique.mp4` | **Vidéos finales avec voix off** (Benjamin), avec ou sans musique, -14 LUFS |
 | `out/prointer-viseur-9x16-60fps.mp4` / `out/prointer-viseur-9x16-sans-musique.mp4` | Vidéos (musique + bruitages / bruitages seuls), 60 i/s avec flou de mouvement, -14 LUFS |
-| `assets/voix/prointer-viseur-benjamin-v2.mp3` | Voix off brute (ElevenLabs), avec les profils qualifiés, les 6 secteurs et les 20 ans |
+| `assets/voix/prointer-viseur-benjamin-v3.flac` | Voix off assemblée : prise v2 (ElevenLabs) + les phrases des secteurs (`prointer-viseur-benjamin-v3-secteurs.mp3`) |
 | `assets/prointer/luxembourg.js` | Frontière du Luxembourg (OpenStreetMap), agences géocodées, adresse et téléphone de l'agence d'Esch-sur-Alzette (mise en avant dans les deux vidéos) |
 | `tools/audio_prointer_viseur.py` | Musique (128 BPM, la mineur) et bruitages calés sur chaque tir |
 | `PROINTER-VISEUR-SCRIPT-VOIX-OFF.md` | Texte ElevenLabs et timecodes |
 
 ```bash
 python3 tools/audio_prointer_viseur.py
-node tools/render.mjs --page prointer-viseur.html --fps 60 --to 31.6 --workers 4 --mb 6 --out out/prointer-viseur-9x16-silent.mp4
+node tools/render.mjs --page prointer-viseur.html --fps 60 --to 37.5 --workers 4 --mb 6 --out out/prointer-viseur-9x16-silent.mp4
 python3 tools/voiceover.py viseur && python3 tools/voiceover.py viseur --sans-musique
 ```
 `--mb 6` : flou de mouvement (6 sous-images par image, obturateur à 180°), utile pour les coups de fouet de caméra.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PRO-INTER — Le viseur (9:16, 37,25 s)</title>
+<title>PRO-INTER — Le viseur (9:16, 37,5 s)</title>
 <style>
 @font-face{font-family:"Montserrat";font-style:normal;font-weight:100 900;font-display:block;
   src:url(assets/fonts/montserrat-latin-ext.woff2) format("woff2");
@@ -38,20 +38,20 @@ body.render #ui{display:none}
   <svg id="hud" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
   <div id="flash"></div>
 </div>
-<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="37.25" step="0.01" value="0"><span id="tc">00.00</span></div>
+<div id="ui"><button id="play">▶ Lecture</button><input id="scrub" type="range" min="0" max="37.5" step="0.01" value="0"><span id="tc">00.00</span></div>
 <script src="assets/prointer/logo-paths.js"></script>
 <script src="assets/prointer/luxembourg.js"></script>
 <script>
 "use strict";
 /* =====================================================================
-   PRO-INTER — « Le viseur » — 37,25 s, 9:16, un seul plan-séquence nerveux.
+   PRO-INTER — « Le viseur » — 37,5 s, 9:16, un seul plan-séquence nerveux.
    La cible du logo devient un viseur qui fonce d'info en info, calé sur une
    musique à 128 BPM, et laisse une traînée cyan. Les étapes sont posées sur
    une spirale autour d'une cible géante : le grand dézoom révèle la cible,
    puis le viseur plonge en son centre et devient le « O » du logo.
    ===================================================================== */
 const Q = new URLSearchParams(location.search);
-const W = 1080, H = 1920, DUR = 37.25;
+const W = 1080, H = 1920, DUR = 37.5;
 const B = 60 / 128, bt = n => n * B;                  // temps de la n-ième pulsation (128 BPM)
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -129,7 +129,7 @@ const LD = window.LOGO_DATA, OL = LD.O;
 const ST = [-90, -15, 60, 135, 210, 285, 360, 400, 520].map((a, i) => { const th = a * Math.PI / 180, r = 3700 - 270 * i; return [r * Math.cos(th), r * Math.sin(th)]; });
 const ZR = .115, CYR = -1739;                          // cadre du grand dézoom
 const ZF = .8, CYF = 150;                              // cadre final
-const T_R0 = bt(61), T_RV = bt(63.5), T_R1 = bt(65), T_LAND = bt(68);  // dézoom (puis la cible reste à l'écran), plongée, impact au centre
+const T_R0 = bt(60.25), T_RV = bt(62.75), T_R1 = bt(65), T_LAND = bt(68);  // dézoom (puis la cible reste à l'écran), plongée, impact au centre
 const LOCKS = [], ANIMS = [], STATIONS = [];
 function lock(t, x, y, o = {}) { LOCKS.push({ t, x, y, d: o.d ?? .42, kind: o.kind ?? (o.arc ? "arc" : "line"), big: !!o.big, cam: o.cam || null }); }
 let START, LOGO, CUR, TRAIL, FX = [], END = {};
@@ -191,8 +191,8 @@ function build() {
 
   /* 6 — trois secteurs, deux métiers chacun (un tir sur le secteur, puis sur chaque métier) */
   { const [ax, ay] = ST[5], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
-    const TSEC = [[20, 21.5, 23], [25, 26.5, 28.25], [30.25, 31.75, 33.75]];        // tirs (pulsations) : secteur, métier 1, métier 2
-    const TROLL = 35.5;                                                          // début du défilement des autres métiers
+    const TSEC = [[18.75, 20.75, 23], [25.75, 27.75, 29.5], [32.75, 34.75, 37.25]];        // tirs (pulsations) : secteur, métier 1, métier 2
+    const TROLL = 38.75, TROLL_END = 42.25;                                      // le défilement s'arrête sur « d'autres » dans la voix
     const kk = line(g, "NOS SECTEURS", ax, ay - 600, { size: 46, w: 700, fill: C.dim, ls: .3, gap: .6 });
     const SEC = [["BÂTIMENT", "helmet", ["ÉLECTRICIEN", "SERRURIER"]], ["INDUSTRIE", "gear", ["SOUDEUR", "TECHNICIEN DE MAINTENANCE"]], ["TERTIAIRE", "work", ["GESTIONNAIRE DE PAIE", "ASSISTANT ADMINISTRATIF"]]];
     const B = SEC.map(([name, ic, jobs], b) => { const yb = ay - 470 + b * 360, tb = TSEC[b];
@@ -215,7 +215,8 @@ function build() {
       "ASSISTANT ADMINISTRATIF", "MENUISIER", "CHAUFFAGISTE", "MÉTALLIER", "SOUDEUR", "ÉLECTRICIEN", "SERRURIER", "GESTIONNAIRE DE PAIE"];
     const ry = ay + 700, rt = el("text", { x: ax, y: ry + 45, "font-size": 100, "font-weight": 900, fill: C.white, "text-anchor": "middle", "letter-spacing": -2, opacity: 0 }, g);
     const RZ = ROLL.map(n => { rt.textContent = n; return Math.min(130, 100 * 800 / rt.getComputedTextLength()); });
-    const rr = Math.pow(.05 / .3, 1 / (ROLL.length - 1)), RD = ROLL.map((_, k) => .3 * Math.pow(rr, k)), RS = RD.map((_, k) => RD.slice(0, k).reduce((a, b) => a + b, 0)), RT = RD.reduce((a, b) => a + b, 0);
+    const rr = Math.pow(.045 / .22, 1 / (ROLL.length - 1)), RD0 = ROLL.map((_, k) => .22 * Math.pow(rr, k)), sc = (bt(TROLL_END) - bt(TROLL)) / RD0.reduce((a, b) => a + b, 0);
+    const RD = RD0.map(d => d * sc), RS = RD.map((_, k) => RD.slice(0, k).reduce((a, b) => a + b, 0)), RT = RD.reduce((a, b) => a + b, 0);
     const more = line(g, [["+", C.cyan], ["DES"], ["DIZAINES"], ["D’AUTRES", C.cyan]], ax, ay + 680, { size: 108, max: 800, ghost: true });
     const site = line(g, "SUR NOTRE SITE INTERNET", ax, ay + 790, { size: 46, w: 700, fill: "#B8C4CB", ls: .18, gap: .5 });
     const t0r = bt(TROLL);
@@ -231,7 +232,7 @@ function build() {
   { const [ax, ay] = ST[6], g = el("g", {}, L.st), X0 = ax - 330; STATIONS.push({ g, first: LOCKS.length });
     const R = [[["ON"], ["ÉCOUTE.", C.cyan]], [["ON"], ["TROUVE.", C.cyan]], [["ON"], ["VOUS"], ["SUIT.", C.cyan]]];
     const SUB = ["vos compétences et vos envies", "la mission qui vous correspond", "du premier au dernier jour"];
-    const rows = R.map((ws, i) => { const y = ay - 300 + i * 300, tl = bt([45.5, 47.5, 50.25][i]);
+    const rows = R.map((ws, i) => { const y = ay - 300 + i * 300, tl = bt([46, 48, 51][i]);
       const badge = el("g", { opacity: 0 }, g); el("circle", { r: 42, fill: C.cyan }, badge); icon("check", 0, 0, 56, C.dark, badge);
       return { badge, bx: X0 - 76, by: y, tl, l: line(g, ws, X0, y, { size: 116, max: 760, align: "l", ghost: true }), sub: line(g, SUB[i], X0, y + 98, { size: 38, w: 600, fill: C.sub, align: "l", ls: 0, gap: .3 }) }; });
     ANIMS.push(t => rows.forEach(r => { const u = prog(t, r.tl, r.tl + .4); set(r.badge, { opacity: u > 0 ? 1 : 0, transform: `translate(${r.bx},${r.by}) scale(${Math.max(.001, E.outBack(u))})` });
@@ -252,28 +253,28 @@ function build() {
       const pulse = el("circle", { r: 18, fill: "none", stroke: C.cyan, "stroke-width": 5 }, pg); el("circle", { r: 18, fill: C.cyan, stroke: C.white, "stroke-width": 6 }, pg);
       const lg = el("g", { opacity: 0 }, g), lx = an === "end" ? x - 36 : an === "start" ? x + 36 : x, ly = an === "middle" ? y + 70 : y + 12;
       const lt = el("text", { x: lx, y: ly, "font-size": 36, "font-weight": 700, fill: C.white, "text-anchor": an }, lg); lt.textContent = n;
-      return { pg, pulse, lg, x, y, tl: bt([52.5, 53.75, 55][i]) }; });
-    ANIMS.push(t => { const u = prog(t, bt(51.5) - .05, bt(51.5) + .55); set(map, { "stroke-dasharray": `${ML * E.out(u)} ${ML}`, "fill-opacity": E.out(prog(t, bt(51.8), bt(51.8) + .5)), opacity: u > 0 ? 1 : 0 });
-      set(capG, { opacity: E.out(prog(t, bt(52.1), bt(52.1) + .3)) });
-      show(k1[0], t, bt(52.4), "slam", { from: 2.6 }); show(k1[1], t, bt(52.7), "slam"); k2.forEach((w, i) => show(w, t, bt(53) + i * .05));
+      return { pg, pulse, lg, x, y, tl: bt([53, 54.5, 56][i]) }; });
+    ANIMS.push(t => { const u = prog(t, bt(52.1) - .05, bt(52.1) + .55); set(map, { "stroke-dasharray": `${ML * E.out(u)} ${ML}`, "fill-opacity": E.out(prog(t, bt(52.4), bt(52.4) + .5)), opacity: u > 0 ? 1 : 0 });
+      set(capG, { opacity: E.out(prog(t, bt(52.7), bt(52.7) + .3)) });
+      show(k1[0], t, bt(52.95), "slam", { from: 2.6 }); show(k1[1], t, bt(53.3), "slam"); k2.forEach((w, i) => show(w, t, bt(53.6) + i * .05));
       PINS.forEach(p => { const v = prog(t, p.tl, p.tl + .5), q = ((t - p.tl) % .9) / .9; set(p.pg, { opacity: v > 0 ? 1 : 0, transform: `translate(${p.x},${p.y}) scale(${Math.max(.001, E.outElastic(v))})` });
         set(p.pulse, { r: 18 + q * 46, opacity: (1 - q) * .8 }); const lu = E.outExpo(prog(t, p.tl + .06, p.tl + .4)); set(p.lg, { opacity: lu, transform: `translate(0,${(1 - lu) * 26})` }); }); });
-    PINS.forEach((p, i) => lock(p.tl, p.x, p.y, [{ cam: [ax, ay - 120, .8], arc: true }, { cam: [ax, ay + 180, .95], d: .22 }, { d: .22 }][i])); }
+    PINS.forEach((p, i) => lock(p.tl, p.x, p.y, [{ cam: [ax, ay - 120, .8], arc: true }, { cam: [ax, ay + 180, .95], d: .3 }, { d: .3 }][i])); }
 
   /* 9 — plus de 20 ans */
   { const [ax, ay] = ST[8], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
     const n = word(g, "+20", ax, ay - 70, { size: 390, fill: C.cyan, ghost: true });
     const l2 = line(g, [["ANS"], ["D’EXPÉRIENCE"]], ax, ay + 205, { size: 96, max: 880 });
-    ANIMS.push(t => { const v = "+" + Math.round(20 * E.out(prog(t, bt(59.5), bt(60.25)))); n.t.textContent = v; n.ghost.textContent = v;
-      show(n, t, bt(59.5) - .06, "slam"); const pu = 1 + .12 * Math.exp(-(t - bt(60.25)) / .1) * (t >= bt(60.25)); if (t >= bt(59.5) + .2) set(n.g, { transform: `translate(${n.x},${n.y}) scale(${pu})` });
-      l2.forEach((w, i) => show(w, t, bt(60.25) + i * .08, "slam")); });
-    lock(bt(59.5), n.x, n.y, { cam: [ax, ay + 40, 1], arc: true });
-    lock(bt(60.25), n.x, n.y, { d: 0, big: true }); }
+    ANIMS.push(t => { const v = "+" + Math.round(20 * E.out(prog(t, bt(58), bt(59.5)))); n.t.textContent = v; n.ghost.textContent = v;
+      show(n, t, bt(58) - .06, "slam"); const pu = 1 + .12 * Math.exp(-(t - bt(59.5)) / .1) * (t >= bt(59.5)); if (t >= bt(58) + .2) set(n.g, { transform: `translate(${n.x},${n.y}) scale(${pu})` });
+      l2.forEach((w, i) => show(w, t, bt(59.5) + i * .08, "slam")); });
+    lock(bt(58), n.x, n.y, { cam: [ax, ay + 40, 1], arc: true });
+    lock(bt(59.5), n.x, n.y, { d: 0, big: true }); }
 
   /* le titre du grand dézoom (au-dessus de la cible) */
   { const y1 = CYR + (330 - 960) / ZR, y2 = CYR + (482 - 960) / ZR;
     const r1 = line(L.top, "VOTRE PROCHAIN", 0, y1, { size: 640 }), r2 = line(L.top, [["JOB", C.cyan], ["?"]], 0, y2, { size: 1000, ghost: true });
-    ANIMS.push(t => { r1.forEach((w, i) => show(w, t, bt([63.65, 64][i]), "slam")); r2.forEach((w, i) => show(w, t, bt([64.6, 65.3][i]), "slam", { from: 2.2 })); }); }
+    ANIMS.push(t => { r1.forEach((w, i) => show(w, t, bt([62.95, 63.3][i]), "slam")); r2.forEach((w, i) => show(w, t, bt([63.9, 64.6][i]), "slam", { from: 2.2 })); }); }
 
   /* le centre : disque blanc, logo, slogan et appel à l'action */
   { const g = L.center, k = .855;
@@ -368,7 +369,7 @@ function camera(t) {
   } else { c = { x: 0, y: CYF, z: ZF * (1 + .045 * E.out(prog(t, T_LAND, DUR))) }; zb = c.z; }
   // petit coup de zoom à chaque tir, plus fort sur les gros impacts
   for (const k of LOCKS) if (t >= k.t && t < k.t + .5) c.z *= 1 + (k.big ? .07 : .028) * Math.exp(-(t - k.t) / .09);
-  if (t >= T_LAND) c.z *= 1 + .02 * Math.exp(-((t - bt(72)) % B) / .08) * (t >= bt(72));
+  if (t >= T_LAND) c.z *= 1 + .02 * Math.exp(-((t - bt(73)) % B) / .08) * (t >= bt(73));
   return { ...c, zb, rot };
 }
 
@@ -429,9 +430,9 @@ function seek(t) {
   END.slogan.forEach((w, i) => show(w, t, bt(69.5) + i * .07));
   END.contrats.forEach((w, i) => show(w, t, bt(70.5) + i * .05));
   END.villes.forEach((w, i) => show(w, t, bt(71) + i * .04));
-  { const u = prog(t, bt(72), bt(72) + .5), pu = t >= bt(72) ? 1 + .035 * Math.exp(-((t - bt(72)) % (2 * B)) / .1) : 1;
+  { const u = prog(t, bt(73), bt(73) + .5), pu = t >= bt(73) ? 1 + .035 * Math.exp(-((t - bt(73)) % (2 * B)) / .1) : 1;
     set(END.cta, { opacity: clamp(u * 4), transform: `translate(0,690) scale(${(Math.max(.001, E.outBack(u)) * pu).toFixed(4)})` });
-    const sw = ((t - bt(73)) % (4 * B)) / (4 * B); set(END.shine, { x: t > bt(73) ? -460 + sw * 1100 : -900 }); }
+    const sw = ((t - bt(74)) % (4 * B)) / (4 * B); set(END.shine, { x: t > bt(74) ? -460 + sw * 1100 : -900 }); }
   $("flash").style.opacity = (t >= T_LAND ? .32 * Math.exp(-(t - T_LAND) / .09) : t >= bt(8) ? .12 * Math.exp(-(t - bt(8)) / .07) : 0).toFixed(3);
 }
 window.seek = seek; window.DUR = DUR;
