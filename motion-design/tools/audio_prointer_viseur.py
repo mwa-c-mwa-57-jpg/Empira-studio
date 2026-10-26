@@ -4,7 +4,7 @@ Calée sur prointer-viseur.html (mêmes temps, en pulsations). Sorties : out/pro
 import numpy as np, os, wave
 from scipy.signal import butter, sosfilt, fftconvolve
 
-SR = 48000; DUR = 37.5; N = int(SR * DUR)
+SR = 48000; DUR = 33.75; N = int(SR * DUR)
 B = 60 / 128; BAR = 4 * B
 def bt(n): return n * B
 OUT = os.path.join(os.path.dirname(__file__), "..", "out")
@@ -67,48 +67,48 @@ CH = {"Am": ["A3", "C4", "E4", "A4"], "F": ["F3", "A3", "C4", "F4"], "C": ["G3",
 ROOT = {"Am": "A1", "F": "F1", "C": "C2", "G": "G1"}
 PROG = ["Am", "F", "C", "G"]
 def chord_of(beat):
-    if beat >= 68: return PROG[int((beat - 68) // 4) % 4]
-    if 60 <= beat < 68: return "Am" if beat < 64 else ("F" if beat < 66 else "G")
+    if beat >= 60: return PROG[int((beat - 60) // 4) % 4]
+    if 52 <= beat < 60: return "Am" if beat < 56 else ("F" if beat < 58 else "G")
     return PROG[int(beat // 4) % 4]
 
 drums = np.zeros((N, 2)); bass = np.zeros((N, 2)); chords = np.zeros((N, 2)); arp = np.zeros((N, 2)); pad = np.zeros((N, 2)); fx = np.zeros((N, 2))
-GROOVE = lambda b: (8 <= b < 60) or (68 <= b < 76)
+GROOVE = lambda b: (8 <= b < 52) or (60 <= b < 68)
 
 # batterie
-kicks = [b for b in range(0, 61)] + list(range(68, 77))
+kicks = [b for b in range(0, 53)] + list(range(60, 69))
 for b in kicks: place(drums, kick(0.88 if b < 8 else 0.95), bt(b))
-for b in list(range(9, 60, 2)) + list(range(69, 76, 2)): place(drums, clap(0.42), bt(b), pan=0.03)
-for i in range(int(76 * 4)):
+for b in list(range(9, 52, 2)) + list(range(61, 68, 2)): place(drums, clap(0.42), bt(b), pan=0.03)
+for i in range(int(68 * 4)):
     b = i / 4
-    if b < 60 or b >= 68: place(drums, hat((0.10 if i % 2 else 0.05) * (0.7 if b < 8 else 1)), bt(b), pan=0.25)
+    if b < 52 or b >= 60: place(drums, hat((0.10 if i % 2 else 0.05) * (0.7 if b < 8 else 1)), bt(b), pan=0.25)
     if GROOVE(b) and i % 4 == 2: place(drums, hat(0.09, 0.22), bt(b), pan=-0.2)
 for k in range(8):                                                           # roulement avant le drop
     place(drums, snare(0.06 + 0.03 * k), bt(6 + k * 0.25), pan=-0.1)
-roll = [65 + k * 0.5 for k in range(4)] + [67 + k * 0.25 for k in range(2)] + [67.5 + k * 0.125 for k in range(2)]
+roll = [57 + k * 0.5 for k in range(4)] + [59 + k * 0.25 for k in range(2)] + [59.5 + k * 0.125 for k in range(2)]
 for k, b in enumerate(roll): place(drums, snare(0.12 + 0.045 * k), bt(b), pan=0.1)
-place(drums, crash(0.5), bt(8)); place(drums, crash(0.6), bt(68)); place(drums, crash(0.45), bt(76))
+place(drums, crash(0.5), bt(8)); place(drums, crash(0.6), bt(60)); place(drums, crash(0.45), bt(68))
 
 # basse roulante (doubles croches) et accords « 3-3-2 »
-for i in range(int(76 * 4)):
+for i in range(int(68 * 4)):
     b = i / 4
     if not GROOVE(b): continue
     f = note(ROOT[chord_of(b)]) * (2 if i % 4 == 2 else 1); place(bass, bassnote(f, B / 4 * 0.95, 0.42), bt(b))
-for bar in range(19):
+for bar in range(17):
     b0 = bar * 4
-    if 60 <= b0 < 68: continue
+    if 52 <= b0 < 60: continue
     cut = 1400 + 2200 * (b0 / 8) if b0 < 8 else 3600
     for pos in (0, 3, 6, 8, 11, 14):
         b = b0 + pos / 4; place(chords, supersaw([note(n) for n in CH[chord_of(b)]], 0.17, cut, 0.55 if b0 >= 8 else 0.5), bt(b))
 # arpège pincé à partir de la 4e mesure
-for i in range(int(76 * 4)):
+for i in range(int(68 * 4)):
     b = i / 4
-    if b < 16 or (65 <= b < 68): continue
+    if b < 16 or (57 <= b < 60): continue
     ns = CH[chord_of(b)]; f = note(ns[[0, 2, 1, 3, 2, 1, 3, 2][i % 8]]) * 2
     g = 0.16 if GROOVE(b) else 0.09
     place(arp, pluck(f, g), bt(b), pan=0.35 if i % 2 else -0.35)
-# nappe : pont (48 → 56) puis discrète sur la fin
-for b0, b1, nm in ((60, 64, "Am"), (64, 66, "F"), (66, 68, "G")):
-    s = supersaw([note(n) / 2 for n in CH[nm]] + [note(n) for n in CH[nm]], bt(b1 - b0) + .3, 1300 if b0 < 66 else 2000, 1.0)
+# nappe : pont (52 → 60)
+for b0, b1, nm in ((52, 56, "Am"), (56, 58, "F"), (58, 60, "G")):
+    s = supersaw([note(n) / 2 for n in CH[nm]] + [note(n) for n in CH[nm]], bt(b1 - b0) + .3, 1300 if b0 < 58 else 2000, 1.0)
     e = np.minimum(1, tt(bt(b1 - b0) + .3) / 0.15)[:, None]; e[-int(.3 * SR):] *= np.linspace(1, 0, int(.3 * SR))[:, None]; place(pad, s * e, bt(b0))
 
 # pompage par la grosse caisse
@@ -126,17 +126,17 @@ def riser(d, g, f0=200, f1=2400):
     tone = np.sin(2 * np.pi * np.cumsum(110 * 2 ** (u * 2)) / SR) * 0.25
     return (out + tone) * u ** 2.2 * g
 place(fx, riser(bt(2), 0.16, 400, 5000), bt(6))
-place(fx, riser(bt(3), 0.5, 200, 7000), bt(65))
-t = tt(1.6); place(fx, np.sin(2 * np.pi * np.cumsum(30 + 70 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.4) * 0.75, bt(68))      # boum au centre
-t = tt(1.2); place(fx, np.sin(2 * np.pi * np.cumsum(35 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.45, bt(59.5))
-t = tt(1.0); place(fx, np.sin(2 * np.pi * np.cumsum(38 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.4, bt(76))
-place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.4, 3000, 0.7) * np.exp(-tt(1.4) * 2.2)[:, None], bt(68))
-place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.25, 2600, 0.65) * np.exp(-tt(1.25) * 2.6)[:, None], bt(76))
-t = tt(bt(1)); place(fx, lp(rng.standard_normal(len(t)), 3000) * (1 - t / t[-1]) ** 2 * 0.12, bt(59.5))                   # descente après « +20 »
+place(fx, riser(bt(3), 0.5, 200, 7000), bt(57))
+t = tt(1.6); place(fx, np.sin(2 * np.pi * np.cumsum(30 + 70 * np.exp(-t * 6)) / SR) * np.exp(-t * 2.4) * 0.75, bt(60))      # boum au centre
+t = tt(1.2); place(fx, np.sin(2 * np.pi * np.cumsum(35 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.45, bt(51.5))
+t = tt(1.0); place(fx, np.sin(2 * np.pi * np.cumsum(38 + 60 * np.exp(-t * 7)) / SR) * np.exp(-t * 3) * 0.4, bt(68))
+place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.4, 3000, 0.7) * np.exp(-tt(1.4) * 2.2)[:, None], bt(60))
+place(chords, supersaw([note(n) for n in CH["Am"]] + [note("A2")], 1.25, 2600, 0.65) * np.exp(-tt(1.25) * 2.6)[:, None], bt(68))
+t = tt(bt(1)); place(fx, lp(rng.standard_normal(len(t)), 3000) * (1 - t / t[-1]) ** 2 * 0.12, bt(51.5))                   # descente après « +20 »
 
 music = reverb(drums, 0.6, 0.06) + bass + reverb(chords, 1.3, 0.22) + reverb(arp, 1.1, 0.3) + reverb(pad, 2.4, 0.4) + reverb(fx, 1.8, 0.25)
 # silence d'un huitième juste avant l'impact
-g = np.ones(N); a, b = int(bt(67.75) * SR), int(bt(68) * SR) - 1; g[a:b] = np.linspace(1, 0.08, b - a) ** 0.5; music *= g[:, None]
+g = np.ones(N); a, b = int(bt(59.75) * SR), int(bt(60) * SR) - 1; g[a:b] = np.linspace(1, 0.08, b - a) ** 0.5; music *= g[:, None]
 
 # ---------------------------- BRUITAGES ----------------------------
 sb = np.zeros((N, 2))
@@ -166,44 +166,44 @@ def glass(base, g=0.05):
 
 # tirs du viseur : (pulsation, durée du déplacement, gros impact)
 LOCKS = [(2, .5, 0), (4.5, .42, 0), (6.5, .42, 0), (8, .45, 1), (11, .3, 0), (13, .42, 0), (15, .22, 0), (17, .22, 0),
-         (18.75, .42, 0), (20.75, .25, 0), (23, .25, 0), (25.75, .3, 0), (27.75, .25, 0), (29.5, .25, 0), (32.75, .3, 0), (34.75, .25, 0), (37.25, .25, 0),
-         (38.75, .3, 0), (42.25, .22, 0), (46, .42, 0), (48, .3, 0), (51, .3, 0), (53, .42, 0), (54.5, .3, 0), (56, .3, 0), (58, .42, 0), (59.5, 0, 1), (68, bt(3), 1)]
+         (18.5, .42, 0), (19.5, .25, 0), (21.25, .25, 0), (22.75, .3, 0), (24, .25, 0), (25.125, .25, 0), (27.5, .3, 0), (28.5, .25, 0), (30.5, .25, 0),
+         (31.75, .3, 0), (34.75, .22, 0), (38, .42, 0), (40, .3, 0), (43, .3, 0), (45, .42, 0), (46.5, .3, 0), (48, .3, 0), (50, .42, 0), (51.5, 0, 1), (60, bt(3), 1)]
 for k, (b, d, big) in enumerate(LOCKS):
     tl = bt(b); pan = -0.35 if k % 2 else 0.35
-    if b == 68: pass
+    if b == 60: pass
     elif d >= .35: place(sb, whoosh(d + .12, 350, 5200, 0.075, -pan, pan), tl - d * .9)
     elif d > 0: place(sb, whoosh(d + .08, 1500, 9000, 0.035, -pan * .5, pan * .5), tl - d * .9)
     place(sb, lock_snd(bool(big)), tl, 0.32 if big else 0.22, pan * .3)
 # mots qui claquent
-for b in (1.5, 2.5, 4.2, 6.2, 9.6, 9.95, 10.4, 53.3, 62.95, 63.3, 63.9, 64.6):
+for b in (1.5, 2.5, 4.2, 6.2, 9.6, 9.95, 10.4, 45.3, 54.95, 55.3, 55.9, 56.6):
     place(sb, thud(0.16), bt(b))
-for k in range(3): place(sb, thud(0.12), bt(59.5) + k * .08)
+for k in range(3): place(sb, thud(0.12), bt(51.5) + k * .08)
 # réactions : pastilles, tuiles, coches, épingles
 for k, b in enumerate((13, 15, 17)): place(sb, blip(900 + 220 * k, 0.07), bt(b) + .02, pan=-.2)
-for k, b in enumerate((20.75, 23, 27.75, 29.5, 34.75, 37.25)): place(sb, blip(760 + 120 * k, 0.07), bt(b) + .02, pan=.2 if k % 2 else -.2)
+for k, b in enumerate((19.5, 21.25, 24, 25.125, 28.5, 30.5)): place(sb, blip(760 + 120 * k, 0.07), bt(b) + .02, pan=.2 if k % 2 else -.2)
 # défilement des métiers : un tic par métier, de plus en plus vite, puis « + des dizaines d'autres »
-rr = (.045 / .22) ** (1 / 15); RD0 = [.22 * rr ** k for k in range(16)]; scl = (bt(42.25) - bt(38.75)) / sum(RD0); acc = bt(38.75)
+rr = (.045 / .22) ** (1 / 12); RD0 = [.22 * rr ** k for k in range(13)]; scl = (bt(34.75) - bt(31.75)) / sum(RD0); acc = bt(31.75)
 for k, d in enumerate(RD0): place(sb, tick(1700 + 80 * k, 0.045), acc, pan=.2 if k % 2 else -.2); acc += d * scl
-place(sb, glass(note("A5"), 0.04), bt(42.25) + .02)
-for k, b in enumerate((46, 48, 51)): place(sb, glass(note("E6") * 2 ** (k * 2 / 12), 0.03), bt(b) + .02)
-for k, b in enumerate((53, 54.5, 56)): place(sb, blip(1100 + 200 * k, 0.07), bt(b) + .03, pan=-.3 + .3 * k)
+place(sb, glass(note("A5"), 0.04), bt(34.75) + .02)
+for k, b in enumerate((38, 40, 43)): place(sb, glass(note("E6") * 2 ** (k * 2 / 12), 0.03), bt(b) + .02)
+for k, b in enumerate((45, 46.5, 48)): place(sb, blip(1100 + 200 * k, 0.07), bt(b) + .03, pan=-.3 + .3 * k)
 place(sb, whoosh(.3, 2500, 9000, .04, -.4, .4), bt(4.6))                                                           # soulignement
 place(sb, glass(note("A5"), 0.035), bt(11) + .02)                                                                  # le point de « JUSTE. »
-t = tt(.6); place(sb, bp(rng.standard_normal(len(t)), 2500, 7000) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t)) * np.sin(np.pi * t / .6) * .05, bt(52.1) - .05)   # tracé de la carte
+t = tt(.6); place(sb, bp(rng.standard_normal(len(t)), 2500, 7000) * (0.5 + 0.5 * np.sin(2 * np.pi * 23 * t)) * np.sin(np.pi * t / .6) * .05, bt(44.1) - .05)   # tracé de la carte
 for k in range(1, 21):                                                                                              # compteur +20
-    u = 1 - (1 - (k - .5) / 20) ** (1 / 3); place(sb, tick(2600 + 60 * k, 0.05), bt(58) + u * (bt(59.5) - bt(58)))
-place(sb, whoosh(bt(2.7), 180, 2600, 0.11, .3, -.3), bt(60.25))                                                     # grand dézoom
+    u = 1 - (1 - (k - .5) / 20) ** (1 / 3); place(sb, tick(2600 + 60 * k, 0.05), bt(50) + u * (bt(51.5) - bt(50)))
+place(sb, whoosh(bt(2.7), 180, 2600, 0.11, .3, -.3), bt(52.25))                                                     # grand dézoom
 t = tt(bt(3)); u = t / t[-1]                                                                                        # plongée en spirale
 sp = bp(rng.standard_normal(len(t)), 600, 6000) * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(2 + 14 * u ** 2.4) / SR)) * u ** 1.8 * 0.1
-place(sb, np.stack([sp * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR)), sp * (0.5 - 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR))], 1) * 1.4, bt(65))
-place(sb, glass(note("A5"), 0.05), bt(68) + .03)
-TL = bt(68)                                                                                                         # le logo se monte
+place(sb, np.stack([sp * (0.5 + 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR)), sp * (0.5 - 0.5 * np.sin(2 * np.pi * np.cumsum(1 + 6 * u ** 2.4) / SR))], 1) * 1.4, bt(57))
+place(sb, glass(note("A5"), 0.05), bt(60) + .03)
+TL = bt(60)                                                                                                         # le logo se monte
 place(sb, whoosh(.35, 800, 6000, .04, -.6, 0), TL); place(sb, whoosh(.35, 800, 6000, .035, -.6, 0), TL + .06)
 place(sb, tick(1800, .06), TL + .14)
 for i in range(5): place(sb, blip(1300 + 140 * i, .035), TL + .2 + i * .05, pan=.3)
 for i in range(3): place(sb, thud(.1), TL + .25 + i * .12)
-place(sb, blip(700, .08), bt(73)); place(sb, tick(2200, .07), bt(73))
-for k in range(2): place(sb, glass(note("E6"), .012), bt(74) + k * 4 * B + 0.9)
+place(sb, blip(700, .08), bt(65)); place(sb, tick(2200, .07), bt(65))
+for k in range(2): place(sb, glass(note("E6"), .012), bt(66) + k * 4 * B + 0.9)
 sfx = reverb(sb, 1.0, 0.14)
 
 fade = np.ones(N); fN = int(SR * 0.6); fade[-fN:] = np.linspace(1, 0, fN) ** 1.5
