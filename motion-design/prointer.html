@@ -368,7 +368,8 @@ const CAPS = [
   ["06 — LE SUIVI", "On reste à vos côtés, | <c>du premier au dernier jour.</c>", 27.3, 31.2],
   ["07 — PRÈS DE CHEZ VOUS", "3 agences au Luxembourg, | <c>plus de 20 ans d'expérience.</c>", 32.4, 35.8],
 ];
-CAPS.forEach(([k, h, t0, t1, c4]) => { text("kick", k, W / 2, 196, t0, t1, { center: true, stag: .03, c4 }); text("h1", h, W / 2, 240, t0 + .15, t1, { center: true, c4 }); });
+// (les petits titres numérotés « 01 — … » ne sont plus affichés : seule la phrase reste)
+CAPS.forEach(([k, h, t0, t1, c4]) => text("h1", h, W / 2, 205, t0 + .05, t1, { center: true, c4 }));
 
 /* ---------------------------- caméra ---------------------------- */
 // (x, y, zoom) ; le sol arrive toujours vers y = 1620 à l'écran : y = 1480 - 660 / zoom
