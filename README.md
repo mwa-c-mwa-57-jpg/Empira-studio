@@ -11,6 +11,13 @@ Jeu interactif pour TikTok LIVE (format vertical 9:16, compatible OBS). Deux mod
 
 > Nom de travail provisoire, à vérifier avant toute commercialisation.
 
+## Installer sur le PC des lives (Windows)
+
+1. Téléchargez le projet (ZIP) et extrayez-le dans votre dossier des lives.
+2. Double-cliquez sur **`INSTALLER.bat`** : il installe Node.js si besoin (via winget), propose d'installer la
+   connexion TikTok, vérifie la voix française de Windows et crée deux raccourcis sur le Bureau
+   (« Empira - Jeu (test) » et « Empira - Live TikTok »).
+
 ## Lancer le jeu sur un PC Windows
 
 1. Installez **Node.js LTS** (version 22 ou plus récente) depuis <https://nodejs.org> (installation par défaut).
