@@ -35,7 +35,7 @@ try {
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 
-  await page.goto(`${base}/`);
+  await page.goto(`${base}/?mode=factions`);
   await page.waitForFunction(() => window.empira?.game);
   check(await page.locator('#panel button').count() > 10, 'panneau de test affiché');
   if (shotDir) await page.screenshot({ path: path.join(shotDir, '1-compte-a-rebours.png') });
@@ -89,7 +89,7 @@ try {
   // OBS mode + server relay (control panel → server → OBS page)
   const obs = await browser.newPage({ viewport: { width: 540, height: 960 } });
   obs.on('pageerror', (e) => errors.push(e.message));
-  await obs.goto(`${base}/?obs`);
+  await obs.goto(`${base}/?obs&mode=factions`);
   await obs.waitForFunction(() => window.empira?.game);
   check(await obs.locator('#panel').isHidden(), 'mode OBS sans panneau de test');
   await obs.waitForFunction(() => document.querySelector('#game') && window.empira.game.round >= 1);
@@ -99,6 +99,47 @@ try {
   await obs.waitForFunction(() => window.empira.rules.players.get('relay')?.faction === 'B', null, { timeout: 5000 });
   check(true, 'l\'événement relayé par le serveur arrive dans la page OBS');
   if (shotDir) await obs.screenshot({ path: path.join(shotDir, '5-mode-obs.png') });
+
+  // ---- Conquête de France (default mode)
+  const fr = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+  fr.on('pageerror', (e) => errors.push(e.message));
+  fr.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  await fr.goto(`${base}/`);
+  await fr.waitForFunction(() => window.empira?.mode === 'france');
+  check(true, 'le mode Conquête de France est le mode par défaut');
+  await fr.fill('[data-id="name"]', 'Nana');
+  await fr.fill('[data-id="dep"]', '17');
+  await fr.click('[data-act="join"]');
+  await fr.click('[data-act="combo"]');
+  check(await fr.evaluate(() => window.empira.game.teams.get('17')?.soldiers) === 105, 'écrire « 17 » fait entrer la Charente-Maritime en guerre, combo ×10 Rose = +100');
+  await fr.check('[data-id="crowd"]');
+  await fr.$eval('[data-id="rate"]', (el) => { el.value = '40'; el.dispatchEvent(new Event('input')); });
+  await fr.$eval('[data-id="giftRate"]', (el) => { el.value = '8'; el.dispatchEvent(new Event('input')); });
+  await fr.waitForTimeout(5000);
+  const st = await fr.evaluate(() => ({ teams: window.empira.game.ranking().length, owned: [...window.empira.game.owner.values()].filter(Boolean).length }));
+  check(st.teams >= 5 && st.owned > st.teams, `la foule fait entrer des départements en guerre et conquérir (${st.teams} équipes, ${st.owned} départements)`);
+  if (shotDir) await fr.screenshot({ path: path.join(shotDir, 'france-1-bataille.png') });
+  await fr.click('[data-act="event"]');
+  await fr.click('button[data-gift="8"]');
+  await fr.waitForTimeout(900);
+  check(await fr.evaluate(() => Boolean(window.empira.game.event)), 'un événement en direct démarre (duel, révolution, mission ou prime)');
+  if (shotDir) await fr.screenshot({ path: path.join(shotDir, 'france-2-evenement.png') });
+  await fr.click('[data-act="storm"]');
+  await fr.click('[data-act="end"]');
+  await fr.waitForFunction(() => window.empira.game.phase === 'victory', null, { timeout: 5000 });
+  await fr.waitForTimeout(800);
+  check(Boolean(await fr.evaluate(() => window.empira.game.winner)), 'fin de partie avec podium');
+  if (shotDir) await fr.screenshot({ path: path.join(shotDir, 'france-3-victoire.png') });
+  const obsFr = await browser.newPage({ viewport: { width: 540, height: 960 } });
+  obsFr.on('pageerror', (e) => errors.push(e.message));
+  await obsFr.goto(`${base}/?obs`);
+  await obsFr.waitForFunction(() => window.empira?.mode === 'france');
+  await obsFr.waitForTimeout(500);
+  await fetch(`${base}/api/inject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: 'relay-fr', type: 'comment', comment: '974', user: { id: 'reu', name: 'Réunion' } }) });
+  await obsFr.waitForFunction(() => window.empira.game.teams.get('974')?.active, null, { timeout: 5000 });
+  check(true, 'mode OBS France : l\'événement relayé par le serveur fait entrer le 974');
+  await obsFr.waitForTimeout(600);
+  if (shotDir) await obsFr.screenshot({ path: path.join(shotDir, 'france-4-obs.png') });
 
   check(errors.length === 0, `aucune erreur JavaScript${errors.length ? ' : ' + errors.join(' | ') : ''}`);
 } finally {

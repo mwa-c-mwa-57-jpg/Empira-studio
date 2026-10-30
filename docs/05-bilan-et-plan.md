@@ -5,6 +5,19 @@ Le développement et les tests ont été faits dans un **conteneur Linux dans le
 Playwright), et non sur le PC Windows d'Empira. Le code est multiplateforme et les lanceurs `.bat` sont fournis,
 mais **le lancement sous Windows n'a pas été testé** : c'est à faire en premier.
 
+## Mise à jour : mode « Conquête de France »
+Ajouté après réception des vidéos de référence ; il est devenu le mode par défaut.
+- Vraie carte des départements (données IGN, Licence Ouverte), outre-mer, Île-de-France, Corse.
+- Tests : 15 tests dédiés (`tests/france.test.js` : données de carte, détection des départements, économie, cadeaux,
+  attaques, bouclier, Galaxie, conquêtes, outre-mer, boost, révolution, duel, mission, fin de partie, live simulé de
+  10 min) et un parcours navigateur complet (`npm run test:e2e`).
+- Fluidité mesurée dans Chromium sans GPU : **58 images/s** avec 20 départements en guerre et une foule de 60 événements/s
+  (contre environ 20 images/s avant la mise en cache de la carte).
+- Non testé : vrais noms et prix des cadeaux TikTok (le catalogue est à vérifier), affichage des photos de profil réelles
+  (prévu dans l'adaptateur, mais jamais reçu d'un vrai live), lisibilité sur téléphone.
+- **Canva n'a pas été utilisé** : la carte exige une géométrie exacte et une animation en temps réel, que Canva ne produit pas.
+  Canva serait en revanche adapté pour le logo, la miniature du live ou les visuels promotionnels.
+
 ## Ce qui a été testé (et comment)
 | Vérification | Méthode | Résultat |
 |---|---|---|

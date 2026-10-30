@@ -8,7 +8,8 @@ import { createDevPanel } from './ui/devPanel.js';
 
 const params = new URLSearchParams(location.search);
 const obsMode = params.has('obs');
-const configName = (params.get('config') || 'default').replace(/[^a-z0-9_-]/gi, '');
+// Default mode: Conquête de France. The original two-faction game stays available with ?mode=factions.
+const configName = (params.get('config') || (params.get('mode') === 'factions' ? 'default' : 'france')).replace(/[^a-z0-9_-]/gi, '');
 
 async function loadConfig() {
   const res = await fetch(`config/${configName}.json`, { cache: 'no-store' });
@@ -71,7 +72,7 @@ function start(config) {
   let last = performance.now();
   let fps = 60;
   function frame(now) {
-    const dt = Math.min(0.1, (now - last) / 1000);
+    const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
     fps = fps * 0.95 + (1 / Math.max(dt, 0.001)) * 0.05;
     // fixed sub-steps keep the simulation stable when the frame rate drops
@@ -96,7 +97,14 @@ function start(config) {
   window.empira = { game, rules, ingest };
 }
 
-loadConfig().then(start).catch((err) => {
-  document.body.textContent = `Erreur de démarrage : ${err.message}`;
-  console.error(err);
-});
+loadConfig()
+  .then(async (config) => {
+    if (config.mode !== 'france') return start(config);
+    document.body.classList.toggle('obs', obsMode);
+    const { startFrance } = await import('./france/main.js');
+    startFrance(config, { obsMode });
+  })
+  .catch((err) => {
+    document.body.textContent = `Erreur de démarrage : ${err.message}`;
+    console.error(err);
+  });

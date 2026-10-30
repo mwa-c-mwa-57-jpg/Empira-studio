@@ -9,6 +9,12 @@
 // depends on the library directly, so another source (official API, third-party service) can be
 // plugged in by writing another adapter producing the same events.
 
+function profilePicture(u) {
+  const pic = u.profilePicture;
+  const url = pic?.url?.[0] ?? pic?.urls?.[0] ?? pic?.urlList?.[0] ?? u.profilePictureUrl;
+  return typeof url === 'string' && url.startsWith('https://') ? url : undefined;
+}
+
 /** Pure mapping from a library event to a normalised Empira event (or null to ignore). */
 export function mapTikTokEvent(kind, data) {
   if (!data) return null;
@@ -21,7 +27,7 @@ export function mapTikTokEvent(kind, data) {
     source: 'tiktok',
     // arrival time: the unit of TikTok's createTime is not documented, so we do not rely on it
     ts: Date.now(),
-    user: { id: userId, name: u.nickname || u.uniqueId || userId },
+    user: { id: userId, name: u.nickname || u.uniqueId || userId, avatar: profilePicture(u) },
   };
   switch (kind) {
     case 'chat':

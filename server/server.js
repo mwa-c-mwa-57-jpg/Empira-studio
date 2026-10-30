@@ -124,7 +124,7 @@ export function createServer({ log = console.log } = {}) {
           return send(200, { ok: true, relayed: events.length, clients: clients.size });
         }
         if (url.pathname === '/api/admin') {
-          const allowed = ['restart', 'pause', 'speed'];
+          const allowed = ['restart', 'pause', 'speed', 'event', 'end'];
           if (!allowed.includes(body.action)) return send(400, { error: 'unknown action' });
           broadcast({ kind: 'admin', action: body.action, value: body.value });
           return send(200, { ok: true });

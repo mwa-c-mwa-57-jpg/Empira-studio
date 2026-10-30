@@ -1,0 +1,56 @@
+{
+  "mode": "france",
+  "title": "EMPIRA",
+  "subtitle": "CONQUÊTE DE FRANCE",
+  "tagline": "Écris le numéro de ton département pour entrer en guerre",
+  "match": {
+    "durationSec": 600,
+    "victoryScreenSec": 15,
+    "instantWinRatio": 0.6
+  },
+  "economy": {
+    "joinBonus": 5,
+    "commentSoldiers": 1,
+    "commentCooldownSec": 2,
+    "likesPerSoldier": 20,
+    "shareSoldiers": 8,
+    "followSoldiers": 15,
+    "soldiersPerDiamond": 10,
+    "conquestBaseCost": 30,
+    "conquestCostPerTerritory": 20,
+    "enemyCostFactor": 0.6,
+    "minSoldiersPerTerritory": 12,
+    "attackFlightSec": 0.8,
+    "starThresholds": [100, 500, 1500],
+    "likeGoal": 5000,
+    "likeGoalReward": 20
+  },
+  "gifts": [
+    { "id": "rose", "names": ["Rose"], "diamonds": 1, "icon": "🌹", "tab": "grossir", "label": "+10 / pièce", "effect": { "type": "none" } },
+    { "id": "heart", "names": ["Finger Heart", "Cœur avec les doigts", "Heart Me"], "diamonds": 5, "icon": "💗", "tab": "grossir", "label": "×1,5 pendant 45 s", "effect": { "type": "boost", "multiplier": 1.5, "durationSec": 45 } },
+    { "id": "donut", "names": ["Doughnut", "Donut", "Beignet"], "diamonds": 30, "icon": "🍩", "tab": "grossir", "label": "×2 pendant 45 s", "effect": { "type": "boost", "multiplier": 2, "durationSec": 45 } },
+    { "id": "shield", "names": ["Butterfly", "Papillon"], "diamonds": 88, "icon": "🦋", "tab": "defendre", "label": "bouclier 45 s", "effect": { "type": "shield", "durationSec": 45 } },
+    { "id": "steal", "names": ["Money Gun", "Pistolet à argent"], "diamonds": 500, "icon": "💸", "tab": "defendre", "label": "vole 10 % au 1er", "effect": { "type": "steal", "percent": 10 } },
+    { "id": "conquest", "names": ["Lion", "Léon"], "diamonds": 29999, "icon": "🦁", "tab": "defendre", "label": "conquiert 20 départements", "effect": { "type": "conquest", "territories": 20 } },
+    { "id": "tomato", "names": ["Tomato", "Tomate"], "diamonds": 1, "icon": "🍅", "tab": "attaquer", "label": "−0,3 % au 1er", "effect": { "type": "hit", "percent": 0.3 } },
+    { "id": "gloves", "names": ["Boxing Gloves", "Gants de boxe"], "diamonds": 299, "icon": "🥊", "tab": "attaquer", "label": "−2 % au 1er", "effect": { "type": "hit", "percent": 2 } },
+    { "id": "swan", "names": ["Swan", "Cygne"], "diamonds": 699, "icon": "🦢", "tab": "attaquer", "label": "−12 % au 1er", "effect": { "type": "hit", "percent": 12 } },
+    { "id": "galaxy", "names": ["Galaxy", "Galaxie"], "diamonds": 1000, "icon": "🌌", "tab": "attaquer", "label": "remet le 1er à 0", "effect": { "type": "reset" } }
+  ],
+  "events": {
+    "firstDelaySec": 45,
+    "intervalSec": [60, 100],
+    "duel": { "durationSec": 90, "stealPercent": 10 },
+    "revolution": { "durationSec": 60, "multiplier": 2 },
+    "mission": { "durationSec": 120, "rewardPerDepartment": 60, "targetPerTeam": 25 },
+    "bounty": { "durationSec": 90, "reward": 100 },
+    "generalPopupEverySec": 75
+  },
+  "safety": {
+    "maxEventAgeSec": 120,
+    "dedupeWindow": 5000,
+    "maxEventsPerSec": 500,
+    "maxNameLength": 24,
+    "maxCommentLength": 200
+  }
+}

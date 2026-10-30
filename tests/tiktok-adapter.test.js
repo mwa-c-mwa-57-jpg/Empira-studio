@@ -25,6 +25,14 @@ test('gift streaks are only counted once, at the end of the streak', () => {
   assert.equal(single.gift.diamonds, 500);
 });
 
+test('keeps the https profile picture when the library provides one', () => {
+  const withPic = mapTikTokEvent('chat', { user: { ...user, profilePicture: { url: ['https://p16.tiktokcdn.com/a.jpg'] } }, comment: '17' });
+  assert.equal(withPic.user.avatar, 'https://p16.tiktokcdn.com/a.jpg');
+  assert.equal(normalizeEvent(withPic).event.user.avatar, 'https://p16.tiktokcdn.com/a.jpg');
+  const bad = mapTikTokEvent('chat', { user: { ...user, profilePicture: { url: ['javascript:alert(1)'] } }, comment: '17' });
+  assert.equal(bad.user.avatar, undefined);
+});
+
 test('ignores malformed data', () => {
   assert.equal(mapTikTokEvent('chat', null), null);
   assert.equal(mapTikTokEvent('chat', { comment: 'no user' }), null);

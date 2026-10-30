@@ -1,7 +1,8 @@
 // Rules engine: turns normalised live events into game commands according to the configuration.
 // Pure logic (no DOM, no timers) so it can run in the browser, on a server, or in tests.
 
-import { normalizeEvent, normalizeKeyword } from './events.js';
+import { normalizeKeyword } from './events.js';
+import { EventGuard } from './guard.js';
 
 export const FACTIONS = ['A', 'B'];
 
@@ -12,11 +13,8 @@ export class RulesEngine {
     this.random = random;
     this.players = new Map(); // userId -> { id, name, faction, points, lastActionAt }
     this.likePools = { A: 0, B: 0 };
-    this.seenIds = new Set();
-    this.seenOrder = [];
-    this.rateWindowStart = 0;
-    this.rateWindowCount = 0;
-    this.stats = { accepted: 0, rejected: {}, total: 0 };
+    this.guard = new EventGuard(config.safety, { now });
+    this.stats = this.guard.stats;
     this.keywords = {};
     for (const f of FACTIONS) {
       this.keywords[f] = new Set((config.factions[f].keywords || []).map(normalizeKeyword));
@@ -46,29 +44,6 @@ export class RulesEngine {
   credit(userId, points) {
     const p = this.players.get(userId);
     if (p) p.points += points;
-  }
-
-  #reject(reason) {
-    this.stats.rejected[reason] = (this.stats.rejected[reason] || 0) + 1;
-    return { accepted: false, reason, commands: [] };
-  }
-
-  #isDuplicate(id) {
-    if (this.seenIds.has(id)) return true;
-    this.seenIds.add(id);
-    this.seenOrder.push(id);
-    const max = this.config.safety.dedupeWindow;
-    while (this.seenOrder.length > max) this.seenIds.delete(this.seenOrder.shift());
-    return false;
-  }
-
-  #rateLimited(now) {
-    if (now - this.rateWindowStart >= 1000) {
-      this.rateWindowStart = now;
-      this.rateWindowCount = 0;
-    }
-    this.rateWindowCount++;
-    return this.rateWindowCount > this.config.safety.maxEventsPerSec;
   }
 
   #matchFaction(comment) {
@@ -114,15 +89,10 @@ export class RulesEngine {
    *   { type: 'feed', faction, text }
    */
   process(raw) {
-    this.stats.total++;
-    const now = this.now();
-    const { safety, interactions: ix } = this.config;
-    const res = normalizeEvent(raw, { now, ...safety });
-    if (!res.ok) return this.#reject(res.reason);
-    const ev = res.event;
-    if (this.#isDuplicate(ev.id)) return this.#reject('duplicate');
-    // Gifts are never rate-limited: a paying viewer's contribution must not be dropped.
-    if (ev.type !== 'gift' && this.#rateLimited(now)) return this.#reject('rate-limited');
+    const { interactions: ix } = this.config;
+    const res = this.guard.check(raw);
+    if (!res.ok) return { accepted: false, reason: res.reason, commands: [] };
+    const { event: ev, now } = res;
 
     const commands = [];
     const p = this.#player(ev.user);
@@ -190,7 +160,6 @@ export class RulesEngine {
       default:
         break;
     }
-    this.stats.accepted++;
     return { accepted: true, event: ev, commands };
   }
 }

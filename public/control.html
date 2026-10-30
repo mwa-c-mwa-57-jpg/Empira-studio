@@ -12,16 +12,21 @@
       ouvertes (par exemple la source navigateur OBS <code>http://localhost:3000/?obs</code>).</p>
   </aside>
   <script type="module">
-    import { createDevPanel } from './src/ui/devPanel.js';
+    const params = new URLSearchParams(location.search);
+    const configName = (params.get('config') || (params.get('mode') === 'factions' ? 'default' : 'france')).replace(/[^a-z0-9_-]/gi, '');
     const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       .catch((err) => console.error(err));
     const panel = document.getElementById('panel');
     const hint = panel.firstElementChild;
-    createDevPanel(panel, {
+    const config = await (await fetch(`config/${configName}.json`, { cache: 'no-store' })).json();
+    const options = {
       sink: (event) => post('/api/inject', event),
       admin: (cmd) => post('/api/admin', cmd),
-      getStats: () => `Événements envoyés via le serveur local`,
-    });
+      getStats: () => 'Événements envoyés via le serveur local',
+      gifts: config.gifts,
+    };
+    if (config.mode === 'france') (await import('./src/france/devPanel.js')).createFrancePanel(panel, options);
+    else (await import('./src/ui/devPanel.js')).createDevPanel(panel, options);
     panel.prepend(hint);
   </script>
 </body>

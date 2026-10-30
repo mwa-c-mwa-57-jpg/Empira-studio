@@ -1,8 +1,13 @@
 # Empira Conquest — prototype jouable
 
-Jeu de conquête territoriale interactif conçu pour TikTok LIVE (format vertical 9:16, compatible OBS).
-Deux factions, **SOLAIRE** et **AZUR**, s'affrontent sur une carte hexagonale. Les spectateurs choisissent
-leur camp dans le chat, et leurs likes, commentaires et cadeaux font apparaître des troupes.
+Jeu interactif pour TikTok LIVE (format vertical 9:16, compatible OBS). Deux modes :
+
+- **Conquête de France** (mode par défaut) : chaque spectateur écrit le numéro de **son département** dans le chat
+  pour le faire entrer en guerre. Ses likes, commentaires, partages et cadeaux recrutent des soldats, et les départements
+  conquièrent leurs voisins sur une vraie carte de France (96 départements, outre-mer en encarts, zoom sur l'Île-de-France).
+  Au programme : attaques contre le 1er, duels, révolutions, missions régionales, têtes mises à prix, bulles en direct,
+  podium et « Roi du pays ».
+- **Deux camps** (`?mode=factions`) : le premier prototype, SOLAIRE contre AZUR sur une carte hexagonale.
 
 > Nom de travail provisoire, à vérifier avant toute commercialisation.
 
@@ -21,6 +26,25 @@ Aucune autre installation n'est nécessaire : le jeu n'a **aucune dépendance np
 ## Tester sans TikTok
 
 La page `http://localhost:3000/` affiche le jeu et, à droite, le **panneau de test**. Touche `D` pour le masquer.
+
+### Mode Conquête de France (par défaut)
+
+| Bouton | Effet simulé |
+|---|---|
+| Écrit son département | le spectateur écrit le numéro saisi (17, 2A, 974…) : le département entre en guerre (+5 soldats) |
+| Commente | +1 soldat (au plus 1 toutes les 2 s par spectateur) |
+| ♥ +20 / +200 | likes : +1 soldat par tranche de 20 likes, et progression de l'objectif collectif |
+| Partage / Abonnement | +8 / +15 soldats |
+| Boutons de cadeaux | +10 soldats par pièce, plus l'effet du cadeau (bonus ×2, bouclier, vol, attaque contre le 1er, remise à zéro, conquête éclair…) |
+| Combo ×10 Rose / Doublon | série de cadeaux / test anti-doublon |
+| Foule simulée / Tempête | public virtuel réglable / 1 000 événements d'un coup |
+| Événement maintenant / Terminer la partie | déclenche un duel, une révolution, une mission ou une prime / affiche le podium |
+
+Le catalogue des cadeaux (noms, prix, effets) se règle dans [`config/france.json`](config/france.json). Les noms et prix
+fournis par défaut sont des **valeurs indicatives, à vérifier** dans le panneau de cadeaux TikTok du créateur, car un
+cadeau est reconnu par son nom. Un cadeau inconnu rapporte quand même +10 soldats par pièce.
+
+### Mode deux camps (`http://localhost:3000/?mode=factions`)
 
 | Bouton | Effet simulé |
 |---|---|
@@ -55,22 +79,30 @@ Si la connexion TikTok tombe, le jeu continue de tourner et un indicateur discre
 
 ## Personnaliser
 
-Toutes les règles sont dans [`config/default.json`](config/default.json) : noms et couleurs des factions, mots-clés,
-durée de la partie, effets des likes et des cadeaux, puissance des unités, limites anti-spam.
+Toutes les règles sont dans des fichiers JSON, modifiables sans toucher au code :
+[`config/france.json`](config/france.json) (titre, économie, coûts de conquête, cadeaux, événements, durée) et
+[`config/default.json`](config/default.json) (mode deux camps).
 Pour essayer une variante, copiez le fichier (par exemple `config/creatrice-x.json`) et ouvrez
 `http://localhost:3000/?config=creatrice-x`.
 
 ## Tests
 
 ```
-npm test            # 32 tests unitaires et d'intégration (Node, sans dépendance)
+npm test            # 47 tests unitaires et d'intégration (Node, sans dépendance)
 npm run test:e2e    # test navigateur complet (nécessite Playwright, facultatif)
 ```
 
+## Données cartographiques
+
+Contours des départements : IGN Admin Express, via le projet open source
+[france-geojson](https://github.com/gregoiredavid/france-geojson), sous **Licence Ouverte / Etalab**.
+Le fichier `public/src/france/departements.js` est généré par `node tools/build-france-map.mjs`.
+
 ## Documentation
 
-- [01 — Analyse de la vidéo de référence](docs/01-analyse-video.md)
+- [01 — Analyse des vidéos de référence](docs/01-analyse-video.md)
 - [02 — Recherche technique et choix d'architecture](docs/02-recherche-technique.md)
 - [03 — Cahier des charges et règles du jeu](docs/03-cahier-des-charges.md)
 - [04 — Architecture technique](docs/04-architecture.md)
 - [05 — Bilan de validation et plan d'évolution](docs/05-bilan-et-plan.md)
+- [06 — Règles du mode Conquête de France](docs/06-mode-france.md)

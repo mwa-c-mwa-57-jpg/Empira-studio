@@ -5,7 +5,7 @@
 //   type: 'comment' | 'like' | 'gift' | 'follow' | 'share' | 'join'
 //   source: string        'sim' | 'tiktok' | 'test' | ...
 //   ts: number            epoch ms when the event happened
-//   user: { id: string, name: string }
+//   user: { id: string, name: string, avatar?: string (https URL of the profile picture) }
 //   comment?: string      (type 'comment')
 //   likeCount?: number    (type 'like')
 //   gift?: { id: string, name: string, diamonds: number, count: number }  (type 'gift', one finished streak)
@@ -54,6 +54,8 @@ export function normalizeEvent(raw, { now = Date.now(), maxEventAgeSec = 120, ma
     ts,
     user: { id: userId, name: userName },
   };
+  const avatar = sanitizeText(raw.user?.avatar, 600);
+  if (/^https:\/\/[^\s"'<>]+$/i.test(avatar)) event.user.avatar = avatar;
 
   switch (raw.type) {
     case 'comment': {
