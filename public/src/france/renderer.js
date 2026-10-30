@@ -633,6 +633,8 @@ export class FranceRenderer {
       this.#text(d.code, x + 14 * s, y, { size: 38 * s, weight: 900, align: 'center', stroke: team.color, strokeWidth: 7 * s, color: '#fff' });
       const stars = game.stars(team);
       if (stars) this.#text('★'.repeat(stars), x + 6 * s, y - 34 * s, { size: 20 * s, weight: 900, align: 'center', color: '#ffd23d', stroke: 'rgba(0,0,0,0.6)', strokeWidth: 4 });
+      // inactive département: its soldiers are melting
+      if (team.asleep) this.#text('💤', x + 44 * s, y - 26 * s + Math.sin(this.time * 3) * 3, { size: 22 * s, align: 'center', font: EMOJI });
       if (big) {
         this.#text(d.name, x, y + 30 * s, { size: 15 * s, weight: 800, align: 'center', stroke: 'rgba(0,0,0,0.7)', strokeWidth: 4 });
         this.#text(`${(game.share(team) * 100).toFixed(1).replace('.', ',')} %`, x, y + 48 * s, { size: 14 * s, weight: 800, align: 'center', color: '#ffd166', stroke: 'rgba(0,0,0,0.7)', strokeWidth: 4 });

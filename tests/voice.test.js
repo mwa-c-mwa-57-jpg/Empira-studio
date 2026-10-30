@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { Announcer, spokenName, spokenDep } from '../public/src/france/voice.js';
+import { Announcer, spokenName } from '../public/src/france/voice.js';
+import { placeForms } from '../public/src/france/names.js';
 import { FranceGame } from '../public/src/france/game.js';
 import { FranceRules } from '../public/src/france/rules.js';
 import { cleanSpeech } from '../server/voice.js';
@@ -30,8 +31,15 @@ function setup() {
 test('names and départements are made pronounceable', () => {
   assert.equal(spokenName('💎Léa_93✨ <b>'), 'Léa 93 b');
   assert.equal(spokenName('x'.repeat(50)).length, 20);
-  assert.equal(spokenDep('17', 'Charente-Maritime'), 'le 17, Charente-Maritime');
-  assert.equal(spokenDep('2A', 'Corse-du-Sud'), 'la Corse-du-Sud');
+  assert.deepEqual(placeForms('Charente-Maritime'), { the: 'la Charente-Maritime', of: 'de la Charente-Maritime', to: 'à la Charente-Maritime' });
+  assert.equal(placeForms('Nord').of, 'du Nord');
+  assert.equal(placeForms('Eure-et-Loir').the, "l'Eure-et-Loir");
+  assert.equal(placeForms('Vosges').of, 'des Vosges');
+  assert.equal(placeForms('Paris').the, 'Paris');
+  assert.equal(placeForms('Haute-Vienne').of, 'de la Haute-Vienne');
+  assert.equal(placeForms('Hérault').the, "l'Hérault");
+  assert.equal(placeForms('Grand Est').the, 'le Grand Est');
+  assert.equal(placeForms('Auvergne-Rhône-Alpes').of, "de l'Auvergne-Rhône-Alpes");
 });
 
 test('announces new départements, grouping several joins in one sentence', () => {
@@ -41,7 +49,45 @@ test('announces new départements, grouping several joins in one sentence', () =
   rules.process(ev('comment', 'a', { comment: '17' }));
   rules.process(ev('comment', 'b', { comment: '63' }));
   flush();
-  assert.ok(said.some((s) => s === 'Le 17, Charente-Maritime, le 63, Puy-de-Dôme entrent en guerre !'), said.join(' | '));
+  assert.ok(said.some((s) => s === 'Nouveaux fronts : la Charente-Maritime, le Puy-de-Dôme entrent en guerre !'), said.join(' | '));
+});
+
+test('a single new département is announced with the name of its first soldier', () => {
+  const { rules, said, flush } = setup();
+  flush();
+  said.length = 0;
+  rules.process(ev('comment', 'Julia', { comment: '87' }));
+  flush();
+  assert.equal(said[0], 'Les troupes de la Haute-Vienne débarquent, menées par Julia !');
+});
+
+test('thanks for shares and follows, without flooding', () => {
+  const { rules, said, flush } = setup();
+  rules.process(ev('comment', 'Yanis', { comment: '59' }));
+  flush();
+  said.length = 0;
+  rules.process(ev('follow', 'Yanis'));
+  rules.process(ev('share', 'Yanis'));
+  flush();
+  assert.deepEqual(said, ['Yanis rejoint la famille ! 15 soldats pour le Nord !']);
+});
+
+test('milestones, capital invasion with a liberation call, melting soldiers and wake-up', () => {
+  const { game, rules, said, flush } = setup();
+  rules.process(ev('comment', 'a', { comment: '21' }));
+  rules.process(ev('gift', 'a', { gift: { name: 'Rose', diamonds: 1, count: 100 } }));
+  flush();
+  assert.ok(said.includes("La Côte-d'Or atteint 1000 soldats !"), said.join(' | '));
+  rules.process(ev('comment', 'b', { comment: '58' }));
+  flush();
+  said.length = 0;
+  game.capture('21', '58');
+  flush();
+  assert.match(said[0], /^La Nièvre est sous le drapeau de la Côte-d'Or ! Soldats de la Nièvre, ne vous laissez pas faire : \d+ soldats et vous êtes libres !$/);
+  said.length = 0;
+  game.emit({ type: 'awake', team: '72', user: { id: 'z', name: 'Royaume' } });
+  flush();
+  assert.equal(said[0], 'La Sarthe se réveille, ses soldats arrêtent de fondre ! Merci Royaume !');
 });
 
 test('announces big gifts with the viewer name, not small ones', () => {
@@ -54,7 +100,7 @@ test('announces big gifts with the viewer name, not small ones', () => {
   assert.equal(said.length, 0);
   rules.process(ev('gift', 'Nana', { gift: { name: 'Cygne', diamonds: 699, count: 1 } }));
   flush();
-  assert.match(said.join(' '), /Nana envoie Cygne pour le 17, Charente-Maritime/);
+  assert.match(said.join(' '), /Nana envoie Cygne pour la Charente-Maritime/);
 });
 
 test('announces live events and the victory with the king', () => {
@@ -68,11 +114,11 @@ test('announces live events and the victory with the king', () => {
   game.rng.pick = (arr) => arr[0];
   game.startEvent();
   flush();
-  assert.ok(said.some((s) => s.startsWith('Duel ! Le 17, Charente-Maritime contre le 08, Ardennes')), said.join(' | '));
+  assert.ok(said.some((s) => s.startsWith('Duel ! La Charente-Maritime contre les Ardennes')), said.join(' | '));
   game.elapsed = cfg.match.durationSec;
   game.update(0.01);
   flush();
-  assert.ok(said.some((s) => /^Victoire ! Le 17, Charente-Maritime remporte la partie/.test(s) && /Bravo à a, roi du pays/.test(s)), said.join(' | '));
+  assert.ok(said.some((s) => /^Victoire de la Charente-Maritime, qui remporte la partie/.test(s) && /Bravo à a, roi du pays/.test(s)), said.join(' | '));
 });
 
 test('never queues more than maxQueue phrases and never repeats the same one', () => {

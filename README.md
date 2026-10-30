@@ -100,7 +100,7 @@ Pour essayer une variante, copiez le fichier (par exemple `config/creatrice-x.js
 ## Tests
 
 ```
-npm test            # 56 tests unitaires et d'intégration (Node, sans dépendance)
+npm test            # 59 tests unitaires et d'intégration (Node, sans dépendance)
 npm run test:e2e    # test navigateur complet (nécessite Playwright, facultatif)
 ```
 

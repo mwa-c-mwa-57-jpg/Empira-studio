@@ -54,7 +54,36 @@ Légende : 👁 observé · 🧠 déduit (probable) · ❓ impossible à confirm
 - Une reconnaissance individuelle : avatar sur la carte, Roi du pays, bulles nominatives.
 - Une interface chargée mais très hiérarchisée : le podium et la carte d'abord, le détail ensuite.
 
-## 7. Ce que nous avons repris, et comment
+## 7. La voix (transcription automatique)
+Transcription faite avec Vosk (modèle français léger, hors ligne). Elle est imparfaite : les mots entre crochets sont
+des corrections probables. 👁 Une voix commente la partie en continu, à la manière d'un « Général » :
+
+- « [Pseudo] 95 recrute du monde en partageant, bravo ! »
+- « Soldats de la Vienne, ne vous laissez pas faire ! Quarante soldats et vous êtes libres ! »
+- « [X] rejoint la famille, quinze soldats pour le Nord ! »
+- « Révolution ! Tout le monde contre la Charente-Maritime ! »
+- « Les troupes de la Haute-Vienne débarquent, menées par [pseudo] ! »
+- « Merci [pseudo] pour le partage ! »
+- « Dernière ligne droite pour l'Auvergne-Rhône-Alpes, encore un message ! »
+- « Le Général est fier de l'Auvergne-Rhône-Alpes : [chaque] département gagne soixante soldats ! »
+- « Nouveau front : Paris rejoint la bataille avec Julia ! »
+- « La Charente-Maritime atteint mille soldats ! »
+- « La tête de la Charente-Maritime est mise à prix : cent soldats pour celui qui la dépassera ! »
+- « La Nièvre est sous le drapeau de la Côte-d'Or ! Likez et commentez pour atteindre quarante ! »
+- « Partage de [joueur] : le Nord gagne huit soldats ! »
+- « Ordre du Général pour le Grand Est : recrutez [N] soldats, deux minutes ; soixante soldats par département qui participe ! »
+- « La Sarthe se réveille, ses soldats arrêtent de fondre ! »
+- « L'Eure-et-Loir se réveille, départ au combat ! Merci [pseudo] ! »
+- « Encore un partage ! Merci 64, qui fait mieux ? »
+- « Duel gagné par la Charente-Maritime ! »
+
+🧠 Ce qu'on en déduit : les départements sont nommés avec leur article, les petites actions sont remerciées
+nommément, les paliers de soldats sont célébrés, une capitale envahie déclenche un appel à la libération, et les
+soldats d'un département inactif « fondent ». Toutes ces idées ont été réécrites dans nos propres phrases
+(voir [08 — La voix du Général](08-voix.md)).
+❓ Le moteur de voix utilisé dans la référence n'est pas identifiable.
+
+## 8. Ce que nous avons repris, et comment
 Les **mécaniques** (département choisi dans le chat, soldats, conquêtes de voisins, attaques contre le 1er,
 duel, révolution, mission, prime, bulles, podium, roi) sont des principes de jeu génériques. Elles ont été
 **réimplémentées entièrement** par notre code, avec notre propre identité visuelle (nom « Empira — Conquête de

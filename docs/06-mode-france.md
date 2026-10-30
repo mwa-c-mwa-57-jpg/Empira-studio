@@ -28,6 +28,12 @@ Tous les chiffres ci-dessous sont des valeurs par défaut, modifiables dans `con
 - **Empire trop étendu** : si un département a moins de 12 soldats par territoire (par exemple après une attaque), il perd
   un territoire périphérique toutes les 3 s. Sa capitale n'est jamais perdue de cette façon.
 
+## Paliers et fonte des soldats
+- Paliers annoncés : 500, 1 000, 2 000, 5 000, 10 000… soldats (`economy.milestones`).
+- **Fonte** : un département qui ne reçoit plus aucune contribution de ses spectateurs depuis 60 s perd 2 % de ses soldats
+  toutes les 5 s (`economy.decay`). Une icône 💤 s'affiche sur sa capitale. La moindre interaction de l'un de ses
+  spectateurs arrête la fonte (« la Sarthe se réveille »). Comme les soldats baissent, l'empire peut perdre des territoires.
+
 ## Cadeaux à effet
 Le catalogue et les prix réels sont dans [07 — Catalogue des cadeaux TikTok](07-catalogue-cadeaux-tiktok.md).
 En résumé : Grossir (bonus ×1,5 / ×2 / ×3), Défendre (bouclier, vol de 10 %, conquête éclair), Attaquer le 1er

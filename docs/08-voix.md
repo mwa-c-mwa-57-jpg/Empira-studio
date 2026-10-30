@@ -2,18 +2,29 @@
 
 Le jeu commente la partie à voix haute, en français, sur les moments forts :
 
+Les phrases s'inspirent du style de la voix entendue dans la vidéo de référence (transcription automatique dans
+[01 — Analyse des vidéos](01-analyse-video.md#7-la-voix-transcription-automatique)). Les départements sont
+nommés avec leur article (« la Charente-Maritime », « du Nord », « de l'Eure », « des Vosges », « Paris »).
+
 | Moment | Exemple de phrase |
 |---|---|
 | Nouvelle partie | « Nouvelle partie ! Écris le numéro de ton département dans le tchat pour entrer en guerre ! » |
-| Départements qui entrent en guerre (regroupés) | « Le 17, Charente-Maritime, le 63, Puy-de-Dôme entrent en guerre ! » |
-| Gros cadeau (100 pièces et plus) | « Énorme ! Nana envoie Cygne pour le 17, Charente-Maritime ! » |
-| Galaxie, vol, bouclier, conquête éclair | « Catastrophe ! Le 63, Puy-de-Dôme retombe à zéro soldat ! » |
-| Prise d'une capitale | « Le 17, Charente-Maritime envahit la capitale du 33 ! » |
-| Duel, révolution, mission, prime | « Révolution ! Tout le monde contre le 17, Charente-Maritime ! Gains doublés pour les autres ! » |
-| Changement de leader | « Le 21, Côte-d'Or prend la tête ! » |
+| Un département entre en guerre | « Les troupes de la Haute-Vienne débarquent, menées par Julia ! » / « Nouveau front : Paris rejoint la bataille avec Julia ! » |
+| Plusieurs à la fois (regroupés) | « Nouveaux fronts : la Charente-Maritime, le Puy-de-Dôme entrent en guerre ! » |
+| Partage / abonnement (au plus 1 remerciement toutes les 6 s) | « Merci Yanis pour le partage ! Le Nord gagne 8 soldats ! » / « Encore un partage ! Merci Yanis, qui fait mieux ? » / « Yanis rejoint la famille ! 15 soldats pour le Nord ! » |
+| Gros cadeau (100 pièces et plus) | « Énorme ! Nana envoie Cygne pour la Charente-Maritime ! » |
+| Palier de soldats | « La Charente-Maritime atteint 1000 soldats ! » |
+| Capitale envahie | « La Nièvre est sous le drapeau de la Côte-d'Or ! Soldats de la Nièvre, ne vous laissez pas faire : 40 soldats et vous êtes libres ! » |
+| Capitale reprise | « Libération ! La Nièvre reprend sa capitale ! » |
+| Soldats qui fondent (top 5) / réveil | « Les soldats de la Sarthe fondent ! Likez et commentez pour les réveiller ! » / « La Sarthe se réveille, ses soldats arrêtent de fondre ! Merci Royaume ! » |
+| Galaxie, vol, bouclier, conquête éclair | « Catastrophe ! Le Puy-de-Dôme retombe à zéro soldat ! » |
+| Duel | « Duel ! La Charente-Maritime contre les Ardennes : celui qui recrute le plus vole 10 pour cent à l'autre ! » puis « Duel gagné par la Charente-Maritime, qui vole 33 soldats aux Ardennes ! » |
+| Révolution | « Révolution ! Tout le monde contre la Charente-Maritime ! Gains doublés pour les autres ! » |
+| Mission | « Ordre du Général pour le Grand Est : recrutez 25 soldats ! 60 soldats par département qui participe ! » puis « Dernière ligne droite pour le Grand Est ! Encore 5 soldats ! » et « Le Général est fier du Grand Est ! » |
+| Tête mise à prix | « La tête de la Charente-Maritime est mise à prix ! 100 soldats pour celui qui la dépassera ! » |
+| Changement de leader | « La Côte-d'Or prend la tête ! » |
 | Fin de partie proche | « Plus qu'une minute ! », « Plus que 10 secondes ! » |
-| Pop-ups du Général | « Partage le live ! Chaque partage rapporte 8 soldats à ton département ! » |
-| Victoire | « Victoire ! Le 17, Charente-Maritime remporte la partie avec 12 départements ! Bravo à Nana, roi du pays ! » |
+| Victoire | « Victoire de la Charente-Maritime, qui remporte la partie avec 12 départements ! Bravo à Nana, roi du pays ! » |
 
 Garde-fous :
 - au plus 3 phrases en attente ; les moins importantes sont abandonnées, et les phrases de remplissage périmées sont supprimées ;

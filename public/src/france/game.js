@@ -149,6 +149,9 @@ export class FranceGame {
       boostMult: 1,
       shieldUntil: 0,
       joinedAt: this.elapsed,
+      lastActiveAt: this.elapsed,
+      asleep: false,
+      milestone: 0,
       active: true,
       inFlight: false,
     };
@@ -171,7 +174,7 @@ export class FranceGame {
     if (!wasActive) {
       const gained = this.addSoldiers(code, this.config.economy.joinBonus, p, 'join');
       this.emit({ type: 'bubble', kind: 'join', user: p, team: code, text: `fait entrer ${code} ${team.name} en guerre !`, amount: gained });
-      this.emit({ type: 'join', team: code });
+      this.emit({ type: 'join', team: code, user: p });
     } else {
       this.emit({ type: 'bubble', kind: 'join', user: p, team: code, text: `rejoint le ${code}`, amount: 0 });
     }
@@ -197,7 +200,17 @@ export class FranceGame {
     if (p) {
       p.total += amount;
       team.contributions.set(p.id, (team.contributions.get(p.id) || 0) + amount);
+      team.lastActiveAt = this.elapsed;
+      if (team.asleep) {
+        team.asleep = false;
+        this.emit({ type: 'awake', team: code, user: p });
+      }
     }
+    const milestones = this.config.economy.milestones || [];
+    let reached = null;
+    while (team.milestone < milestones.length && team.soldiers >= milestones[team.milestone]) reached = milestones[team.milestone++];
+    // one big gift can cross several milestones: only the highest one is announced
+    if (reached) this.emit({ type: 'milestone', team: code, value: reached });
     if (ev?.type === 'duel' && ev.scores[code] !== undefined) ev.scores[code] += amount;
     if (ev?.type === 'mission' && team.region === ev.region) {
       ev.progress += amount;
@@ -395,6 +408,23 @@ export class FranceGame {
     }
   }
 
+  /** Soldiers of départements nobody supports any more slowly melt away. */
+  updateDecay(dt) {
+    const decay = this.config.economy.decay;
+    if (!decay) return;
+    this.decayTimer = (this.decayTimer || 0) + dt;
+    if (this.decayTimer < decay.everySec) return;
+    this.decayTimer = 0;
+    for (const team of this.teams.values()) {
+      if (!team.active || team.soldiers <= 0 || this.elapsed - team.lastActiveAt < decay.afterSec) continue;
+      if (!team.asleep) {
+        team.asleep = true;
+        this.emit({ type: 'asleep', team: team.code });
+      }
+      team.soldiers = Math.max(0, team.soldiers - Math.max(1, Math.round((team.soldiers * decay.percent) / 100)));
+    }
+  }
+
   #foreignNeighbors(code, team) {
     return byCode.get(code).neighbors.filter((n) => this.owner.get(n) !== team).length;
   }
@@ -439,6 +469,7 @@ export class FranceGame {
     this.event = null;
     const ev = this.config.events;
     let text = null;
+    const result = {};
     if (e.type === 'duel') {
       const sa = e.scores[e.a];
       const sb = e.scores[e.b];
@@ -451,6 +482,7 @@ export class FranceGame {
         winner.soldiers += stolen;
         winner.progress += stolen;
         text = `${w} ${winner.name} gagne le duel et vole ${stolen} soldats au ${l} !`;
+        Object.assign(result, { winner: w, loser: l, stolen });
         this.emit({ type: 'hit', from: w, team: l, amount: stolen, effect: 'duel' });
       } else text = 'Duel nul : personne ne vole personne.';
     } else if (e.type === 'mission') {
@@ -461,13 +493,15 @@ export class FranceGame {
           team.progress += ev.mission.rewardPerDepartment;
         }
         text = `Mission réussie : +${ev.mission.rewardPerDepartment} pour ${e.participants.size} département(s) de ${e.region} !`;
+        result.success = true;
       } else text = `Mission échouée pour la région ${e.region}…`;
     } else if (e.type === 'revolution') {
       text = 'Fin de la révolution. Le calme revient… pour l\'instant.';
     } else if (e.type === 'bounty') {
       text = success ? `${success.code} ${success.name} dépasse le ${e.target} et touche la prime de ${ev.bounty.reward} soldats !` : `Personne n'a dépassé le ${e.target}.`;
+      if (success) result.winner = success.code;
     }
-    this.emit({ type: 'eventEnd', event: e, text });
+    this.emit({ type: 'eventEnd', event: e, text, result });
     const [min, max] = ev.intervalSec;
     this.nextEventAt = this.elapsed + this.rng.range(min, max);
   }
@@ -521,6 +555,7 @@ export class FranceGame {
     }
     this.elapsed += dt;
     this.updateConquest(dt);
+    this.updateDecay(dt);
     this.updateEvents();
     this.checkVictory();
   }

@@ -27,7 +27,22 @@
       1500
     ],
     "likeGoal": 5000,
-    "likeGoalReward": 20
+    "likeGoalReward": 20,
+    "milestones": [
+      500,
+      1000,
+      2000,
+      5000,
+      10000,
+      20000,
+      50000,
+      100000
+    ],
+    "decay": {
+      "afterSec": 60,
+      "everySec": 5,
+      "percent": 2
+    }
   },
   "gifts": [
     {
