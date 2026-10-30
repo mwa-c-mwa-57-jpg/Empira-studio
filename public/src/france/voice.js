@@ -2,7 +2,7 @@
 // The phrase logic is pure and testable; the output backend is injected (browser speech or local server).
 
 import { DEPARTEMENTS } from './departements.js';
-import { placeForms, capitalize } from './names.js';
+import { placeForms, capitalize, verb } from './names.js';
 
 const pick = (arr, rnd) => arr[Math.floor(rnd() * arr.length)];
 const DEPARTEMENTS_BY_CODE = new Map(DEPARTEMENTS.map((d) => [d.code, d]));
@@ -68,8 +68,8 @@ export class Announcer {
     if (this.pendingJoins.length && t - this.joinTimer > 2500) this.#flushJoins();
     if (t < this.busyUntil || !this.queue.length) return;
     const next = this.queue.shift();
-    // rough duration estimate (about 14 characters per second) so phrases do not overlap
-    this.busyUntil = t + 900 + next.text.length * 70;
+    // rough duration estimate (about 16 characters per second, measured with French voices) so phrases do not overlap
+    this.busyUntil = t + 600 + next.text.length * 62;
     this.speak(next.text);
   }
 
@@ -84,9 +84,9 @@ export class Announcer {
         ? pick([
             `Les troupes ${f.of} débarquent, menées par ${who} !`,
             `Nouveau front : ${f.the} rejoint la bataille avec ${who} !`,
-            `${capitalize(f.the)} entre en guerre ! Merci ${who} !`,
+            `${capitalize(f.the)} ${verb(f, 'entre', 'entrent')} en guerre ! Merci ${who} !`,
           ], this.random)
-        : `${capitalize(f.the)} entre en guerre !`, 2);
+        : `${capitalize(f.the)} ${verb(f, 'entre', 'entrent')} en guerre !`, 2);
     } else if (joins.length <= 3) {
       this.say(`Nouveaux fronts : ${joins.map((j) => this.dep(j.team).the).join(', ')} entrent en guerre !`, 2);
     } else {
@@ -123,7 +123,7 @@ export class Announcer {
           const f = this.dep(e.team);
           if (e.kind === 'share') {
             this.#thanks(pick([
-              `Merci ${who} pour le partage ! ${capitalize(f.the)} gagne ${eco.shareSoldiers} soldats !`,
+              `Merci ${who} pour le partage ! ${capitalize(f.the)} ${verb(f, 'gagne', 'gagnent')} ${eco.shareSoldiers} soldats !`,
               `Encore un partage ! Merci ${who}, qui fait mieux ?`,
               `${who} recrute du monde en partageant, bravo !`,
             ], r));
@@ -139,41 +139,57 @@ export class Announcer {
           const f = this.dep(e.team);
           this.say(pick([
             `Énorme ! ${who} envoie ${gift} pour ${f.the} !`,
-            `Merci ${who} pour ${gift} ! ${capitalize(f.the)} reçoit des renforts !`,
-            `${gift} de la part de ${who} ! ${capitalize(f.the)} se renforce !`,
+            `Merci ${who} pour ${gift} ! ${capitalize(f.the)} ${verb(f, 'reçoit', 'reçoivent')} des renforts !`,
+            `${gift} de la part de ${who} ! ${capitalize(f.the)} ${verb(f, 'se renforce', 'se renforcent')} !`,
           ], r), 2, `gift:${e.user?.id}:${gift}`);
           break;
         }
         case 'hit':
-          if (e.effect === 'reset') this.say(`Catastrophe ! ${capitalize(this.dep(e.team).the)} retombe à zéro soldat !`, 3);
-          else if (e.effect === 'steal') this.say(`${capitalize(this.dep(e.from).the)} vole ${Math.round(e.amount)} soldats ${this.dep(e.team).to} !`, 2);
+          if (e.effect === 'reset') {
+            const f = this.dep(e.team);
+            this.say(`Catastrophe ! ${capitalize(f.the)} ${verb(f, 'retombe', 'retombent')} à zéro soldat !`, 3);
+          } else if (e.effect === 'steal') {
+            const f = this.dep(e.from);
+            this.say(`${capitalize(f.the)} ${verb(f, 'vole', 'volent')} ${Math.round(e.amount)} soldats ${this.dep(e.team).to} !`, 2);
+          }
           break;
         case 'banner':
           if (/bouclier/i.test(e.text) && /Bouclier sur/.test(e.text) && e.team) this.say(`Bouclier activé sur ${this.dep(e.team).the} !`, 2, `shield:${e.team}`);
-          else if (/déferle/i.test(e.text) && e.team) this.say(`Incroyable ! ${capitalize(this.dep(e.team).the)} déferle sur la France !`, 3);
+          else if (/déferle/i.test(e.text) && e.team) {
+            const f = this.dep(e.team);
+            this.say(`Incroyable ! ${capitalize(f.the)} ${verb(f, 'déferle', 'déferlent')} sur la France !`, 3);
+          }
           else if (/objectif de likes/i.test(e.text)) this.say(`Objectif de likes atteint ! ${eco.likeGoalReward} soldats pour tous les départements !`, 2);
           break;
         case 'capture': {
           if (!e.capital) {
-            if (e.team === e.code) this.say(`Libération ! ${capitalize(this.dep(e.code).the)} reprend sa capitale !`, 2);
+            if (e.team === e.code) {
+              const f = this.dep(e.code);
+              this.say(`Libération ! ${capitalize(f.the)} ${verb(f, 'reprend sa', 'reprennent leur')} capitale !`, 2);
+            }
             break;
           }
           const victim = this.dep(e.code);
           const attacker = this.dep(e.team);
           const team = g.teams.get(e.code);
           const cost = team ? g.conquestCost(team, e.code) : 0;
-          this.say(`${capitalize(victim.the)} est sous le drapeau ${attacker.of} ! Soldats ${victim.of}, ne vous laissez pas faire${cost ? ` : ${cost} soldats et vous êtes libres` : ''} !`, 3);
+          // one announcement per conqueror every 12 s, otherwise a conquest wave repeats itself
+          this.say(`${capitalize(victim.the)} ${verb(victim, 'tombe', 'tombent')} sous le drapeau ${attacker.of} !${cost ? ` Soldats ${victim.of}, ${cost} soldats et vous êtes libres !` : ''}`, 3, `capital:${e.team}`);
           break;
         }
         case 'milestone':
-          this.say(`${capitalize(this.dep(e.team).the)} atteint ${e.value} soldats !`, 2);
+          {
+            const f = this.dep(e.team);
+            this.say(`${capitalize(f.the)} ${verb(f, 'atteint', 'atteignent')} ${e.value} soldats !`, 2);
+          }
           break;
         case 'asleep':
           if (g.ranking().slice(0, 5).some((t) => t.code === e.team)) this.say(`Les soldats ${this.dep(e.team).of} fondent ! Likez et commentez pour les réveiller !`, 1);
           break;
         case 'awake': {
           const who = this.name(e.user);
-          this.say(`${capitalize(this.dep(e.team).the)} se réveille, ses soldats arrêtent de fondre !${who ? ` Merci ${who} !` : ''}`, 2);
+          const f = this.dep(e.team);
+          this.say(`${capitalize(f.the)} ${verb(f, 'se réveille, ses', 'se réveillent, leurs')} soldats arrêtent de fondre !${who ? ` Merci ${who} !` : ''}`, 2);
           break;
         }
         case 'eventStart': {
@@ -194,10 +210,13 @@ export class Announcer {
           const ev = e.event;
           const res = e.result || {};
           const reward = this.config.events.mission.rewardPerDepartment;
-          if (ev.type === 'duel') this.say(res.winner ? `Duel gagné par ${this.dep(res.winner).the}, qui vole ${res.stolen} soldats ${this.dep(res.loser).to} !` : 'Duel nul ! Personne ne vole personne.', 2);
+          if (ev.type === 'duel') this.say(res.winner ? `Duel gagné par ${this.dep(res.winner).the} ! ${res.stolen} soldats volés ${this.dep(res.loser).to} !` : 'Duel nul ! Personne ne vole personne.', 2);
           else if (ev.type === 'mission') this.say(res.success ? `Le Général est fier ${placeForms(ev.region).of} ! Chaque département qui a participé gagne ${reward} soldats !` : `Mission échouée pour ${placeForms(ev.region).the}… Le Général est déçu.`, 2);
           else if (ev.type === 'revolution') this.say('Fin de la révolution. Le calme revient… pour l\'instant.', 2);
-          else if (ev.type === 'bounty' && res.winner) this.say(`${capitalize(this.dep(res.winner).the)} dépasse ${this.dep(ev.target).the} et touche la prime !`, 2);
+          else if (ev.type === 'bounty' && res.winner) {
+            const f = this.dep(res.winner);
+            this.say(`${capitalize(f.the)} ${verb(f, 'dépasse', 'dépassent')} ${this.dep(ev.target).the} et ${verb(f, 'touche', 'touchent')} la prime !`, 2);
+          }
           break;
         }
         case 'popup': {
@@ -213,7 +232,8 @@ export class Announcer {
         case 'victory': {
           const w = e.winner;
           const king = g.finalKing;
-          let text = w ? `Victoire ${placeForms(w.name).of}, qui remporte la partie avec ${w.territories} départements !` : 'Fin de la partie !';
+          const wf = w && placeForms(w.name);
+          let text = w ? `Victoire ${wf.of}, qui ${verb(wf, 'remporte', 'remportent')} la partie avec ${w.territories} départements !` : 'Fin de la partie !';
           if (king && this.cfg.readNames) text += ` Bravo à ${spokenName(king.name)}, roi du pays !`;
           this.queue = [];
           this.say(text, 3);
@@ -232,7 +252,8 @@ export class Announcer {
     const leader = g.ranking()[0];
     const t = this.now();
     if (leader && leader.soldiers >= 50 && leader.code !== this.lastLeader) {
-      if (this.lastLeader && t - this.lastLeaderAt > 20000) this.say(`${capitalize(this.dep(leader.code).the)} prend la tête !`, 1);
+      const f = this.dep(leader.code);
+      if (this.lastLeader && t - this.lastLeaderAt > 20000) this.say(`${capitalize(f.the)} ${verb(f, 'prend', 'prennent')} la tête !`, 1);
       this.lastLeader = leader.code;
       this.lastLeaderAt = t;
     }
@@ -244,7 +265,7 @@ export class Announcer {
     for (const s of [60, 30, 10]) {
       if (g.timeLeft <= s && g.timeLeft > s - 2 && !this.countdownSaid.has(s)) {
         this.countdownSaid.add(s);
-        this.say(s === 60 ? 'Plus qu\'une minute !' : `Plus que ${s} secondes !`, 3);
+        this.say(s === 60 ? 'Plus qu\'une minute !' : `Plus que ${s} secondes !`, 4); // the countdown beats everything
       }
     }
   }

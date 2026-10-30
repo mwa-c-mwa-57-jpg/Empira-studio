@@ -104,6 +104,17 @@ npm test            # 59 tests unitaires et d'intégration (Node, sans dépendan
 npm run test:e2e    # test navigateur complet (nécessite Playwright, facultatif)
 ```
 
+## Vidéo de démonstration
+
+Une démo scriptée de 86 s (événements simulés, voix de l'annonceur incluse) se régénère avec :
+
+```
+node tools/make-demo-video.mjs demo                              # enregistre la partie (Playwright + Chromium)
+python3 tools/make-demo-audio.py demo fr_FR-siwis-medium.onnx    # voix Piper (pip install piper-tts) + MP4 final
+```
+
+La voix de la vidéo est celle de Piper (« siwis », CC-BY 4.0), pas la voix Windows utilisée en direct.
+
 ## Données cartographiques
 
 Contours des départements : IGN Admin Express, via le projet open source

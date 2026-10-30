@@ -31,7 +31,7 @@ function setup() {
 test('names and départements are made pronounceable', () => {
   assert.equal(spokenName('💎Léa_93✨ <b>'), 'Léa 93 b');
   assert.equal(spokenName('x'.repeat(50)).length, 20);
-  assert.deepEqual(placeForms('Charente-Maritime'), { the: 'la Charente-Maritime', of: 'de la Charente-Maritime', to: 'à la Charente-Maritime' });
+  assert.deepEqual(placeForms('Charente-Maritime'), { the: 'la Charente-Maritime', of: 'de la Charente-Maritime', to: 'à la Charente-Maritime', plural: false });
   assert.equal(placeForms('Nord').of, 'du Nord');
   assert.equal(placeForms('Eure-et-Loir').the, "l'Eure-et-Loir");
   assert.equal(placeForms('Vosges').of, 'des Vosges');
@@ -50,6 +50,19 @@ test('announces new départements, grouping several joins in one sentence', () =
   rules.process(ev('comment', 'b', { comment: '63' }));
   flush();
   assert.ok(said.some((s) => s === 'Nouveaux fronts : la Charente-Maritime, le Puy-de-Dôme entrent en guerre !'), said.join(' | '));
+});
+
+test('verbs agree with plural départements', () => {
+  const { game, rules, said, flush } = setup();
+  rules.process(ev('comment', 'a', { comment: '13' }));
+  rules.process(ev('gift', 'a', { gift: { name: 'Rose', diamonds: 1, count: 60 } }));
+  flush();
+  assert.ok(said.includes('Les Bouches-du-Rhône atteignent 500 soldats !'), said.join(' | '));
+  rules.process(ev('comment', 'b', { comment: '59' }));
+  rules.process(ev('gift', 'b', { gift: { name: 'Galaxie', diamonds: 1000, count: 1 } }));
+  flush();
+  assert.ok(said.includes('Catastrophe ! Les Bouches-du-Rhône retombent à zéro soldat !'), said.join(' | '));
+  void game;
 });
 
 test('a single new département is announced with the name of its first soldier', () => {
@@ -83,7 +96,7 @@ test('milestones, capital invasion with a liberation call, melting soldiers and 
   said.length = 0;
   game.capture('21', '58');
   flush();
-  assert.match(said[0], /^La Nièvre est sous le drapeau de la Côte-d'Or ! Soldats de la Nièvre, ne vous laissez pas faire : \d+ soldats et vous êtes libres !$/);
+  assert.equal(said[0], "La Nièvre tombe sous le drapeau de la Côte-d'Or ! Soldats de la Nièvre, 40 soldats et vous êtes libres !");
   said.length = 0;
   game.emit({ type: 'awake', team: '72', user: { id: 'z', name: 'Royaume' } });
   flush();

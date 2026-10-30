@@ -149,6 +149,21 @@ test('soldiers fuel conquests of neighbouring départements with animated attack
   for (const c of captures) assert.equal(game.owner.get(c.code), '17');
 });
 
+test('a département that lost all its territories rises up again and can free its capital', () => {
+  const { game, rules, run } = setup();
+  rules.process(ev('comment', 'a', { comment: '21' }));
+  rules.process(ev('gift', 'a', { gift: { name: 'Rose', diamonds: 1, count: 50 } }));
+  rules.process(ev('comment', 'b', { comment: '58' }));
+  game.capture('21', '58');
+  assert.equal(game.territoryCount('58'), 0);
+  rules.process(ev('gift', 'b', { gift: { name: 'Rose', diamonds: 1, count: 5 } })); // 40 soldiers = liberation cost
+  assert.doesNotThrow(() => run(3));
+  const evs = game.drainEvents();
+  const attack = evs.find((e) => e.type === 'attack' && e.team === '58');
+  assert.ok(attack && attack.from, 'the uprising starts from a real département');
+  assert.equal(game.owner.get('58'), '58', 'capital freed');
+});
+
 test('overseas départements land on the borders of mainland France', () => {
   const { game, rules, run } = setup();
   rules.process(ev('comment', 'r', { comment: '974' }));

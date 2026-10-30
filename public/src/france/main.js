@@ -80,6 +80,15 @@ export function startFrance(config, { obsMode }) {
 
   let last = performance.now();
   function frame(now) {
+    // whatever happens, the next frame is scheduled: one unexpected error must never freeze a live
+    requestAnimationFrame(frame);
+    try {
+      step(now);
+    } catch (err) {
+      console.error('Erreur pendant une image (le jeu continue) :', err);
+    }
+  }
+  function step(now) {
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
     fps = fps * 0.95 + (1 / Math.max(dt, 0.001)) * 0.05;
@@ -93,7 +102,6 @@ export function startFrance(config, { obsMode }) {
     const tiktok = connection.tiktok;
     const status = tiktok && tiktok.state !== 'connected' ? { ok: false, text: `TikTok : ${tiktok.state}${tiktok.detail ? ` (${tiktok.detail})` : ''} — le jeu continue` } : null;
     renderer.render(dt, { status });
-    requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
   window.empira = { game, rules, ingest, renderer, announcer, mode: 'france' };

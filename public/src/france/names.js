@@ -13,11 +13,14 @@ const FEMININE = new Set([
 
 /** Returns the forms of a place name: { the: "la Vienne", of: "de la Vienne", to: "à la Vienne" }. */
 export function placeForms(name) {
-  if (NO_ARTICLE.has(name)) return { the: name, of: name.startsWith('La ') ? `de ${name}` : `de ${name}`, to: `à ${name}` };
-  if (PLURAL.test(name)) return { the: `les ${name}`, of: `des ${name}`, to: `aux ${name}` };
-  if (ELIDED.test(name)) return { the: `l'${name}`, of: `de l'${name}`, to: `à l'${name}` };
-  if (FEMININE.has(name)) return { the: `la ${name}`, of: `de la ${name}`, to: `à la ${name}` };
-  return { the: `le ${name}`, of: `du ${name}`, to: `au ${name}` };
+  if (NO_ARTICLE.has(name)) return { the: name, of: `de ${name}`, to: `à ${name}`, plural: false };
+  if (PLURAL.test(name)) return { the: `les ${name}`, of: `des ${name}`, to: `aux ${name}`, plural: true };
+  if (ELIDED.test(name)) return { the: `l'${name}`, of: `de l'${name}`, to: `à l'${name}`, plural: false };
+  if (FEMININE.has(name)) return { the: `la ${name}`, of: `de la ${name}`, to: `à la ${name}`, plural: false };
+  return { the: `le ${name}`, of: `du ${name}`, to: `au ${name}`, plural: false };
 }
+
+/** Subject–verb agreement: verb(forms, 'atteint', 'atteignent'). */
+export const verb = (forms, singular, plural) => (forms.plural ? plural : singular);
 
 export const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);

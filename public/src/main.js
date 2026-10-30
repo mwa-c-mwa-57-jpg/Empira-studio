@@ -72,6 +72,15 @@ function start(config) {
   let last = performance.now();
   let fps = 60;
   function frame(now) {
+    // whatever happens, the next frame is scheduled: one unexpected error must never freeze a live
+    requestAnimationFrame(frame);
+    try {
+      step(now);
+    } catch (err) {
+      console.error('Erreur pendant une image (le jeu continue) :', err);
+    }
+  }
+  function step(now) {
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
     fps = fps * 0.95 + (1 / Math.max(dt, 0.001)) * 0.05;
@@ -89,7 +98,6 @@ function start(config) {
       ? { ok: false, text: `TikTok : ${tiktok.state}${tiktok.detail ? ` (${tiktok.detail})` : ''} — le jeu continue` }
       : null;
     renderer.render(dt, { teams: rules.teamCounts(), likePools: rules.likePools, leaderboard: rules.leaderboard(5), status });
-    requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 

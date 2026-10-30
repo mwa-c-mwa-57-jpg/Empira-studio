@@ -297,6 +297,8 @@ export class FranceGame {
 
   conquestCost(team, code) {
     const eco = this.config.economy;
+    // taking back one's own capital is cheap, so an invaded département can always fight back
+    if (code === team.code) return eco.conquestBaseCost + 10;
     let cost = eco.conquestBaseCost + eco.conquestCostPerTerritory * Math.max(0, this.territoryCount(team.code) - 1);
     const o = this.owner.get(code);
     if (o && o !== team.code) {
@@ -338,6 +340,8 @@ export class FranceGame {
         from = c;
       }
     }
+    // an exiled département (no territory left) rises up from a neighbour of its capital
+    if (!from) from = t.neighbors[0] ?? target;
     team.inFlight = true;
     const dur = free ? 0.45 : this.config.economy.attackFlightSec;
     this.attacks.push({ team: team.code, from, to: target, t: 0, dur });
@@ -383,7 +387,8 @@ export class FranceGame {
 
     for (const team of this.teams.values()) {
       if (!team.active || team.inFlight) continue;
-      if (team.target === null || this.owner.get(team.target) === team.code || this.isShielded(this.owner.get(team.target))) this.chooseTarget(team);
+      const exiled = this.owner.get(team.code) !== team.code;
+      if (team.target === null || this.owner.get(team.target) === team.code || this.isShielded(this.owner.get(team.target)) || (exiled && team.target !== team.code)) this.chooseTarget(team);
       if (team.target === null) continue;
       team.cost = this.conquestCost(team, team.target);
       if (team.progress >= team.cost) {
