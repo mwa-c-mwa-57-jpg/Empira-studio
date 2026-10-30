@@ -30,11 +30,26 @@ export class FranceRules {
     this.stats = this.guard.stats;
     this.lastComment = new Map();
     this.giftsByName = new Map();
-    for (const g of config.gifts) for (const n of g.names) this.giftsByName.set(n.toLowerCase(), g);
+    this.giftsById = new Map();
+    for (const g of config.gifts) {
+      for (const n of g.names) this.giftsByName.set(normalizeKeyword(n), g);
+      for (const id of g.ids || []) this.giftsById.set(String(id), g);
+    }
+    // gifts received but absent from the catalogue, so the creator can add them to the configuration
+    this.unknownGifts = new Map();
   }
 
+  /** Matches a received gift by TikTok id first (language independent), then by name (accents and case ignored). */
   matchGift(gift) {
-    return this.giftsByName.get(String(gift.name).toLowerCase()) || this.config.gifts.find((g) => g.id === gift.id) || null;
+    return this.giftsById.get(String(gift.id)) || this.giftsByName.get(normalizeKeyword(gift.name)) || this.config.gifts.find((g) => g.id === gift.id) || null;
+  }
+
+  #recordUnknown(gift) {
+    const key = `${gift.name}|${gift.id}`;
+    const entry = this.unknownGifts.get(key) || { name: gift.name, id: gift.id, diamonds: gift.diamonds, count: 0 };
+    entry.count += gift.count;
+    this.unknownGifts.set(key, entry);
+    if (this.unknownGifts.size > 200) this.unknownGifts.delete(this.unknownGifts.keys().next().value);
   }
 
   /** Makes sure the viewer's team exists in the current round (teams are reset between rounds). */
@@ -103,6 +118,7 @@ export class FranceRules {
         const { diamonds, count } = ev.gift;
         const base = diamonds * count * eco.soldiersPerDiamond;
         const def = this.matchGift(ev.gift);
+        if (!def) this.#recordUnknown(ev.gift);
         const team = this.#teamOf(p, ev.user);
         if (!team) {
           // Never lose a gift: it is kept until the viewer picks a département (or the next round starts).

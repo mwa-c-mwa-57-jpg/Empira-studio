@@ -41,8 +41,10 @@ La page `http://localhost:3000/` affiche le jeu et, à droite, le **panneau de t
 | Événement maintenant / Terminer la partie | déclenche un duel, une révolution, une mission ou une prime / affiche le podium |
 
 Le catalogue des cadeaux (noms, prix, effets) se règle dans [`config/france.json`](config/france.json). Les noms et prix
-fournis par défaut sont des **valeurs indicatives, à vérifier** dans le panneau de cadeaux TikTok du créateur, car un
-cadeau est reconnu par son nom. Un cadeau inconnu rapporte quand même +10 soldats par pièce.
+par défaut ont été relevés dans le panneau de cadeaux TikTok français le 28/10/2026 (voir
+[docs/07](docs/07-catalogue-cadeaux-tiktok.md)). Un cadeau est reconnu par son nom (français ou anglais) ou par son
+identifiant TikTok (champ `ids`). Un cadeau inconnu rapporte quand même +10 soldats par pièce, et il est listé dans la
+rubrique Diagnostic du panneau de test pour pouvoir être ajouté au catalogue.
 
 ### Mode deux camps (`http://localhost:3000/?mode=factions`)
 
@@ -106,3 +108,4 @@ Le fichier `public/src/france/departements.js` est généré par `node tools/bui
 - [04 — Architecture technique](docs/04-architecture.md)
 - [05 — Bilan de validation et plan d'évolution](docs/05-bilan-et-plan.md)
 - [06 — Règles du mode Conquête de France](docs/06-mode-france.md)
+- [07 — Catalogue des cadeaux TikTok (relevé du 28/10/2026)](docs/07-catalogue-cadeaux-tiktok.md)

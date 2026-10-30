@@ -21,29 +21,232 @@
     "enemyCostFactor": 0.6,
     "minSoldiersPerTerritory": 12,
     "attackFlightSec": 0.8,
-    "starThresholds": [100, 500, 1500],
+    "starThresholds": [
+      100,
+      500,
+      1500
+    ],
     "likeGoal": 5000,
     "likeGoalReward": 20
   },
   "gifts": [
-    { "id": "rose", "names": ["Rose"], "diamonds": 1, "icon": "🌹", "tab": "grossir", "label": "+10 / pièce", "effect": { "type": "none" } },
-    { "id": "heart", "names": ["Finger Heart", "Cœur avec les doigts", "Heart Me"], "diamonds": 5, "icon": "💗", "tab": "grossir", "label": "×1,5 pendant 45 s", "effect": { "type": "boost", "multiplier": 1.5, "durationSec": 45 } },
-    { "id": "donut", "names": ["Doughnut", "Donut", "Beignet"], "diamonds": 30, "icon": "🍩", "tab": "grossir", "label": "×2 pendant 45 s", "effect": { "type": "boost", "multiplier": 2, "durationSec": 45 } },
-    { "id": "shield", "names": ["Butterfly", "Papillon"], "diamonds": 88, "icon": "🦋", "tab": "defendre", "label": "bouclier 45 s", "effect": { "type": "shield", "durationSec": 45 } },
-    { "id": "steal", "names": ["Money Gun", "Pistolet à argent"], "diamonds": 500, "icon": "💸", "tab": "defendre", "label": "vole 10 % au 1er", "effect": { "type": "steal", "percent": 10 } },
-    { "id": "conquest", "names": ["Lion", "Léon"], "diamonds": 29999, "icon": "🦁", "tab": "defendre", "label": "conquiert 20 départements", "effect": { "type": "conquest", "territories": 20 } },
-    { "id": "tomato", "names": ["Tomato", "Tomate"], "diamonds": 1, "icon": "🍅", "tab": "attaquer", "label": "−0,3 % au 1er", "effect": { "type": "hit", "percent": 0.3 } },
-    { "id": "gloves", "names": ["Boxing Gloves", "Gants de boxe"], "diamonds": 299, "icon": "🥊", "tab": "attaquer", "label": "−2 % au 1er", "effect": { "type": "hit", "percent": 2 } },
-    { "id": "swan", "names": ["Swan", "Cygne"], "diamonds": 699, "icon": "🦢", "tab": "attaquer", "label": "−12 % au 1er", "effect": { "type": "hit", "percent": 12 } },
-    { "id": "galaxy", "names": ["Galaxy", "Galaxie"], "diamonds": 1000, "icon": "🌌", "tab": "attaquer", "label": "remet le 1er à 0", "effect": { "type": "reset" } }
+    {
+      "id": "rose",
+      "names": [
+        "Rose"
+      ],
+      "ids": [],
+      "diamonds": 1,
+      "icon": "🌹",
+      "tab": "grossir",
+      "label": "+10 / pièce",
+      "effect": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "finger-heart",
+      "names": [
+        "Cœur avec les doigts",
+        "Finger Heart"
+      ],
+      "ids": [],
+      "diamonds": 5,
+      "icon": "🫰",
+      "tab": "grossir",
+      "label": "×1,5 pendant 45 s",
+      "effect": {
+        "type": "boost",
+        "multiplier": 1.5,
+        "durationSec": 45
+      }
+    },
+    {
+      "id": "donut",
+      "names": [
+        "Donut",
+        "Doughnut",
+        "Beignet"
+      ],
+      "ids": [],
+      "diamonds": 30,
+      "icon": "🍩",
+      "tab": "grossir",
+      "label": "×2 pendant 45 s",
+      "effect": {
+        "type": "boost",
+        "multiplier": 2,
+        "durationSec": 45
+      }
+    },
+    {
+      "id": "hearts",
+      "names": [
+        "Cœurs",
+        "Hearts"
+      ],
+      "ids": [],
+      "diamonds": 199,
+      "icon": "💗",
+      "tab": "grossir",
+      "label": "×3 pendant 45 s",
+      "effect": {
+        "type": "boost",
+        "multiplier": 3,
+        "durationSec": 45
+      }
+    },
+    {
+      "id": "teddy",
+      "names": [
+        "Le petit Ourson",
+        "Teddy Bear"
+      ],
+      "ids": [],
+      "diamonds": 100,
+      "icon": "🧸",
+      "tab": "defendre",
+      "label": "bouclier 45 s",
+      "effect": {
+        "type": "shield",
+        "durationSec": 45
+      }
+    },
+    {
+      "id": "pirate",
+      "names": [
+        "Trésor de pirate",
+        "Pirate's Treasure"
+      ],
+      "ids": [],
+      "diamonds": 449,
+      "icon": "🏴‍☠️",
+      "tab": "defendre",
+      "label": "vole 10 % au 1er",
+      "effect": {
+        "type": "steal",
+        "percent": 10
+      }
+    },
+    {
+      "id": "leon",
+      "names": [
+        "Léon le chaton",
+        "Leon the Kitten"
+      ],
+      "ids": [],
+      "diamonds": 4888,
+      "icon": "🦁",
+      "tab": "defendre",
+      "label": "conquiert 20 départements",
+      "effect": {
+        "type": "conquest",
+        "territories": 20
+      }
+    },
+    {
+      "id": "leon-lion",
+      "names": [
+        "Léon et le Lion",
+        "Leon and Lion"
+      ],
+      "ids": [],
+      "diamonds": 34000,
+      "icon": "👑",
+      "tab": "defendre",
+      "label": "conquiert 40 départements",
+      "effect": {
+        "type": "conquest",
+        "territories": 40
+      }
+    },
+    {
+      "id": "tomato",
+      "names": [
+        "Tom la tomate",
+        "Tom the Tomato"
+      ],
+      "ids": [],
+      "diamonds": 1,
+      "icon": "🍅",
+      "tab": "attaquer",
+      "label": "−0,3 % au 1er",
+      "effect": {
+        "type": "hit",
+        "percent": 0.3
+      }
+    },
+    {
+      "id": "gloves",
+      "names": [
+        "Gants de boxe dorés",
+        "Golden Boxing Gloves"
+      ],
+      "ids": [],
+      "diamonds": 10,
+      "icon": "🥊",
+      "tab": "attaquer",
+      "label": "−2 % au 1er",
+      "effect": {
+        "type": "hit",
+        "percent": 2
+      }
+    },
+    {
+      "id": "swan",
+      "names": [
+        "Cygne",
+        "Swan"
+      ],
+      "ids": [],
+      "diamonds": 699,
+      "icon": "🦢",
+      "tab": "attaquer",
+      "label": "−12 % au 1er",
+      "effect": {
+        "type": "hit",
+        "percent": 12
+      }
+    },
+    {
+      "id": "galaxy",
+      "names": [
+        "Galaxie",
+        "Galaxy"
+      ],
+      "ids": [],
+      "diamonds": 1000,
+      "icon": "🌌",
+      "tab": "attaquer",
+      "label": "remet le 1er à 0",
+      "effect": {
+        "type": "reset"
+      }
+    }
   ],
   "events": {
     "firstDelaySec": 45,
-    "intervalSec": [60, 100],
-    "duel": { "durationSec": 90, "stealPercent": 10 },
-    "revolution": { "durationSec": 60, "multiplier": 2 },
-    "mission": { "durationSec": 120, "rewardPerDepartment": 60, "targetPerTeam": 25 },
-    "bounty": { "durationSec": 90, "reward": 100 },
+    "intervalSec": [
+      60,
+      100
+    ],
+    "duel": {
+      "durationSec": 90,
+      "stealPercent": 10
+    },
+    "revolution": {
+      "durationSec": 60,
+      "multiplier": 2
+    },
+    "mission": {
+      "durationSec": 120,
+      "rewardPerDepartment": 60,
+      "targetPerTeam": 25
+    },
+    "bounty": {
+      "durationSec": 90,
+      "reward": 100
+    },
     "generalPopupEverySec": 75
   },
   "safety": {
@@ -52,5 +255,6 @@
     "maxEventsPerSec": 500,
     "maxNameLength": 24,
     "maxCommentLength": 200
-  }
+  },
+  "giftCatalogNote": "Noms et prix relevés dans le panneau de cadeaux TikTok en français le 28/10/2026 (voir docs/07-catalogue-cadeaux-tiktok.md). Un cadeau est reconnu par son nom (français ou anglais) ou par son identifiant TikTok (champ ids). Les cadeaux non reconnus rapportent quand même soldiersPerDiamond par pièce et sont listés dans le panneau de test."
 }

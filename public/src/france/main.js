@@ -48,6 +48,7 @@ export function startFrance(config, { obsMode }) {
           `Rejetés : ${rejected}`,
           `Serveur : ${connection.server} · TikTok : ${connection.tiktok?.state ?? 'non configuré'}`,
           `Partie ${game.round} · ${game.phase} · événement : ${game.event?.type ?? 'aucun'}`,
+          `Cadeaux non reconnus : ${[...rules.unknownGifts.values()].sort((a, b) => b.count - a.count).slice(0, 5).map((g) => `${g.name} (id ${g.id}, ${g.diamonds} pièces) ×${g.count}`).join(' · ') || 'aucun'}`,
         ].join('\n');
       },
     });

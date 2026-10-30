@@ -84,6 +84,22 @@ test('gifts give +10 soldiers per coin; gifts before choosing a département are
   assert.equal(game.teams.get('21').soldiers, 75 + 30);
 });
 
+test('gifts are matched by TikTok id or by name in French or English; unknown gifts are listed', () => {
+  const cfg = loadFrance();
+  cfg.gifts = cfg.gifts.map((g) => (g.id === 'galaxy' ? { ...g, ids: ['11046'] } : g));
+  const game = new FranceGame(cfg, { seed: 1 });
+  const rules = new FranceRules(cfg, game);
+  assert.equal(rules.matchGift({ id: '11046', name: 'whatever' }).id, 'galaxy');
+  assert.equal(rules.matchGift({ id: '1', name: 'GALAXY' }).id, 'galaxy');
+  assert.equal(rules.matchGift({ id: '1', name: 'galaxie' }).id, 'galaxy');
+  assert.equal(rules.matchGift({ id: '1', name: 'Cœur avec les doigts' }).id, 'finger-heart');
+  assert.equal(rules.matchGift({ id: '2', name: 'Rosa' }), null, '"Rosa" (10 pièces) is a different gift from "Rose"');
+  rules.process(ev('comment', 'u', { comment: '17' }));
+  rules.process(ev('gift', 'u', { gift: { id: '777', name: 'Capybara', diamonds: 30, count: 2 } }));
+  assert.equal(game.teams.get('17').soldiers, 5 + 600);
+  assert.deepEqual([...rules.unknownGifts.values()][0], { name: 'Capybara', id: '777', diamonds: 30, count: 2 });
+});
+
 test('attack gifts hit the leader (or the 2nd when the leader attacks); shield blocks them', () => {
   const { game, rules } = setup();
   rules.process(ev('comment', 'l', { comment: '17' }));
@@ -91,16 +107,16 @@ test('attack gifts hit the leader (or the 2nd when the leader attacks); shield b
   rules.process(ev('comment', 's', { comment: '08' }));
   rules.process(ev('gift', 's', { gift: { name: 'Rose', diamonds: 1, count: 30 } })); // 08: 305
   rules.process(ev('comment', 'x', { comment: '63' }));
-  rules.process(ev('gift', 'x', { gift: { name: 'Swan', diamonds: 699, count: 1 } })); // 63: +6990, hits leader 17 by 12 %
+  rules.process(ev('gift', 'x', { gift: { name: 'Cygne', diamonds: 699, count: 1 } })); // 63: +6990, hits leader 17 by 12 %
   assert.equal(game.teams.get('17').soldiers, 1005 - Math.round(1005 * 0.12));
   // 63 is now the leader: its own attack targets the 2nd (17)
   const before17 = game.teams.get('17').soldiers;
-  rules.process(ev('gift', 'x', { gift: { name: 'Tomato', diamonds: 1, count: 1 } }));
+  rules.process(ev('gift', 'x', { gift: { name: 'Tom la tomate', diamonds: 1, count: 1 } }));
   assert.ok(game.teams.get('17').soldiers < before17);
   // shield on 63, then a Galaxy from 08 is blocked
-  rules.process(ev('gift', 'x', { gift: { name: 'Butterfly', diamonds: 88, count: 1 } }));
+  rules.process(ev('gift', 'x', { gift: { name: 'Le petit Ourson', diamonds: 100, count: 1 } }));
   const s63 = game.teams.get('63').soldiers;
-  rules.process(ev('gift', 's', { gift: { name: 'Galaxy', diamonds: 1000, count: 1 } }));
+  rules.process(ev('gift', 's', { gift: { name: 'Galaxie', diamonds: 1000, count: 1 } }));
   assert.equal(game.teams.get('63').soldiers, s63);
 });
 
@@ -112,7 +128,7 @@ test('Galaxy resets the leader to zero and its empire then crumbles', () => {
   const before = game.territoryCount('13');
   assert.ok(before >= 3, `13 expanded to ${before}`);
   rules.process(ev('comment', 'z', { comment: '59' }));
-  rules.process(ev('gift', 'z', { gift: { name: 'Galaxy', diamonds: 1000, count: 1 } }));
+  rules.process(ev('gift', 'z', { gift: { name: 'Galaxie', diamonds: 1000, count: 1 } }));
   assert.equal(game.teams.get('13').soldiers, 0);
   run(20);
   assert.ok(game.territoryCount('13') < before);
@@ -146,7 +162,7 @@ test('overseas départements land on the borders of mainland France', () => {
 test('boost multiplies gains; revolution doubles everyone except the target', () => {
   const { game, rules } = setup();
   rules.process(ev('comment', 'a', { comment: '75' }));
-  rules.process(ev('gift', 'a', { gift: { name: 'Doughnut', diamonds: 30, count: 1 } })); // +300 then x2 boost
+  rules.process(ev('gift', 'a', { gift: { name: 'Donut', diamonds: 30, count: 1 } })); // +300 then x2 boost
   const s = game.teams.get('75').soldiers;
   rules.process(ev('gift', 'a', { gift: { name: 'Rose', diamonds: 1, count: 1 } }));
   assert.equal(game.teams.get('75').soldiers, s + 20);
@@ -223,7 +239,7 @@ test('a simulated live of 10 minutes runs to the end without errors', () => {
       const raw = r < 0.2 ? ev('comment', u, { comment: deps[Number(u.slice(1)) % deps.length] })
         : r < 0.9 ? ev('like', u, { likeCount: rng.int(1, 15) })
         : r < 0.98 ? ev('share', u)
-        : ev('gift', u, { gift: rng.pick([{ name: 'Rose', diamonds: 1, count: 3 }, { name: 'Swan', diamonds: 699, count: 1 }, { name: 'Butterfly', diamonds: 88, count: 1 }]) });
+        : ev('gift', u, { gift: rng.pick([{ name: 'Rose', diamonds: 1, count: 3 }, { name: 'Cygne', diamonds: 699, count: 1 }, { name: 'Le petit Ourson', diamonds: 100, count: 1 }]) });
       rules.process(raw);
     }
     game.drainEvents();

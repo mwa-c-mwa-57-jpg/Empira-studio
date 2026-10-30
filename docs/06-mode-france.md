@@ -28,16 +28,10 @@ Tous les chiffres ci-dessous sont des valeurs par défaut, modifiables dans `con
 - **Empire trop étendu** : si un département a moins de 12 soldats par territoire (par exemple après une attaque), il perd
   un territoire périphérique toutes les 3 s. Sa capitale n'est jamais perdue de cette façon.
 
-## Cadeaux à effet (catalogue par défaut, à vérifier)
-| Onglet | Cadeau | Effet |
-|---|---|---|
-| Grossir | Rose (1) | +10 / pièce |
-| Grossir | Finger Heart (5) / Doughnut (30) | gains ×1,5 / ×2 pendant 45 s |
-| Défendre | Butterfly (88) | bouclier 45 s : territoires imprenables, attaques bloquées |
-| Défendre | Money Gun (500) | vole 10 % des soldats du 1er |
-| Défendre | Lion (29 999) | conquête éclair de 20 départements |
-| Attaquer le 1er | Tomato (1) / Boxing Gloves (299) / Swan (699) | −0,3 % / −2 % / −12 % de soldats au 1er |
-| Attaquer le 1er | Galaxy (1 000) | remet le 1er à 0 |
+## Cadeaux à effet
+Le catalogue et les prix réels sont dans [07 — Catalogue des cadeaux TikTok](07-catalogue-cadeaux-tiktok.md).
+En résumé : Grossir (bonus ×1,5 / ×2 / ×3), Défendre (bouclier, vol de 10 %, conquête éclair), Attaquer le 1er
+(−0,3 %, −2 %, −12 %, remise à zéro). Un bouclier bloque aussi les attaques.
 
 Les attaques visent le 1er au classement des soldats ; si c'est le département du donateur, elles visent le 2e.
 
