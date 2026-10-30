@@ -67,7 +67,7 @@
       ],
       "ids": [],
       "diamonds": 5,
-      "icon": "🫰",
+      "icon": "💞",
       "tab": "grossir",
       "label": "×1,5 pendant 45 s",
       "effect": {
@@ -102,7 +102,7 @@
       ],
       "ids": [],
       "diamonds": 199,
-      "icon": "💗",
+      "icon": "💖",
       "tab": "grossir",
       "label": "×3 pendant 45 s",
       "effect": {
@@ -135,7 +135,7 @@
       ],
       "ids": [],
       "diamonds": 449,
-      "icon": "🏴‍☠️",
+      "icon": "💰",
       "tab": "defendre",
       "label": "vole 10 % au 1er",
       "effect": {
@@ -271,7 +271,7 @@
     "maxNameLength": 24,
     "maxCommentLength": 200
   },
-  "giftCatalogNote": "Noms et prix relevés dans le panneau de cadeaux TikTok en français le 28/10/2026 (voir docs/07-catalogue-cadeaux-tiktok.md). Un cadeau est reconnu par son nom (français ou anglais) ou par son identifiant TikTok (champ ids). Les cadeaux non reconnus rapportent quand même soldiersPerDiamond par pièce et sont listés dans le panneau de test.",
+  "giftCatalogNote": "Noms et prix relevés dans le panneau de cadeaux TikTok en français le 28/10/2026 (voir docs/07-catalogue-cadeaux-tiktok.md). Un cadeau est reconnu par son nom (français ou anglais) ou par son identifiant TikTok (champ ids). Les cadeaux non reconnus rapportent quand même soldiersPerDiamond par pièce et sont listés dans le panneau de test. Pendant un live, les vraies images des cadeaux sont chargées depuis TikTok ; les emojis ne servent qu'en mode test.",
   "voice": {
     "enabled": true,
     "output": "auto",

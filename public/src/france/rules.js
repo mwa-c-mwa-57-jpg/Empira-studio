@@ -127,7 +127,7 @@ export class FranceRules {
           return { accepted: true, pending: true };
         }
         const n = game.addSoldiers(team, base, p, 'gift');
-        game.emit({ type: 'gift', user: p, team, gift: def || { icon: '🎁', label: '' }, name: ev.gift.name, count, amount: n, diamonds: diamonds * count });
+        game.emit({ type: 'gift', user: p, team, gift: def || { icon: '🎁', label: '' }, name: ev.gift.name, giftId: ev.gift.id, image: ev.gift.image, count, amount: n, diamonds: diamonds * count });
         game.emit({ type: 'bubble', kind: 'gift', user: p, team, text: `envoie ${ev.gift.name}${count > 1 ? ` ×${count}` : ''} pour le ${team}`, amount: n });
         if (def) game.applyGiftEffect(team, p, def, count);
         return { accepted: true };

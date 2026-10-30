@@ -8,7 +8,7 @@
 //   user: { id: string, name: string, avatar?: string (https URL of the profile picture) }
 //   comment?: string      (type 'comment')
 //   likeCount?: number    (type 'like')
-//   gift?: { id: string, name: string, diamonds: number, count: number }  (type 'gift', one finished streak)
+//   gift?: { id: string, name: string, diamonds: number, count: number, image?: string }  (type 'gift', one finished streak)
 // }
 
 export const EVENT_TYPES = ['comment', 'like', 'gift', 'follow', 'share', 'join'];
@@ -24,6 +24,12 @@ function clampInt(value, min, max, fallback) {
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.min(max, Math.max(min, Math.floor(n)));
+}
+
+/** Only plain https URLs are accepted for pictures (profile pictures, gift images). */
+export function safeImageUrl(value) {
+  const url = sanitizeText(value, 600);
+  return /^https:\/\/[^\s"'<>]+$/i.test(url) ? url : null;
 }
 
 let syntheticCounter = 0;
@@ -54,8 +60,8 @@ export function normalizeEvent(raw, { now = Date.now(), maxEventAgeSec = 120, ma
     ts,
     user: { id: userId, name: userName },
   };
-  const avatar = sanitizeText(raw.user?.avatar, 600);
-  if (/^https:\/\/[^\s"'<>]+$/i.test(avatar)) event.user.avatar = avatar;
+  const avatar = safeImageUrl(raw.user?.avatar);
+  if (avatar) event.user.avatar = avatar;
 
   switch (raw.type) {
     case 'comment': {
@@ -75,6 +81,8 @@ export function normalizeEvent(raw, { now = Date.now(), maxEventAgeSec = 120, ma
         diamonds: clampInt(g.diamonds, 0, 50_000, 0),
         count: clampInt(g.count, 1, 1000, 1),
       };
+      const image = safeImageUrl(g.image);
+      if (image) event.gift.image = image;
       break;
     }
     default:

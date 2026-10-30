@@ -37,6 +37,7 @@ export function startFrance(config, { obsMode }) {
 
   connectServerSource({
     onEvent: ingest,
+    onGifts: (gifts) => renderer.giftImages.learnAll(gifts),
     onAdmin: adminAction,
     onStatus: (s) => {
       if (s.server) connection.server = s.server;

@@ -146,6 +146,17 @@ try {
   await obsFr.waitForTimeout(600);
   if (shotDir) await obsFr.screenshot({ path: path.join(shotDir, 'france-4-obs.png') });
 
+  // Real gift pictures: the TikTok gift list (simulated here) replaces the emoji on the page
+  await obsFr.route('https://gifts.test/**', (route) => route.fulfill({ contentType: 'image/png', body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGUlEQVR4nGP4b5DwnxLMMGrAqAGjBgwXAwCp4I4fLO5zPQAAAABJRU5ErkJggg==', 'base64') }));
+  server.broadcast({ kind: 'gifts', gifts: [{ id: '5655', name: 'Rose', diamonds: 1, image: 'https://gifts.test/rose.png' }, { id: '1', name: 'Galaxy', diamonds: 1000, image: 'https://gifts.test/galaxy.png' }] });
+  await obsFr.waitForFunction(() => {
+    const gi = window.empira.renderer.giftImages;
+    const rose = window.empira.game.config.gifts.find((g) => g.id === 'rose');
+    const url = gi.urlFor(rose);
+    return url && gi.image(url);
+  }, null, { timeout: 5000 });
+  check(true, 'les vraies images des cadeaux reçues de TikTok remplacent les emojis');
+
   check(errors.length === 0, `aucune erreur JavaScript${errors.length ? ' : ' + errors.join(' | ') : ''}`);
 } finally {
   await browser.close();

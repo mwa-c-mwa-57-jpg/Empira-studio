@@ -15,6 +15,25 @@ function profilePicture(u) {
   return typeof url === 'string' && url.startsWith('https://') ? url : undefined;
 }
 
+/** Picture of a gift, whatever the shape the library gives it (gift event, extended info or catalogue). */
+export function giftImage(g) {
+  if (!g) return undefined;
+  const url = g.image?.url_list?.[0] ?? g.image?.urlList?.[0] ?? g.image?.url?.[0] ?? g.icon?.url_list?.[0] ?? g.icon?.urlList?.[0]
+    ?? g.giftImage?.giftPictureUrl ?? g.giftPictureUrl;
+  return typeof url === 'string' && url.startsWith('https://') ? url : undefined;
+}
+
+const withImage = (image) => (image ? { image } : {});
+
+/** Room gift list → [{ id, name, diamonds, image }] (only gifts with a picture). */
+export function mapGiftCatalog(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((g) => ({ id: String(g.id ?? g.giftId ?? ''), name: String(g.name ?? g.giftName ?? ''), diamonds: Number(g.diamond_count ?? g.diamondCount ?? 0), image: giftImage(g) }))
+    .filter((g) => g.id && g.name && g.image)
+    .slice(0, 1000);
+}
+
 /** Pure mapping from a library event to a normalised Empira event (or null to ignore). */
 export function mapTikTokEvent(kind, data) {
   if (!data) return null;
@@ -46,6 +65,7 @@ export function mapTikTokEvent(kind, data) {
           name: details.giftName || data.extendedGiftInfo?.name || 'Cadeau',
           diamonds: details.diamondCount ?? data.extendedGiftInfo?.diamond_count ?? 0,
           count: data.repeatCount || 1,
+          ...withImage(giftImage(data.extendedGiftInfo) ?? giftImage(details) ?? giftImage(data)),
         },
       };
     }
@@ -60,7 +80,7 @@ export function mapTikTokEvent(kind, data) {
   }
 }
 
-export async function startTikTokSource(username, { onEvent, onStatus }) {
+export async function startTikTokSource(username, { onEvent, onStatus, onGifts = () => {} }) {
   let lib;
   try {
     lib = await import('tiktok-live-connector');
@@ -69,7 +89,8 @@ export async function startTikTokSource(username, { onEvent, onStatus }) {
     return null;
   }
   const { TikTokLiveConnection, WebcastEvent, ControlEvent } = lib;
-  const options = process.env.EULER_API_KEY ? { signApiKey: process.env.EULER_API_KEY } : {};
+  // enableExtendedGiftInfo: the room gift list (names, prices, pictures) is fetched at connection time
+  const options = { enableExtendedGiftInfo: true, ...(process.env.EULER_API_KEY ? { signApiKey: process.env.EULER_API_KEY } : {}) };
   const connection = new TikTokLiveConnection(username, options);
   let retryDelay = 5000;
   let stopped = false;
@@ -113,6 +134,8 @@ export async function startTikTokSource(username, { onEvent, onStatus }) {
     try {
       const state = await connection.connect();
       retryDelay = 5000;
+      const catalog = mapGiftCatalog(state?.availableGifts ?? connection.state?.availableGifts ?? connection.availableGifts);
+      if (catalog.length) onGifts(catalog);
       onStatus({ state: 'connected', detail: `room ${state?.roomId ?? '?'}` });
     } catch (err) {
       scheduleReconnect(String(err?.message || err).slice(0, 120));

@@ -85,9 +85,11 @@ function readJsonBody(req) {
 export function createServer({ log = console.log, voice = null } = {}) {
   const clients = new Set();
   let lastStatus = null;
+  let lastGifts = null;
 
   function broadcast(message) {
     if (message.kind === 'status') lastStatus = message;
+    if (message.kind === 'gifts') lastGifts = message;
     const payload = `data: ${JSON.stringify(message)}\n\n`;
     for (const res of clients) res.write(payload);
   }
@@ -109,6 +111,7 @@ export function createServer({ log = console.log, voice = null } = {}) {
         res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
         res.write('retry: 2000\n\n');
         if (lastStatus) res.write(`data: ${JSON.stringify(lastStatus)}\n\n`);
+        if (lastGifts) res.write(`data: ${JSON.stringify(lastGifts)}\n\n`);
         clients.add(res);
         req.on('close', () => clients.delete(res));
         return;
@@ -197,6 +200,10 @@ async function main() {
       const { startTikTokSource } = await import(pathToFileURL(path.join(ROOT, 'server/adapters/tiktok-live.js')).href);
       startTikTokSource(args.tiktok, {
         onEvent: (event) => server.broadcast({ kind: 'event', event }),
+        onGifts: (gifts) => {
+          console.log(`  [TikTok] ${gifts.length} cadeaux avec image reçus`);
+          server.broadcast({ kind: 'gifts', gifts });
+        },
         onStatus: (tiktok) => {
           console.log(`  [TikTok] ${tiktok.state}${tiktok.detail ? ' — ' + tiktok.detail : ''}`);
           server.broadcast({ kind: 'status', tiktok });

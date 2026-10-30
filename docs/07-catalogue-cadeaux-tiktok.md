@@ -26,6 +26,16 @@ dans lequel la bibliothèque TikTok renvoie les noms n'a pas été vérifié sur
 le panneau de test liste les **cadeaux non reconnus** avec leur nom et leur identifiant TikTok. Il suffit alors
 d'ajouter cet identifiant dans le champ `ids` du cadeau voulu : la reconnaissance par identifiant ne dépend pas de la langue.
 
+## Images des cadeaux
+- **Pendant un live** : à la connexion, le jeu demande à TikTok la liste des cadeaux de la salle, avec leurs images
+  (option `enableExtendedGiftInfo` de la bibliothèque), et lit aussi l'image jointe à chaque cadeau reçu. Les vraies
+  images remplacent alors les emojis dans les onglets et dans les combos sur la carte. Elles sont chargées depuis les
+  serveurs de TikTok pendant le live, sans qu'aucune image TikTok ne soit copiée dans le projet. Seules les adresses
+  https sont acceptées.
+- **En mode test** (sans connexion), les emojis de `config/france.json` servent de remplacement.
+- ❓ Non vérifié sur un vrai live : le format exact des images renvoyées par la bibliothèque. Le code accepte
+  plusieurs formats (`image.url_list`, `giftImage.giftPictureUrl`…) et revient à l'emoji si aucune image n'est trouvée.
+
 ## Relevé complet (par ordre d'apparition)
 | Prix | Cadeaux |
 |---|---|

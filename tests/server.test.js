@@ -70,6 +70,24 @@ test('parses command line arguments', () => {
   assert.equal(parseArgs(['--no-voice']).voice, false);
 });
 
+test('replays the gift catalogue to game pages that connect later', async () => {
+  server.broadcast({ kind: 'gifts', gifts: [{ id: '5655', name: 'Rose', image: 'https://cdn/rose.png' }] });
+  const msg = await new Promise((resolve) => {
+    http.get(`${base}/events`, (res) => {
+      let buf = '';
+      res.on('data', (chunk) => {
+        buf += chunk;
+        const line = buf.split('\n').find((l) => l.startsWith('data: ') && l.includes('"gifts"'));
+        if (line) {
+          res.destroy();
+          resolve(JSON.parse(line.slice(6)));
+        }
+      });
+    });
+  });
+  assert.equal(msg.gifts[0].name, 'Rose');
+});
+
 test('passes announcer phrases to the local voice', async () => {
   const res = await fetch(`${base}/api/say`, { method: 'POST', body: JSON.stringify({ text: 'Victoire du 17 !' }) });
   assert.equal(res.status, 200);

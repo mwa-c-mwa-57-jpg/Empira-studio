@@ -1,6 +1,7 @@
 // Renderer of the "Conquête de France" mode: map of départements, live bubbles, HUD and effects.
 
 import { DEPARTEMENTS, MAP_SIZE } from './departements.js';
+import { GiftImages } from './giftImages.js';
 
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
@@ -74,6 +75,7 @@ export class FranceRenderer {
     this.tabTime = 0;
     this.shake = 0;
     this.background = this.#buildBackground();
+    this.giftImages = new GiftImages();
     this.stripes = this.#buildStripes();
     this.mapCache = document.createElement('canvas');
     this.mapCache.width = MAP_SIZE[0] * 2;
@@ -307,7 +309,8 @@ export class FranceRenderer {
         case 'attack':
           break;
         case 'gift': {
-          this.combos.push({ team: e.team, icon: e.gift.icon || '🎁', count: e.count, amount: e.amount, t: 0, life: 2.0, color: this.color(e.team) });
+          this.giftImages.learn({ id: e.giftId, name: e.name, image: e.image });
+          this.combos.push({ team: e.team, icon: e.gift.icon || '🎁', image: e.image || this.giftImages.urlFor(e.gift), count: e.count, amount: e.amount, t: 0, life: 2.0, color: this.color(e.team) });
           if (this.combos.length > 4) this.combos.shift();
           if (e.diamonds >= 100) this.#focus(e.team, 2.0, 2.8);
           break;
@@ -783,7 +786,7 @@ export class FranceRenderer {
           { icon: '⭐', name: "S'abonner", label: `+${eco.followSoldiers}` },
           { icon: '🎁', name: 'Tout cadeau', label: `+${eco.soldiersPerDiamond} / pièce` },
         ]
-      : this.config.gifts.filter((g) => g.tab === active).map((g) => ({ icon: g.icon, name: g.names[0], label: g.label, cost: g.diamonds }));
+      : this.config.gifts.filter((g) => g.tab === active).map((g) => ({ icon: g.icon, image: this.giftImages.urlFor(g), name: g.names[0], label: g.label, cost: g.diamonds }));
     const n = Math.min(5, cards.length);
     const cw = 186;
     const x0 = 540 - (n * cw + (n - 1) * 10) / 2;
@@ -795,7 +798,10 @@ export class FranceRenderer {
       this.#panel(x, y, cw, 166, { radius: 16, fill: 'rgba(255,255,255,0.05)' });
       if (c.cost) this.#text(`🪙 ${fmt(c.cost)}`, x + 12, y + 20, { size: 15, weight: 800, color: '#ffd166' });
       const bob = Math.sin(this.time * 3 + i) * 4;
-      this.#text(c.icon, x + cw / 2, y + 66 + bob, { size: 50, align: 'center', font: EMOJI });
+      // real TikTok picture when the live connection provided it, emoji otherwise
+      const img = this.giftImages.image(c.image);
+      if (img) this.ctx.drawImage(img, x + cw / 2 - 34, y + 32 + bob, 68, 68);
+      else this.#text(c.icon, x + cw / 2, y + 66 + bob, { size: 50, align: 'center', font: EMOJI });
       this.#text(c.name, x + cw / 2, y + 116, { size: 17, weight: 800, align: 'center', maxWidth: cw - 14 });
       this.#text(c.label, x + cw / 2, y + 142, { size: 16, weight: 900, align: 'center', color: TAB_COLORS[active] === '#f5b301' ? '#ffd166' : TAB_COLORS[active], maxWidth: cw - 14 });
       this.ctx.globalAlpha = 1;
@@ -967,7 +973,9 @@ export class FranceRenderer {
       ctx.globalAlpha = alpha;
       ctx.translate(x, y);
       ctx.scale(s, s);
-      this.#text(c.icon, -40, 0, { size: 84, align: 'center', font: EMOJI });
+      const img = this.giftImages.image(c.image);
+      if (img) ctx.drawImage(img, -90, -50, 100, 100);
+      else this.#text(c.icon, -40, 0, { size: 84, align: 'center', font: EMOJI });
       if (c.count > 1) this.#text(`×${c.count}`, 30, 6, { size: 86, weight: 900, align: 'left', color: '#fff', stroke: c.color, strokeWidth: 12 });
       this.#text(`+${fmt(c.amount)}`, c.count > 1 ? 40 : 30, c.count > 1 ? 70 : 6, { size: c.count > 1 ? 40 : 56, weight: 900, color: '#5cff8a', stroke: 'rgba(0,0,0,0.8)', strokeWidth: 8 });
       ctx.restore();
