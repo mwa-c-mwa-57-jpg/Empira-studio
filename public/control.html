@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Empira Conquest — Régie</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="control">
+  <aside id="panel" class="panel">
+    <p class="hint">Cette régie envoie les événements simulés au serveur local, qui les relaie à toutes les pages de jeu
+      ouvertes (par exemple la source navigateur OBS <code>http://localhost:3000/?obs</code>).</p>
+  </aside>
+  <script type="module">
+    import { createDevPanel } from './src/ui/devPanel.js';
+    const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .catch((err) => console.error(err));
+    const panel = document.getElementById('panel');
+    const hint = panel.firstElementChild;
+    createDevPanel(panel, {
+      sink: (event) => post('/api/inject', event),
+      admin: (cmd) => post('/api/admin', cmd),
+      getStats: () => `Événements envoyés via le serveur local`,
+    });
+    panel.prepend(hint);
+  </script>
+</body>
+</html>

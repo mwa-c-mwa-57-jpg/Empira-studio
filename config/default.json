@@ -1,0 +1,78 @@
+{
+  "match": {
+    "durationSec": 300,
+    "countdownSec": 6,
+    "victoryScreenSec": 12,
+    "dominationRatio": 0.8,
+    "autoRestart": true
+  },
+  "map": {
+    "cols": 7,
+    "rows": 10,
+    "holes": 0.1,
+    "seed": null
+  },
+  "factions": {
+    "A": {
+      "name": "SOLAIRE",
+      "color": "#ffb020",
+      "light": "#ffe08a",
+      "dark": "#6b3d00",
+      "keywords": ["1", "soleil", "solaire", "sun", "or"]
+    },
+    "B": {
+      "name": "AZUR",
+      "color": "#2fa8ff",
+      "light": "#a8dcff",
+      "dark": "#0a2f5c",
+      "keywords": ["2", "azur", "bleu", "blue", "mer"]
+    }
+  },
+  "economy": {
+    "autoSpawnIntervalSec": 1.1,
+    "underdogBoost": 0.6,
+    "maxUnits": 240,
+    "spawnRatePerSec": 8,
+    "neutralGarrison": [2, 6],
+    "startGarrison": 4,
+    "capitalGarrison": 25,
+    "capitalDefense": 1.5
+  },
+  "units": {
+    "soldier": { "power": 2, "speed": 75, "scale": 1 },
+    "knight": { "power": 8, "speed": 95, "scale": 1.35 },
+    "giant": { "power": 24, "speed": 55, "scale": 2 }
+  },
+  "interactions": {
+    "comment": {
+      "joinSpawn": { "kind": "soldier", "count": 1 },
+      "memberCommentSpawn": { "kind": "soldier", "count": 1 },
+      "cooldownSec": 6,
+      "points": 1
+    },
+    "like": {
+      "likesPerCharge": 150,
+      "charge": { "kind": "soldier", "count": 6 },
+      "pointsPerLike": 0.1
+    },
+    "gift": {
+      "tiers": [
+        { "minDiamonds": 1, "kind": "knight", "label": "CHEVALIER" },
+        { "minDiamonds": 20, "kind": "giant", "label": "GÉANT" },
+        { "minDiamonds": 100, "special": "meteor", "label": "MÉTÉORE" }
+      ],
+      "maxSpawnPerEvent": 15,
+      "pointsPerDiamond": 10
+    },
+    "follow": { "kind": "soldier", "count": 2, "points": 5 },
+    "share": { "kind": "soldier", "count": 3, "points": 5 },
+    "capturePoints": 5
+  },
+  "safety": {
+    "maxEventAgeSec": 120,
+    "dedupeWindow": 5000,
+    "maxEventsPerSec": 500,
+    "maxNameLength": 24,
+    "maxCommentLength": 200
+  }
+}

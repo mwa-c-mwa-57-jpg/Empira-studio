@@ -1,0 +1,16 @@
+{
+  "name": "empira-conquest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Empira Conquest — jeu de conquête interactif pour TikTok LIVE (prototype)",
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.js --open",
+    "dev": "node server/server.js",
+    "tiktok": "node server/server.js --open --tiktok",
+    "test": "node --test \"tests/*.test.js\"",
+    "test:e2e": "node tests/e2e/smoke.mjs"
+  },
+  "engines": { "node": ">=22" },
+  "license": "UNLICENSED"
+}
