@@ -4,7 +4,7 @@ import { FranceSimulator } from './simulator.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-export function createFrancePanel(container, { sink, admin, getStats, gifts }) {
+export function createFrancePanel(container, { sink, admin, getStats, gifts, voice }) {
   container.innerHTML = `
   <h2>Panneau de test <small>(touche D pour masquer)</small></h2>
   <section>
@@ -39,6 +39,10 @@ export function createFrancePanel(container, { sink, admin, getStats, gifts }) {
     <label>Événements / s <input type="range" data-id="rate" min="1" max="80" value="8"> <span data-id="rateV">8</span></label>
     <label>Taux de cadeaux <input type="range" data-id="giftRate" min="0" max="15" value="2"> <span data-id="giftV">2%</span></label>
     <button data-act="storm">Tempête : 1000 événements</button>
+  </section>
+  <section>
+    <h3>Voix du Général</h3>
+    <div class="row"><button data-act="voice">🔊 Activer la voix</button><small data-id="voiceInfo"></small></div>
   </section>
   <section>
     <h3>Partie</h3>
@@ -78,6 +82,10 @@ export function createFrancePanel(container, { sink, admin, getStats, gifts }) {
     combo: () => sim.gift(me(), gifts.find((g) => g.id === 'rose') || gifts[0], 10),
     dup: () => sim.duplicate(me()),
     storm: () => sim.storm(1000),
+    voice: (btn) => {
+      if (!voice) return;
+      btn.textContent = voice.toggle() ? '🔇 Couper la voix' : '🔊 Activer la voix';
+    },
     restart: () => admin({ action: 'restart' }),
     event: () => admin({ action: 'event' }),
     end: () => admin({ action: 'end' }),
@@ -108,6 +116,13 @@ export function createFrancePanel(container, { sink, admin, getStats, gifts }) {
     sim.crowd.giftRate = Number(e.target.value) / 100;
     $('giftV').textContent = `${e.target.value}%`;
   });
+  if (voice) {
+    $('voiceInfo').textContent = voice.output === 'server' ? ' sortie : haut-parleurs du PC (serveur)' : ' sortie : navigateur';
+    container.querySelector('[data-act="voice"]').textContent = voice.isOn() ? '🔇 Couper la voix' : '🔊 Activer la voix';
+  } else {
+    container.querySelector('[data-act="voice"]').disabled = true;
+    $('voiceInfo').textContent = ' voix désactivée (config ou ?voice=off)';
+  }
   if (getStats) setInterval(() => ($('stats').textContent = getStats()), 500);
   return sim;
 }

@@ -19,7 +19,8 @@ try {
 const shotDir = process.argv[2] ? path.resolve(process.argv[2]) : null;
 if (shotDir) mkdirSync(shotDir, { recursive: true });
 
-const server = createServer({ log: () => {} });
+const spokenByServer = [];
+const server = createServer({ log: () => {}, voice: { say: (t) => (spokenByServer.push(t), true) } });
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch();
@@ -112,6 +113,8 @@ try {
   await fr.click('[data-act="join"]');
   await fr.click('[data-act="combo"]');
   check(await fr.evaluate(() => window.empira.game.teams.get('17')?.soldiers) === 105, 'écrire « 17 » fait entrer la Charente-Maritime en guerre, combo ×10 Rose = +100');
+  await fr.click('[data-act="voice"]');
+  check(await fr.evaluate(() => window.empira.announcer.enabled && window.empira.announcer.lastSaid.size > 0), 'la voix du Général s\'active d\'un clic dans la page de test');
   await fr.check('[data-id="crowd"]');
   await fr.$eval('[data-id="rate"]', (el) => { el.value = '40'; el.dispatchEvent(new Event('input')); });
   await fr.$eval('[data-id="giftRate"]', (el) => { el.value = '8'; el.dispatchEvent(new Event('input')); });
@@ -138,6 +141,8 @@ try {
   await fetch(`${base}/api/inject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: 'relay-fr', type: 'comment', comment: '974', user: { id: 'reu', name: 'Réunion' } }) });
   await obsFr.waitForFunction(() => window.empira.game.teams.get('974')?.active, null, { timeout: 5000 });
   check(true, 'mode OBS France : l\'événement relayé par le serveur fait entrer le 974');
+  for (let i = 0; i < 24 && !spokenByServer.some((t) => /Réunion/.test(t)); i++) await obsFr.waitForTimeout(500);
+  check(spokenByServer.some((t) => t.startsWith('Nouvelle partie')) && spokenByServer.some((t) => /974/.test(t) || /Réunion/.test(t)), `mode OBS : la voix passe par le serveur local (${spokenByServer.length} phrases : « ${spokenByServer.slice(0, 2).join(' » « ')} »)`);
   await obsFr.waitForTimeout(600);
   if (shotDir) await obsFr.screenshot({ path: path.join(shotDir, 'france-4-obs.png') });
 

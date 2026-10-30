@@ -67,6 +67,16 @@ rubrique Diagnostic du panneau de test pour pouvoir être ajouté au catalogue.
 3. Pour piloter ou simuler des événements pendant que la source OBS tourne, ouvrez la régie dans votre navigateur :
    `http://localhost:3000/control.html`. Les événements passent par le serveur local et arrivent dans la page OBS.
 
+## Voix du Général
+
+Le jeu commente les moments forts à voix haute, en français : nouveaux départements, gros cadeaux, duels, révolutions,
+prises de capitale, victoire… Les commentaires des spectateurs ne sont jamais lus.
+- **Dans OBS** : la voix sort automatiquement des haut-parleurs du PC (voix Windows, via le serveur local). Laissez la
+  source « Audio du bureau » active dans OBS.
+- **Dans la page de test** : cliquez sur « 🔊 Activer la voix » dans le panneau.
+
+Détails, réglages et limites : [docs/08-voix.md](docs/08-voix.md).
+
 ## Connexion à un vrai live TikTok (expérimental, non testé en conditions réelles)
 
 Double-cliquez sur `start-tiktok.bat` et saisissez le nom du compte qui est en live. Vous pouvez aussi lancer
@@ -90,7 +100,7 @@ Pour essayer une variante, copiez le fichier (par exemple `config/creatrice-x.js
 ## Tests
 
 ```
-npm test            # 47 tests unitaires et d'intégration (Node, sans dépendance)
+npm test            # 56 tests unitaires et d'intégration (Node, sans dépendance)
 npm run test:e2e    # test navigateur complet (nécessite Playwright, facultatif)
 ```
 
@@ -109,3 +119,4 @@ Le fichier `public/src/france/departements.js` est généré par `node tools/bui
 - [05 — Bilan de validation et plan d'évolution](docs/05-bilan-et-plan.md)
 - [06 — Règles du mode Conquête de France](docs/06-mode-france.md)
 - [07 — Catalogue des cadeaux TikTok (relevé du 28/10/2026)](docs/07-catalogue-cadeaux-tiktok.md)
+- [08 — La voix du Général](docs/08-voix.md)

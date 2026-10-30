@@ -3,14 +3,16 @@
 //  - relays live events to every open game page through Server-Sent Events (/events)
 //  - accepts simulated events and admin commands from the control panel (POST /api/inject, /api/admin)
 //  - optionally connects a real TikTok LIVE source (--tiktok <username>)
+//  - speaks the announcer's phrases with the computer's voices (POST /api/say), for OBS
 //
-// Usage: node server/server.js [--port 3000] [--host 127.0.0.1] [--open] [--tiktok <username>]
+// Usage: node server/server.js [--port 3000] [--host 127.0.0.1] [--open] [--tiktok <username>] [--no-voice]
 
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createVoice } from './voice.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC_DIR = path.join(ROOT, 'public');
@@ -28,13 +30,14 @@ const MIME = {
 };
 
 export function parseArgs(argv) {
-  const args = { port: Number(process.env.PORT) || 3000, host: '127.0.0.1', open: false, tiktok: null };
+  const args = { port: Number(process.env.PORT) || 3000, host: '127.0.0.1', open: false, tiktok: null, voice: true };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--port') args.port = Number(argv[++i]);
     else if (a === '--host') args.host = argv[++i];
     else if (a === '--open') args.open = true;
     else if (a === '--tiktok') args.tiktok = (argv[++i] || '').replace(/^@/, '') || null;
+    else if (a === '--no-voice') args.voice = false;
   }
   return args;
 }
@@ -79,7 +82,7 @@ function readJsonBody(req) {
   });
 }
 
-export function createServer({ log = console.log } = {}) {
+export function createServer({ log = console.log, voice = null } = {}) {
   const clients = new Set();
   let lastStatus = null;
 
@@ -122,6 +125,11 @@ export function createServer({ log = console.log } = {}) {
             if (event && typeof event === 'object') broadcast({ kind: 'event', event: { ...event, source: event.source || 'control' } });
           }
           return send(200, { ok: true, relayed: events.length, clients: clients.size });
+        }
+        if (url.pathname === '/api/say') {
+          if (!voice) return send(503, { error: 'voice disabled' });
+          const spoken = voice.say(typeof body.text === 'string' ? body.text : '');
+          return send(200, { ok: true, spoken });
         }
         if (url.pathname === '/api/admin') {
           const allowed = ['restart', 'pause', 'speed', 'event', 'end'];
@@ -168,7 +176,8 @@ function openBrowser(url) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const server = createServer();
+  const voice = args.voice ? createVoice() : null;
+  const server = createServer({ voice });
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') console.error(`Le port ${args.port} est déjà utilisé. Fermez l'autre fenêtre du jeu ou lancez avec --port 3001.`);
     else console.error(err);

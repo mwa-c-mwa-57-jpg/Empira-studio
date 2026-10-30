@@ -5,8 +5,9 @@ import { createServer, parseArgs } from '../server/server.js';
 
 let server;
 let base;
+const spoken = [];
 before(async () => {
-  server = createServer({ log: () => {} });
+  server = createServer({ log: () => {}, voice: { say: (t) => (spoken.push(t), true) } });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   base = `http://127.0.0.1:${server.address().port}`;
 });
@@ -65,5 +66,12 @@ test('rejects invalid JSON, oversized bodies, unknown admin actions and GET on t
 });
 
 test('parses command line arguments', () => {
-  assert.deepEqual(parseArgs(['--port', '4000', '--open', '--tiktok', '@creator']), { port: 4000, host: '127.0.0.1', open: true, tiktok: 'creator' });
+  assert.deepEqual(parseArgs(['--port', '4000', '--open', '--tiktok', '@creator']), { port: 4000, host: '127.0.0.1', open: true, tiktok: 'creator', voice: true });
+  assert.equal(parseArgs(['--no-voice']).voice, false);
+});
+
+test('passes announcer phrases to the local voice', async () => {
+  const res = await fetch(`${base}/api/say`, { method: 'POST', body: JSON.stringify({ text: 'Victoire du 17 !' }) });
+  assert.equal(res.status, 200);
+  assert.deepEqual(spoken, ['Victoire du 17 !']);
 });
