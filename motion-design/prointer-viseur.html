@@ -133,6 +133,12 @@ const T_R0 = bt(48.25), T_RV = bt(50.75), T_R1 = bt(53), T_LAND = bt(56);  // d�
 const LOCKS = [], ANIMS = [], STATIONS = [];
 function lock(t, x, y, o = {}) { LOCKS.push({ t, x, y, d: o.d ?? .42, kind: o.kind ?? (o.arc ? "arc" : "line"), big: !!o.big, cam: o.cam || null }); }
 let START, LOGO, CUR, TRAIL, FX = [], END = {};
+// la puce : le point où le viseur s'arrête, à gauche du mot, pour qu'il ne cache jamais le texte
+const PG = 115;                                                                    // de la puce au début du texte (le viseur au repos fait ~100 de rayon)
+function dot(g, x, y, tl) { const d = el("g", { opacity: 0 }, g); el("circle", { r: 22, fill: C.cyan }, d);
+  ANIMS.push(t => { const u = prog(t, tl - .04, tl + .3); set(d, { opacity: u > 0 ? 1 : 0, transform: `translate(${x},${y}) scale(${Math.max(.001, E.outBack(u))})` }); }); }
+// décale une ligne centrée pour faire de la place à sa puce ; renvoie l'abscisse de la puce
+function bulleted(ws, dx = (85 + PG) / 2) { ws.forEach(w => w.x += dx); return ws[0].x - ws[0].w / 2 - PG; }
 
 function build() {
   /* fond : grille de points, anneaux de la cible géante, repères */
@@ -145,28 +151,28 @@ function build() {
   /* 1 — l'accroche */
   { const [ax, ay] = ST[0], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
     const l1 = line(g, "VOUS CHERCHEZ", ax, ay - 175, { size: 104, w: 800, max: 900 });
-    const l2 = line(g, [["UN"], ["JOB", C.cyan], ["?"]], ax, ay + 45, { size: 250, max: 920, ghost: true });
+    const l2 = line(g, [["UN"], ["JOB", C.cyan], ["?"]], ax, ay + 45, { size: 250, max: 740, ghost: true }), bx = bulleted(l2);
     ANIMS.push(t => { show(l1[0], t, 0, "rise", { d: .35 }); show(l1[1], t, .12, "rise", { d: .35 }); show(l2[0], t, bt(1.5), "slam"); show(l2[1], t, bt(2), "slam"); show(l2[2], t, bt(2.5), "slam", { from: 2.6 }); });
-    START = { x: l2[1].x, y: l2[1].y + 420 };
-    lock(bt(2), l2[1].x, l2[1].y, { cam: [ax, ay - 40, .95], d: .5 }); }
+    START = { x: bx, y: l2[1].y + 420 }; dot(g, bx, l2[1].y, bt(2));
+    lock(bt(2), bx, l2[1].y, { cam: [ax, ay - 40, .95], d: .5 }); }
 
   /* 2 — un vrai */
   { const [ax, ay] = ST[1], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
-    const l = line(g, "UN VRAI.", ax, ay, { size: 280, max: 920, ghost: true }), v = l[1];
+    const l = line(g, "UN VRAI.", ax, ay, { size: 280, max: 800, ghost: true }), bx = bulleted(l), v = l[1];
     const x0 = v.x - v.w / 2, bar = el("rect", { x: x0, y: ay + v.size * .5, width: v.w, height: 24, rx: 4, fill: C.cyan }, g);
     ANIMS.push(t => { show(l[0], t, bt(4.2), "slam"); show(l[1], t, bt(4.5), "slam"); const s = E.outExpo(prog(t, bt(4.6), bt(4.6) + .35)); set(bar, { opacity: s > 0 ? 1 : 0, transform: `translate(${x0},0) scale(${Math.max(.001, s)},1) translate(${-x0},0)` }); });
-    lock(bt(4.5), v.x, v.y, { cam: [ax, ay, 1], arc: true }); }
+    dot(g, bx, v.y, bt(4.5)); lock(bt(4.5), bx, v.y, { cam: [ax, ay, 1], arc: true }); }
 
   /* 3 — près de chez vous */
   { const [ax, ay] = ST[2], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
     const l1 = line(g, "PRÈS DE", ax, ay - 150, { size: 124, w: 800 });
-    const l2 = line(g, [["CHEZ"], ["VOUS.", C.cyan]], ax, ay + 70, { size: 210, max: 920, ghost: true });
+    const l2 = line(g, [["CHEZ"], ["VOUS.", C.cyan]], ax, ay + 70, { size: 210, max: 800, ghost: true }), bx = bulleted(l2);
     ANIMS.push(t => { show(l1[0], t, bt(6) - .12); show(l1[1], t, bt(6) - .02); show(l2[0], t, bt(6.2), "slam"); show(l2[1], t, bt(6.5), "slam"); });
-    lock(bt(6.5), l2[1].x, l2[1].y, { cam: [ax, ay - 30, 1], arc: true }); }
+    dot(g, bx, l2[1].y, bt(6.5)); lock(bt(6.5), bx, l2[1].y, { cam: [ax, ay - 30, 1], arc: true }); }
 
   /* 4 — chez PRO-INTER, on vise juste (le drop) */
   { const [ax, ay] = ST[3], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
-    const k = line(g, [["CHEZ"], ["PRO-INTER,", C.cyan]], ax, ay - 300, { size: 96, w: 800 });
+    const k = line(g, [["CHEZ"], ["PRO-INTER,", C.cyan]], ax, ay - 300, { size: 96, w: 800, max: 720 }), bx = bulleted(k);
     const l1 = line(g, "ON VISE", ax, ay - 70, { size: 210, max: 920, ghost: true });
     const J = line(g, "JUSTE.", ax, ay + 175, { size: 260, max: 920, ghost: true })[0];
     const tmp = word(g, "JUSTE", 0, 0, { size: J.size }), wNoDot = tmp.w; tmp.g.remove();
@@ -174,20 +180,20 @@ function build() {
     const rings = [0, 1, 2].map(() => el("circle", { cx: px, cy: py, r: 1, fill: "none", stroke: C.cyan, "stroke-width": 8, opacity: 0 }, g));
     ANIMS.push(t => { show(k[0], t, bt(7.7)); show(k[1], t, bt(8), "slam", { from: 2.4 }); show(l1[0], t, bt(9.6), "slam"); show(l1[1], t, bt(9.95), "slam"); show(J, t, bt(10.4), "slam"); hit(J, t, bt(11));
       rings.forEach((c, i) => { const u = prog(t, bt(11) + i * .07, bt(11) + i * .07 + .55); set(c, { r: 10 + E.outExpo(u) * (70 + i * 55), opacity: u > 0 && u < 1 ? (1 - u) : 0, "stroke-width": 9 - 6 * u }); }); });
-    lock(bt(8), k[1].x, k[1].y, { cam: [ax, ay - 60, .95], arc: true, big: true, d: .45 });
+    dot(g, bx, k[1].y, bt(8)); lock(bt(8), bx, k[1].y, { cam: [ax, ay - 60, .95], arc: true, big: true, d: .45 });
     lock(bt(11), px, py, { cam: [ax + 50, ay + 80, 1.08], d: .3 }); }
 
   /* 5 — les contrats */
-  { const [ax, ay] = ST[4], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
-    const kk = line(g, "VOS CONTRATS", ax, ay - 370, { size: 46, w: 700, fill: C.dim, ls: .3, gap: .6 });
+  { const [ax, ay] = ST[4], g = el("g", {}, L.st), PX = ax + 40, bx = PX - 320 - PG + 15; STATIONS.push({ g, first: LOCKS.length });
+    const kk = line(g, "VOS CONTRATS", PX, ay - 370, { size: 46, w: 700, fill: C.dim, ls: .3, gap: .6 });
     const P = ["INTÉRIM", "CDD", "CDI"].map((s, i) => { const y = ay - 170 + i * 205, pg = el("g", { opacity: 0 }, g);
       const r = el("rect", { x: -320, y: -80, width: 640, height: 160, rx: 80, fill: "none", stroke: "#2E3A42", "stroke-width": 6 }, pg);
-      const w = word(pg, s, 0, 0, { size: 104 }); set(w.g, { opacity: 1 }); return { pg, r, w, x: ax, y, tl: bt([13, 15, 17][i]) }; });
+      const w = word(pg, s, 0, 0, { size: 104 }); set(w.g, { opacity: 1 }); dot(g, bx, y, bt([13, 15, 17][i])); return { pg, r, w, x: PX, y, tl: bt([13, 15, 17][i]) }; });
     ANIMS.push(t => { kk.forEach((w, i) => show(w, t, bt(11.9) + i * .06));
       P.forEach((p, i) => { const u = E.outExpo(prog(t, bt(12) - .1 + i * .07, bt(12) + .25 + i * .07)), on = t >= p.tl, pu = 1 + .1 * Math.exp(-(t - p.tl) / .08) * on;
         set(p.pg, { opacity: clamp(u * 3), transform: `translate(${p.x},${p.y}) scale(${Math.max(.001, u) * pu},${pu})` });
         set(p.r, { fill: on ? C.cyan : "none", stroke: on ? C.cyan : "#2E3A42" }); p.w.t.setAttribute("fill", on ? C.dark : C.white); }); });
-    P.forEach((p, i) => lock(p.tl, p.x, p.y, i ? { d: .22 } : { cam: [ax, ay - 50, 1], arc: true })); }
+    P.forEach((p, i) => lock(p.tl, bx, p.y, i ? { d: .22 } : { cam: [ax - 25, ay - 50, 1], arc: true })); }
 
   /* 6 — trois secteurs, deux métiers chacun (un tir par secteur, ses deux métiers s'affichent avec lui) */
   { const [ax, ay] = ST[5], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
@@ -197,7 +203,7 @@ function build() {
     const SEC = [["BÂTIMENT", "helmet", ["ÉLECTRICIEN", "SERRURIER"]], ["INDUSTRIE", "gear", ["SOUDEUR", "TECHNICIEN DE MAINTENANCE"]], ["TERTIAIRE", "work", ["GESTIONNAIRE DE PAIE", "ASSISTANT ADMINISTRATIF"]]];
     const B = SEC.map(([name, ic, jobs], b) => { const yb = ay - 470 + b * 360, tb = TSEC[b];
       const h = line(g, [[name, C.cyan]], ax + 40, yb, { size: 100, ghost: true })[0];
-      const ig = el("g", { opacity: 0 }, g); icon(ic, 0, 0, 84, C.cyan, ig); const ix = h.x - h.w / 2 - 70;
+      const ig = el("g", { opacity: 0 }, g); icon(ic, 0, 0, 84, C.cyan, ig); const ix = h.x - h.w / 2 - PG;
       const J = jobs.map((s, k) => { const y = yb + 118 + k * 92, pg = el("g", { opacity: 0 }, g);
         const w = word(pg, s, 0, 0, { size: 40, w: 800 }); set(w.g, { opacity: 1 });
         const r = el("rect", { x: -w.w / 2 - 45, y: -38, width: w.w + 90, height: 76, rx: 38, fill: "none", stroke: "#2E3A42", "stroke-width": 5 }, pg); pg.insertBefore(r, w.g);
@@ -208,24 +214,24 @@ function build() {
         o.J.forEach((j, k) => { const v = E.outExpo(prog(t, j.tl - .04, j.tl + .3)), on = t >= j.tl, pu = 1 + .1 * Math.exp(-(t - j.tl) / .08) * on;
           set(j.pg, { opacity: clamp(v * 3), transform: `translate(${j.x},${j.y}) scale(${Math.max(.001, v) * pu},${pu})` });
           set(j.r, { fill: on ? C.cyan : "none", stroke: on ? C.cyan : "#2E3A42" }); j.w.t.setAttribute("fill", on ? C.dark : C.white); }); }); });
-    B.forEach((o, b) => lock(o.tl, o.h.x, o.h.y, b ? { cam: [ax, o.yb + 110, 1], d: .3 } : { cam: [ax, o.yb + 110, 1], arc: true }));
+    B.forEach((o, b) => lock(o.tl, o.ix, o.yb, b ? { cam: [ax, o.yb + 110, 1], d: .3 } : { cam: [ax, o.yb + 110, 1], arc: true }));
     // pour ceux qui n'ont pas vu leur métier : d'autres défilent, de plus en plus vite, jusqu'à « + des dizaines d'autres »
     const ROLL = ["CHAUFFAGISTE", "MENUISIER", "MÉTALLIER", "ÉLECTRICIEN", "SOUDEUR", "GESTIONNAIRE DE PAIE", "SERRURIER", "TECHNICIEN DE MAINTENANCE",
       "ASSISTANT ADMINISTRATIF", "MENUISIER", "CHAUFFAGISTE", "MÉTALLIER", "SOUDEUR"];
-    const ry = ay + 700, rt = el("text", { x: ax, y: ry + 45, "font-size": 100, "font-weight": 900, fill: C.white, "text-anchor": "middle", "letter-spacing": -2, opacity: 0 }, g);
-    const RZ = ROLL.map(n => { rt.textContent = n; return Math.min(130, 100 * 800 / rt.getComputedTextLength()); });
+    const ry = ay + 700, X0 = ax - 220, rx = X0 - PG, rt = el("text", { x: X0, y: ry + 45, "font-size": 100, "font-weight": 900, fill: C.white, "letter-spacing": -2, opacity: 0 }, g);
+    const RZ = ROLL.map(n => { rt.textContent = n; return Math.min(120, 100 * 640 / rt.getComputedTextLength()); });
     const rr = Math.pow(.045 / .22, 1 / (ROLL.length - 1)), RD0 = ROLL.map((_, k) => .22 * Math.pow(rr, k)), sc = (bt(TROLL_END) - bt(TROLL)) / RD0.reduce((a, b) => a + b, 0);
     const RD = RD0.map(d => d * sc), RS = RD.map((_, k) => RD.slice(0, k).reduce((a, b) => a + b, 0)), RT = RD.reduce((a, b) => a + b, 0);
-    const more = line(g, [["+", C.cyan], ["DES"], ["DIZAINES"], ["D’AUTRES", C.cyan]], ax, ay + 680, { size: 108, max: 800, ghost: true });
-    const site = line(g, "SUR NOTRE SITE INTERNET", ax, ay + 790, { size: 46, w: 700, fill: "#B8C4CB", ls: .18, gap: .5 });
+    const more = line(g, [["+", C.cyan], ["DES"], ["DIZAINES"], ["D’AUTRES", C.cyan]], X0, ry, { size: 108, max: 640, ghost: true, align: "l" });
+    const site = line(g, "SUR NOTRE SITE INTERNET", X0, ry + 100, { size: 46, w: 700, fill: "#B8C4CB", ls: .18, gap: .5, max: 640, align: "l" });
     const t0r = bt(TROLL);
     ANIMS.push(t => { const a = t - t0r; let k = -1; if (a >= 0) { k = 0; while (k < ROLL.length - 1 && a >= RS[k + 1]) k++; }
       const on = a >= 0 && a < RT, lu = on ? clamp((a - RS[k]) / Math.max(.04, RD[k] * .5)) : 0;
       if (on) { rt.textContent = ROLL[k]; rt.setAttribute("font-size", RZ[k].toFixed(1)); rt.setAttribute("fill", k % 2 ? C.cyan : C.white); rt.setAttribute("y", (ry + RZ[k] * .355).toFixed(1)); }
       set(rt, { opacity: on ? 1 : 0, transform: `translate(0,${((1 - E.outExpo(lu)) * 110).toFixed(1)})` });
       more.forEach((w, i) => show(w, t, t0r + RT + i * .06, "slam")); site.forEach((w, i) => show(w, t, t0r + RT + .25 + i * .05)); });
-    lock(t0r, ax, ry, { cam: [ax, ay + 690, 1.1], d: .3 });
-    lock(t0r + RT, more[3].x, more[3].y, { d: .22 }); }
+    dot(g, rx, ry, t0r); lock(t0r, rx, ry, { cam: [ax - 45, ay + 720, 1.1], d: .3 });
+    lock(t0r + RT, rx, ry, { d: .22 }); }
 
   /* 7 — écoute, trouve, suit */
   { const [ax, ay] = ST[6], g = el("g", {}, L.st), X0 = ax - 330; STATIONS.push({ g, first: LOCKS.length });
@@ -250,7 +256,8 @@ function build() {
     const PINS = [["Esch-sur-Alzette", ...PL.esch, "end"], ["Dudelange", ...PL.dudelange, "middle"], ["Mondorf-les-Bains", ...PL.mondorf, "start"]].map(([n, lon, lat, an], i) => {
       const [x, y] = geo(lon, lat), pg = el("g", { opacity: 0 }, g);
       const pulse = el("circle", { r: 18, fill: "none", stroke: C.cyan, "stroke-width": 5 }, pg); el("circle", { r: 18, fill: C.cyan, stroke: C.white, "stroke-width": 6 }, pg);
-      const lg = el("g", { opacity: 0 }, g), lx = an === "end" ? x - 36 : an === "start" ? x + 36 : x, ly = an === "middle" ? y + 70 : y + 12;
+      const lg = el("g", { opacity: 0 }, g), o = 118, lx = an === "end" ? x - o : an === "start" ? x + o : x, ly = an === "middle" ? y + o + 30 : y + 12;
+      { const [dx, dy] = an === "end" ? [-1, 0] : an === "start" ? [1, 0] : [0, 1]; el("line", { x1: x + dx * 30, y1: y + dy * 30, x2: x + dx * (o - 14), y2: y + dy * (o - 14), stroke: C.cyan, "stroke-width": 3, opacity: .7 }, lg); }
       const lt = el("text", { x: lx, y: ly, "font-size": 36, "font-weight": 700, fill: C.white, "text-anchor": an }, lg); lt.textContent = n;
       return { pg, pulse, lg, x, y, tl: bt([41, 42.5, 44][i]) }; });
     ANIMS.push(t => { const u = prog(t, bt(40.1) - .05, bt(40.1) + .55); set(map, { "stroke-dasharray": `${ML * E.out(u)} ${ML}`, "fill-opacity": E.out(prog(t, bt(40.4), bt(40.4) + .5)), opacity: u > 0 ? 1 : 0 });
@@ -258,17 +265,17 @@ function build() {
       show(k1[0], t, bt(40.95), "slam", { from: 2.6 }); show(k1[1], t, bt(41.3), "slam"); k2.forEach((w, i) => show(w, t, bt(41.6) + i * .05));
       PINS.forEach(p => { const v = prog(t, p.tl, p.tl + .5), q = ((t - p.tl) % .9) / .9; set(p.pg, { opacity: v > 0 ? 1 : 0, transform: `translate(${p.x},${p.y}) scale(${Math.max(.001, E.outElastic(v))})` });
         set(p.pulse, { r: 18 + q * 46, opacity: (1 - q) * .8 }); const lu = E.outExpo(prog(t, p.tl + .06, p.tl + .4)); set(p.lg, { opacity: lu, transform: `translate(0,${(1 - lu) * 26})` }); }); });
-    PINS.forEach((p, i) => lock(p.tl, p.x, p.y, [{ cam: [ax, ay - 120, .8], arc: true }, { cam: [ax, ay + 180, .95], d: .3 }, { d: .3 }][i])); }
+    PINS.forEach((p, i) => lock(p.tl, p.x, p.y, [{ cam: [ax, ay - 120, .8], arc: true }, { cam: [ax + 12, ay + 180, .88], d: .3 }, { d: .3 }][i])); }
 
   /* 9 — plus de 20 ans */
   { const [ax, ay] = ST[8], g = el("g", {}, L.st); STATIONS.push({ g, first: LOCKS.length });
-    const n = word(g, "+20", ax, ay - 70, { size: 390, fill: C.cyan, ghost: true });
-    const l2 = line(g, [["ANS"], ["D’EXPÉRIENCE"]], ax, ay + 205, { size: 96, max: 880 });
+    const n = word(g, "+20", ax, ay - 70, { size: 390, fill: C.cyan, ghost: true }), bx = bulleted([n]);
+    const l2 = line(g, [["ANS"], ["D’EXPÉRIENCE"]], ax, ay + 205, { size: 96, max: 760 }); bulleted(l2);
     ANIMS.push(t => { const v = "+" + Math.round(20 * E.out(prog(t, bt(46), bt(47.5)))); n.t.textContent = v; n.ghost.textContent = v;
       show(n, t, bt(46) - .06, "slam"); const pu = 1 + .12 * Math.exp(-(t - bt(47.5)) / .1) * (t >= bt(47.5)); if (t >= bt(46) + .2) set(n.g, { transform: `translate(${n.x},${n.y}) scale(${pu})` });
       l2.forEach((w, i) => show(w, t, bt(47.5) + i * .08, "slam")); });
-    lock(bt(46), n.x, n.y, { cam: [ax, ay + 40, 1], arc: true });
-    lock(bt(47.5), n.x, n.y, { d: 0, big: true }); }
+    dot(g, bx, n.y, bt(46)); lock(bt(46), bx, n.y, { cam: [ax, ay + 40, 1], arc: true });
+    lock(bt(47.5), bx, n.y, { d: 0, big: true }); }
 
   /* le titre du grand dézoom (au-dessus de la cible) */
   { const y1 = CYR + (330 - 960) / ZR, y2 = CYR + (482 - 960) / ZR;
@@ -284,7 +291,7 @@ function build() {
     LOGO = { parts, k, O: [-LD.w * k / 2 + OL.cx * k, -30 - LD.h * k / 2 + OL.cy * k] };
     END.slogan = line(g, [["EN"], ["PLEIN"], ["DANS"], ["LE", C.cyan], ["MILLE.", C.cyan]], 0, -250, { size: 46, w: 800, fill: C.grey, max: 760 });
     END.contrats = line(g, "INTÉRIM · CDD · CDI", 0, 160, { size: 30, w: 800, fill: C.cyan, ls: .12, gap: .4 });
-    END.villes = line(g, "Dudelange · Esch-sur-Alzette · Mondorf-les-Bains", 0, 214, { size: 25, w: 600, fill: "#6B7780", ls: 0, gap: .3 });
+    END.villes = line(g, "Esch-sur-Alzette · Dudelange · Mondorf-les-Bains", 0, 214, { size: 25, w: 600, fill: "#6B7780", ls: 0, gap: .3 });
     END.top = line(L.top, [["VOTRE"], ["PROCHAIN"], ["JOB,", C.cyan]], 0, -720, { size: 84, max: 900, ghost: true });
     const cta = el("g", { opacity: 0 }, L.top); el("rect", { x: -370, y: -60, width: 740, height: 120, rx: 60, fill: C.cyan }, cta);
     const clip = el("clipPath", { id: "ctaclip" }, cta); el("rect", { x: -370, y: -60, width: 740, height: 120, rx: 60 }, clip);

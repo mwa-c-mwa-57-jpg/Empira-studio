@@ -142,7 +142,7 @@ python3 tools/voiceover.py prointer && python3 tools/voiceover.py prointer --san
 
 # PRO-INTER : motion design 31,9 s « Le viseur » (9:16)
 
-Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La cible du logo devient un **viseur** qui fonce d'info en info. Il « tire » sur chaque mot, en rythme sur une musique électro-pop à 128 BPM, et laisse une traînée cyan :
+Un deuxième concept, plus nerveux, en un seul plan-séquence sans coupure. La cible du logo devient un **viseur** qui fonce d'info en info. Il « tire » sur chaque mot, en rythme sur une musique électro-pop à 128 BPM, en se posant sur une puce à gauche du mot (le texte n'est jamais caché), et laisse une traînée cyan :
 1. « Vous cherchez un job ? Un vrai. Près de chez vous. »
 2. Le drop : « Chez PRO-INTER, on vise juste. »
 3. Intérim, CDD, CDI, puis 3 secteurs, chacun affiché d'un coup avec ses 2 métiers (la voix ne lit que les secteurs : bâtiment : électricien, serrurier ; industrie : soudeur, technicien de maintenance ; tertiaire : gestionnaire de paie, assistant administratif), et tout de suite d'autres métiers qui défilent de plus en plus vite jusqu'à « + des dizaines d'autres sur notre site internet ».

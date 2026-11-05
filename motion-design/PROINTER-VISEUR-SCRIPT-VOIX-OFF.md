@@ -1,6 +1,6 @@
 # PRO-INTER : « Le viseur », script voix off (31,9 s, 9:16)
 
-**Concept** : un seul plan-séquence, sans coupure ni transition. La cible du logo devient un viseur qui fonce d'une info à l'autre et « tire » sur chaque mot, en rythme sur une musique à 128 BPM. Il laisse une traînée cyan. Au grand dézoom, on découvre que tout le parcours dessine une cible géante. Le viseur plonge alors en son centre et devient le « O » du logo.
+**Concept** : un seul plan-séquence, sans coupure ni transition. La cible du logo devient un viseur qui fonce d'une info à l'autre et « tire » sur chaque mot, en rythme sur une musique à 128 BPM. Il se pose toujours sur une puce (un point cyan, une icône ou l'épingle d'une agence) à gauche du mot, pour ne jamais cacher le texte, et laisse une traînée cyan. Au grand dézoom, on découvre que tout le parcours dessine une cible géante. Le viseur plonge alors en son centre et devient le « O » du logo.
 
 **Ton** : nerveux, rapide, phrases courtes. On **vouvoie**, comme sur prointer.lu.
 **ElevenLabs** : voix française énergique (par exemple Benjamin), modèle Multilingual v2, Stability ≈ 35 %, Style ≈ 45 %, vitesse 1,1. La voix dure environ **31 secondes**.
@@ -44,7 +44,7 @@ La voix assemblée (prise v2 + les phrases des secteurs) dure 35,1 s. `python3 t
 
 | Parole | Image |
 |---|---|
-| 0,4 s « Vous cherchez un job ? » | « UN JOB ? » claque, le viseur tire sur « JOB » |
+| 0,4 s « Vous cherchez un job ? » | « UN JOB ? » claque, le viseur se pose sur sa puce |
 | 3,55 s « Chez PRO-INTER, on vise juste. » | le drop sur « PRO-INTER » |
 | 6,0 s « Intérim. CDD. CDI. » | un tir sur chaque contrat |
 | 8,7 s « Bâtiment. » | tir sur BÂTIMENT, ÉLECTRICIEN et SERRURIER s'affichent avec lui |
