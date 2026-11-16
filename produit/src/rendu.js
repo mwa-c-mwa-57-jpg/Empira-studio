@@ -8,14 +8,15 @@ export { dessinerLogo };
 
 export const LARGEUR = 1080;
 export const HAUTEUR = 1920;
-// Zone de la carte (sous l'interface, au-dessus du fil des actions)
-const ZONE = { haut: 884, bas: 1676 };
-const ECHELLE = 0.8;
-const X0 = 175;
-const Y0 = 892;
-const OUTREMER = { '971': 900, '972': 1002, '973': 1104, '974': 1206, '976': 1308 };
-const CASE = { x: 18, l: 128, h: 94 };
-const IDF = { x: 160, y: 892, l: 196, h: 112, codes: ['75', '77', '78', '91', '92', '93', '94', '95'] };
+// Zone de la carte : sous l'interface et AU-DESSUS des commentaires de TikTok (qui couvrent le bas de l'écran,
+// à partir d'environ 65 % de la hauteur). Colonne de gauche : outre-mer ; colonne de droite : logo, roi, événements.
+const ZONE = { haut: 592, bas: 1242 };
+const ECHELLE = 0.665;
+const X0 = 150;
+const Y0 = 598;
+const OUTREMER = { '971': 600, '972': 702, '973': 804, '974': 906, '976': 1008 };
+const CASE = { x: 14, l: 128, h: 94 };
+const IDF = { x: 150, y: 598, l: 180, h: 108, codes: ['75', '77', '78', '91', '92', '93', '94', '95'] };
 const PARTICULES_MAX = 700;
 const POLICE = "'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
 const EMOJI = "'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif";
@@ -429,7 +430,7 @@ export class Rendu {
     this.#etiquettes(); // les numéros et le top 3 restent lisibles par-dessus les unités
     this.#effets();
     ctx.restore();
-    this.#logo(1062, 900, 'droite');
+    this.#logo(1060, 604, 'droite');
     if (this.flash > 0) {
       ctx.fillStyle = `rgba(255,250,235,${this.flash})`;
       ctx.fillRect(0, ZONE.haut, LARGEUR, ZONE.bas - ZONE.haut);

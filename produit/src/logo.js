@@ -1,5 +1,5 @@
 // Logo Empira : « A » doré en chevron et « EMPIRA AGENCY », ou l'image images/logo-empira.png si elle est fournie.
-// Il est toujours affiché (en haut à droite de la carte et sous le podium) et ne peut pas être masqué.
+// Il est toujours affiché (en haut de la colonne de droite, à côté de la carte, et sous le podium) et ne peut pas être masqué.
 
 const POLICE = "'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
 
