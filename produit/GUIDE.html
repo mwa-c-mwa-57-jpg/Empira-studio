@@ -25,7 +25,7 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
 <ul>
   <li>Un PC Windows 10 ou 11.</li>
   <li><b>TikTok LIVE Studio</b> (pour diffuser le live).</li>
-  <li><b>TikFinity</b>, connecté à ton live, avec l’<b>API WebSocket</b> activée (port 21213). C’est TikFinity qui transmet au jeu les likes, commentaires, partages, abonnements et cadeaux.</li>
+  <li>Une connexion Internet. <b>Rien d’autre à installer</b> : le jeu se connecte lui-même à ton live (pas besoin de TikFinity) et tout se règle depuis une seule fenêtre.</li>
 </ul>
 
 <h2>Installation</h2>
@@ -35,8 +35,8 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
     Si Windows affiche « Windows a protégé votre ordinateur » : clique sur <b>Informations complémentaires</b>, puis sur <b>Exécuter quand même</b>.</li>
   <li>Une fenêtre noire s’ouvre (le serveur du jeu, à laisser ouverte pendant le live), puis la <b>page de démarrage</b> dans ton navigateur.</li>
   <li>Entre ta <b>clé de licence</b> (reçue par e-mail après l’achat) et clique sur <b>Activer</b>. Une clé fonctionne sur 2 PC.</li>
-  <li>Entre ton <b>pseudo TikTok</b> : tes commandes dans le tchat (<code>!fin</code>, <code>!vague assaut</code>…) seront acceptées, comme celles de tes modérateurs.</li>
-  <li>Vérifie que TikFinity, la voix et la musique sont au vert, choisis tes couleurs et ta voix (homme ou femme).</li>
+  <li>Lance ton live, puis entre ton <b>pseudo TikTok</b> et clique sur <b>Connecter</b>. Le voyant passe au vert : « Connecté au live de @ton_pseudo ». Le pseudo est retenu : aux lancements suivants, la connexion se fait toute seule.</li>
+  <li>Vérifie que la voix et la musique sont au vert, choisis tes couleurs et ta voix (homme ou femme).</li>
   <li>Clique sur <b>Copier l’adresse</b>.</li>
 </ol>
 
@@ -51,7 +51,11 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
 <h2>Musique</h2>
 <p>Dépose des fichiers <b>MP3</b> dans le dossier <code>musique</code>. Ils sont joués en boucle, dans un ordre aléatoire, et le volume baisse quand la voix parle. N’utilise que des musiques dont tu as les droits de diffusion.</p>
 
+<h2>La régie (dans la fenêtre de pilotage)</h2>
+<p>Pendant le live, garde la page de démarrage ouverte sur ton PC : la section <b>Régie</b> pilote le jeu par des boutons, sans rien écrire dans le tchat. Terminer la partie, changer la durée, lancer une vague ou un événement, faire parler la voix, épingler un message, couper la musique ou les bruitages, remettre à zéro…</p>
+
 <h2>Commandes (toi ou tes modérateurs, dans le tchat)</h2>
+<p>Les mêmes actions existent aussi en commandes dans le tchat. Elles ne sont acceptées que de toi (le pseudo connecté) et de tes modérateurs.</p>
 <table>
   <tr><td><code>!fin</code></td><td>termine la partie et affiche le podium</td></tr>
   <tr><td><code>!duree 10</code></td><td>durée de la partie en minutes</td></tr>
@@ -70,10 +74,13 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
 
 <h2>En cas de problème</h2>
 <ul>
-  <li><b>« TikFinity déconnecté »</b> sur l’écran : ouvre TikFinity, connecte ton live et vérifie que l’API WebSocket est activée. Le jeu se reconnecte tout seul toutes les 3 secondes.</li>
+  <li><b>« n’est pas en live »</b> : lance d’abord ton live sur TikTok, le jeu réessaie tout seul. Vérifie aussi l’orthographe du pseudo.</li>
+  <li><b>« TikTok : connexion perdue — le jeu continue »</b> sur l’écran : le jeu se reconnecte tout seul. La partie n’est pas interrompue.</li>
+  <li><b>Connexions refusées ou limitées</b> : le jeu passe par un service gratuit (Euler Stream) qui peut limiter le nombre de connexions. Tu peux y créer une clé gratuite et la coller dans « Options avancées ».</li>
+  <li><b>Plan B</b> : si la connexion directe ne marche pas un jour (TikTok change parfois son fonctionnement), coche « Utiliser TikFinity à la place » dans les options avancées, avec TikFinity ouvert et son API WebSocket activée.</li>
   <li><b>Pas de voix</b> : installe une voix française dans Paramètres Windows → Heure et langue → Voix, puis relance le jeu.</li>
   <li><b>« Licence non activée »</b> : ouvre la page de démarrage (LANCER LE JEU) et entre ta clé. Une connexion Internet est nécessaire au moins tous les 5 jours.</li>
-  <li><b>Port occupé</b> : le jeu est peut-être déjà lancé ; ferme l’autre fenêtre noire et relance.</li>
+  <li><b>Port occupé</b> : le jeu est peut-être déjà lancé ; la page de démarrage s’ouvre alors directement. Sinon, ferme le programme qui utilise le port 8911.</li>
 </ul>
 </main>
 </body>

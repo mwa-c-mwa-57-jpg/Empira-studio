@@ -1,5 +1,6 @@
-// Événements du live reçus de l'application TikFinity (API WebSocket, format TikTok-Live-Connector).
-// TikFinity tourne sur le PC du créateur ; le jeu s'y connecte en local, avec reconnexion toutes les 3 s.
+// Événements du live au format TikTok-Live-Connector « à plat » ({ event, data }).
+// Ils viennent du serveur du jeu (connexion directe à TikTok, par défaut) ou, en secours, de l'application TikFinity.
+// Le jeu se connecte en WebSocket local, avec reconnexion toutes les 3 s.
 
 import { normalizeKeyword } from '../../public/src/core/events.js';
 

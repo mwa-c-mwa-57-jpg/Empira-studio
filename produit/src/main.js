@@ -1,4 +1,4 @@
-// Point d'entrée du jeu : TikFinity → garde-fous → moteur → rendu, interface, voix, sons.
+// Point d'entrée du jeu : live TikTok (via le serveur du jeu, ou TikFinity) → garde-fous → moteur → rendu, interface, voix, sons.
 
 import { Partie } from './game.js';
 import { Theme, lireReglages } from './theme.js';
@@ -83,14 +83,41 @@ async function demarrer() {
     }
   };
 
+  // état des connexions, résumé dans un bandeau discret
+  const connexion = { canal: 'connexion', tiktok: null };
+  const majEtat = () => {
+    if (reglages.source === 'tikfinity') {
+      hud.afficherEtat(connexion.canal === 'connecte' ? null : connexion.canal === 'connexion' ? 'Connexion à TikFinity…' : 'TikFinity déconnecté — reconnexion automatique…');
+      return;
+    }
+    if (connexion.canal !== 'connecte') hud.afficherEtat(connexion.canal === 'connexion' ? 'Connexion au serveur du jeu…' : 'Serveur du jeu injoignable — relancez « LANCER LE JEU »');
+    else if (connexion.tiktok && connexion.tiktok.etat !== 'connecte') hud.afficherEtat(`TikTok : ${connexion.tiktok.detail} — le jeu continue`);
+    else hud.afficherEtat(null);
+  };
+
   const recevoir = (donnees) => {
-    const r = convertirTikFinity(donnees, { hote: reglages.hote });
+    let msg = donnees;
+    if (typeof msg === 'string') {
+      try {
+        msg = JSON.parse(msg);
+      } catch {
+        return;
+      }
+    }
+    // messages du serveur du jeu : commandes de la régie et état de la connexion TikTok
+    if (msg && msg.commande && reglages.source === 'direct') return executer(msg.commande);
+    if (msg && msg.statut) {
+      connexion.tiktok = msg.statut;
+      return majEtat();
+    }
+    const r = convertirTikFinity(msg, { hote: reglages.hote });
     if (!r) return;
     if (r.commande) return executer(r.commande);
     const g = garde.check(r.evenement);
     if (g.ok) partie.traiter(g.event);
   };
-  connecterTikFinity({ url: reglages.tikfinity || URL_TIKFINITY, surMessage: recevoir, surEtat: (e) => hud.etatTikFinity(e) });
+  const urlEvenements = reglages.source === 'tikfinity' ? reglages.tikfinity || URL_TIKFINITY : `ws://${location.host}/evenements`;
+  connecterTikFinity({ url: urlEvenements, surMessage: recevoir, surEtat: (e) => ((connexion.canal = e), majEtat()) });
 
   // sons associés aux événements du moteur
   const sons = (evs) => {

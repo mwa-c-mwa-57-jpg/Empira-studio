@@ -2,13 +2,14 @@
 
 ## ★ La Guerre des Départements — version vendue (nouveau)
 
-Reconstruite d'après le cahier des charges Empira : TikFinity, TikTok LIVE Studio, engins de guerre, vagues,
+Reconstruite d'après le cahier des charges Empira : connexion directe au live TikTok (plus besoin de TikFinity),
+tout piloté depuis une seule fenêtre (connexion, régie, couleurs, voix), TikTok LIVE Studio, engins de guerre, vagues,
 événements, voix homme ou femme, couleurs personnalisables et licence Lemon Squeezy. Code dans `produit/`.
 
 ```
-npm install                 # une fois (esbuild, pour l'assemblage)
-npm run build:produit       # → dist/La-Guerre-des-Departements/ (dossier à livrer)
-npm run dev:produit         # jeu de dev sur http://localhost:8911 + faux TikFinity (POST /regie pour simuler)
+npm install                 # une fois (esbuild + tiktok-live-connector 2.4.0)
+npm run build:produit       # → dist/La-Guerre-des-Departements/ (dossier à livrer, avec node.exe Windows)
+npm run dev:produit         # serveur de dev sur http://localhost:8911 avec faux live (POST /test/tiktok pour simuler)
 npm run test:produit        # test navigateur complet
 ```
 

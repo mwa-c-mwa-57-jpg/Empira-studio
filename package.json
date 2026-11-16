@@ -12,14 +12,15 @@
     "test:e2e": "node tests/e2e/smoke.mjs",
     "build:map": "node tools/build-france-map.mjs",
     "build:produit": "node tools/build-produit.mjs",
-    "test:produit": "node tools/build-produit.mjs && node tests/e2e/produit.mjs",
-    "dev:produit": "node tools/build-produit.mjs && node tools/serveur-produit.mjs dist/dev"
+    "test:produit": "node tools/build-produit.mjs --sans-node && node tests/e2e/produit.mjs",
+    "dev:produit": "node tools/build-produit.mjs --sans-node && EMPIRA_TEST=1 node dist/dev/outils/serveur.cjs"
   },
   "engines": {
     "node": ">=22"
   },
   "license": "UNLICENSED",
   "devDependencies": {
-    "esbuild": "^0.24.2"
+    "esbuild": "^0.24.2",
+    "tiktok-live-connector": "2.4.0"
   }
 }

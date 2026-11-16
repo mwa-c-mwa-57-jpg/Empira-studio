@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Démarrer — La Guerre des Départements</title>
 <style>
+[hidden] { display: none !important; }
 :root { color-scheme: dark; --nuit: #0c0d14; --carte: #151722; --trait: #2a2c3c; --texte: #ecebf2; --doux: #a3a3b8; --or: #d9a84e; --or-clair: #f0cd7a; --ok: #3fcf8e; --ko: #ff6b5b; }
 * { box-sizing: border-box; }
 html { background: var(--nuit); }
@@ -36,6 +37,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .palette i { width: 22px; height: 22px; border-radius: 6px; }
 #msgLicence, #copie { font-weight: 700; }
 a { color: var(--or-clair); }
+details { margin-top: 10px; } summary { cursor: pointer; color: var(--or-clair); font-weight: 700; }
+select { width: auto; }
 .info { color: var(--doux); font-size: 14px; margin: 6px 0 0; }
 </style>
 </head>
@@ -54,16 +57,24 @@ a { color: var(--or-clair); }
     <p id="msgLicence" role="status"></p>
   </section>
 
-  <section>
-    <h2>Ton compte TikTok</h2>
-    <label for="hote">Ton pseudo TikTok (sans @) — tes commandes !fin, !vague… seront acceptées</label>
-    <input type="text" id="hote" autocomplete="off" spellcheck="false" placeholder="ton_pseudo">
+  <section id="blocTikTok">
+    <h2>Connexion au live TikTok</h2>
+    <label for="pseudo">Ton pseudo TikTok (sans @) — le jeu se connecte directement à ton live, sans autre logiciel</label>
+    <div class="ligne"><input type="text" id="pseudo" autocomplete="off" spellcheck="false" placeholder="ton_pseudo" style="flex:1"><button id="connecter" type="button">Connecter</button><button class="discret" id="deconnecter" type="button">Déconnecter</button></div>
+    <div class="etat" style="margin-top:12px"><b id="iLive" class="attente">…</b><div><span id="tLive">Live TikTok</span><small id="sLive">Pas encore connecté.</small></div></div>
+    <p class="info">Tu dois être <b>en live</b> pour que la connexion réussisse. Le pseudo est retenu : au prochain lancement, la connexion se fait toute seule. Tes commandes dans le tchat (!fin, !vague…) et celles de tes modérateurs sont acceptées.</p>
+    <details>
+      <summary>Options avancées</summary>
+      <label for="euler">Clé Euler Stream (facultative, en cas de limite de connexions)</label>
+      <input type="text" id="euler" autocomplete="off" spellcheck="false" placeholder="laisser vide">
+      <label class="choix" style="margin-top:10px"><span><input type="checkbox" id="tikfinity"> Utiliser TikFinity à la place (secours, si la connexion directe ne marche plus)</span></label>
+    </details>
   </section>
 
   <section>
     <h2>Vérifications</h2>
     <div class="etats">
-      <div class="etat"><b id="iTik" class="attente">…</b><div><span id="tTik">TikFinity</span><small id="sTik">Connexion à ws://127.0.0.1:21213…</small></div></div>
+      <div class="etat" id="ligneTik" hidden><b id="iTik" class="attente">…</b><div><span id="tTik">TikFinity</span><small id="sTik"></small></div></div>
       <div class="etat"><b id="iVoix" class="attente">…</b><div><span id="tVoix">Voix Windows</span><small id="sVoix"></small></div></div>
       <div class="etat"><b id="iMus" class="attente">…</b><div><span id="tMus">Musique</span><small id="sMus"></small></div></div>
     </div>
@@ -107,6 +118,25 @@ a { color: var(--or-clair); }
     </div>
     <label for="nomVoix">Voix Windows</label>
     <div class="ligne"><select id="nomVoix" style="flex:1"></select><button class="discret" id="tester" type="button">Tester</button></div>
+  </section>
+
+  <section id="regie">
+    <h2>Régie (pendant le live)</h2>
+    <p class="info" style="margin:0 0 10px">Ces boutons pilotent le jeu affiché dans LIVE Studio. <span id="retourRegie" class="ok" role="status"></span></p>
+    <div class="ligne"><button type="button" data-cmd="fin">Terminer la partie</button>
+      <select id="duree" aria-label="Durée de la partie"><option value="5">5 min</option><option value="10">10 min</option><option value="15" selected>15 min</option><option value="20">20 min</option><option value="30">30 min</option></select><button class="discret" type="button" id="btnDuree">Changer la durée</button></div>
+    <label>Vagues</label>
+    <div class="ligne"><button class="discret" type="button" data-cmd="vague" data-arg="doublon">Doublon</button><button class="discret" type="button" data-cmd="vague" data-arg="pluie">Pluie de parachutistes</button><button class="discret" type="button" data-cmd="vague" data-arg="triple">Triplé</button><button class="discret" type="button" data-cmd="vague" data-arg="assaut">Assaut final</button></div>
+    <label>Événements</label>
+    <div class="ligne"><button class="discret" type="button" data-cmd="revolution">Révolution</button><button class="discret" type="button" data-cmd="duel">Duel</button><button class="discret" type="button" data-cmd="prime">Tête mise à prix</button><button class="discret" type="button" data-cmd="invasion">Invasion</button><button class="discret" type="button" data-cmd="mission">Mission</button><button class="discret" type="button" data-cmd="avion">Largage (avion)</button></div>
+    <label>Ambiance</label>
+    <div class="ligne"><button class="discret" type="button" data-cmd="suivant">Musique suivante</button><button class="discret" type="button" data-cmd="musique">Musique on/off</button><button class="discret" type="button" data-cmd="son">Bruitages on/off</button><button class="discret" type="button" data-cmd="zoom">Zoom on/off</button><button class="discret" type="button" data-cmd="cris">Cris de victoire</button><button class="discret" type="button" data-cmd="guerre">Tambours</button></div>
+    <label for="texteDire">Faire parler la voix</label>
+    <div class="ligne"><input type="text" id="texteDire" maxlength="200" placeholder="Bienvenue à tous dans la guerre !" style="flex:1"><button class="discret" type="button" id="btnDire">Dire</button></div>
+    <label for="texteFixe">Message épinglé dans le bandeau du Général</label>
+    <div class="ligne"><input type="text" id="texteFixe" maxlength="120" placeholder="Abonnez-vous pour soutenir votre département !" style="flex:1"><button class="discret" type="button" id="btnFixe">Épingler</button><button class="discret" type="button" data-cmd="efface">Retirer</button></div>
+    <label>Remise à zéro</label>
+    <div class="ligne"><button class="discret" type="button" id="btnMembres">Tout le monde oublie son département</button><button class="discret" type="button" id="btnReset">Tout remettre à zéro</button></div>
   </section>
 
   <section>

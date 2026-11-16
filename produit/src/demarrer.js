@@ -1,4 +1,4 @@
-// Page de démarrage : licence, pseudo de l'hôte, vérifications, couleurs, voix, adresse pour LIVE Studio.
+// Fenêtre de pilotage : licence, connexion directe au live TikTok, vérifications, couleurs, voix, régie, adresse pour LIVE Studio.
 
 import { PALETTE } from './config.js';
 import { dessinerLogo } from './logo.js';
@@ -71,9 +71,54 @@ async function activer() {
   await verifierLicence();
 }
 
+// ------------------------------------------------------------------ connexion directe au live TikTok
+
+const ETATS_LIVE = { connecte: 'ok', erreur: 'ko', deconnecte: 'ko', reconnexion: 'attente', connexion: 'attente' };
+async function etatLive() {
+  try {
+    const e = await (await fetch('/tiktok/etat', { cache: 'no-store' })).json();
+    marquer('iLive', 'sLive', e.detail || '', ETATS_LIVE[e.etat] || 'attente');
+  } catch {
+    marquer('iLive', 'sLive', 'Le serveur du jeu ne répond pas : relancez « LANCER LE JEU ».', 'ko');
+  }
+}
+
+async function connecter() {
+  const pseudo = $('pseudo').value.trim().replace(/^@/, '');
+  if (!pseudo) return $('pseudo').focus();
+  marquer('iLive', 'sLive', `Connexion au live de @${pseudo}…`, 'attente');
+  try {
+    await fetch('/tiktok/connecter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pseudo, cleEuler: $('euler').value.trim() }) });
+  } catch {
+    /* l'état affiché dira ce qu'il en est */
+  }
+  majAdresse();
+  etatLive();
+}
+
+async function deconnecter() {
+  await fetch('/tiktok/deconnecter', { method: 'POST' }).catch(() => {});
+  etatLive();
+}
+
+async function commande(nom, arg = '') {
+  try {
+    const r = await (await fetch('/commande', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom, arg }) })).json();
+    $('retourRegie').textContent = r.ok ? (r.pages ? `Envoyé au jeu (${r.pages} écran${r.pages > 1 ? 's' : ''}).` : 'Envoyé, mais aucun écran de jeu n’est ouvert.') : 'Commande refusée.';
+    $('retourRegie').className = r.ok && r.pages ? 'ok' : 'ko';
+  } catch {
+    $('retourRegie').textContent = 'Le serveur du jeu ne répond pas.';
+    $('retourRegie').className = 'ko';
+  }
+  clearTimeout(commande.minuteur);
+  commande.minuteur = setTimeout(() => ($('retourRegie').textContent = ''), 3000);
+}
+
 // ------------------------------------------------------------------ vérifications
 
 function verifierTikFinity() {
+  $('ligneTik').hidden = !$('tikfinity').checked;
+  if (!$('tikfinity').checked) return Promise.resolve(true);
   marquer('iTik', 'sTik', `Connexion à ${URL_TIKFINITY}…`, 'attente');
   return new Promise((resolve) => {
     let fini = false;
@@ -141,8 +186,9 @@ async function verifierMusique() {
 
 function majAdresse() {
   const p = new URLSearchParams();
-  const hote = $('hote').value.trim().replace(/^@/, '');
+  const hote = $('pseudo').value.trim().replace(/^@/, '');
   if (hote) p.set('hote', hote);
+  if ($('tikfinity').checked) p.set('source', 'tikfinity');
   const couleurs = valeur('couleurs');
   p.set('couleurs', couleurs);
   if (couleurs === 'fixe') {
@@ -164,7 +210,7 @@ function majAdresse() {
     i.style.background = c;
     return i;
   }));
-  Object.assign(memoire, { hote, couleurs, palette: $('palette').value, unites: valeur('unites'), contours: valeur('contours'), voix: valeur('voix'), nomVoix: $('nomVoix').value });
+  Object.assign(memoire, { tikfinity: $('tikfinity').checked, couleurs, palette: $('palette').value, unites: valeur('unites'), contours: valeur('contours'), voix: valeur('voix'), nomVoix: $('nomVoix').value });
   memoriser();
 }
 
@@ -192,7 +238,11 @@ function init() {
   const g = $('logo').getContext('2d');
   g.scale(2, 2);
   dessinerLogo(g, 0, 0, 'gauche');
-  $('hote').value = memoire.hote || '';
+  $('tikfinity').checked = Boolean(memoire.tikfinity);
+  fetch('/reglages', { cache: 'no-store' }).then((r) => r.json()).then((r) => {
+    if (r.pseudo && !$('pseudo').value) $('pseudo').value = r.pseudo;
+    majAdresse();
+  }).catch(() => {});
   $('palette').value = memoire.palette || '';
   cocher('couleurs', memoire.couleurs);
   cocher('unites', memoire.unites);
@@ -202,6 +252,18 @@ function init() {
   for (const el of document.querySelectorAll('input[name="voix"]')) el.addEventListener('change', remplirVoix);
   $('nomVoix').addEventListener('change', majAdresse);
   $('activer').addEventListener('click', activer);
+  $('connecter').addEventListener('click', connecter);
+  $('deconnecter').addEventListener('click', deconnecter);
+  $('pseudo').addEventListener('keydown', (e) => e.key === 'Enter' && connecter());
+  $('tikfinity').addEventListener('change', () => verifierTikFinity());
+  for (const b of document.querySelectorAll('button[data-cmd]')) b.addEventListener('click', () => commande(b.dataset.cmd, b.dataset.arg || ''));
+  $('btnDuree').addEventListener('click', () => commande('duree', $('duree').value));
+  $('btnDire').addEventListener('click', () => $('texteDire').value.trim() && commande('dire', $('texteDire').value.trim()));
+  $('btnFixe').addEventListener('click', () => $('texteFixe').value.trim() && commande('fixe', $('texteFixe').value.trim()));
+  $('btnMembres').addEventListener('click', () => confirm('Tout le monde oublie son département ?') && commande('membres'));
+  $('btnReset').addEventListener('click', () => confirm('Tout remettre à zéro (partie, membres) ?') && commande('reset'));
+  etatLive();
+  setInterval(etatLive, 2000);
   $('copier').addEventListener('click', copier);
   $('reverifier').addEventListener('click', () => Promise.all([verifierTikFinity(), verifierVoix(), verifierMusique()]));
   $('tester').addEventListener('click', () => fetch(`/parler?t=${encodeURIComponent('Que la guerre commence ! Écris le numéro de ton département !')}&voix=${encodeURIComponent($('nomVoix').value)}`).catch(() => {}));

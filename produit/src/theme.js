@@ -19,6 +19,8 @@ export function lireReglages(search = '') {
     nomVoix: (p.get('nomvoix') || '').slice(0, 80),
     hote: (p.get('hote') || '').replace(/^@/, '').slice(0, 40),
     tikfinity: /^ws:\/\/(127\.0\.0\.1|localhost):\d{2,5}$/.test(p.get('tikfinity') || '') ? p.get('tikfinity') : null,
+    // source des événements : connexion directe par le serveur du jeu (par défaut) ou TikFinity (secours)
+    source: p.get('source') === 'tikfinity' || p.get('tikfinity') ? 'tikfinity' : 'direct',
   };
 }
 

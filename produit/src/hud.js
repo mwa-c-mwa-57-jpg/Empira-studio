@@ -443,8 +443,9 @@ export class Interface {
     d.classList.add('montre');
   }
 
-  etatTikFinity(etat) {
-    this.eEtat.textContent = etat === 'connecte' ? '' : etat === 'connexion' ? 'Connexion à TikFinity…' : 'TikFinity déconnecté — reconnexion automatique…';
-    this.eEtat.classList.toggle('montre', etat !== 'connecte');
+  /** Bandeau d'état en bas de la carte : affiché seulement quand quelque chose ne va pas. */
+  afficherEtat(texte) {
+    this.eEtat.textContent = texte || '';
+    this.eEtat.classList.toggle('montre', Boolean(texte));
   }
 }
