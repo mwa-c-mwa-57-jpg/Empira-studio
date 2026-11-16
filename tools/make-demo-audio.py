@@ -46,7 +46,20 @@ with wave.open(str(demo / 'voice.wav'), 'wb') as w:
 print('\n'.join(log))
 
 video_filter = 'fps=30'
-if font:
+legendes = demo / 'legendes.json'
+if font and legendes.exists():
+    # légendes à l'écran (démo Empira Conquest) : [{de, a, texte, bas?}], une par fichier texte pour l'échapper
+    for i, l in enumerate(json.loads(legendes.read_text(encoding='utf-8'))):
+        f = demo / f'legende-{i}.txt'
+        f.write_text(l['texte'], encoding='utf-8')
+        y = 'h-150' if l.get('bas') else str(l.get('y', 52))
+        taille = l.get('taille', 30)
+        video_filter += (f",drawtext=fontfile='{font}':textfile='{f}':fontcolor=0xF6DC8F:fontsize={taille}:"
+                         f"box=1:boxcolor=0x0C0D14@0.86:boxborderw=18:x=(w-text_w)/2:y={y}:enable='between(t,{l['de']},{l['a']})'")
+    (demo / 'caption.txt').write_text('Démo — live simulé', encoding='utf-8')
+    video_filter += (f",drawtext=fontfile='{font}':textfile='{demo / 'caption.txt'}':fontcolor=white@0.8:fontsize=18:"
+                     "x=w-text_w-14:y=h-30")
+elif font:
     # the caption goes through a file: commas and colons would otherwise break the filter graph
     (demo / 'caption.txt').write_text('DÉMO — événements simulés, sans connexion TikTok', encoding='utf-8')
     video_filter += (f",drawtext=fontfile='{font}':textfile='{demo / 'caption.txt'}':fontcolor=white:fontsize=22:"
@@ -56,6 +69,6 @@ subprocess.run([
     '-filter_complex', f'[0:v]{video_filter}[v];[1:a]apad,volume=1.6[a]', '-map', '[v]', '-map', '[a]',
     '-c:v', 'libx264', '-preset', 'medium', '-crf', '21', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k',
     # explicit duration (apad + -shortest can hang); DEMO_DURATION lets the video stop after a sentence
-    '-t', os.environ.get('DEMO_DURATION', '85.8'), '-movflags', '+faststart', str(demo / 'empira-demo.mp4'),
+    '-t', os.environ.get('DEMO_DURATION', '85.8'), '-movflags', '+faststart', str(demo / os.environ.get('DEMO_OUTPUT', 'empira-demo.mp4')),
 ], check=True)
-print('→', demo / 'empira-demo.mp4')
+print('→', demo / os.environ.get('DEMO_OUTPUT', 'empira-demo.mp4'))
