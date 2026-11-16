@@ -215,6 +215,7 @@ function init() {
   fetch('/reglages', { cache: 'no-store' }).then((r) => r.json()).then((r) => {
     if (r.pseudo && !$('pseudo').value) $('pseudo').value = r.pseudo;
     if (r.source) $('source').value = r.source;
+    $('euler').placeholder = r.euler ? 'ta clé est enregistrée (écris « aucune » pour l’effacer)' : r.eulerInclus ? 'facultatif : une clé Empira est déjà incluse' : 'laisser vide';
     majAdresse();
   }).catch(() => {});
   $('palette').value = memoire.palette || '';

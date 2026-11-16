@@ -37,6 +37,9 @@ async function secretVente() {
   return neuf;
 }
 const SECRET = await secretVente();
+// clé API Euler Stream d'Empira (facultative, jamais dans git) : incluse, protégée, dans la version vendue pour que les
+// acheteurs ne dépendent pas de la limite gratuite. Source : EMPIRA_CLE_EULER, sinon produit/.cle-euler.
+const CLE_EULER = (process.env.EMPIRA_CLE_EULER || (await readFile(path.join(RACINE, 'produit/.cle-euler'), 'utf8').catch(() => ''))).trim();
 
 // Protection du code : réglages de l'obfuscateur (javascript-obfuscator, licence BSD-2 ; il n'est pas livré)
 const PROTECTION = {
@@ -120,7 +123,7 @@ async function assembler(dossier, { vente, essai = false, node = vente && !essai
   const storeId = essai ? '1' : String(VENTE.storeId || '');
   const produitId = essai ? '1' : String(VENTE.produitId || '');
   // la clé du fichier de licence doit rester la même d'une mise à jour à l'autre (sinon réactivation)
-  const config = vente ? { storeId, produitId, achat: essai ? 'https://exemple.invalid/acheter' : String(VENTE.urlAchat || ''), secret: crypto.createHash('sha256').update(`empira-conquest|${essai ? 'essai' : SECRET}|${storeId}|${produitId}`).digest('hex'), cleJeu: cleJeu.toString('hex'), essai } : {};
+  const config = vente ? { storeId, produitId, achat: essai ? 'https://exemple.invalid/acheter' : String(VENTE.urlAchat || ''), secret: crypto.createHash('sha256').update(`empira-conquest|${essai ? 'essai' : SECRET}|${storeId}|${produitId}`).digest('hex'), cleJeu: cleJeu.toString('hex'), cleEuler: essai ? '' : CLE_EULER, essai } : {};
   const jeu = await page('page.html', 'main.js', vente);
   if (vente) await writeFile(path.join(dossier, 'outils/jeu.bin'), chiffrer(jeu, cleJeu));
   else await writeFile(path.join(dossier, 'empira-conquest.html'), jeu);
@@ -148,4 +151,5 @@ await assembler(path.join(RACINE, 'dist', 'essai-vente'), { vente: true, essai: 
 await assembler(path.join(RACINE, 'dist', 'dev'), { vente: false });
 console.log(`Assemblé : dist/${NOM} (version vendue${SANS_NODE ? ', sans node.exe' : ', avec node.exe'}), dist/essai-vente (tests, à ne pas livrer) et dist/dev — ${n} bibliothèques embarquées`);
 if (!VENTE.storeId || !VENTE.produitId) console.warn('\n⚠ produit/vente.json : storeId ou produitId vide. Cette version vendue REFUSERA TOUTES LES CLÉS tant qu\'ils ne sont pas renseignés.');
+if (!CLE_EULER) console.warn('ℹ Pas de clé API Euler Stream (produit/.cle-euler) : les acheteurs utiliseront la limite gratuite ou leur propre clé.');
 if (!VENTE.urlAchat) console.warn('⚠ produit/vente.json : urlAchat vide, le bouton « Acheter une clé » ne sera pas affiché.');

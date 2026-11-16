@@ -80,7 +80,8 @@ export async function creerServeur({ racine, test = false, donnees = path.join(p
 
   let hub;
   const tiktok = creerSources({
-    cleEuler: () => reglages.cleEuler,
+    // clé Euler Stream : celle de l'acheteur s'il en a mis une, sinon celle d'Empira gravée à l'assemblage (si fournie)
+    cleEuler: () => reglages.cleEuler || CFG.cleEuler || '',
     charger: charger || (faux ? async () => faux : undefined),
     ...(!VERSION_VENDUE && urlTikFinity ? { urlTikFinity } : {}),
     surMessage: (m) => hub.diffuser(m),
@@ -146,11 +147,12 @@ export async function creerServeur({ racine, test = false, donnees = path.join(p
       }
       // sans licence valide, le jeu ne se connecte pas au live et n'accepte aucune commande
       if (VERSION_VENDUE && post && (p === '/tiktok/connecter' || p === '/commande') && !(await etatLicence()).ok) return json(res, { ok: false, raison: 'Licence non activée.' }, 403);
-      if (p === '/reglages') return json(res, { pseudo: reglages.pseudo, auto: reglages.auto, source: reglages.source, euler: Boolean(reglages.cleEuler) });
+      if (p === '/reglages') return json(res, { pseudo: reglages.pseudo, auto: reglages.auto, source: reglages.source, euler: Boolean(reglages.cleEuler), eulerInclus: Boolean(CFG.cleEuler) });
       if (p === '/tiktok/etat') return json(res, tiktok.etat());
       if (p === '/tiktok/connecter' && post) {
         const b = (await lireCorps(req)) || {};
-        if (typeof b.cleEuler === 'string') reglages.cleEuler = b.cleEuler.trim().slice(0, 200);
+        // un champ vide garde la clé déjà enregistrée ; « aucune » l'efface
+        if (typeof b.cleEuler === 'string' && b.cleEuler.trim()) reglages.cleEuler = b.cleEuler.trim().toLowerCase() === 'aucune' ? '' : b.cleEuler.trim().slice(0, 200);
         if (MODES.includes(b.source)) reglages.source = b.source;
         const ok = tiktok.connecter(b.pseudo, reglages.source);
         if (ok) {

@@ -6,3 +6,4 @@ dist/
 .cache/
 livrables/*.zip
 produit/.secret-vente
+produit/.cle-euler

@@ -44,6 +44,12 @@ garder une partie du jeu en ligne.
 même pour toutes les versions, sinon les acheteurs devront ressaisir leur clé. À sauvegarder en lieu sûr ; on peut
 aussi le fournir par la variable `EMPIRA_SECRET_VENTE`.
 
+**Clé API Euler Stream d'Empira** (facultative) : placée dans `produit/.cle-euler` (jamais dans git) ou dans la
+variable `EMPIRA_CLE_EULER`, elle est incluse, chiffrée par l'obfuscateur, dans la version vendue. Les acheteurs ne
+dépendent alors plus de la limite gratuite ; une clé saisie par l'acheteur reste prioritaire. Une clé incluse dans un
+logiciel peut toujours être extraite par un expert : prendre une clé dédiée au produit, avec un quota surveillé, et
+vérifier que les conditions d'Euler Stream autorisent cet usage.
+
 **Dépôt GitHub** : il est **public**. N'importe qui peut donc lire le code source et assembler une version sans
 licence. Le passer en privé est la première protection à mettre en place.
 
