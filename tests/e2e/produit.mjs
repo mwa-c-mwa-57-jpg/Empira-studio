@@ -110,6 +110,9 @@ try {
   await jeu.goto(adresse.replace(/^http:\/\/[^/]+/, dev.base));
   await jeu.waitForFunction(() => window.empira?.partie);
   verifier(await attendre(jeu, () => !document.querySelector('.etat').classList.contains('montre')), 'le jeu reçoit le live par le serveur (aucun bandeau d’erreur)');
+  // la fenêtre du test fait 540 × 960 : le diagnostic de netteté doit le signaler, des deux côtés
+  verifier(await attendre(jeu, () => document.querySelector('.alerte-taille').classList.contains('montre') && /540 × 960/.test(document.querySelector('.alerte-taille').textContent)), 'jeu affiché trop petit : avertissement « image floue » sur le jeu');
+  verifier(await attendre(pilote, () => document.getElementById('iAff').className === 'ko' && /540 × 960 pixels/.test(document.getElementById('sAff').textContent)), 'fenêtre de pilotage : taille réelle du jeu et conseil pour une image nette');
 
   await live('chat', { user: user('Nana'), content: '17' });
   await live('chat', { user: user('Kenzo'), content: 'allez le 63 !' });

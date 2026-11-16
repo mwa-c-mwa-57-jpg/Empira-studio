@@ -9,7 +9,7 @@
 body { margin: 0; background: #0c0d14; color: #ecebf2; font: 17px/1.6 'Segoe UI', system-ui, sans-serif; }
 main { max-width: 820px; margin: 0 auto; padding: 32px 20px 64px; }
 h1 { font: 400 36px/1.15 Georgia, serif; margin: 0 0 6px; } h1 em { font-style: normal; color: #f0cd7a; }
-h2 { color: #f0cd7a; font-size: 21px; margin-top: 32px; }
+h2 { color: #f0cd7a; font-size: 21px; margin-top: 32px; } h3 { font-size: 18px; margin: 20px 0 6px; }
 code, kbd { background: #1b1d2b; border: 1px solid #2a2c3c; border-radius: 6px; padding: 1px 6px; font-family: Consolas, monospace; font-size: 15px; }
 ol li, ul li { margin: 6px 0; }
 .note { background: #151722; border-left: 4px solid #d9a84e; padding: 12px 16px; border-radius: 10px; }
@@ -51,7 +51,20 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
 <p class="note">Si tu changes de couleurs ou de voix, recopie l’adresse depuis la page de démarrage : les réglages sont dans l’adresse, car LIVE Studio ne partage pas la mémoire du navigateur.</p>
 
 <h2>Image nette sur TikTok</h2>
-<p>Le jeu se dessine automatiquement à la résolution réelle de ton écran (même avec la mise à l’échelle de Windows à 125 % ou 150 %). Ce qui reste flou vient presque toujours des réglages de diffusion :</p>
+<p>Le jeu se dessine automatiquement à la taille à laquelle il est affiché. Dans la fenêtre de pilotage, la ligne <b>« Netteté de l’image »</b> indique la taille réelle à laquelle LIVE Studio affiche le jeu : il faut <b>1080 × 1920</b>. Si elle est plus petite, LIVE Studio étire une petite image et tout devient flou ; le jeu l’affiche aussi en rouge en haut de l’écran pendant 25 secondes.</p>
+<h3>Si c’est déjà flou dans LIVE Studio : passer par OBS (gratuit)</h3>
+<p>La source « Lien » de LIVE Studio affiche parfois les pages web en petit avant de les étirer. La solution utilisée par la plupart des jeux interactifs :</p>
+<ol>
+  <li>Installe <b>OBS Studio</b> (gratuit, obsproject.com).</li>
+  <li>OBS → Paramètres → Vidéo : résolution de base <b>1080 × 1920</b> et résolution de sortie <b>1080 × 1920</b>.</li>
+  <li>Ajoute une source <b>Navigateur</b> : colle l’adresse du jeu (bouton « Copier l’adresse » de la fenêtre de pilotage), largeur <b>1080</b>, hauteur <b>1920</b>. Laisse « Contrôler l’audio via OBS » décoché pour que le son passe par les haut-parleurs du PC.</li>
+  <li>Clique sur <b>Démarrer la caméra virtuelle</b> (en bas à droite d’OBS).</li>
+  <li>Dans LIVE Studio, ajoute une source <b>Caméra</b>, choisis <b>OBS Virtual Camera</b> et étire-la pour remplir tout l’écran (supprime l’ancienne source « Lien »).</li>
+  <li>Vérifie que LIVE Studio capte le son du PC (audio du bureau), pour la voix et la musique du jeu.</li>
+</ol>
+<p>La ligne « Netteté de l’image » doit alors afficher 1080 × 1920 — net.</p>
+<h3>Réglages de diffusion</h3>
+<p>Une fois l’image nette dans LIVE Studio, ce qui reste flou sur les téléphones vient de la diffusion :</p>
 <ul>
   <li>Source <b>Lien</b> réglée sur <b>1080 × 1920</b>, sans l’agrandir à la souris dans la scène (une source plus petite étirée devient floue).</li>
   <li>Dans les paramètres de LIVE Studio : résolution <b>1080p</b>, et le <b>débit (bitrate) le plus élevé</b> que ta connexion supporte (6 000 kbit/s ou plus si possible). Un débit trop bas est la première cause de flou sur TikTok.</li>

@@ -224,3 +224,11 @@ test('serveur : voix, musiques, fichiers, sécurité', async () => {
   assert.equal(await brut('/etat', { 'Sec-Fetch-Site': 'cross-site' }), 403, 'un autre site ne peut pas piloter le serveur');
   assert.equal((await fetch(`${base}/licence`).then((r) => r.json())).ok, true, 'pas de licence en version de développement');
 });
+
+test('serveur : diagnostic de netteté — taille d’affichage signalée par les écrans de jeu', async () => {
+  assert.deepEqual(await fetch(`${base}/ecrans`).then((r) => r.json()), []);
+  assert.equal((await post('/ecran', { id: 'a', largeur: 540, hauteur: 960, dpr: 1, q: 0.5 })).ok, true);
+  assert.equal((await fetch(`${base}/ecran`, { method: 'POST', body: JSON.stringify({ id: 'b', largeur: 'x' }) })).status, 400);
+  const l = await fetch(`${base}/ecrans`).then((r) => r.json());
+  assert.deepEqual(l.map((e) => [e.largeur, e.hauteur, e.dpr]), [[540, 960, 1]]);
+});

@@ -106,6 +106,10 @@ Interprétations (le cahier des charges ne tranchait pas) :
   photos de profil en 720 px (avatarMedium) au lieu de la miniature de 100 px ; textes de la carte et petites
   légendes agrandis et contourés pour rester lisibles après la compression de TikTok. Le guide liste les réglages
   de LIVE Studio (source 1080 × 1920 non étirée, 1080p, débit élevé).
+- **Diagnostic de netteté** : chaque écran de jeu signale au serveur la taille à laquelle il est affiché (`POST /ecran`,
+  `GET /ecrans`) ; la fenêtre de pilotage l'affiche (« Netteté de l'image ») et le jeu avertit 25 s à l'écran si elle
+  est sous 1080 × 1920. Si la source « Lien » de LIVE Studio rend la page en petit (bug signalé par des éditeurs
+  tiers, non vérifié ici), le guide décrit le contournement par OBS (source Navigateur 1080 × 1920 + caméra virtuelle).
 - **Logo** : le logo fourni par Empira (fond rendu transparent) est intégré au jeu : version compacte sur la carte,
   version complète sur le podium, la fenêtre de pilotage, l'écran de licence et le guide ; icône d'onglet. Il n'est plus
   remplaçable par l'acheteur (le dossier `images/` a disparu).

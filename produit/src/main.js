@@ -69,9 +69,31 @@ async function demarrer() {
   const photos = new Photos();
   const rendu = new Rendu(document.getElementById('carte'), partie, theme, { photos });
   // netteté : le canevas suit la taille réelle de l'affichage et la mise à l'échelle de Windows
-  const ajuster = () => rendu.adapter(adapterEchelle() * (window.devicePixelRatio || 1));
+  const idEcran = Math.random().toString(36).slice(2, 12);
+  const alerteTaille = document.createElement('div');
+  alerteTaille.className = 'alerte-taille';
+  document.getElementById('interface').appendChild(alerteTaille);
+  let finAlerte = null;
+  const signaler = () => {
+    const dpr = window.devicePixelRatio || 1;
+    fetch('/ecran', { method: 'POST', body: JSON.stringify({ id: idEcran, largeur: window.innerWidth, hauteur: window.innerHeight, dpr, q: rendu.q, agent: navigator.userAgent }) }).catch(() => {});
+  };
+  const ajuster = () => {
+    const dpr = window.devicePixelRatio || 1;
+    rendu.adapter(adapterEchelle() * dpr);
+    signaler();
+    // la source est trop petite ou couchée : l'image sera étirée, donc floue ; on le dit clairement pendant 25 s
+    const l = Math.round(window.innerWidth * dpr);
+    const h = Math.round(window.innerHeight * dpr);
+    const petit = l < 1000 || h < 1700 || window.innerWidth > window.innerHeight;
+    alerteTaille.textContent = petit ? `Image floue : le jeu est affiché en ${l} × ${h} pixels. Règle la source sur 1080 × 1920 (voir la fenêtre de pilotage).` : '';
+    alerteTaille.classList.toggle('montre', petit);
+    clearTimeout(finAlerte);
+    if (petit) finAlerte = setTimeout(() => alerteTaille.classList.remove('montre'), 25000);
+  };
   ajuster();
   window.addEventListener('resize', ajuster);
+  setInterval(signaler, 15000);
   const suivreDpr = () => matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`).addEventListener('change', () => (ajuster(), suivreDpr()), { once: true });
   suivreDpr();
   const hud = new Interface(document.getElementById('interface'), partie, theme, photos);

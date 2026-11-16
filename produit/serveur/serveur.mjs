@@ -91,6 +91,7 @@ export async function creerServeur({ racine, test = false, donnees = path.join(p
     },
   });
 
+  const ecrans = new Map(); // id d'écran de jeu → taille d'affichage signalée
   const json = (res, obj, code = 200) => {
     res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     res.end(JSON.stringify(obj));
@@ -130,6 +131,18 @@ export async function creerServeur({ racine, test = false, donnees = path.join(p
         return json(res, { ok: true, dit: voix.parler(t, url.searchParams.get('voix') || '') });
       }
       if (p === '/voix') return json(res, voix.liste());
+      // diagnostic de netteté : chaque écran de jeu indique la taille à laquelle il est affiché (LIVE Studio, OBS…)
+      if (p === '/ecran' && post) {
+        const b = (await lireCorps(req)) || {};
+        const n = (v, max) => (Number.isFinite(Number(v)) && Number(v) > 0 && Number(v) <= max ? Math.round(Number(v) * 100) / 100 : null);
+        const id = String(b.id || '').slice(0, 40);
+        const r = { largeur: n(b.largeur, 20000), hauteur: n(b.hauteur, 20000), dpr: n(b.dpr, 10), q: n(b.q, 10), agent: String(b.agent || '').slice(0, 120) };
+        if (!id || !r.largeur || !r.hauteur) return json(res, { ok: false }, 400);
+        ecrans.set(id, { ...r, vu: Date.now() });
+        if (ecrans.size > 12) ecrans.delete(ecrans.keys().next().value);
+        return json(res, { ok: true });
+      }
+      if (p === '/ecrans') return json(res, [...ecrans.values()].filter((e) => Date.now() - e.vu < 45000).map(({ vu, ...e }) => e));
       if (p === '/musiques') {
         const fichiers = await readdir(path.join(base, 'musique')).catch(() => []);
         return json(res, fichiers.filter((f) => /\.mp3$/i.test(f)).sort().map((f) => `musique/${encodeURIComponent(f)}`));

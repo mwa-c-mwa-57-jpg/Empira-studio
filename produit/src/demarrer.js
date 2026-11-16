@@ -148,6 +148,27 @@ function remplirVoix() {
   majAdresse();
 }
 
+// netteté : taille à laquelle LIVE Studio (ou OBS, ou le navigateur) affiche réellement le jeu
+async function verifierAffichage() {
+  let liste = [];
+  try {
+    liste = await (await fetch('/ecrans', { cache: 'no-store' })).json();
+  } catch {
+    return;
+  }
+  if (!liste.length) return marquer('iAff', 'sAff', 'Aucun écran de jeu ouvert : ajoute la source dans LIVE Studio (ou « Ouvrir le jeu dans le navigateur »).', 'attente');
+  const textes = liste.map((e) => {
+    const l = Math.round(e.largeur * (e.dpr || 1));
+    const h = Math.round(e.hauteur * (e.dpr || 1));
+    const couche = e.largeur > e.hauteur;
+    const ok = l >= 1000 && h >= 1700 && !couche;
+    const conseil = couche ? 'la source est en paysage : règle-la en 1080 × 1920 (portrait)' : !ok ? 'trop petit, LIVE Studio l’étire → flou. Règle la source sur 1080 × 1920, ou passe par OBS (voir le guide)' : 'net';
+    return { ok, texte: `${l} × ${h} pixels — ${conseil}` };
+  });
+  const ok = textes.every((t) => t.ok);
+  marquer('iAff', 'sAff', textes.map((t) => t.texte).join(' · '), ok ? 'ok' : 'ko');
+}
+
 async function verifierMusique() {
   try {
     const l = await (await fetch('/musiques', { cache: 'no-store' })).json();
@@ -265,6 +286,8 @@ function init() {
   verifierLicence();
   verifierVoix();
   verifierMusique();
+  verifierAffichage();
+  setInterval(verifierAffichage, 3000);
 }
 
 init();
