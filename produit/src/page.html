@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Guerre des Départements — Empira</title>
+<style>
+:root { color-scheme: dark; --contour: #d9a84e; --k: 0.5; --police: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #07080d; overflow: hidden; }
+body { font-family: var(--police); color: #f2efe8; }
+#scene { position: absolute; left: 50%; top: 50%; width: 1080px; height: 1920px; transform: translate(-50%, -50%) scale(var(--k)); }
+#carte { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+#interface { position: absolute; inset: 0; pointer-events: none; }
+#interface > * { position: absolute; }
+.cadre { background: rgba(14, 15, 26, 0.88); border: 3px solid var(--contour); border-radius: 22px; box-shadow: 0 0 22px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.04); }
+.entete { top: 232px; left: 30px; right: 30px; height: 78px; display: flex; align-items: center; gap: 16px; padding: 0 16px; }
+.drapeau { display: flex; width: 56px; height: 38px; border-radius: 6px; overflow: hidden; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25); }
+.drapeau i { flex: 1; } .bleu { background: #0055a4; } .blanc { background: #fff; } .rouge { background: #ef4135; }
+.titre { flex: 1; font: 700 34px Georgia, 'Times New Roman', serif; color: #f6ead0; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.case { min-width: 150px; text-align: center; background: rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 4px 14px; }
+.case small { display: block; font: 800 13px/1.2 var(--police); letter-spacing: 0.1em; color: #bdb4a0; }
+.case b { font: 900 30px/1.15 var(--police); }
+.case b.urgent { color: #ff6b5b; }
+.general { top: 320px; left: 30px; right: 30px; height: 64px; display: grid; grid-template-columns: 46px 1fr; grid-template-rows: 18px 1fr; column-gap: 12px; align-items: center; padding: 6px 18px; }
+.general .medaille { grid-row: span 2; font-size: 34px; }
+.general small { font: 900 13px var(--police); letter-spacing: 0.12em; color: var(--contour); }
+.general p { margin: 0; font: 800 20px/1.15 var(--police); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.general.alerte { border-color: #ffd23d; animation: pulse 1.2s infinite; }
+.cadeaux { top: 394px; left: 30px; right: 30px; height: 228px; padding: 10px 12px; }
+.onglets { display: flex; gap: 8px; }
+.onglets span { flex: 1; text-align: center; padding: 7px 4px; border-radius: 12px; font: 900 15px var(--police); background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.55); }
+.onglets span.actif { background: var(--contour); color: #150f02; }
+.cartes { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+.carte { position: relative; width: 186px; height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 8px; border-radius: 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); animation: entree 0.45s ease-out both; }
+.carte:nth-child(2) { animation-delay: 0.05s; } .carte:nth-child(3) { animation-delay: 0.1s; } .carte:nth-child(4) { animation-delay: 0.15s; } .carte:nth-child(5) { animation-delay: 0.2s; }
+.carte .icone { font-size: 48px; line-height: 64px; width: 64px; height: 64px; object-fit: contain; text-align: center; }
+.carte .prix { position: absolute; top: 6px; left: 10px; font: 800 14px var(--police); color: #ffd166; }
+.carte b { font: 800 16px/1.15 var(--police); text-align: center; }
+.carte .effet { font: 800 14px/1.15 var(--police); color: var(--contour); text-align: center; }
+.top3 { top: 630px; left: 30px; right: 30px; height: 88px; display: flex; gap: 14px; }
+.place { flex: 1; display: grid; grid-template-columns: 66px auto 1fr; grid-template-rows: 1fr 1fr; column-gap: 10px; align-items: center; padding: 6px 12px; min-width: 0; }
+.place .photo { grid-row: span 2; width: 66px; height: 66px; }
+.place .num { font: 900 32px/1 var(--police); }
+.place .nom { font: 800 17px var(--police); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.place .det { grid-column: span 2; font: 700 14px var(--police); color: rgba(255, 255, 255, 0.75); white-space: nowrap; }
+.place .medaille { position: absolute; top: -10px; right: -6px; font-size: 26px; }
+.place.p0 { box-shadow: 0 0 26px rgba(255, 210, 61, 0.35); }
+.place.vide { opacity: 0.55; }
+.roi { top: 726px; left: 30px; width: 380px; height: 62px; display: grid; grid-template-columns: 52px 1fr; grid-template-rows: auto auto auto; column-gap: 10px; align-items: center; padding: 3px 14px; border-color: #ffd23d; border-radius: 31px; }
+.roi .photo { grid-row: span 3; width: 50px; height: 50px; }
+.roi small { font: 900 11px var(--police); letter-spacing: 0.1em; color: #ffd23d; }
+.roi b { font: 900 18px/1.05 var(--police); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.roi span { font: 700 11px var(--police); color: rgba(255, 255, 255, 0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mission, .evenement { display: none; padding: 10px 16px; }
+.mission { top: 796px; left: 30px; width: 380px; height: 84px; border-color: #22c55e; }
+.evenement { top: 726px; right: 30px; width: 640px; height: 154px; border-color: #ffd23d; }
+.mission.montre, .evenement.montre { display: block; animation: entree 0.4s ease-out; }
+.tete { display: flex; justify-content: space-between; align-items: baseline; }
+.tete b { font: 900 22px var(--police); } .mission .tete b { font-size: 17px; }
+.tete .temps { font: 900 20px var(--police); color: #ffd166; }
+.mission p, .evenement p { margin: 4px 0; font: 700 17px/1.2 var(--police); }
+.mission p { font-size: 13px; }
+.barre { height: 16px; border-radius: 8px; overflow: hidden; background: rgba(0, 0, 0, 0.4); }
+.barre i { display: block; height: 100%; background: #22c55e; transition: width 0.3s; }
+.mission small, .evenement small { display: block; margin-top: 3px; font: 700 13px var(--police); color: rgba(255, 255, 255, 0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mission small { font-size: 11px; }
+.temps-barre { height: 5px; margin-top: 6px; border-radius: 3px; background: rgba(0, 0, 0, 0.35); }
+.temps-barre i { display: block; height: 100%; background: #ffd166; border-radius: 3px; }
+.vague { top: 892px; left: 50%; transform: translateX(-50%); display: none; padding: 8px 24px; border-radius: 30px; background: linear-gradient(90deg, #ff8a00, #ffd23d); color: #1a1000; font: 900 26px var(--police); white-space: nowrap; box-shadow: 0 0 24px rgba(255, 180, 0, 0.6); }
+.vague.montre { display: block; animation: pulse 1s infinite; }
+.fil { top: 1684px; right: 30px; width: 660px; display: flex; flex-direction: column; gap: 6px; }
+.fil .ligne { background: rgba(12, 13, 22, 0.88); border-left: 6px solid var(--contour); border-radius: 12px; padding: 6px 12px; font: 700 18px var(--police); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; animation: glisse 0.35s ease-out; }
+.fil .ligne:nth-child(2) { opacity: 0.8; } .fil .ligne:nth-child(3) { opacity: 0.6; }
+.annonce { top: 1170px; left: 70px; right: 70px; padding: 18px 24px; text-align: center; font: 900 38px/1.15 var(--police); opacity: 0; transform: scale(0.6); transition: opacity 0.25s, transform 0.35s cubic-bezier(.2, 1.6, .4, 1); }
+.annonce.montre { opacity: 1; transform: scale(1); }
+.attente { top: 1150px; left: 100px; right: 100px; display: none; text-align: center; padding: 24px; border-radius: 26px; background: rgba(10, 11, 18, 0.85); border: 2px dashed var(--contour); }
+.attente.montre { display: block; animation: pulse 2s infinite; }
+.attente h2 { margin: 0 0 8px; font: 700 36px/1.2 Georgia, serif; color: #f6dc8f; }
+.attente p { margin: 0; font: 700 20px var(--police); color: rgba(255, 255, 255, 0.75); }
+.etat { top: 1640px; left: 30px; display: none; padding: 6px 12px; border-radius: 10px; background: rgba(130, 20, 20, 0.88); font: 700 16px var(--police); }
+.etat.montre { display: block; }
+.podium { top: 232px; left: 30px; right: 30px; bottom: 140px; display: none; flex-direction: column; align-items: center; gap: 10px; padding: 26px; border-radius: 28px; background: rgba(8, 9, 15, 0.94); border: 3px solid var(--contour); }
+.podium.montre { display: flex; animation: entree 0.6s ease-out; }
+.podium h1 { margin: 0; font: 700 96px/1 Georgia, serif; color: #f6dc8f; letter-spacing: 0.04em; }
+.podium .gagnant { font: 900 150px/1 var(--police); text-shadow: 0 0 30px rgba(0, 0, 0, 0.8); }
+.podium h2 { margin: 0; font: 900 46px var(--police); }
+.podium > p { margin: 0; font: 700 26px var(--police); color: rgba(255, 255, 255, 0.85); }
+.podium .liste { display: flex; flex-direction: column; gap: 12px; width: 860px; margin-top: 14px; }
+.podium .ligne { display: grid; grid-template-columns: 60px 80px 1fr; grid-template-rows: auto auto; column-gap: 12px; align-items: center; padding: 10px 18px; }
+.podium .ligne .medaille { grid-row: span 2; font-size: 44px; }
+.podium .ligne .photo { grid-row: span 2; width: 76px; height: 76px; }
+.podium .ligne b { font: 900 30px var(--police); } .podium .ligne small { font: 700 19px var(--police); color: rgba(255, 255, 255, 0.8); }
+.podium .roi-final { display: grid; grid-template-columns: 96px 1fr; column-gap: 14px; align-items: center; padding: 12px 26px; margin-top: 12px; border-color: #ffd23d; border-radius: 60px; }
+.podium .roi-final .photo { grid-row: span 2; width: 92px; height: 92px; }
+.podium .roi-final small { font: 900 20px var(--police); color: #ffd23d; } .podium .roi-final b { font: 900 30px var(--police); }
+.podium .logo { width: 300px; height: 120px; margin-top: 10px; }
+.podium .suite { font-size: 22px; color: rgba(255, 255, 255, 0.7); }
+#licence { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 80px; background: rgba(5, 6, 10, 0.96); }
+#licence.montre { display: flex; }
+#licence h2 { font: 700 54px Georgia, serif; color: #f6dc8f; }
+#licence p { font: 600 30px/1.4 var(--police); }
+@keyframes entree { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes glisse { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+@keyframes pulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
+</style>
+</head>
+<body>
+<div id="scene">
+  <canvas id="carte" width="1080" height="1920"></canvas>
+  <div id="interface"></div>
+  <div id="licence"><div><h2>Licence non activée</h2><p id="licence-texte">Ouvrez la page de démarrage (LANCER LE JEU) pour entrer votre clé de licence.</p></div></div>
+</div>
+<!--SCRIPT-->
+</body>
+</html>

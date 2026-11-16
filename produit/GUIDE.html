@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide d’installation — La Guerre des Départements</title>
+<style>
+:root { color-scheme: dark; }
+body { margin: 0; background: #0c0d14; color: #ecebf2; font: 17px/1.6 'Segoe UI', system-ui, sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 32px 20px 64px; }
+h1 { font: 400 36px/1.15 Georgia, serif; margin: 0 0 6px; } h1 em { font-style: normal; color: #f0cd7a; }
+h2 { color: #f0cd7a; font-size: 21px; margin-top: 32px; }
+code, kbd { background: #1b1d2b; border: 1px solid #2a2c3c; border-radius: 6px; padding: 1px 6px; font-family: Consolas, monospace; font-size: 15px; }
+ol li, ul li { margin: 6px 0; }
+.note { background: #151722; border-left: 4px solid #d9a84e; padding: 12px 16px; border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a2c3c; padding: 6px 8px; vertical-align: top; } td:first-child { white-space: nowrap; }
+</style>
+</head>
+<body>
+<main>
+<h1>La Guerre des <em>Départements</em></h1>
+<p>Guide d’installation et d’utilisation — Empira Agency</p>
+
+<h2>Ce qu’il faut</h2>
+<ul>
+  <li>Un PC Windows 10 ou 11.</li>
+  <li><b>TikTok LIVE Studio</b> (pour diffuser le live).</li>
+  <li><b>TikFinity</b>, connecté à ton live, avec l’<b>API WebSocket</b> activée (port 21213). C’est TikFinity qui transmet au jeu les likes, commentaires, partages, abonnements et cadeaux.</li>
+</ul>
+
+<h2>Installation</h2>
+<ol>
+  <li>Extrais le dossier <code>La-Guerre-des-Departements</code> où tu veux (par exemple dans tes documents).</li>
+  <li>Double-clique sur <b>LANCER LE JEU.bat</b>.<br>
+    Si Windows affiche « Windows a protégé votre ordinateur » : clique sur <b>Informations complémentaires</b>, puis sur <b>Exécuter quand même</b>.</li>
+  <li>Une fenêtre noire s’ouvre (le serveur du jeu, à laisser ouverte pendant le live), puis la <b>page de démarrage</b> dans ton navigateur.</li>
+  <li>Entre ta <b>clé de licence</b> (reçue par e-mail après l’achat) et clique sur <b>Activer</b>. Une clé fonctionne sur 2 PC.</li>
+  <li>Entre ton <b>pseudo TikTok</b> : tes commandes dans le tchat (<code>!fin</code>, <code>!vague assaut</code>…) seront acceptées, comme celles de tes modérateurs.</li>
+  <li>Vérifie que TikFinity, la voix et la musique sont au vert, choisis tes couleurs et ta voix (homme ou femme).</li>
+  <li>Clique sur <b>Copier l’adresse</b>.</li>
+</ol>
+
+<h2>Dans TikTok LIVE Studio</h2>
+<ol>
+  <li>Ajoute une source <b>Lien</b> et colle l’adresse copiée.</li>
+  <li>Taille : <b>1080 × 1920</b> (format vertical). Les 230 pixels du haut restent libres pour l’interface de TikTok.</li>
+  <li>La partie démarre dès la première action d’un spectateur.</li>
+</ol>
+<p class="note">Si tu changes de couleurs ou de voix, recopie l’adresse depuis la page de démarrage : les réglages sont dans l’adresse, car LIVE Studio ne partage pas la mémoire du navigateur.</p>
+
+<h2>Musique</h2>
+<p>Dépose des fichiers <b>MP3</b> dans le dossier <code>musique</code>. Ils sont joués en boucle, dans un ordre aléatoire, et le volume baisse quand la voix parle. N’utilise que des musiques dont tu as les droits de diffusion.</p>
+
+<h2>Commandes (toi ou tes modérateurs, dans le tchat)</h2>
+<table>
+  <tr><td><code>!fin</code></td><td>termine la partie et affiche le podium</td></tr>
+  <tr><td><code>!duree 10</code></td><td>durée de la partie en minutes</td></tr>
+  <tr><td><code>!vague doublon|pluie|triple|assaut</code></td><td>lance une vague (annoncée 15 s avant)</td></tr>
+  <tr><td><code>!revolution</code> <code>!duel</code> <code>!prime</code> <code>!invasion</code> <code>!mission</code></td><td>lance un événement</td></tr>
+  <tr><td><code>!avion</code></td><td>largage de renforts sur le dernier du classement</td></tr>
+  <tr><td><code>!dire texte</code></td><td>la voix lit ton texte</td></tr>
+  <tr><td><code>!fixe texte</code> / <code>!efface</code></td><td>épingle / retire un message dans le bandeau du Général</td></tr>
+  <tr><td><code>!suivant</code> / <code>!musique</code></td><td>musique suivante / musique on-off</td></tr>
+  <tr><td><code>!son</code></td><td>bruitages on-off</td></tr>
+  <tr><td><code>!zoom</code></td><td>zooms de caméra on-off</td></tr>
+  <tr><td><code>!cris</code> / <code>!guerre</code></td><td>cris de victoire / tambours et clairon</td></tr>
+  <tr><td><code>!membres</code></td><td>tout le monde oublie son département</td></tr>
+  <tr><td><code>!reset</code></td><td>remise à zéro complète</td></tr>
+</table>
+
+<h2>En cas de problème</h2>
+<ul>
+  <li><b>« TikFinity déconnecté »</b> sur l’écran : ouvre TikFinity, connecte ton live et vérifie que l’API WebSocket est activée. Le jeu se reconnecte tout seul toutes les 3 secondes.</li>
+  <li><b>Pas de voix</b> : installe une voix française dans Paramètres Windows → Heure et langue → Voix, puis relance le jeu.</li>
+  <li><b>« Licence non activée »</b> : ouvre la page de démarrage (LANCER LE JEU) et entre ta clé. Une connexion Internet est nécessaire au moins tous les 5 jours.</li>
+  <li><b>Port occupé</b> : le jeu est peut-être déjà lancé ; ferme l’autre fenêtre noire et relance.</li>
+</ul>
+</main>
+</body>
+</html>

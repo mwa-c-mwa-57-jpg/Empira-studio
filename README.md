@@ -1,4 +1,23 @@
-# Empira Conquest — prototype jouable
+# Empira — jeux interactifs pour TikTok LIVE
+
+## ★ La Guerre des Départements — version vendue (nouveau)
+
+Reconstruite d'après le cahier des charges Empira : TikFinity, TikTok LIVE Studio, engins de guerre, vagues,
+événements, voix homme ou femme, couleurs personnalisables et licence Lemon Squeezy. Code dans `produit/`.
+
+```
+npm install                 # une fois (esbuild, pour l'assemblage)
+npm run build:produit       # → dist/La-Guerre-des-Departements/ (dossier à livrer)
+npm run dev:produit         # jeu de dev sur http://localhost:8911 + faux TikFinity (POST /regie pour simuler)
+npm run test:produit        # test navigateur complet
+```
+
+Détails, conformité, tests et points à vérifier avant la vente : [docs/09-version-vendue.md](docs/09-version-vendue.md).
+
+---
+
+## Prototype précédent : Empira Conquest
+
 
 Jeu interactif pour TikTok LIVE (format vertical 9:16, compatible OBS). Deux modes :
 

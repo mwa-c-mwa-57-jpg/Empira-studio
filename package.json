@@ -10,8 +10,16 @@
     "tiktok": "node server/server.js --open --tiktok",
     "test": "node --test \"tests/*.test.js\"",
     "test:e2e": "node tests/e2e/smoke.mjs",
-    "build:map": "node tools/build-france-map.mjs"
+    "build:map": "node tools/build-france-map.mjs",
+    "build:produit": "node tools/build-produit.mjs",
+    "test:produit": "node tools/build-produit.mjs && node tests/e2e/produit.mjs",
+    "dev:produit": "node tools/build-produit.mjs && node tools/serveur-produit.mjs dist/dev"
   },
-  "engines": { "node": ">=22" },
-  "license": "UNLICENSED"
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "esbuild": "^0.24.2"
+  }
 }

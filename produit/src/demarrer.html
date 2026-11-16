@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Démarrer — La Guerre des Départements</title>
+<style>
+:root { color-scheme: dark; --nuit: #0c0d14; --carte: #151722; --trait: #2a2c3c; --texte: #ecebf2; --doux: #a3a3b8; --or: #d9a84e; --or-clair: #f0cd7a; --ok: #3fcf8e; --ko: #ff6b5b; }
+* { box-sizing: border-box; }
+html { background: var(--nuit); }
+body { margin: 0; background: radial-gradient(1100px 480px at 15% -10%, #22202e 0, var(--nuit) 60%); color: var(--texte); font: 16px/1.55 'Segoe UI', system-ui, sans-serif; }
+.page { max-width: 880px; margin: 0 auto; padding: 28px 18px 60px; display: grid; gap: 16px; }
+header { display: flex; align-items: center; gap: 16px; }
+header canvas { width: 150px; height: 56px; }
+h1 { margin: 0; font: 400 clamp(26px, 5vw, 38px)/1.1 Georgia, 'Times New Roman', serif; }
+h1 em { font-style: normal; color: var(--or-clair); }
+section { background: var(--carte); border: 1px solid var(--trait); border-radius: 16px; padding: 18px 20px; }
+h2 { margin: 0 0 10px; font: 700 18px/1.2 'Segoe UI', system-ui, sans-serif; color: var(--or-clair); }
+label { display: block; margin: 8px 0 4px; font-weight: 700; }
+input[type=text], select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--trait); background: #0f1019; color: var(--texte); font: inherit; }
+.ligne { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.choix { display: flex; flex-wrap: wrap; gap: 8px; }
+.choix label { margin: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 99px; border: 1px solid var(--trait); cursor: pointer; font-weight: 600; }
+.choix input { accent-color: var(--or); }
+.pastille { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255, 255, 255, 0.4); }
+button { font: 800 15px 'Segoe UI', system-ui, sans-serif; padding: 10px 16px; border-radius: 12px; border: 0; background: var(--or); color: #1a1300; cursor: pointer; }
+button.discret { background: transparent; color: var(--or-clair); border: 1px solid var(--or); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--or-clair); outline-offset: 2px; }
+.etats { display: grid; gap: 8px; }
+.etat { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: start; }
+.etat b { font-size: 18px; }
+.etat small { display: block; color: var(--doux); }
+.ok { color: var(--ok); } .ko { color: var(--ko); } .attente { color: var(--doux); }
+.adresse { width: 100%; padding: 12px; border-radius: 10px; background: #0f1019; border: 1px dashed var(--or); font: 14px/1.4 Consolas, monospace; word-break: break-all; }
+.palette { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.palette i { width: 22px; height: 22px; border-radius: 6px; }
+#msgLicence, #copie { font-weight: 700; }
+a { color: var(--or-clair); }
+.info { color: var(--doux); font-size: 14px; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header><canvas id="logo" width="300" height="112" aria-label="Empira Agency"></canvas><h1>La Guerre des <em>Départements</em></h1></header>
+
+  <section id="blocLicence">
+    <h2>Licence</h2>
+    <div id="etatLicence" class="attente">Vérification de la licence…</div>
+    <div id="formLicence" hidden>
+      <label for="cle">Clé de licence (reçue par e-mail après l’achat)</label>
+      <div class="ligne"><input type="text" id="cle" autocomplete="off" spellcheck="false" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" style="flex:1"><button id="activer" type="button">Activer</button></div>
+      <p class="info">Une clé fonctionne sur 2 PC. Le jeu tolère quelques jours sans connexion Internet.</p>
+    </div>
+    <p id="msgLicence" role="status"></p>
+  </section>
+
+  <section>
+    <h2>Ton compte TikTok</h2>
+    <label for="hote">Ton pseudo TikTok (sans @) — tes commandes !fin, !vague… seront acceptées</label>
+    <input type="text" id="hote" autocomplete="off" spellcheck="false" placeholder="ton_pseudo">
+  </section>
+
+  <section>
+    <h2>Vérifications</h2>
+    <div class="etats">
+      <div class="etat"><b id="iTik" class="attente">…</b><div><span id="tTik">TikFinity</span><small id="sTik">Connexion à ws://127.0.0.1:21213…</small></div></div>
+      <div class="etat"><b id="iVoix" class="attente">…</b><div><span id="tVoix">Voix Windows</span><small id="sVoix"></small></div></div>
+      <div class="etat"><b id="iMus" class="attente">…</b><div><span id="tMus">Musique</span><small id="sMus"></small></div></div>
+    </div>
+    <p class="ligne" style="margin:12px 0 0"><button class="discret" id="reverifier" type="button">Revérifier</button></p>
+  </section>
+
+  <section>
+    <h2>Couleurs</h2>
+    <label>Départements</label>
+    <div class="choix" id="cCouleurs">
+      <label><input type="radio" name="couleurs" value="aleatoire" checked> Aléatoires à chaque lancement</label>
+      <label><input type="radio" name="couleurs" value="fixe"> Garder ce tirage</label>
+      <label><input type="radio" name="couleurs" value="perso"> Ma palette</label>
+    </div>
+    <div id="perso" hidden><label for="palette">Ta palette (codes couleur séparés par des virgules, au moins 4)</label><input type="text" id="palette" placeholder="#ff3b30, #34c759, #007aff, #ffcc00"></div>
+    <div class="palette" id="apercu" aria-hidden="true"></div>
+    <label>Unités (soldats, tanks, avions…)</label>
+    <div class="choix" id="cUnites">
+      <label><input type="radio" name="unites" value="departement" checked> Couleur du département</label>
+      <label><input type="radio" name="unites" value="bleu"><i class="pastille" style="background:#2f6fe4"></i> Bleu</label>
+      <label><input type="radio" name="unites" value="vert"><i class="pastille" style="background:#1f9d4c"></i> Vert</label>
+      <label><input type="radio" name="unites" value="rouge"><i class="pastille" style="background:#d63b3b"></i> Rouge</label>
+      <label><input type="radio" name="unites" value="aleatoire"> Aléatoire</label>
+    </div>
+    <label>Contours des fenêtres</label>
+    <div class="choix" id="cContours">
+      <label><input type="radio" name="contours" value="or" checked><i class="pastille" style="background:#d9a84e"></i> Or</label>
+      <label><input type="radio" name="contours" value="bleu"><i class="pastille" style="background:#3b82f6"></i> Bleu</label>
+      <label><input type="radio" name="contours" value="vert"><i class="pastille" style="background:#22c55e"></i> Vert</label>
+      <label><input type="radio" name="contours" value="rouge"><i class="pastille" style="background:#ef4444"></i> Rouge</label>
+      <label><input type="radio" name="contours" value="violet"><i class="pastille" style="background:#a855f7"></i> Violet</label>
+      <label><input type="radio" name="contours" value="aleatoire"> Aléatoire</label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Voix</h2>
+    <div class="choix" id="cVoix">
+      <label><input type="radio" name="voix" value="femme" checked> Femme</label>
+      <label><input type="radio" name="voix" value="homme"> Homme</label>
+    </div>
+    <label for="nomVoix">Voix Windows</label>
+    <div class="ligne"><select id="nomVoix" style="flex:1"></select><button class="discret" id="tester" type="button">Tester</button></div>
+  </section>
+
+  <section>
+    <h2>Adresse à coller dans TikTok LIVE Studio</h2>
+    <p class="info" style="margin:0 0 8px">LIVE Studio → Ajouter une source → <b>Lien</b> → colle cette adresse, taille 1080 × 1920.</p>
+    <div class="adresse" id="adresse"></div>
+    <p class="ligne" style="margin:12px 0 0"><button id="copier" type="button">Copier l’adresse</button><a id="ouvrir" href="#" target="_blank" rel="noopener">Ouvrir le jeu dans le navigateur</a><span id="copie" class="ok" role="status"></span></p>
+  </section>
+
+  <p class="info">Besoin d’aide ? <a href="GUIDE.html" target="_blank" rel="noopener">Guide d’installation</a></p>
+</div>
+<!--SCRIPT-->
+</body>
+</html>
