@@ -76,12 +76,35 @@ export class Rendu {
     this.parCode = new Map(this.deps.map((d) => [d.code, d]));
     this.boiteIdf = IDF.codes.map((c) => this.parCode.get(c).boite).reduce((a, b) => ({ x1: Math.min(a.x1, b.x1), y1: Math.min(a.y1, b.y1), x2: Math.max(a.x2, b.x2), y2: Math.max(a.y2, b.y2) }));
     this.cam = { x: MAP_SIZE[0] / 2, y: MAP_SIZE[1] / 2, s: 1, cx: MAP_SIZE[0] / 2, cy: MAP_SIZE[1] / 2, cs: 1, jusqua: 0, repos: 0 };
+    this.q = 1; // pixels réels par pixel de la scène 1080 × 1920 (voir adapter)
+    this.cacheK = 2; // résolution du cache de la carte
     this.cache = document.createElement('canvas');
-    this.cache.width = MAP_SIZE[0] * 2;
-    this.cache.height = MAP_SIZE[1] * 2;
+    this.cache.width = MAP_SIZE[0] * this.cacheK;
+    this.cache.height = MAP_SIZE[1] * this.cacheK;
     this.cleCache = '';
     this.fond = this.#fond();
     this.vider();
+  }
+
+  /**
+   * Netteté : le canevas est dessiné à la résolution réelle de l'affichage (taille de la source dans LIVE Studio ×
+   * mise à l'échelle de Windows), au lieu d'une image fixe de 1080 × 1920 agrandie (floue à 125 % ou 150 %).
+   */
+  adapter(q) {
+    const nq = Math.max(0.5, Math.min(3, Math.round(q * 100) / 100));
+    if (nq === this.q && this.canvas.width === Math.round(LARGEUR * nq)) return;
+    this.q = nq;
+    this.canvas.width = Math.round(LARGEUR * nq);
+    this.canvas.height = Math.round(HAUTEUR * nq);
+    // la carte peut être zoomée ×2 : son cache doit suivre la résolution
+    const ck = Math.min(4, Math.max(2, Math.ceil(nq * 1.4)));
+    if (ck !== this.cacheK) {
+      this.cacheK = ck;
+      this.cache.width = MAP_SIZE[0] * ck;
+      this.cache.height = MAP_SIZE[1] * ck;
+    }
+    this.cleCache = '';
+    this.fond = this.#fond();
   }
 
   vider() {
@@ -107,16 +130,17 @@ export class Rendu {
 
   #fond() {
     const c = document.createElement('canvas');
-    c.width = LARGEUR;
-    c.height = HAUTEUR;
+    c.width = Math.round(LARGEUR * this.q);
+    c.height = Math.round(HAUTEUR * this.q);
     const g = c.getContext('2d');
+    g.scale(this.q, this.q);
     const grad = g.createLinearGradient(0, 0, 0, HAUTEUR);
     grad.addColorStop(0, '#0b0c14');
     grad.addColorStop(0.5, '#121522');
     grad.addColorStop(1, '#0a0b12');
     g.fillStyle = grad;
     g.fillRect(0, 0, LARGEUR, HAUTEUR);
-    const halo = g.createRadialGradient(560, 1280, 40, 560, 1280, 620);
+    const halo = g.createRadialGradient(540, 920, 40, 540, 920, 560);
     halo.addColorStop(0, 'rgba(217,168,78,0.10)');
     halo.addColorStop(1, 'rgba(217,168,78,0)');
     g.fillStyle = halo;
@@ -540,8 +564,9 @@ export class Rendu {
   dessiner(dt) {
     this.#avancer(dt);
     const { ctx } = this;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.drawImage(this.fond, 0, 0);
+    ctx.setTransform(this.q, 0, 0, this.q, 0, 0);
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(this.fond, 0, 0, LARGEUR, HAUTEUR);
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, ZONE.haut, LARGEUR, ZONE.bas - ZONE.haut);
@@ -649,7 +674,8 @@ export class Rendu {
       const g = this.cache.getContext('2d');
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.clearRect(0, 0, this.cache.width, this.cache.height);
-      g.setTransform(2, 0, 0, 2, 0, 0);
+      g.setTransform(this.cacheK, 0, 0, this.cacheK, 0, 0);
+      g.imageSmoothingQuality = 'high';
       g.shadowColor = 'rgba(217,168,78,0.25)';
       g.shadowBlur = 24;
       g.fillStyle = '#1b1e2c';
@@ -723,7 +749,7 @@ export class Rendu {
       if (['75', '92', '93', '94'].includes(d.code) && this.cam.s < 1.6) continue;
       const [x, y] = this.ecran(d.code);
       if (y < ZONE.haut || y > ZONE.bas) continue;
-      this.#texte(d.code, x, y, { taille: (e ? 18 : 14) * z, poids: 800, align: 'center', couleur: e ? '#fff' : 'rgba(255,255,255,0.35)', contour: e ? 'rgba(0,0,0,0.7)' : null });
+      this.#texte(d.code, x, y, { taille: (e ? 21 : 15) * z, poids: 800, align: 'center', couleur: e ? '#fff' : 'rgba(255,255,255,0.45)', contour: e ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.35)', epaisseur: e ? 5 : 3 });
     }
     // le top 3 en grand, avec nom et pourcentage
     cl.slice(0, 3).forEach((e, i) => {
@@ -735,8 +761,8 @@ export class Rendu {
       if (i === 0) this.#couronne(x, y - 34 * s, 16 * s);
       this.#texte(e.code, x, y, { taille: 36 * s, poids: 900, align: 'center', contour: couleur, epaisseur: 7 * s });
       if (!d.overseas) {
-        this.#texte(e.nom, x, y + 27 * s, { taille: 14 * s, poids: 800, align: 'center', contour: 'rgba(0,0,0,0.8)', epaisseur: 4 });
-        this.#texte(`${(P.part(e) * 100).toFixed(1).replace('.', ',')} %`, x, y + 44 * s, { taille: 13 * s, poids: 800, align: 'center', couleur: '#ffd166', contour: 'rgba(0,0,0,0.8)', epaisseur: 4 });
+        this.#texte(e.nom, x, y + 29 * s, { taille: 17 * s, poids: 900, align: 'center', contour: 'rgba(0,0,0,0.9)', epaisseur: 5 });
+        this.#texte(`${(P.part(e) * 100).toFixed(1).replace('.', ',')} %`, x, y + 49 * s, { taille: 16 * s, poids: 900, align: 'center', couleur: '#ffd166', contour: 'rgba(0,0,0,0.9)', epaisseur: 5 });
       }
     });
   }

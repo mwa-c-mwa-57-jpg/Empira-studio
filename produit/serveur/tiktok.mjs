@@ -30,7 +30,8 @@ export function aplatir(sorte, d) {
   const base = {
     uniqueId: String(pseudo),
     nickname: u.nickname || d.nickname || String(pseudo),
-    profilePictureUrl: https(u.avatarThumb?.urlList?.[0] ?? u.avatarMedium?.urlList?.[0] ?? u.profilePicture?.url?.[0] ?? u.profilePicture?.urls?.[0] ?? d.profilePictureUrl),
+    // photo en 720 px (avatarMedium) plutôt que la miniature de 100 px, floue une fois agrandie dans un département
+    profilePictureUrl: https(u.avatarMedium?.urlList?.[0] ?? u.avatarLarge?.urlList?.[0] ?? u.avatarThumb?.urlList?.[0] ?? u.profilePicture?.url?.[0] ?? u.profilePicture?.urls?.[0] ?? d.profilePictureUrl),
     msgId: String(d.common?.msgId ?? d.msgId ?? ''),
     isModerator: Boolean(d.userIdentity?.isModeratorOfAnchor || u.userAttr?.isAdmin || d.isModerator),
   };

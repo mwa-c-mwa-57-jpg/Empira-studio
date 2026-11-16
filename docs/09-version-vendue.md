@@ -101,6 +101,11 @@ Interprétations (le cahier des charges ne tranchait pas) :
   bombardier.
 - **Couleurs** : soldats et véhicules réglés séparément (couleur du département, 8 couleurs, aléatoire ou couleur
   personnalisée).
+- **Netteté** : le canevas est dessiné à la résolution réelle de l'affichage (taille de la source × mise à l'échelle
+  Windows, jusqu'à ×3) au lieu d'une image fixe de 1080 × 1920 agrandie ; cache de la carte en haute résolution ;
+  photos de profil en 720 px (avatarMedium) au lieu de la miniature de 100 px ; textes de la carte et petites
+  légendes agrandis et contourés pour rester lisibles après la compression de TikTok. Le guide liste les réglages
+  de LIVE Studio (source 1080 × 1920 non étirée, 1080p, débit élevé).
 - **Logo** : le logo fourni par Empira (fond rendu transparent) est intégré au jeu : version compacte sur la carte,
   version complète sur le podium, la fenêtre de pilotage, l'écran de licence et le guide ; icône d'onglet. Il n'est plus
   remplaçable par l'acheteur (le dossier `images/` a disparu).

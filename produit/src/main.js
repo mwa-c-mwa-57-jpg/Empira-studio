@@ -34,6 +34,7 @@ function ecrire(cle, valeur) {
 function adapterEchelle() {
   const k = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
   document.documentElement.style.setProperty('--k', String(k));
+  return k;
 }
 
 async function licenceValide() {
@@ -67,6 +68,12 @@ async function demarrer() {
   const theme = new Theme(reglages);
   const photos = new Photos();
   const rendu = new Rendu(document.getElementById('carte'), partie, theme, { photos });
+  // netteté : le canevas suit la taille réelle de l'affichage et la mise à l'échelle de Windows
+  const ajuster = () => rendu.adapter(adapterEchelle() * (window.devicePixelRatio || 1));
+  ajuster();
+  window.addEventListener('resize', ajuster);
+  const suivreDpr = () => matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`).addEventListener('change', () => (ajuster(), suivreDpr()), { once: true });
+  suivreDpr();
   const hud = new Interface(document.getElementById('interface'), partie, theme, photos);
   const bruitages = new Bruitages();
   const musique = new Musique();
