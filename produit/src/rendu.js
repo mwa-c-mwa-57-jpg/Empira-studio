@@ -91,7 +91,7 @@ export class Rendu {
    * mise à l'échelle de Windows), au lieu d'une image fixe de 1080 × 1920 agrandie (floue à 125 % ou 150 %).
    */
   adapter(q) {
-    const nq = Math.max(0.5, Math.min(3, Math.round(q * 100) / 100));
+    const nq = Math.max(0.5, Math.min(2, Math.round(q * 100) / 100));
     if (nq === this.q && this.canvas.width === Math.round(LARGEUR * nq)) return;
     this.q = nq;
     this.canvas.width = Math.round(LARGEUR * nq);

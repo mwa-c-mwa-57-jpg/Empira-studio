@@ -106,6 +106,10 @@ Interprétations (le cahier des charges ne tranchait pas) :
   photos de profil en 720 px (avatarMedium) au lieu de la miniature de 100 px ; textes de la carte et petites
   légendes agrandis et contourés pour rester lisibles après la compression de TikTok. Le guide liste les réglages
   de LIVE Studio (source 1080 × 1920 non étirée, 1080p, débit élevé).
+- **Taille de la source** : LIVE Studio réduit la source « Lien » de la mise à l'échelle de Windows (constaté par
+  l'acheteur : la source apparaît plus petite que la taille tapée et il faut l'étirer, d'où le flou). La fenêtre de
+  pilotage calcule la taille à taper (1080 × 1920 × échelle, détectée via `devicePixelRatio`, modifiable) ; le jeu se
+  dessine net à toute taille 9:16 (résolution du canevas plafonnée à ×2).
 - **Diagnostic de netteté** : chaque écran de jeu signale au serveur la taille à laquelle il est affiché (`POST /ecran`,
   `GET /ecrans`) ; la fenêtre de pilotage l'affiche (« Netteté de l'image ») et le jeu avertit 25 s à l'écran si elle
   est sous 1080 × 1920. Si la source « Lien » de LIVE Studio rend la page en petit (bug signalé par des éditeurs

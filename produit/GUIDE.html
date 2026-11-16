@@ -52,7 +52,17 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
 
 <h2>Image nette sur TikTok</h2>
 <p>Le jeu se dessine automatiquement à la taille à laquelle il est affiché. Dans la fenêtre de pilotage, la ligne <b>« Netteté de l’image »</b> indique la taille réelle à laquelle LIVE Studio affiche le jeu : il faut <b>1080 × 1920</b>. Si elle est plus petite, LIVE Studio étire une petite image et tout devient flou ; le jeu l’affiche aussi en rouge en haut de l’écran pendant 25 secondes.</p>
-<h3>Si c’est déjà flou dans LIVE Studio : passer par OBS (gratuit)</h3>
+<h3>La bonne taille à taper dans LIVE Studio</h3>
+<p>Si Windows est réglé à 125 % ou 150 % (Paramètres → Système → Écran → Mise à l’échelle), LIVE Studio réduit la source « Lien » d’autant : avec 1080 × 1920 elle n’occupe qu’une partie de l’écran, et l’agrandir à la souris rend l’image floue. Tape plutôt la taille multipliée par l’échelle de Windows — la fenêtre de pilotage la calcule pour toi :</p>
+<table>
+  <tr><td>Windows à 100 %</td><td><b>1080 × 1920</b></td></tr>
+  <tr><td>Windows à 125 %</td><td><b>1350 × 2400</b></td></tr>
+  <tr><td>Windows à 150 %</td><td><b>1620 × 2880</b></td></tr>
+  <tr><td>Windows à 175 %</td><td><b>1890 × 3360</b></td></tr>
+  <tr><td>Windows à 200 %</td><td><b>2160 × 3840</b></td></tr>
+</table>
+<p>La source doit alors remplir l’écran toute seule : <b>ne l’agrandis jamais à la souris</b>. Si elle ne remplit toujours pas tout, essaie la ligne suivante du tableau. Le jeu se dessine net à n’importe laquelle de ces tailles.</p>
+<h3>Si c’est encore flou dans LIVE Studio : passer par OBS (gratuit)</h3>
 <p>La source « Lien » de LIVE Studio affiche parfois les pages web en petit avant de les étirer. La solution utilisée par la plupart des jeux interactifs :</p>
 <ol>
   <li>Installe <b>OBS Studio</b> (gratuit, obsproject.com).</li>

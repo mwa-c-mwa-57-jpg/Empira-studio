@@ -26,6 +26,10 @@ input[type=text], select { width: 100%; padding: 10px 12px; border-radius: 10px;
 .choix label { margin: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 99px; border: 1px solid var(--trait); cursor: pointer; font-weight: 600; }
 .choix input { accent-color: var(--or); }
 input[type=color] { width: 30px; height: 22px; padding: 0; border: 1px solid var(--trait); border-radius: 6px; background: none; vertical-align: middle; }
+.taille { margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--or); background: rgba(217, 168, 78, 0.08); }
+.taille span { display: block; font-weight: 700; color: var(--doux); }
+.taille b { display: block; font: 900 34px/1.2 var(--police, system-ui); color: var(--or-clair); letter-spacing: 0.02em; }
+.taille small { display: block; color: var(--doux); line-height: 1.4; }
 .pastille { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255, 255, 255, 0.4); }
 button { font: 800 15px 'Segoe UI', system-ui, sans-serif; padding: 10px 16px; border-radius: 12px; border: 0; background: var(--or); color: #1a1300; cursor: pointer; }
 button.discret { background: transparent; color: var(--or-clair); border: 1px solid var(--or); }
@@ -174,7 +178,14 @@ select { width: auto; }
 
   <section>
     <h2>Adresse à coller dans TikTok LIVE Studio</h2>
-    <p class="info" style="margin:0 0 8px">LIVE Studio → Ajouter une source → <b>Lien</b> → colle cette adresse, taille 1080 × 1920.</p>
+    <p class="info" style="margin:0 0 8px">LIVE Studio → Ajouter une source → <b>Lien</b> → colle cette adresse, puis tape la taille ci-dessous.</p>
+    <div class="taille" id="taille">
+      <span>Taille à taper dans LIVE Studio</span>
+      <b id="tailleValeur">1080 × 1920</b>
+      <small id="tailleExplication"></small>
+      <div class="ligne" style="margin-top:8px"><label for="echelle" style="margin:0">Mise à l’échelle de Windows</label>
+        <select id="echelle"><option value="1">100 %</option><option value="1.25">125 %</option><option value="1.5">150 %</option><option value="1.75">175 %</option><option value="2">200 %</option><option value="2.25">225 %</option><option value="2.5">250 %</option></select></div>
+    </div>
     <div class="adresse" id="adresse"></div>
     <p class="ligne" style="margin:12px 0 0"><button id="copier" type="button">Copier l’adresse</button><a id="ouvrir" href="#" target="_blank" rel="noopener">Ouvrir le jeu dans le navigateur</a><span id="copie" class="ok" role="status"></span></p>
   </section>

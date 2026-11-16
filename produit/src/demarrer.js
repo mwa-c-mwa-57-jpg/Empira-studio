@@ -162,7 +162,7 @@ async function verifierAffichage() {
     const h = Math.round(e.hauteur * (e.dpr || 1));
     const couche = e.largeur > e.hauteur;
     const ok = l >= 1000 && h >= 1700 && !couche;
-    const conseil = couche ? 'la source est en paysage : règle-la en 1080 × 1920 (portrait)' : !ok ? 'trop petit, LIVE Studio l’étire → flou. Règle la source sur 1080 × 1920, ou passe par OBS (voir le guide)' : 'net';
+    const conseil = couche ? 'la source est en paysage : règle-la en 1080 × 1920 (portrait)' : !ok ? 'trop petit, LIVE Studio l’étire → flou. Tape la « taille à taper dans LIVE Studio » indiquée plus bas, sans agrandir la source à la souris' : 'net';
     return { ok, texte: `${l} × ${h} pixels — ${conseil}` };
   });
   const ok = textes.every((t) => t.ok);
@@ -179,6 +179,23 @@ async function verifierMusique() {
 }
 
 // ------------------------------------------------------------------ couleurs et adresse
+
+// Taille de la source « Lien » : LIVE Studio réduit la source de la mise à l'échelle de Windows (125 %, 150 %…).
+// En tapant 1080 × 1920 multiplié par cette échelle, la source remplit l'écran sans être étirée : l'image reste nette.
+const ECHELLES = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5];
+function echelleWindows() {
+  const dpr = window.devicePixelRatio || 1;
+  return ECHELLES.reduce((a, b) => (Math.abs(b - dpr) < Math.abs(a - dpr) ? b : a));
+}
+function majTaille() {
+  const e = Number($('echelle').value) || 1;
+  const l = Math.round(1080 * e);
+  const h = Math.round(1920 * e);
+  $('tailleValeur').textContent = `${l} × ${h}`;
+  $('tailleExplication').textContent = e === 1
+    ? 'La source doit remplir tout l’écran de LIVE Studio sans que tu l’agrandisses à la souris.'
+    : `Windows est réglé à ${Math.round(e * 100)} % : avec 1080 × 1920, LIVE Studio afficherait la source à ${Math.round(100 / e)} % et tu devrais l’étirer, ce qui rend l’image floue. Avec ${l} × ${h}, elle remplit l’écran et reste nette. Ne l’agrandis jamais à la souris : si elle ne remplit pas tout, essaie l’échelle suivante.`;
+}
 
 function majAdresse() {
   const p = new URLSearchParams();
@@ -270,6 +287,18 @@ function init() {
   $('connecter').addEventListener('click', connecter);
   $('deconnecter').addEventListener('click', deconnecter);
   $('source').addEventListener('change', () => $('pseudo').value.trim() && connecter());
+  // échelle détectée sur ce PC (le navigateur doit être à 100 % de zoom), modifiable
+  $('echelle').value = String(memoire.echelle || echelleWindows());
+  majTaille();
+  $('echelle').addEventListener('change', () => {
+    memoire.echelle = Number($('echelle').value);
+    try {
+      localStorage.setItem(MEMOIRE, JSON.stringify(memoire));
+    } catch {
+      /* stockage indisponible */
+    }
+    majTaille();
+  });
   $('pseudo').addEventListener('keydown', (e) => e.key === 'Enter' && connecter());
   for (const b of document.querySelectorAll('button[data-cmd]')) b.addEventListener('click', () => commande(b.dataset.cmd, b.dataset.arg || ''));
   $('btnDuree').addEventListener('click', () => commande('duree', $('duree').value));
