@@ -1,7 +1,7 @@
 // Interface HTML/CSS par-dessus le canvas, aux positions du cahier des charges (scène 1080 × 1920).
 // Les pseudos sont toujours insérés comme texte (textContent), jamais comme HTML.
 
-import { CADEAUX, REGLES, TITRE, EVENEMENTS } from './config.js';
+import { CADEAUX, REGLES, TITRE, SOUS_TITRE, EVENEMENTS } from './config.js';
 import { PAR_CODE } from './game.js';
 import { placeForms, capitalize } from '../../public/src/france/names.js';
 import { pseudoPropre } from './theme.js';
@@ -46,7 +46,7 @@ export class Interface {
     el('i', 'bleu', drapeau);
     el('i', 'blanc', drapeau);
     el('i', 'rouge', drapeau);
-    el('div', 'titre', entete, TITRE);
+    el('small', '', el('div', 'titre', entete, TITRE), SOUS_TITRE);
     this.eTotal = el('div', 'case', entete);
     el('small', '', this.eTotal, 'SOLDATS');
     this.eTotalV = el('b', '', this.eTotal, '0');

@@ -1,4 +1,4 @@
-// Point d'entrée du jeu : live TikTok (via le serveur du jeu, ou TikFinity) → garde-fous → moteur → rendu, interface, voix, sons.
+// Point d'entrée du jeu : live TikTok (relayé par le serveur du jeu : connexion directe ou TikFinity) → garde-fous → moteur → rendu, interface, voix, sons.
 
 import { Partie } from './game.js';
 import { Theme, lireReglages } from './theme.js';
@@ -7,12 +7,12 @@ import { Rendu } from './rendu.js';
 import { Interface } from './hud.js';
 import { Annonceur, sortieVoix } from './voix.js';
 import { Bruitages, Musique } from './audio.js';
-import { connecterTikFinity, convertirTikFinity, URL_TIKFINITY } from './tikfinity.js';
+import { connecterTikFinity, convertirTikFinity } from './tikfinity.js';
 import { EventGuard } from '../../public/src/core/guard.js';
 
 /* global VENTE */
 const VERSION_VENDUE = typeof VENTE !== 'undefined' && VENTE;
-const STOCKAGE = 'guerre-des-departements';
+const STOCKAGE = 'empira-conquest';
 
 function lire(cle, defaut) {
   try {
@@ -86,10 +86,6 @@ async function demarrer() {
   // état des connexions, résumé dans un bandeau discret
   const connexion = { canal: 'connexion', tiktok: null };
   const majEtat = () => {
-    if (reglages.source === 'tikfinity') {
-      hud.afficherEtat(connexion.canal === 'connecte' ? null : connexion.canal === 'connexion' ? 'Connexion à TikFinity…' : 'TikFinity déconnecté — reconnexion automatique…');
-      return;
-    }
     if (connexion.canal !== 'connecte') hud.afficherEtat(connexion.canal === 'connexion' ? 'Connexion au serveur du jeu…' : 'Serveur du jeu injoignable — relancez « LANCER LE JEU »');
     else if (connexion.tiktok && connexion.tiktok.etat !== 'connecte') hud.afficherEtat(`TikTok : ${connexion.tiktok.detail} — le jeu continue`);
     else hud.afficherEtat(null);
@@ -105,7 +101,12 @@ async function demarrer() {
       }
     }
     // messages du serveur du jeu : commandes de la régie et état de la connexion TikTok
-    if (msg && msg.commande && reglages.source === 'direct') return executer(msg.commande);
+    if (msg && msg.commande) return executer(msg.commande);
+    if (msg && msg.licence && !msg.licence.ok) {
+      document.getElementById('licence').classList.add('montre');
+      if (msg.licence.raison) document.getElementById('licence-texte').textContent = msg.licence.raison;
+      return;
+    }
     if (msg && msg.statut) {
       connexion.tiktok = msg.statut;
       return majEtat();
@@ -116,8 +117,7 @@ async function demarrer() {
     const g = garde.check(r.evenement);
     if (g.ok) partie.traiter(g.event);
   };
-  const urlEvenements = reglages.source === 'tikfinity' ? reglages.tikfinity || URL_TIKFINITY : `ws://${location.host}/evenements`;
-  connecterTikFinity({ url: urlEvenements, surMessage: recevoir, surEtat: (e) => ((connexion.canal = e), majEtat()) });
+  connecterTikFinity({ url: `ws://${location.host}/evenements`, surMessage: recevoir, surEtat: (e) => ((connexion.canal = e), majEtat()) });
 
   // sons associés aux événements du moteur
   const sons = (evs) => {

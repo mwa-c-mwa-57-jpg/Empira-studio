@@ -7,10 +7,10 @@ import { PALETTE, CONTOURS } from '../produit/src/config.js';
 import { createRng } from '../public/src/core/rng.js';
 
 test('réglages lus dans l’adresse, valeurs inconnues remplacées par les valeurs par défaut', () => {
-  const r = lireReglages('?couleurs=fixe&graine=1234&unites=vert&contours=violet&voix=homme&hote=@MonLive&tikfinity=ws://127.0.0.1:21213');
-  assert.deepEqual([r.couleurs, r.graine, r.unites, r.contours, r.voix, r.hote, r.tikfinity], ['fixe', 1234, 'vert', 'violet', 'homme', 'MonLive', 'ws://127.0.0.1:21213']);
-  const d = lireReglages('?couleurs=n%27importe&unites=jaune&tikfinity=ws://evil.example.com:80');
-  assert.deepEqual([d.couleurs, d.unites, d.contours, d.voix, d.tikfinity], ['aleatoire', 'departement', 'or', 'femme', null]);
+  const r = lireReglages('?couleurs=fixe&graine=1234&unites=vert&contours=violet&voix=homme&hote=@MonLive');
+  assert.deepEqual([r.couleurs, r.graine, r.unites, r.contours, r.voix, r.hote], ['fixe', 1234, 'vert', 'violet', 'homme', 'MonLive']);
+  const d = lireReglages('?couleurs=n%27importe&unites=jaune');
+  assert.deepEqual([d.couleurs, d.unites, d.contours, d.voix], ['aleatoire', 'departement', 'or', 'femme']);
   assert.deepEqual(lireReglages('?palette=ff0000,%2300ff00,zzz').palette, ['#ff0000', '#00ff00']);
 });
 

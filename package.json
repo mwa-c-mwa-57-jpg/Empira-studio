@@ -21,6 +21,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "esbuild": "^0.24.2",
+    "javascript-obfuscator": "^5.10.1",
     "tiktok-live-connector": "2.4.0"
   }
 }

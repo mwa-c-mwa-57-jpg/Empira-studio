@@ -1,11 +1,11 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { aplatir } from '../produit/serveur/tiktok.mjs';
-import { creerLicence } from '../produit/serveur/licence.mjs';
+import { creerLicence, environnementSuspect } from '../produit/serveur/licence.mjs';
 import { creerServeur } from '../produit/serveur/serveur.mjs';
 import { convertirTikFinity } from '../produit/src/tikfinity.js';
 import { normalizeEvent } from '../public/src/core/events.js';
@@ -54,37 +54,86 @@ function fauxLemon(reponses) {
   return { appels, fetchImpl };
 }
 
-test('licence : activation, vérification, limite de 2 PC, tolérance hors ligne, produit vérifié', async () => {
+test('licence : activation, vérification, limite de 2 PC, tolérance hors ligne, boutique et produit vérifiés', async () => {
   const dossier = await mkdtemp(path.join(os.tmpdir(), 'licence-'));
   const fichier = path.join(dossier, 'licence.json');
   let t = Date.UTC(2026, 10, 16);
-  const ok = { activated: true, instance: { id: 'inst-1' }, meta: { product_id: 42 } };
-  const valide = { valid: true, license_key: { status: 'active' }, meta: { product_id: 42 } };
+  const meta = { store_id: 9, product_id: 42 };
+  const ok = { activated: true, instance: { id: 'inst-1' }, meta };
+  const valide = { valid: true, license_key: { status: 'active' }, instance: { id: 'inst-1' }, meta };
+  const base = { fichier, storeId: '9', produitId: '42', secret: 's3cret', idPc: 'PC-A', verifierEnvironnement: () => null, maintenant: () => t };
   let lemon = fauxLemon({ activate: ok, validate: valide });
-  let l = creerLicence({ fichier, produitId: '42', nomPc: 'PC-LIVE', fetchImpl: lemon.fetchImpl, maintenant: () => t });
+  let l = creerLicence({ ...base, nomPc: 'PC-LIVE', fetchImpl: lemon.fetchImpl });
   assert.equal((await l.etat()).ok, false, 'pas de clé au départ');
   assert.deepEqual(await l.activer('court'), { ok: false, raison: 'Clé de licence invalide.' });
   assert.equal((await l.activer('ABCD-1234-EFGH-5678')).ok, true);
   assert.deepEqual(lemon.appels.at(-1), { action: 'activate', corps: { license_key: 'ABCD-1234-EFGH-5678', instance_name: 'PC-LIVE' } });
   assert.deepEqual(await l.etat(), { ok: true });
 
+  // le fichier est chiffré : ni la clé ni les dates n'y sont lisibles
+  const contenu = await readFile(fichier, 'utf8');
+  assert.doesNotMatch(contenu, /ABCD|inst-1|verifie/);
+
   // 3 jours plus tard, sans Internet : toléré ; 7 jours plus tard : bloqué
   lemon = fauxLemon({ validate: 'reseau' });
   t += 3 * 86400000;
-  l = creerLicence({ fichier, produitId: '42', fetchImpl: lemon.fetchImpl, maintenant: () => t });
+  l = creerLicence({ ...base, fetchImpl: lemon.fetchImpl });
   assert.deepEqual(await l.etat(), { ok: true, horsLigne: true });
-  t += 4 * 86400000;
-  l = creerLicence({ fichier, produitId: '42', fetchImpl: lemon.fetchImpl, maintenant: () => t });
+  // horloge reculée : pas de tolérance
+  t -= 2 * 86400000;
+  l = creerLicence({ ...base, fetchImpl: lemon.fetchImpl });
+  assert.match((await l.etat()).raison, /horloge/);
+  t += 6 * 86400000;
+  l = creerLicence({ ...base, fetchImpl: lemon.fetchImpl });
   assert.equal((await l.etat()).ok, false);
 
-  // clé d'un autre produit, clé révoquée, limite d'activations atteinte
-  l = creerLicence({ fichier, produitId: '42', fetchImpl: fauxLemon({ validate: { ...valide, meta: { product_id: 7 } } }).fetchImpl, maintenant: () => t });
+  // fichier copié sur un autre PC, ou modifié à la main : sans valeur
+  l = creerLicence({ ...base, idPc: 'PC-B', fetchImpl: fauxLemon({ validate: valide }).fetchImpl });
+  assert.match((await l.etat()).raison, /Aucune licence/);
+  await writeFile(fichier, Buffer.from('EC1' + 'x'.repeat(60)).toString('base64'));
+  l = creerLicence({ ...base, fetchImpl: fauxLemon({ validate: valide }).fetchImpl });
+  assert.match((await l.etat()).raison, /Aucune licence/);
+  await writeFile(fichier, JSON.stringify({ cle: 'ABCD-1234-EFGH-5678', instance: 'inst-1', verifie: t }));
+  assert.match((await creerLicence({ ...base, fetchImpl: fauxLemon({ validate: 'reseau' }).fetchImpl }).etat()).raison, /Aucune licence/, 'un fichier forgé en clair est refusé');
+
+  // clé révoquée : bloquée, et couper Internet ensuite ne rend pas la tolérance
+  l = creerLicence({ ...base, fetchImpl: fauxLemon({ activate: ok }).fetchImpl });
+  assert.equal((await l.activer('ABCD-1234-EFGH-5678')).ok, true);
+  l = creerLicence({ ...base, fetchImpl: fauxLemon({ validate: { valid: false, license_key: { status: 'disabled' }, meta } }).fetchImpl });
   assert.equal((await l.etat()).ok, false);
-  l = creerLicence({ fichier, produitId: '42', fetchImpl: fauxLemon({ validate: { valid: false, license_key: { status: 'disabled' } } }).fetchImpl, maintenant: () => t });
+  l = creerLicence({ ...base, fetchImpl: fauxLemon({ validate: 'reseau' }).fetchImpl });
+  assert.equal((await l.etat()).ok, false, 'pas de tolérance après une révocation');
+
+  // clé valide mais d'une autre boutique ou d'un autre produit : refusée, et l'activation est libérée
+  for (const autre of [{ store_id: 1, product_id: 42 }, { store_id: 9, product_id: 7 }, {}]) {
+    lemon = fauxLemon({ activate: { ...ok, meta: autre }, deactivate: { deactivated: true } });
+    l = creerLicence({ ...base, fichier: path.join(dossier, 'x.json'), fetchImpl: lemon.fetchImpl });
+    assert.match((await l.activer('AUTRE-1234-EFGH-0000')).raison, /pas une clé Empira Conquest/);
+    assert.equal(lemon.appels.at(-1).action, 'deactivate');
+  }
+  l = creerLicence({ ...base, fetchImpl: fauxLemon({ validate: { ...valide, meta: { store_id: 9, product_id: 7 } } }).fetchImpl });
   assert.equal((await l.etat()).ok, false);
-  l = creerLicence({ fichier: path.join(dossier, 'autre.json'), fetchImpl: fauxLemon({ activate: { activated: false, error: 'This license key has reached the activation limit.' } }).fetchImpl });
+
+  // limite d'activations atteinte
+  l = creerLicence({ ...base, fichier: path.join(dossier, 'autre.json'), fetchImpl: fauxLemon({ activate: { activated: false, error: 'This license key has reached the activation limit.' } }).fetchImpl });
   assert.match((await l.activer('ABCD-1234-EFGH-9999')).raison, /2 PC/);
+
+  // version non configurée (boutique ou produit absents) : tout est refusé, sans même appeler Lemon Squeezy
+  lemon = fauxLemon({ activate: ok, validate: valide });
+  l = creerLicence({ ...base, storeId: '', fetchImpl: lemon.fetchImpl });
+  assert.match((await l.activer('ABCD-1234-EFGH-5678')).raison, /pas configurée/);
+  assert.match((await l.etat()).raison, /pas configurée/);
+  assert.equal(lemon.appels.length, 0);
   await rm(dossier, { recursive: true, force: true });
+});
+
+test('licence : Node lancé avec des réglages d’interception → refus', async () => {
+  assert.equal(environnementSuspect({}, []), null);
+  assert.equal(environnementSuspect({ NODE_EXTRA_CA_CERTS: 'faux.pem' }, []), 'NODE_EXTRA_CA_CERTS');
+  assert.equal(environnementSuspect({ NODE_TLS_REJECT_UNAUTHORIZED: '0' }, []), 'NODE_TLS_REJECT_UNAUTHORIZED');
+  assert.match(environnementSuspect({}, ['--use-system-ca']), /options de Node/);
+  const l = creerLicence({ fichier: path.join(os.tmpdir(), 'jamais.json'), storeId: '9', produitId: '42', verifierEnvironnement: () => 'NODE_OPTIONS', fetchImpl: async () => assert.fail('aucun appel') });
+  assert.match((await l.activer('ABCD-1234-EFGH-5678')).raison, /NODE_OPTIONS/);
 });
 
 // ---------------------------------------------------------------- serveur du jeu, avec le faux live

@@ -1,4 +1,4 @@
-// Moteur de « La Guerre des Départements » — logique pure (aucun DOM), testable sous Node.
+// Moteur de « Empira Conquest » — logique pure (aucun DOM), testable sous Node.
 // Le temps avance uniquement par update(dt), avec des secondes réelles : le chrono reste juste
 // même si TikTok LIVE Studio affiche peu d'images par seconde.
 

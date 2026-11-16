@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Guide d’installation — La Guerre des Départements</title>
+<title>Guide d’installation — Empira Conquest</title>
 <style>
 :root { color-scheme: dark; }
 body { margin: 0; background: #0c0d14; color: #ecebf2; font: 17px/1.6 'Segoe UI', system-ui, sans-serif; }
@@ -18,23 +18,24 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
 </head>
 <body>
 <main>
-<h1>La Guerre des <em>Départements</em></h1>
+<h1>Empira <em>Conquest</em></h1>
 <p>Guide d’installation et d’utilisation — Empira Agency</p>
 
 <h2>Ce qu’il faut</h2>
 <ul>
   <li>Un PC Windows 10 ou 11.</li>
   <li><b>TikTok LIVE Studio</b> (pour diffuser le live).</li>
-  <li>Une connexion Internet. <b>Rien d’autre à installer</b> : le jeu se connecte lui-même à ton live (pas besoin de TikFinity) et tout se règle depuis une seule fenêtre.</li>
+  <li>Une connexion Internet. <b>Rien d’autre à installer</b> : le jeu se connecte lui-même à ton live et tout se règle depuis une seule fenêtre.</li>
+  <li><b>Facultatif — TikFinity</b> : si tu l’utilises déjà, laisse-le ouvert avec son « API WebSocket » activée (port 21213). En mode automatique, le jeu reçoit alors le live par TikFinity, et repasse tout seul en connexion directe si TikFinity se ferme.</li>
 </ul>
 
 <h2>Installation</h2>
 <ol>
-  <li>Extrais le dossier <code>La-Guerre-des-Departements</code> où tu veux (par exemple dans tes documents).</li>
+  <li>Extrais le dossier <code>Empira-Conquest</code> où tu veux (par exemple dans tes documents).</li>
   <li>Double-clique sur <b>LANCER LE JEU.bat</b>.<br>
     Si Windows affiche « Windows a protégé votre ordinateur » : clique sur <b>Informations complémentaires</b>, puis sur <b>Exécuter quand même</b>.</li>
   <li>Une fenêtre noire s’ouvre (le serveur du jeu, à laisser ouverte pendant le live), puis la <b>page de démarrage</b> dans ton navigateur.</li>
-  <li>Entre ta <b>clé de licence</b> (reçue par e-mail après l’achat) et clique sur <b>Activer</b>. Une clé fonctionne sur 2 PC.</li>
+  <li>Entre ta <b>clé de licence</b> (reçue par e-mail après l’achat) et clique sur <b>Activer</b>. Pas encore de clé ? Le bouton <b>Acheter une clé</b> mène au paiement. Une clé fonctionne sur 2 PC ; pour changer de PC, clique sur « Libérer ce PC » sur l’ancien.</li>
   <li>Lance ton live, puis entre ton <b>pseudo TikTok</b> et clique sur <b>Connecter</b>. Le voyant passe au vert : « Connecté au live de @ton_pseudo ». Le pseudo est retenu : aux lancements suivants, la connexion se fait toute seule.</li>
   <li>Vérifie que la voix et la musique sont au vert, choisis tes couleurs et ta voix (homme ou femme).</li>
   <li>Clique sur <b>Copier l’adresse</b>.</li>
@@ -77,9 +78,10 @@ table { border-collapse: collapse; width: 100%; } td { border-top: 1px solid #2a
   <li><b>« n’est pas en live »</b> : lance d’abord ton live sur TikTok, le jeu réessaie tout seul. Vérifie aussi l’orthographe du pseudo.</li>
   <li><b>« TikTok : connexion perdue — le jeu continue »</b> sur l’écran : le jeu se reconnecte tout seul. La partie n’est pas interrompue.</li>
   <li><b>Connexions refusées ou limitées</b> : le jeu passe par un service gratuit (Euler Stream) qui peut limiter le nombre de connexions. Tu peux y créer une clé gratuite et la coller dans « Options avancées ».</li>
-  <li><b>Plan B</b> : si la connexion directe ne marche pas un jour (TikTok change parfois son fonctionnement), coche « Utiliser TikFinity à la place » dans les options avancées, avec TikFinity ouvert et son API WebSocket activée.</li>
+  <li><b>Plan B</b> : si la connexion directe ne marche pas un jour (TikTok change parfois son fonctionnement), ouvre TikFinity avec son API WebSocket activée : en mode automatique, le jeu l’utilise tout seul.</li>
   <li><b>Pas de voix</b> : installe une voix française dans Paramètres Windows → Heure et langue → Voix, puis relance le jeu.</li>
   <li><b>« Licence non activée »</b> : ouvre la page de démarrage (LANCER LE JEU) et entre ta clé. Une connexion Internet est nécessaire au moins tous les 5 jours.</li>
+  <li><b>« réglage qui empêche de vérifier la licence »</b> : lance toujours le jeu avec LANCER LE JEU.bat. Si le message reste, une variable NODE_OPTIONS ou NODE_EXTRA_CA_CERTS est définie sur ton PC (logiciel de développement) : supprime-la des variables d’environnement de Windows.</li>
   <li><b>Port occupé</b> : le jeu est peut-être déjà lancé ; la page de démarrage s’ouvre alors directement. Sinon, ferme le programme qui utilise le port 8911.</li>
 </ul>
 </main>

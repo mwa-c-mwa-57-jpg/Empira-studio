@@ -20,14 +20,14 @@ function trame(texte, opcode = 0x1) {
 }
 
 /** Accepte les connexions WebSocket sur un chemin donné ; renvoie { diffuser, nombre, surConnexion }. */
-export function serveurWebSocket(serveurHttp, chemin, { surConnexion = () => {} } = {}) {
+export function serveurWebSocket(serveurHttp, chemin, { surConnexion = () => {}, autoriser = () => true } = {}) {
   const clients = new Set();
   serveurHttp.on('upgrade', (req, socket) => {
     const url = new URL(req.url, 'http://localhost');
     const cle = req.headers['sec-websocket-key'];
     // seules les pages servies par ce PC peuvent se connecter
     const origine = req.headers.origin;
-    if (url.pathname !== chemin || !cle || (origine && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origine))) {
+    if (url.pathname !== chemin || !cle || !autoriser() || (origine && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origine))) {
       socket.destroy();
       return;
     }

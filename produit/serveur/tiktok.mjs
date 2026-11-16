@@ -74,6 +74,12 @@ export function aplatir(sorte, d) {
  * Gère la connexion au live : connecter(pseudo), deconnecter(), etat().
  * surMessage reçoit les messages à plat, surEtat chaque changement d'état.
  */
+/** Pseudo TikTok nettoyé (@, lien de profil acceptés), ou null s'il est invalide. */
+export function normaliserPseudo(brut) {
+  const p = String(brut || '').trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?tiktok\.com\/@/, '').replace(/\/.*$/, '');
+  return /^[\w.]{2,40}$/.test(p) ? p : null;
+}
+
 export function creerConnexionTikTok({ surMessage, surEtat = () => {}, cleEuler = '', charger = () => import('tiktok-live-connector') }) {
   let connexion = null;
   let pseudo = '';
@@ -99,7 +105,8 @@ export function creerConnexionTikTok({ surMessage, surEtat = () => {}, cleEuler 
     const { TikTokLiveConnection, WebcastEvent, ControlEvent } = lib;
     changer({ etat: 'connexion', detail: `Connexion au live de @${pseudo}…` });
     // enableExtendedGiftInfo reste désactivé : il exige un abonnement payant chez Euler Stream (l'image arrive avec chaque cadeau)
-    const c = new TikTokLiveConnection(pseudo, { enableExtendedGiftInfo: false, ...(cleEuler ? { signApiKey: cleEuler } : {}) });
+    const cle = typeof cleEuler === 'function' ? cleEuler() : cleEuler;
+    const c = new TikTokLiveConnection(pseudo, { enableExtendedGiftInfo: false, ...(cle ? { signApiKey: cle } : {}) });
     connexion = c;
     // abonnements et partages arrivent aussi par l'événement « social » : le jeu ignore les doublons (même msgId)
     const sortes = { chat: WebcastEvent.CHAT, like: WebcastEvent.LIKE, gift: WebcastEvent.GIFT, follow: WebcastEvent.FOLLOW, share: WebcastEvent.SHARE, social: WebcastEvent.SOCIAL };
@@ -139,8 +146,8 @@ export function creerConnexionTikTok({ surMessage, surEtat = () => {}, cleEuler 
 
   return {
     connecter(nouveau) {
-      const p = String(nouveau || '').trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?tiktok\.com\/@/, '').replace(/\/.*$/, '');
-      if (!/^[\w.]{2,40}$/.test(p)) {
+      const p = normaliserPseudo(nouveau);
+      if (!p) {
         changer({ etat: 'erreur', detail: 'Pseudo TikTok invalide.' });
         return false;
       }

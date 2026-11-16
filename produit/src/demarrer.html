@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Démarrer — La Guerre des Départements</title>
+<title>Démarrer — Empira Conquest</title>
 <style>
 [hidden] { display: none !important; }
+a.bouton { display: inline-block; padding: 10px 18px; border-radius: 10px; background: var(--or, #d9a84e); color: #1a1407; font-weight: 700; text-decoration: none; }
 :root { color-scheme: dark; --nuit: #0c0d14; --carte: #151722; --trait: #2a2c3c; --texte: #ecebf2; --doux: #a3a3b8; --or: #d9a84e; --or-clair: #f0cd7a; --ok: #3fcf8e; --ko: #ff6b5b; }
 * { box-sizing: border-box; }
 html { background: var(--nuit); }
@@ -15,6 +16,7 @@ header { display: flex; align-items: center; gap: 16px; }
 header canvas { width: 150px; height: 56px; }
 h1 { margin: 0; font: 400 clamp(26px, 5vw, 38px)/1.1 Georgia, 'Times New Roman', serif; }
 h1 em { font-style: normal; color: var(--or-clair); }
+h1 .sous { display: block; font: 600 14px/1.4 var(--police, system-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--texte-2, #a9a8b8); margin-top: 4px; }
 section { background: var(--carte); border: 1px solid var(--trait); border-radius: 16px; padding: 18px 20px; }
 h2 { margin: 0 0 10px; font: 700 18px/1.2 'Segoe UI', system-ui, sans-serif; color: var(--or-clair); }
 label { display: block; margin: 8px 0 4px; font-weight: 700; }
@@ -44,7 +46,7 @@ select { width: auto; }
 </head>
 <body>
 <div class="page">
-  <header><canvas id="logo" width="300" height="112" aria-label="Empira Agency"></canvas><h1>La Guerre des <em>Départements</em></h1></header>
+  <header><canvas id="logo" width="300" height="112" aria-label="Empira Agency"></canvas><h1>Empira <em>Conquest</em><small class="sous">La bataille des départements</small></h1></header>
 
   <section id="blocLicence">
     <h2>Licence</h2>
@@ -53,28 +55,35 @@ select { width: auto; }
       <label for="cle">Clé de licence (reçue par e-mail après l’achat)</label>
       <div class="ligne"><input type="text" id="cle" autocomplete="off" spellcheck="false" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" style="flex:1"><button id="activer" type="button">Activer</button></div>
       <p class="info">Une clé fonctionne sur 2 PC. Le jeu tolère quelques jours sans connexion Internet.</p>
+      <p class="ligne" id="ligneAcheter" hidden><a class="bouton" id="acheter" target="_blank" rel="noopener">Acheter une clé</a></p>
     </div>
+    <p class="ligne" id="ligneDesactiver" hidden><button class="discret" id="desactiver" type="button">Libérer ce PC (désactiver la licence ici)</button></p>
     <p id="msgLicence" role="status"></p>
   </section>
 
   <section id="blocTikTok">
     <h2>Connexion au live TikTok</h2>
-    <label for="pseudo">Ton pseudo TikTok (sans @) — le jeu se connecte directement à ton live, sans autre logiciel</label>
+    <label for="pseudo">Ton pseudo TikTok (sans @) — le jeu se connecte lui-même à ton live</label>
     <div class="ligne"><input type="text" id="pseudo" autocomplete="off" spellcheck="false" placeholder="ton_pseudo" style="flex:1"><button id="connecter" type="button">Connecter</button><button class="discret" id="deconnecter" type="button">Déconnecter</button></div>
     <div class="etat" style="margin-top:12px"><b id="iLive" class="attente">…</b><div><span id="tLive">Live TikTok</span><small id="sLive">Pas encore connecté.</small></div></div>
+    <label for="source" style="margin-top:12px">Comment recevoir le live</label>
+    <select id="source">
+      <option value="auto">Automatique (recommandé) : TikFinity s’il est ouvert sur ce PC, sinon connexion directe</option>
+      <option value="direct">Connexion directe uniquement (aucun autre logiciel)</option>
+      <option value="tikfinity">TikFinity uniquement</option>
+    </select>
     <p class="info">Tu dois être <b>en live</b> pour que la connexion réussisse. Le pseudo est retenu : au prochain lancement, la connexion se fait toute seule. Tes commandes dans le tchat (!fin, !vague…) et celles de tes modérateurs sont acceptées.</p>
     <details>
       <summary>Options avancées</summary>
       <label for="euler">Clé Euler Stream (facultative, en cas de limite de connexions)</label>
       <input type="text" id="euler" autocomplete="off" spellcheck="false" placeholder="laisser vide">
-      <label class="choix" style="margin-top:10px"><span><input type="checkbox" id="tikfinity"> Utiliser TikFinity à la place (secours, si la connexion directe ne marche plus)</span></label>
+      <p class="info">TikFinity (facultatif) : ouvre-le, connecte ton live et active son « API WebSocket » (port 21213). En mode automatique, le jeu l’utilise dès qu’il répond, et repasse en connexion directe s’il se ferme.</p>
     </details>
   </section>
 
   <section>
     <h2>Vérifications</h2>
     <div class="etats">
-      <div class="etat" id="ligneTik" hidden><b id="iTik" class="attente">…</b><div><span id="tTik">TikFinity</span><small id="sTik"></small></div></div>
       <div class="etat"><b id="iVoix" class="attente">…</b><div><span id="tVoix">Voix Windows</span><small id="sVoix"></small></div></div>
       <div class="etat"><b id="iMus" class="attente">…</b><div><span id="tMus">Musique</span><small id="sMus"></small></div></div>
     </div>

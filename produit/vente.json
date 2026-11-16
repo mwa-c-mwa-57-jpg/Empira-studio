@@ -1,0 +1,6 @@
+{
+  "_aide": "Réglages de vente Lemon Squeezy (aucun secret ici). storeId et produitId : Lemon Squeezy → Settings → Stores (ID de la boutique) et Products → le produit (ID). urlAchat : lien de paiement du produit (Share → Checkout URL). Sans storeId et produitId, la version vendue refuse toutes les clés.",
+  "storeId": "",
+  "produitId": "",
+  "urlAchat": ""
+}

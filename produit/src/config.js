@@ -1,7 +1,8 @@
-// Réglages de « La Guerre des Départements » (version vendue).
+// Réglages de « Empira Conquest » (version vendue).
 // Tout ce qui est chiffré dans le cahier des charges est ici, pour pouvoir l'ajuster sans toucher au moteur.
 
-export const TITRE = 'La Guerre des Départements';
+export const TITRE = 'Empira Conquest';
+export const SOUS_TITRE = 'La bataille des départements';
 export const VERSION = '1.0.0';
 
 export const REGLES = {

@@ -1,14 +1,15 @@
 # Empira — jeux interactifs pour TikTok LIVE
 
-## ★ La Guerre des Départements — version vendue (nouveau)
+## ★ Empira Conquest — La bataille des départements (version vendue)
 
-Reconstruite d'après le cahier des charges Empira : connexion directe au live TikTok (plus besoin de TikFinity),
+Reconstruite d'après le cahier des charges Empira : connexion directe au live TikTok ou TikFinity (mode automatique),
+licence Lemon Squeezy verrouillée, code protégé et jeu chiffré,
 tout piloté depuis une seule fenêtre (connexion, régie, couleurs, voix), TikTok LIVE Studio, engins de guerre, vagues,
 événements, voix homme ou femme, couleurs personnalisables et licence Lemon Squeezy. Code dans `produit/`.
 
 ```
 npm install                 # une fois (esbuild + tiktok-live-connector 2.4.0)
-npm run build:produit       # → dist/La-Guerre-des-Departements/ (dossier à livrer, avec node.exe Windows)
+npm run build:produit       # → dist/Empira-Conquest/ (dossier à livrer, avec node.exe Windows)
 npm run dev:produit         # serveur de dev sur http://localhost:8911 avec faux live (POST /test/tiktok pour simuler)
 npm run test:produit        # test navigateur complet
 ```

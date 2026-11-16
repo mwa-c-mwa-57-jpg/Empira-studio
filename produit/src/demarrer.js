@@ -2,12 +2,11 @@
 
 import { PALETTE } from './config.js';
 import { dessinerLogo } from './logo.js';
-import { URL_TIKFINITY } from './tikfinity.js';
 
 /* global VENTE */
 const VERSION_VENDUE = typeof VENTE !== 'undefined' && VENTE;
 const $ = (id) => document.getElementById(id);
-const MEMOIRE = 'guerre-des-departements:demarrage';
+const MEMOIRE = 'empira-conquest:demarrage';
 
 const memoire = (() => {
   try {
@@ -48,6 +47,10 @@ async function verifierLicence() {
     $('etatLicence').textContent = r.ok ? `✔ Licence active${r.horsLigne ? ' (vérification hors ligne)' : ''}` : `✘ ${r.raison || 'Licence non activée'}`;
     $('etatLicence').className = r.ok ? 'ok' : 'ko';
     $('formLicence').hidden = r.ok;
+    $('ligneDesactiver').hidden = !r.ok;
+    const achat = typeof r.achat === 'string' && /^https:\/\//.test(r.achat) ? r.achat : '';
+    $('ligneAcheter').hidden = r.ok || !achat;
+    if (achat) $('acheter').href = achat;
     return r.ok;
   } catch {
     $('etatLicence').textContent = '✘ Le serveur du jeu ne répond pas : relancez « LANCER LE JEU ».';
@@ -77,7 +80,8 @@ const ETATS_LIVE = { connecte: 'ok', erreur: 'ko', deconnecte: 'ko', reconnexion
 async function etatLive() {
   try {
     const e = await (await fetch('/tiktok/etat', { cache: 'no-store' })).json();
-    marquer('iLive', 'sLive', e.detail || '', ETATS_LIVE[e.etat] || 'attente');
+    const via = e.etat === 'connecte' ? (e.source === 'tikfinity' ? ' — via TikFinity' : ' — connexion directe') : '';
+    marquer('iLive', 'sLive', `${e.detail || ''}${e.source === 'tikfinity' ? '' : via}`, ETATS_LIVE[e.etat] || 'attente');
   } catch {
     marquer('iLive', 'sLive', 'Le serveur du jeu ne répond pas : relancez « LANCER LE JEU ».', 'ko');
   }
@@ -88,7 +92,7 @@ async function connecter() {
   if (!pseudo) return $('pseudo').focus();
   marquer('iLive', 'sLive', `Connexion au live de @${pseudo}…`, 'attente');
   try {
-    await fetch('/tiktok/connecter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pseudo, cleEuler: $('euler').value.trim() }) });
+    await fetch('/tiktok/connecter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pseudo, cleEuler: $('euler').value.trim(), source: $('source').value }) });
   } catch {
     /* l'état affiché dira ce qu'il en est */
   }
@@ -115,35 +119,6 @@ async function commande(nom, arg = '') {
 }
 
 // ------------------------------------------------------------------ vérifications
-
-function verifierTikFinity() {
-  $('ligneTik').hidden = !$('tikfinity').checked;
-  if (!$('tikfinity').checked) return Promise.resolve(true);
-  marquer('iTik', 'sTik', `Connexion à ${URL_TIKFINITY}…`, 'attente');
-  return new Promise((resolve) => {
-    let fini = false;
-    const conclure = (ok) => {
-      if (fini) return;
-      fini = true;
-      marquer('iTik', 'sTik', ok ? 'TikFinity est ouvert et son API WebSocket répond.' : 'Pas de réponse : ouvre TikFinity, connecte ton live et active l’API WebSocket (port 21213).', ok ? 'ok' : 'ko');
-      try {
-        ws.close();
-      } catch {
-        /* rien */
-      }
-      resolve(ok);
-    };
-    let ws;
-    try {
-      ws = new WebSocket(URL_TIKFINITY);
-      ws.onopen = () => conclure(true);
-      ws.onerror = () => conclure(false);
-    } catch {
-      conclure(false);
-    }
-    setTimeout(() => conclure(false), 3500);
-  });
-}
 
 let voix = [];
 async function verifierVoix() {
@@ -188,7 +163,6 @@ function majAdresse() {
   const p = new URLSearchParams();
   const hote = $('pseudo').value.trim().replace(/^@/, '');
   if (hote) p.set('hote', hote);
-  if ($('tikfinity').checked) p.set('source', 'tikfinity');
   const couleurs = valeur('couleurs');
   p.set('couleurs', couleurs);
   if (couleurs === 'fixe') {
@@ -200,7 +174,7 @@ function majAdresse() {
   p.set('contours', valeur('contours'));
   p.set('voix', valeur('voix'));
   if ($('nomVoix').value) p.set('nomvoix', $('nomVoix').value);
-  const adresse = `${location.origin}/guerre-des-departements.html?${p}`;
+  const adresse = `${location.origin}/empira-conquest.html?${p}`;
   $('adresse').textContent = adresse;
   $('ouvrir').href = adresse;
   $('perso').hidden = couleurs !== 'perso';
@@ -210,7 +184,7 @@ function majAdresse() {
     i.style.background = c;
     return i;
   }));
-  Object.assign(memoire, { tikfinity: $('tikfinity').checked, couleurs, palette: $('palette').value, unites: valeur('unites'), contours: valeur('contours'), voix: valeur('voix'), nomVoix: $('nomVoix').value });
+  Object.assign(memoire, { couleurs, palette: $('palette').value, unites: valeur('unites'), contours: valeur('contours'), voix: valeur('voix'), nomVoix: $('nomVoix').value });
   memoriser();
 }
 
@@ -238,9 +212,9 @@ function init() {
   const g = $('logo').getContext('2d');
   g.scale(2, 2);
   dessinerLogo(g, 0, 0, 'gauche');
-  $('tikfinity').checked = Boolean(memoire.tikfinity);
   fetch('/reglages', { cache: 'no-store' }).then((r) => r.json()).then((r) => {
     if (r.pseudo && !$('pseudo').value) $('pseudo').value = r.pseudo;
+    if (r.source) $('source').value = r.source;
     majAdresse();
   }).catch(() => {});
   $('palette').value = memoire.palette || '';
@@ -252,10 +226,17 @@ function init() {
   for (const el of document.querySelectorAll('input[name="voix"]')) el.addEventListener('change', remplirVoix);
   $('nomVoix').addEventListener('change', majAdresse);
   $('activer').addEventListener('click', activer);
+  $('desactiver').addEventListener('click', async () => {
+    if (!confirm('Désactiver la licence sur ce PC ? Elle pourra être activée sur un autre PC.')) return;
+    const r = await (await fetch('/licence/desactiver', { method: 'POST' })).json().catch(() => ({ ok: false }));
+    $('msgLicence').textContent = r.ok ? 'Licence désactivée sur ce PC.' : r.raison || 'Désactivation impossible.';
+    $('msgLicence').className = r.ok ? 'ok' : 'ko';
+    verifierLicence();
+  });
   $('connecter').addEventListener('click', connecter);
   $('deconnecter').addEventListener('click', deconnecter);
+  $('source').addEventListener('change', () => $('pseudo').value.trim() && connecter());
   $('pseudo').addEventListener('keydown', (e) => e.key === 'Enter' && connecter());
-  $('tikfinity').addEventListener('change', () => verifierTikFinity());
   for (const b of document.querySelectorAll('button[data-cmd]')) b.addEventListener('click', () => commande(b.dataset.cmd, b.dataset.arg || ''));
   $('btnDuree').addEventListener('click', () => commande('duree', $('duree').value));
   $('btnDire').addEventListener('click', () => $('texteDire').value.trim() && commande('dire', $('texteDire').value.trim()));
@@ -265,11 +246,10 @@ function init() {
   etatLive();
   setInterval(etatLive, 2000);
   $('copier').addEventListener('click', copier);
-  $('reverifier').addEventListener('click', () => Promise.all([verifierTikFinity(), verifierVoix(), verifierMusique()]));
+  $('reverifier').addEventListener('click', () => Promise.all([verifierVoix(), verifierMusique()]));
   $('tester').addEventListener('click', () => fetch(`/parler?t=${encodeURIComponent('Que la guerre commence ! Écris le numéro de ton département !')}&voix=${encodeURIComponent($('nomVoix').value)}`).catch(() => {}));
   majAdresse();
   verifierLicence();
-  verifierTikFinity();
   verifierVoix();
   verifierMusique();
 }
