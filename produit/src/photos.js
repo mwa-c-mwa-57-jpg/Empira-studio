@@ -1,5 +1,5 @@
 // Photos de profil des joueurs (adresse fournie par TikFinity) avec initiale colorée en repli,
-// images réelles des cadeaux et logo Empira (images/logo-empira.png s'il est présent).
+// et images réelles des cadeaux (apprises pendant le live).
 
 import { safeImageUrl } from '../../public/src/core/events.js';
 
@@ -7,11 +7,7 @@ export class Photos {
   constructor() {
     this.images = new Map();
     this.repli = new Map();
-    this.logo = null;
     this.cadeaux = new Map(); // nom ou identifiant de cadeau → adresse de son image
-    const logo = new Image();
-    logo.onload = () => (this.logo = logo);
-    logo.src = 'images/logo-empira.png';
   }
 
   #charger(url) {

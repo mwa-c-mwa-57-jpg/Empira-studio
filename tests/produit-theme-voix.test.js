@@ -30,6 +30,14 @@ test('couleurs : 32 couleurs mélangées, même tirage avec la même graine, pal
   assert.equal(new Theme(lireReglages('?contours=vert')).contour, CONTOURS.vert);
   const t = new Theme(lireReglages('?unites=departement'));
   assert.equal(t.couleurUnites('17'), t.couleur('17'));
+  // soldats et véhicules réglés séparément, couleur personnalisée comprise
+  const sv = new Theme(lireReglages('?unites=perso&unitesperso=FF00AA&vehicules=camouflage'));
+  assert.deepEqual([sv.couleurSoldats('17'), sv.couleurVehicules('17')], ['#ff00aa', '#5b6b3a']);
+  const ancien = new Theme(lireReglages('?unites=vert'));
+  assert.equal(ancien.couleurVehicules('17'), '#1f9d4c', 'ancienne adresse : les véhicules suivent les soldats');
+  const mauvais = new Theme(lireReglages('?unites=perso&unitesperso=javascript:1&vehicules=departement'));
+  assert.equal(mauvais.couleurSoldats('17'), mauvais.couleur('17'), 'couleur personnalisée invalide → couleur du département');
+  assert.equal(mauvais.couleurVehicules('63'), mauvais.couleur('63'));
 });
 
 test('mots interdits filtrés dans les pseudos', () => {

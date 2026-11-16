@@ -5,7 +5,7 @@ import { CADEAUX, REGLES, TITRE, SOUS_TITRE, EVENEMENTS } from './config.js';
 import { PAR_CODE } from './game.js';
 import { placeForms, capitalize } from '../../public/src/france/names.js';
 import { pseudoPropre } from './theme.js';
-import { dessinerLogo } from './logo.js';
+import { LOGO_COMPLET } from './logo.js';
 
 const fmt = (n) => Math.round(n).toLocaleString('fr-FR');
 const chrono = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -147,11 +147,11 @@ export class Interface {
           this.#filAjouter(`${nom} : écris ton département pour utiliser ton cadeau !`, 'var(--contour)');
           break;
         case 'attaque': {
-          const verbes = { chasseur: 'bombarde', missiles: 'envoie ses missiles sur', helicos: 'envoie ses hélicoptères sur', tsunami: 'déclenche un tsunami sur', tomate: 'lance une tomate sur', nucleaire: 'lâche la bombe sur' };
+          const verbes = { chasseur: 'bombarde', missiles: 'envoie ses missiles sur', helicos: 'envoie ses hélicoptères sur', tsunami: 'déclenche un tsunami sur', tomate: 'lance une tomate sur', nucleaire: 'lâche la bombe sur', porteavions: 'envoie son porte-avions sur' };
           const texte = `Le ${e.de} ${verbes[e.sorte] || 'attaque'} ${e.vers.map((v) => `le ${v}`).join(', ')}${e.riposte ? ' (riposte ×2)' : ''} !`;
           this.#filAjouter(texte, this.theme.couleur(e.de));
           this.#general(texte, 5, 2);
-          if (e.sorte === 'nucleaire' || e.sorte === 'tsunami' || e.sorte === 'helicos') this.annoncer(texte, this.theme.couleur(e.de));
+          if (['nucleaire', 'tsunami', 'helicos', 'porteavions'].includes(e.sorte)) this.annoncer(e.sorte === 'nucleaire' ? `☢ ${texte}` : e.sorte === 'porteavions' ? `🚢 ${texte}` : texte, this.theme.couleur(e.de));
           break;
         }
         case 'bouclier':
@@ -203,6 +203,22 @@ export class Interface {
           break;
         case 'largage':
           this.#filAjouter(`Largage de renforts sur le ${e.equipe} (+${fmt(e.soldats)})`, c);
+          break;
+        case 'ambiance':
+          if (e.sorte === 'ravitaillement') this.#filAjouter(`📦 Ravitaillement surprise en route vers le ${e.equipe} !`, c);
+          else if (e.sorte === 'bombardement') {
+            this.#filAjouter(`💣 Bombardement surprise sur le leader : le ${e.equipe} !`, '#ff6b5b');
+            this.#general(`Bombardement surprise sur le ${e.equipe} ! Un bouclier le protégerait…`, 5, 2);
+          }
+          break;
+        case 'ravitaille':
+          this.#filAjouter(`📦 Le ${e.equipe} reçoit ${fmt(e.soldats)} soldats de ravitaillement`, c);
+          break;
+        case 'vagueAerienne':
+          if (e.numero === 1) this.#general(`Le porte-avions du ${e.de} lance ses avions sur le ${e.vers} !`, 6, 2);
+          break;
+        case 'ambianceActive':
+          this.#filAjouter(e.actif ? 'Ambiance activée : ravitaillements et bombardements surprises' : 'Ambiance désactivée', 'var(--contour)');
           break;
         case 'podium':
           this.#podium(e.podium);
@@ -433,12 +449,9 @@ export class Interface {
       el('b', '', r, `${pseudoPropre(p.roi.nom)} — ${fmt(p.roi.total)} soldats`);
     }
     // le logo Empira, toujours affiché sous le podium
-    const logo = el('canvas', 'logo', d);
-    logo.width = 300;
-    logo.height = 120;
-    const g2 = logo.getContext('2d');
-    g2.scale(2, 2);
-    dessinerLogo(g2, 75, 2, 'centre', this.photos.logo);
+    const logo = el('img', 'logo', d);
+    logo.src = LOGO_COMPLET;
+    logo.alt = 'Empira Agency';
     el('p', 'suite', d, 'La prochaine partie démarre à la première action — écris ton département !');
     d.classList.add('montre');
   }

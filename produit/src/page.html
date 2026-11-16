@@ -73,7 +73,7 @@ body { font-family: var(--police); color: #f2efe8; }
 .fil { top: 1252px; right: 130px; width: 440px; display: flex; flex-direction: column; gap: 6px; }
 .fil .ligne { background: rgba(12, 13, 22, 0.88); border-left: 6px solid var(--contour); border-radius: 12px; padding: 5px 10px; font: 700 16px var(--police); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; animation: glisse 0.35s ease-out; }
 .fil .ligne:nth-child(2) { opacity: 0.8; } .fil .ligne:nth-child(3) { opacity: 0.6; }
-.annonce { top: 840px; left: 60px; right: 60px; padding: 16px 22px; text-align: center; font: 900 34px/1.15 var(--police); opacity: 0; transform: scale(0.6); transition: opacity 0.25s, transform 0.35s cubic-bezier(.2, 1.6, .4, 1); }
+.annonce { top: 1150px; left: 60px; right: 60px; padding: 12px 20px; text-align: center; font: 900 30px/1.15 var(--police); opacity: 0; transform: scale(0.6); transition: opacity 0.25s, transform 0.35s cubic-bezier(.2, 1.6, .4, 1); }
 .annonce.montre { opacity: 1; transform: scale(1); }
 .attente { top: 800px; left: 100px; right: 100px; display: none; text-align: center; padding: 24px; border-radius: 26px; background: rgba(10, 11, 18, 0.85); border: 2px dashed var(--contour); }
 .attente.montre { display: block; animation: pulse 2s infinite; }
@@ -95,11 +95,12 @@ body { font-family: var(--police); color: #f2efe8; }
 .podium .roi-final { display: grid; grid-template-columns: 80px 1fr; column-gap: 14px; align-items: center; padding: 8px 24px; margin-top: 6px; border-color: #ffd23d; border-radius: 60px; }
 .podium .roi-final .photo { grid-row: span 2; width: 76px; height: 76px; }
 .podium .roi-final small { font: 900 18px var(--police); color: #ffd23d; } .podium .roi-final b { font: 900 26px var(--police); }
-.podium .logo { width: 225px; height: 90px; margin-top: 2px; }
+.podium .logo { width: 210px; height: auto; margin-top: 2px; }
 .podium .suite { font-size: 19px; color: rgba(255, 255, 255, 0.7); }
 #licence { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; padding: 80px; background: rgba(5, 6, 10, 0.96); }
 #licence.montre { display: flex; }
 #licence h2 { font: 700 54px Georgia, serif; color: #f6dc8f; }
+#licence img { width: 420px; margin-bottom: 30px; }
 #licence p { font: 600 30px/1.4 var(--police); }
 @keyframes entree { from { opacity: 0; transform: translateY(14px) scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes glisse { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }

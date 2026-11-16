@@ -42,6 +42,9 @@ export class Annonceur {
     this.file = this.file.filter((q) => q.priorite >= 2 || t - q.a < 6000);
     if (t < this.occupeJusqua || !this.file.length) return;
     const p = this.file.shift();
+    // jamais deux fois la même phrase de suite (ex. un leader qui change deux fois en quelques secondes)
+    if (p.texte === this.derniereDite) return;
+    this.derniereDite = p.texte;
     const duree = 600 + p.texte.length * 62;
     this.occupeJusqua = t + duree;
     this.surParole(duree);
@@ -78,9 +81,15 @@ export class Annonceur {
             tsunami: [`Tsunami ! Une vague géante déferle sur le ${vers} !`],
             nucleaire: [`Alerte nucléaire ! Le ${de} frappe les trois premiers !`, `Bombes nucléaires ! Le ${de} vise le podium !`],
             tomate: [`Le ${de} lance une tomate sur le ${vers} !`],
+            porteavions: [`Un porte-avions du ${de} arrive au large ! Le ${vers} va prendre cher !`, `Porte-avions en approche ! Le ${de} lance ses avions sur le ${vers} !`],
           }[e.sorte];
           if (!lignes) break;
-          this.dire(`${e.riposte ? 'Riposte ! ' : ''}${c(lignes)}`, e.sorte === 'nucleaire' || e.sorte === 'tsunami' ? 3 : 2, `attaque:${e.sorte}:${de}`);
+          this.dire(`${e.riposte ? 'Riposte ! ' : ''}${c(lignes)}`, ['nucleaire', 'tsunami', 'porteavions'].includes(e.sorte) ? 3 : 2, `attaque:${e.sorte}:${de}`);
+          break;
+        }
+        case 'ambiance': {
+          if (e.sorte === 'ravitaillement') this.dire(c([`Ravitaillement surprise pour ${formes(e.equipe).the} !`, `Un avion cargo largue des renforts sur ${formes(e.equipe).the} !`]), 1, `ambiance:${e.equipe}`);
+          else if (e.sorte === 'bombardement') this.dire(c([`Bombardement surprise sur le leader : ${formes(e.equipe).the} !`, `Attention ${formes(e.equipe).the}, un bombardier arrive !`]), 2, `bombardement:${e.equipe}`);
           break;
         }
         case 'tank':

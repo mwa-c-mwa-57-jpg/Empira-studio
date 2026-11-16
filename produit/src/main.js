@@ -9,6 +9,7 @@ import { Annonceur, sortieVoix } from './voix.js';
 import { Bruitages, Musique } from './audio.js';
 import { connecterTikFinity, convertirTikFinity } from './tikfinity.js';
 import { EventGuard } from '../../public/src/core/guard.js';
+import { LOGO_COMPLET, poserIcone } from './logo.js';
 
 /* global VENTE */
 const VERSION_VENDUE = typeof VENTE !== 'undefined' && VENTE;
@@ -46,6 +47,11 @@ async function licenceValide() {
 }
 
 async function demarrer() {
+  poserIcone();
+  const logoLicence = document.createElement('img');
+  logoLicence.src = LOGO_COMPLET;
+  logoLicence.alt = 'Empira Agency';
+  document.querySelector('#licence > div')?.prepend(logoLicence);
   adapterEchelle();
   window.addEventListener('resize', adapterEchelle);
   const reglages = lireReglages(location.search);
@@ -127,9 +133,13 @@ async function demarrer() {
       else if (e.type === 'cadeau' && e.renfort === 'commandos') bruitages.jouer('avion');
       else if (e.type === 'tank') bruitages.jouer('canon');
       else if (e.type === 'attaque') {
-        const s = { chasseur: 'chasseur', missiles: 'missile', helicos: 'helico', tsunami: 'vague', nucleaire: 'sifflet', tomate: 'rafale' }[e.sorte];
+        const s = { chasseur: 'chasseur', missiles: 'missile', helicos: 'helico', tsunami: 'vague', nucleaire: 'sifflet', tomate: 'rafale', porteavions: 'clairon' }[e.sorte];
         if (s) bruitages.jouer(s);
       } else if (e.type === 'impact' && !e.bloque && e.detruit > 0) bruitages.jouer(e.sorte === 'nucleaire' ? 'nucleaire' : e.sorte === 'helicos' ? 'mitrailleuse' : 'explosion');
+      else if (e.type === 'vagueAerienne') bruitages.jouer('chasseur');
+      else if (e.type === 'ambiance' && e.sorte === 'ravitaillement') bruitages.jouer('avion');
+      else if (e.type === 'ambiance' && e.sorte === 'bombardement') bruitages.jouer('sifflet');
+      else if (e.type === 'impact' && e.sorte === 'bombardement' && !e.bloque) bruitages.jouer('explosion');
       else if (e.type === 'vagueAnnonce') bruitages.jouer('tension');
       else if (e.type === 'vagueDebut') bruitages.jouer(e.vague.sirene ? 'sirene' : 'clairon');
       else if (e.type === 'evenementDebut' || e.type === 'occupation') bruitages.jouer('tambour');

@@ -13,7 +13,7 @@ html { background: var(--nuit); }
 body { margin: 0; background: radial-gradient(1100px 480px at 15% -10%, #22202e 0, var(--nuit) 60%); color: var(--texte); font: 16px/1.55 'Segoe UI', system-ui, sans-serif; }
 .page { max-width: 880px; margin: 0 auto; padding: 28px 18px 60px; display: grid; gap: 16px; }
 header { display: flex; align-items: center; gap: 16px; }
-header canvas { width: 150px; height: 56px; }
+header img { width: 190px; height: auto; flex: none; }
 h1 { margin: 0; font: 400 clamp(26px, 5vw, 38px)/1.1 Georgia, 'Times New Roman', serif; }
 h1 em { font-style: normal; color: var(--or-clair); }
 h1 .sous { display: block; font: 600 14px/1.4 var(--police, system-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--texte-2, #a9a8b8); margin-top: 4px; }
@@ -25,6 +25,7 @@ input[type=text], select { width: 100%; padding: 10px 12px; border-radius: 10px;
 .choix { display: flex; flex-wrap: wrap; gap: 8px; }
 .choix label { margin: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 99px; border: 1px solid var(--trait); cursor: pointer; font-weight: 600; }
 .choix input { accent-color: var(--or); }
+input[type=color] { width: 30px; height: 22px; padding: 0; border: 1px solid var(--trait); border-radius: 6px; background: none; vertical-align: middle; }
 .pastille { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255, 255, 255, 0.4); }
 button { font: 800 15px 'Segoe UI', system-ui, sans-serif; padding: 10px 16px; border-radius: 12px; border: 0; background: var(--or); color: #1a1300; cursor: pointer; }
 button.discret { background: transparent; color: var(--or-clair); border: 1px solid var(--or); }
@@ -46,7 +47,7 @@ select { width: auto; }
 </head>
 <body>
 <div class="page">
-  <header><canvas id="logo" width="300" height="112" aria-label="Empira Agency"></canvas><h1>Empira <em>Conquest</em><small class="sous">La bataille des départements</small></h1></header>
+  <header><img id="logo" alt="Empira Agency"><h1>Empira <em>Conquest</em><small class="sous">La bataille des départements</small></h1></header>
 
   <section id="blocLicence">
     <h2>Licence</h2>
@@ -100,13 +101,33 @@ select { width: auto; }
     </div>
     <div id="perso" hidden><label for="palette">Ta palette (codes couleur séparés par des virgules, au moins 4)</label><input type="text" id="palette" placeholder="#ff3b30, #34c759, #007aff, #ffcc00"></div>
     <div class="palette" id="apercu" aria-hidden="true"></div>
-    <label>Unités (soldats, tanks, avions…)</label>
+    <label>Soldats</label>
     <div class="choix" id="cUnites">
       <label><input type="radio" name="unites" value="departement" checked> Couleur du département</label>
       <label><input type="radio" name="unites" value="bleu"><i class="pastille" style="background:#2f6fe4"></i> Bleu</label>
       <label><input type="radio" name="unites" value="vert"><i class="pastille" style="background:#1f9d4c"></i> Vert</label>
       <label><input type="radio" name="unites" value="rouge"><i class="pastille" style="background:#d63b3b"></i> Rouge</label>
+      <label><input type="radio" name="unites" value="or"><i class="pastille" style="background:#e8b931"></i> Or</label>
+      <label><input type="radio" name="unites" value="violet"><i class="pastille" style="background:#8b5cf6"></i> Violet</label>
+      <label><input type="radio" name="unites" value="noir"><i class="pastille" style="background:#2b2b2e"></i> Noir</label>
+      <label><input type="radio" name="unites" value="blanc"><i class="pastille" style="background:#ececec"></i> Blanc</label>
+      <label><input type="radio" name="unites" value="camouflage"><i class="pastille" style="background:#5b6b3a"></i> Camouflage</label>
       <label><input type="radio" name="unites" value="aleatoire"> Aléatoire</label>
+      <label><input type="radio" name="unites" value="perso"> <input type="color" id="unitesPerso" value="#2f6fe4" aria-label="Couleur personnalisée"> Ma couleur</label>
+    </div>
+    <label>Véhicules (tanks, avions, hélicoptères, navires)</label>
+    <div class="choix" id="cVehicules">
+      <label><input type="radio" name="vehicules" value="departement" checked> Couleur du département</label>
+      <label><input type="radio" name="vehicules" value="bleu"><i class="pastille" style="background:#2f6fe4"></i> Bleu</label>
+      <label><input type="radio" name="vehicules" value="vert"><i class="pastille" style="background:#1f9d4c"></i> Vert</label>
+      <label><input type="radio" name="vehicules" value="rouge"><i class="pastille" style="background:#d63b3b"></i> Rouge</label>
+      <label><input type="radio" name="vehicules" value="or"><i class="pastille" style="background:#e8b931"></i> Or</label>
+      <label><input type="radio" name="vehicules" value="violet"><i class="pastille" style="background:#8b5cf6"></i> Violet</label>
+      <label><input type="radio" name="vehicules" value="noir"><i class="pastille" style="background:#2b2b2e"></i> Noir</label>
+      <label><input type="radio" name="vehicules" value="blanc"><i class="pastille" style="background:#ececec"></i> Blanc</label>
+      <label><input type="radio" name="vehicules" value="camouflage"><i class="pastille" style="background:#5b6b3a"></i> Camouflage</label>
+      <label><input type="radio" name="vehicules" value="aleatoire"> Aléatoire</label>
+      <label><input type="radio" name="vehicules" value="perso"> <input type="color" id="vehiculesPerso" value="#5b6b3a" aria-label="Couleur personnalisée"> Ma couleur</label>
     </div>
     <label>Contours des fenêtres</label>
     <div class="choix" id="cContours">
@@ -138,7 +159,9 @@ select { width: auto; }
     <div class="ligne"><button class="discret" type="button" data-cmd="vague" data-arg="doublon">Doublon</button><button class="discret" type="button" data-cmd="vague" data-arg="pluie">Pluie de parachutistes</button><button class="discret" type="button" data-cmd="vague" data-arg="triple">Triplé</button><button class="discret" type="button" data-cmd="vague" data-arg="assaut">Assaut final</button></div>
     <label>Événements</label>
     <div class="ligne"><button class="discret" type="button" data-cmd="revolution">Révolution</button><button class="discret" type="button" data-cmd="duel">Duel</button><button class="discret" type="button" data-cmd="prime">Tête mise à prix</button><button class="discret" type="button" data-cmd="invasion">Invasion</button><button class="discret" type="button" data-cmd="mission">Mission</button><button class="discret" type="button" data-cmd="avion">Largage (avion)</button></div>
-    <label>Ambiance</label>
+    <label>Ambiance (toutes les 30 à 55 s pendant la partie)</label>
+    <div class="ligne"><button class="discret" type="button" data-cmd="ravitaillement">Ravitaillement surprise</button><button class="discret" type="button" data-cmd="bombardement">Bombardement sur le 1er</button><button class="discret" type="button" data-cmd="ambiance">Ambiance on/off</button></div>
+    <label>Son et caméra</label>
     <div class="ligne"><button class="discret" type="button" data-cmd="suivant">Musique suivante</button><button class="discret" type="button" data-cmd="musique">Musique on/off</button><button class="discret" type="button" data-cmd="son">Bruitages on/off</button><button class="discret" type="button" data-cmd="zoom">Zoom on/off</button><button class="discret" type="button" data-cmd="cris">Cris de victoire</button><button class="discret" type="button" data-cmd="guerre">Tambours</button></div>
     <label for="texteDire">Faire parler la voix</label>
     <div class="ligne"><input type="text" id="texteDire" maxlength="200" placeholder="Bienvenue à tous dans la guerre !" style="flex:1"><button class="discret" type="button" id="btnDire">Dire</button></div>

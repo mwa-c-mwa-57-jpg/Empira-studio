@@ -46,6 +46,7 @@ export const valeurCadeau = (piecesUnitaires, nombre = 1) => soldatsParPiece(pie
 export class Partie {
   constructor({ random = Math.random, membres = {}, surMembres = () => {}, dureeMinutes = REGLES.dureeMinutes } = {}) {
     this.random = random;
+    this.ambianceActive = true; // ravitaillements, bombardements surprises et survols (commande !ambiance)
     this.membres = membres; // identifiant TikTok → département, conservé d'une partie à l'autre
     this.surMembres = surMembres;
     this.dureeMinutes = dureeMinutes;
@@ -150,6 +151,7 @@ export class Partie {
     this.vague = null;
     this.evenement = null;
     this.prochainEvenement = Infinity;
+    this.prochaineAmbiance = Infinity;
     this.vaguesFaites = new Set();
     this.rappels = new Set();
     this.leader = null;
@@ -162,6 +164,7 @@ export class Partie {
     this.phase = 'partie';
     this.debut = this.t;
     this.prochainEvenement = this.t + this.hasard(...EVENEMENTS.intervalleSec);
+    this.prochaineAmbiance = this.t + this.hasard(...REGLES.ambianceSec);
     for (const j of this.joueurs.values()) {
       j.total = 0;
       j.arrive = false;
@@ -203,6 +206,7 @@ export class Partie {
     this.#helicos();
     this.#vagues();
     this.#evenements();
+    this.#ambiance();
     this.#suivi();
     if (this.ecoule >= this.duree) this.terminer('temps');
   }
@@ -456,7 +460,7 @@ export class Partie {
       attaquant.soldats += butin;
     }
     if (attaquant) cible.attaquePar = { code: attaquant.code, fin: this.t + REGLES.ripostesec };
-    this.emit({ type: 'impact', sorte, equipe: cible.code, attaquant: attaquant?.code, detruit, bloque, butin, joueur });
+    this.emit({ type: 'impact', sorte, equipe: cible.code, attaquant: attaquant?.code, detruit, bloque, butin, joueur, reste: cible.soldats });
     return { detruit, bloque, butin };
   }
 
@@ -495,6 +499,18 @@ export class Partie {
     else if (sorte === 'missiles') this.plus(2.0, () => this.equipes.has(cible.code) && this.degats(cible, montant, opts));
     else if (sorte === 'helicos') {
       this.helicos.push({ de: e.code, vers: cible.code, salve: montant / REGLES.heliSalves, prochain: this.t + 3, joueur: j, plafond: effet.plafond });
+    } else if (sorte === 'porteavions') {
+      // le porte-avions arrive au large, puis lance des vagues d'avions sur la cible et son plus gros voisin
+      const vagues = REGLES.porteAvionsVagues;
+      for (let i = 0; i < vagues; i++) {
+        this.plus(3 + i * 1.5, () => {
+          if (!this.equipes.has(cible.code)) return;
+          this.emit({ type: 'vagueAerienne', de: e.code, vers: cible.code, numero: i + 1, total: vagues });
+          this.degats(cible, montant / vagues, opts);
+          const voisin = PAR_CODE.get(cible.code).neighbors.map((v) => this.equipes.get(v)).filter((v) => v && v.code !== e.code).sort((a, b) => b.soldats - a.soldats)[0];
+          if (voisin) this.degats(voisin, (montant / vagues) * REGLES.porteAvionsVoisin, { ...opts, plafond: opts.plafond / 2 });
+        });
+      }
     } else if (sorte === 'tsunami') {
       // la vague traverse la carte d'ouest en est à la hauteur de la cible
       const yCible = PAR_CODE.get(cible.code).center[1];
@@ -653,6 +669,43 @@ export class Partie {
     }
   }
 
+  // ------------------------------------------------------------------ ambiance : ravitaillements, bombardements, survols
+
+  #ambiance() {
+    if (!this.ambianceActive || this.t < this.prochaineAmbiance || this.equipes.size === 0) return;
+    this.prochaineAmbiance = this.t + this.hasard(...REGLES.ambianceSec);
+    const r = this.random();
+    if (r < 0.55) this.ravitaillement();
+    else if (r < 0.85 && this.equipes.size >= 2) this.bombardement();
+    else this.emit({ type: 'ambiance', sorte: 'survol' });
+  }
+
+  /** Un avion cargo largue une caisse de ravitaillement sur un département (au hasard si non précisé). */
+  ravitaillement(code = null) {
+    const e = code ? this.equipes.get(code) : this.choisir([...this.equipes.values()]);
+    if (!e) return false;
+    this.emit({ type: 'ambiance', sorte: 'ravitaillement', equipe: e.code, soldats: REGLES.ravitaillementSoldats });
+    this.plus(2.4, () => {
+      if (!this.equipes.has(e.code)) return;
+      const n = this.ajouter(e, REGLES.ravitaillementSoldats, null, 'ravitaillement', { brut: true });
+      this.emit({ type: 'ravitaille', equipe: e.code, soldats: n });
+    });
+    return true;
+  }
+
+  /** Bombardement surprise sur le 1er du classement (le bouclier protège). */
+  bombardement() {
+    const cl = this.classement();
+    const e = cl[0];
+    if (!e || cl.length < 2) return false;
+    this.emit({ type: 'ambiance', sorte: 'bombardement', equipe: e.code });
+    this.plus(2.2, () => {
+      if (!this.equipes.has(e.code)) return;
+      this.degats(e, Math.max(5, e.soldats * REGLES.bombardementPart), { plafond: REGLES.bombardementPart, sorte: 'bombardement' });
+    });
+    return true;
+  }
+
   // ------------------------------------------------------------------ commandes de l'animateur
 
   /** Commandes du tchat (hôte ou modérateur). Renvoie true si la commande est connue. */
@@ -684,6 +737,14 @@ export class Partie {
         this.emit({ type: 'largage', equipe: dernier.code, soldats: n });
         return true;
       }
+      case 'ravitaillement':
+        return this.ravitaillement(this.equipes.has(String(arg)) ? String(arg) : null);
+      case 'bombardement':
+        return this.bombardement();
+      case 'ambiance':
+        this.ambianceActive = !this.ambianceActive;
+        this.emit({ type: 'ambianceActive', actif: this.ambianceActive });
+        return true;
       case 'fixe':
         this.messageFixe = String(arg).slice(0, 120) || null;
         return true;

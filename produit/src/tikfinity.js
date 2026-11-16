@@ -6,7 +6,7 @@ import { normalizeKeyword } from '../../public/src/core/events.js';
 
 export const URL_TIKFINITY = 'ws://127.0.0.1:21213';
 
-const COMMANDES = new Set(['fin', 'duree', 'vague', 'revolution', 'duel', 'prime', 'invasion', 'mission', 'avion', 'dire', 'fixe', 'efface', 'suivant', 'musique', 'son', 'zoom', 'cris', 'guerre', 'membres', 'reset']);
+const COMMANDES = new Set(['fin', 'duree', 'vague', 'revolution', 'duel', 'prime', 'invasion', 'mission', 'avion', 'ravitaillement', 'bombardement', 'ambiance', 'dire', 'fixe', 'efface', 'suivant', 'musique', 'son', 'zoom', 'cris', 'guerre', 'membres', 'reset']);
 
 /** « !Durée 10 » → { nom: 'duree', arg: '10' } ; null si ce n'est pas une commande connue. */
 export function lireCommande(texte) {

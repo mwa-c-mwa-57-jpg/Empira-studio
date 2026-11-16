@@ -15,7 +15,7 @@ Code source : `produit/`. Version à livrer : `npm run build:produit` → `dist/
 | `outils/bibliotheques.cjs` | bibliothèques libres (tiktok-live-connector et dépendances), non protégées, à part pour respecter leurs licences |
 | `outils/node.exe` | Node.js v22.22.0 pour Windows (rien à installer chez l'acheteur) |
 | `LICENCES-TIERS.txt` | licences des bibliothèques embarquées (MIT, BSD, Apache) et de Node.js |
-| `musique/`, `images/` | MP3 de l'acheteur ; `images/logo-empira.png` facultatif (sinon le logo est dessiné) |
+| `musique/` | MP3 de l'acheteur (le logo Empira est intégré au jeu) |
 | `GUIDE.html` | guide d'installation pour l'acheteur |
 
 ## Licence payante et protections
@@ -88,6 +88,22 @@ Interprétations (le cahier des charges ne tranchait pas) :
 - **`!avion`** : largage gratuit de 20 soldats sur le dernier du classement.
 - **Invasion** : l'occupant est tiré dans la moitié haute du classement ; sa proie est un voisin si possible.
 - **Ajout** : une loupe sur l'Île-de-France (Paris et la petite couronne seraient sinon illisibles).
+- **Bombe nucléaire (Léon le chaton)** : un bombardier traverse la carte, les 3 cibles sont marquées (☢ et compte à
+  rebours), puis éclair, onde de choc, champignon et cratère. Jusqu'à 80 % de chaque cible détruits (au lieu de 50 %),
+  souffle −15 % sur les voisins. Avant, la bombe tombait hors de la zone dessinée et restait invisible jusqu'à l'impact.
+- **Porte-avions (Voiture de sport, 7 000 pièces)** : il mouille dans la mer la plus proche de la cible (Atlantique,
+  Gascogne, Manche, Méditerranée) et lance 4 vagues de 3 chasseurs ; chaque vague détruit jusqu'à 35 % de la cible
+  (≈ 82 % au total) et touche aussi son plus gros voisin. Avant, la Voiture de sport refaisait les bombes nucléaires.
+- **Ambiance** : toutes les 30 à 55 s, un ravitaillement surprise (+30 sur un département au hasard, 55 %), un
+  bombardement surprise sur le 1er (−5 %, bouclier respecté, 30 %) ou une patrouille qui passe (15 %). Des avions de
+  décor (chasseurs, cargos, hélicoptères) passent aussi toutes les 12 à 26 s. Désactivable : `!ambiance` ou la régie.
+- **Hélicoptères de combat** redessinés (rotor, rotor de queue, patins, roquettes) ; nouveaux chasseurs, cargos et
+  bombardier.
+- **Couleurs** : soldats et véhicules réglés séparément (couleur du département, 8 couleurs, aléatoire ou couleur
+  personnalisée).
+- **Logo** : le logo fourni par Empira (fond rendu transparent) est intégré au jeu : version compacte sur la carte,
+  version complète sur le podium, la fenêtre de pilotage, l'écran de licence et le guide ; icône d'onglet. Il n'est plus
+  remplaçable par l'acheteur (le dossier `images/` a disparu).
 
 ## Tests
 - `npm test` : tests unitaires, dont 37 pour la version vendue (moteur, conversion des événements, thème, voix,

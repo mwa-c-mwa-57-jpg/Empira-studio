@@ -51,7 +51,7 @@ const PROTECTION = {
 const proteger = (code, reglages) => JavaScriptObfuscator.obfuscate(code, reglages).getObfuscatedCode();
 
 async function bundle(entree, vente) {
-  const r = await build({ entryPoints: [path.join(SRC, entree)], bundle: true, format: 'iife', target: 'chrome100', minify: vente, legalComments: 'none', write: false, define: { VENTE: vente ? 'true' : 'false' } });
+  const r = await build({ entryPoints: [path.join(SRC, entree)], bundle: true, format: 'iife', target: 'chrome100', minify: vente, legalComments: 'none', write: false, loader: { '.png': 'dataurl' }, define: { VENTE: vente ? 'true' : 'false' } });
   let js = r.outputFiles[0].text;
   if (vente) js = proteger(js, PROTECTION.jeu);
   // « </script » ne doit jamais apparaître dans le code inséré dans la page
@@ -118,7 +118,7 @@ async function nodeWindows() {
 
 async function assembler(dossier, { vente, essai = false, node = vente && !essai && !SANS_NODE }) {
   await rm(dossier, { recursive: true, force: true });
-  for (const d of ['outils', 'musique', 'images']) await mkdir(path.join(dossier, d), { recursive: true });
+  for (const d of ['outils', 'musique']) await mkdir(path.join(dossier, d), { recursive: true });
   const cleJeu = crypto.randomBytes(32);
   const storeId = essai ? '1' : String(VENTE.storeId || '');
   const produitId = essai ? '1' : String(VENTE.produitId || '');
@@ -140,8 +140,9 @@ async function assembler(dossier, { vente, essai = false, node = vente && !essai
   await writeFile(path.join(dossier, 'LICENCES-TIERS.txt'), crlf(licences));
   await writeFile(path.join(dossier, 'LANCER LE JEU.bat'), crlf(await readFile(path.join(RACINE, 'produit/outils/LANCER LE JEU.bat'), 'utf8')));
   await writeFile(path.join(dossier, 'musique/LISEZ-MOI.txt'), crlf('Déposez ici vos musiques au format MP3.\nElles sont jouées en boucle, dans un ordre aléatoire, pendant les parties.\nN\'utilisez que des musiques dont vous avez les droits de diffusion en live.\n'));
-  await writeFile(path.join(dossier, 'images/LISEZ-MOI.txt'), crlf('Déposez ici logo-empira.png (fond transparent) pour remplacer le logo dessiné par le jeu.\n'));
-  await copyFile(path.join(RACINE, 'produit/GUIDE.html'), path.join(dossier, 'GUIDE.html'));
+  const logo = (await readFile(path.join(RACINE, 'produit/images/logo-empira-complet.png'))).toString('base64');
+  const guide = (await readFile(path.join(RACINE, 'produit/GUIDE.html'), 'utf8')).replace('<!--LOGO-->', `<img src="data:image/png;base64,${logo}" alt="Empira Agency" style="width:260px;margin-bottom:18px">`);
+  await writeFile(path.join(dossier, 'GUIDE.html'), guide);
   if (essai) await writeFile(path.join(dossier, 'NE-PAS-LIVRER.txt'), 'Copie d\'essai pour les tests automatisés (boutique fictive). Ne jamais la livrer.\n');
   return s.paquets.length;
 }

@@ -5,15 +5,23 @@ import { PALETTE, CONTOURS, UNITES, MOTS_INTERDITS } from './config.js';
 import { createRng } from '../../public/src/core/rng.js';
 import { normalizeKeyword } from '../../public/src/core/events.js';
 
-/** Lit les réglages de l'adresse : ?couleurs=aleatoire|fixe|perso&graine=..&palette=..&unites=..&contours=..&voix=.. */
+const CHOIX_UNITES = ['departement', ...Object.keys(UNITES), 'aleatoire', 'perso'];
+const hex = (v) => (/^#?[0-9a-f]{6}$/i.test(v || '') ? `#${v.replace('#', '').toLowerCase()}` : null);
+
+/** Lit les réglages de l'adresse : ?couleurs=aleatoire|fixe|perso&graine=..&palette=..&unites=..&vehicules=..&contours=..&voix=.. */
 export function lireReglages(search = '') {
   const p = new URLSearchParams(search);
   const val = (k, permis, defaut) => (permis.includes(p.get(k)) ? p.get(k) : defaut);
+  const unites = val('unites', CHOIX_UNITES, 'departement');
   return {
     couleurs: val('couleurs', ['aleatoire', 'fixe', 'perso'], 'aleatoire'),
     graine: Number.parseInt(p.get('graine'), 10) || null,
     palette: (p.get('palette') || '').split(',').map((c) => c.trim().replace(/^#?/, '#')).filter((c) => /^#[0-9a-f]{6}$/i.test(c)),
-    unites: val('unites', ['departement', 'bleu', 'vert', 'rouge', 'aleatoire'], 'departement'),
+    unites, // soldats
+    unitesPerso: hex(p.get('unitesperso')),
+    // véhicules : même choix que les soldats si rien n'est précisé (anciennes adresses)
+    vehicules: val('vehicules', CHOIX_UNITES, unites),
+    vehiculesPerso: hex(p.get('vehiculesperso')) || (p.has('vehicules') ? null : hex(p.get('unitesperso'))),
     contours: val('contours', ['or', 'bleu', 'vert', 'rouge', 'violet', 'aleatoire'], 'or'),
     voix: val('voix', ['homme', 'femme'], 'femme'),
     nomVoix: (p.get('nomvoix') || '').slice(0, 80),
@@ -35,7 +43,9 @@ export class Theme {
     }
     const hasard = (o) => o[Object.keys(o)[Math.floor(rng() * Object.keys(o).length)]];
     this.contour = reglages.contours === 'aleatoire' ? hasard(CONTOURS) : CONTOURS[reglages.contours];
-    this.unitesFixes = reglages.unites === 'departement' ? null : reglages.unites === 'aleatoire' ? hasard(UNITES) : UNITES[reglages.unites];
+    const fixe = (choix, perso) => (choix === 'departement' ? null : choix === 'aleatoire' ? hasard(UNITES) : choix === 'perso' ? perso || null : UNITES[choix] || null);
+    this.soldatsFixes = fixe(reglages.unites, reglages.unitesPerso);
+    this.vehiculesFixes = fixe(reglages.vehicules ?? reglages.unites, reglages.vehiculesPerso ?? reglages.unitesPerso);
     this.attribuees = new Map();
   }
 
@@ -48,8 +58,18 @@ export class Theme {
     return c;
   }
 
+  /** Couleur des soldats (et parachutistes) d'un département. */
+  couleurSoldats(code) {
+    return this.soldatsFixes || this.couleur(code);
+  }
+
+  /** Couleur des véhicules (tanks, avions, hélicoptères, navires) d'un département. */
+  couleurVehicules(code) {
+    return this.vehiculesFixes || this.couleur(code);
+  }
+
   couleurUnites(code) {
-    return this.unitesFixes || this.couleur(code);
+    return this.couleurSoldats(code);
   }
 
   /** Nouvelle partie : les couleurs sont réattribuées dans l'ordre d'arrivée. */

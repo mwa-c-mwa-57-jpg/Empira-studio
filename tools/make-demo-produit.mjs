@@ -33,7 +33,7 @@ let n = 0;
 const user = (pseudo) => ({ nickname: pseudo, displayId: pseudo.toLowerCase().normalize('NFD').replace(/[^\w]/g, ''), avatarThumb: { urlList: [] } });
 const live = (sorte, pseudo, data = {}) => fetch(`${base}/test/tiktok`, { method: 'POST', body: JSON.stringify({ sorte, data: { common: { msgId: `d${++n}` }, user: user(pseudo), ...data } }) });
 const chat = (pseudo, texte) => live('chat', pseudo, { content: texte });
-const CAT = { Rose: [1, 1], Donut: [30, 2], 'Cœur dans les mains': [100, 2], Galaxie: [1000, 2], 'Pistolet à argent': [500, 2], 'Léon le chaton': [4888, 2], Papillon: [88, 2], 'Cœur avec les doigts': [5, 1] };
+const CAT = { Rose: [1, 1], Donut: [30, 2], 'Cœur dans les mains': [100, 2], Galaxie: [1000, 2], 'Pistolet à argent': [500, 2], 'Léon le chaton': [4888, 2], Papillon: [88, 2], 'Cœur avec les doigts': [5, 1], 'Voiture de sport': [7000, 2] };
 async function cadeau(pseudo, nom, fois = 1) {
   const [diamants, type] = CAT[nom];
   const gift = { name: nom, diamondCount: diamants, type, combo: type === 1 };
@@ -93,9 +93,9 @@ await a(34, () => regie('duel'));
 await a(39, () => cadeau('Inès', 'Cœur dans les mains'));
 await a(43, () => regie('vague', 'assaut'));
 await a(46, () => cadeau('Malik', 'Galaxie'));
-await a(52, () => cadeau('Julia', 'Pistolet à argent'));
-await a(57, () => cadeau('Léa', 'Papillon'));
-await a(60, () => cadeau('Kenzo', 'Léon le chaton'));
+await a(50, () => regie('ravitaillement'));
+await a(53, () => cadeau('Julia', 'Voiture de sport'));
+await a(62, () => cadeau('Kenzo', 'Léon le chaton'));
 await a(71, () => regie('fin'));
 await a(86, async () => clearInterval(foule));
 
@@ -111,7 +111,9 @@ writeFileSync(path.join(sortie, 'legendes.json'), JSON.stringify([
   {"de": 10.5, "a": 22.5, "texte": "Chacun écrit son département"},
   {"de": 22.5, "a": 33.5, "texte": "Likes et cadeaux = renforts"},
   {"de": 33.5, "a": 45.5, "texte": "La régie lance duels et vagues"},
-  {"de": 45.5, "a": 70.5, "texte": "Gros cadeaux = armes lourdes"},
+  {"de": 45.5, "a": 52.5, "texte": "Hélicos de combat, ravitaillements"},
+  {"de": 52.5, "a": 61.5, "texte": "Voiture de sport = porte-avions"},
+  {"de": 61.5, "a": 70.5, "texte": "Léon = bombes nucléaires"},
   {"de": 71, "a": 81.5, "texte": "Podium et Roi du pays"},
   {"de": 81.5, "a": 99, "texte": "Empira Conquest", "taille": 46},
   {"de": 81.5, "a": 99, "texte": "Bientôt disponible", "taille": 30, "y": 122}

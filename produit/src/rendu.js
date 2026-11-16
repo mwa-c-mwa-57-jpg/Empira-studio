@@ -3,6 +3,7 @@
 
 import { DEPARTEMENTS, MAP_SIZE } from '../../public/src/france/departements.js';
 import { dessinerLogo } from './logo.js';
+import { REGLES } from './config.js';
 
 export { dessinerLogo };
 
@@ -18,6 +19,10 @@ const OUTREMER = { '971': 600, '972': 702, '973': 804, '974': 906, '976': 1008 }
 const CASE = { x: 14, l: 128, h: 94 };
 const IDF = { x: 150, y: 598, l: 180, h: 108, codes: ['75', '77', '78', '91', '92', '93', '94', '95'] };
 const PARTICULES_MAX = 700;
+// mers où mouille le porte-avions (coordonnées de la carte) : [x, y, cap de la proue en radians]
+// le long des côtes atlantiques il navigue nord-sud, pour ne pas mordre sur les cases de l'outre-mer
+const MERS = [[48, 450, -Math.PI / 2], [118, 700, -Math.PI / 2], [470, 50, 0], [690, 932, Math.PI], [830, 940, Math.PI]];
+const REGLES_PA = { vagues: REGLES.porteAvionsVagues };
 const POLICE = "'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
 const EMOJI = "'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif";
 const NEUTRES = ['#2c2f45', '#2a3340', '#33303f', '#2d3a3a', '#38323a', '#2f3446'];
@@ -87,6 +92,11 @@ export class Rendu {
     this.helicos = [];
     this.tsunamis = [];
     this.bombes = [];
+    this.bombardiers = []; // bombardier nucléaire, bombardier surprise
+    this.caisses = []; // caisses de ravitaillement sous parachute
+    this.porteAvions = [];
+    this.crateres = []; // départements brûlés après une bombe nucléaire
+    this.prochainSurvol = this.temps + 8 + Math.random() * 8;
     this.champignons = [];
     this.anneaux = [];
     this.particules = [];
@@ -214,8 +224,14 @@ export class Rendu {
             break;
           }
           const fort = e.sorte === 'nucleaire' || e.sorte === 'tsunami';
-          if (e.sorte !== 'souffle') this.explosion(e.equipe, fort ? 2.2 : e.sorte === 'helicos' ? 0.6 : 1.1);
-          if (e.detruit >= 1) this.flottant(e.equipe, `−${fmt(e.detruit)}`, '#ff6b5b', fort ? 46 : 34);
+          // la bombe nucléaire et le bombardement surprise ont leur propre explosion (à l'arrivée des bombes)
+          if (e.sorte !== 'souffle' && e.sorte !== 'nucleaire' && e.sorte !== 'bombardement') this.explosion(e.equipe, fort ? 2.2 : e.sorte === 'helicos' ? 0.6 : 1.1);
+          if (e.sorte === 'souffle') this.anneau(e.equipe, 'rgba(140,255,120,0.9)', 90, 1.2);
+          if (e.detruit >= 1) this.flottant(e.equipe, `${e.sorte === 'nucleaire' ? '☢ ' : ''}−${fmt(e.detruit)}`, e.sorte === 'souffle' ? '#9dff8a' : '#ff6b5b', e.sorte === 'nucleaire' ? 56 : fort ? 46 : 34);
+          if (e.sorte === 'nucleaire' && e.detruit >= 1 && e.detruit / (e.detruit + (e.reste ?? 0)) >= 0.6) {
+            const [x, y] = this.ecran(e.equipe);
+            this.flottants.push({ x, y: y - 90, texte: 'RASÉ !', couleur: '#ffd23d', taille: 48, t: 0, duree: 2.2 });
+          }
           if (e.butin >= 1 && e.attaquant) this.flottant(e.attaquant, `butin +${fmt(e.butin)}`, '#ffd166', 26);
           break;
         }
@@ -226,6 +242,19 @@ export class Rendu {
           break;
         case 'largage':
           this.avionTransport(e.equipe, 8, false, null);
+          break;
+        case 'ambiance':
+          if (e.sorte === 'ravitaillement') this.ravitaillement(e.equipe);
+          else if (e.sorte === 'bombardement') this.bombardier(e.equipe, false);
+          else this.survol(true);
+          break;
+        case 'ravitaille':
+          this.eclat(e.equipe, '#ffd23d', 26, 200);
+          this.anneau(e.equipe, '#ffd23d', 110, 0.9);
+          this.flottant(e.equipe, `📦 +${fmt(e.soldats)}`, '#ffd23d', 34);
+          break;
+        case 'vagueAerienne':
+          this.decollage(e);
           break;
         case 'vagueDebut':
           if (e.vague.parachute) this.assaut = e.vague.fin;
@@ -299,13 +328,13 @@ export class Rendu {
 
   parachuter(equipe, n, dore) {
     const [x, y] = this.ecran(equipe);
-    for (let i = 0; i < n; i++) this.paras.push({ equipe, x: x + (Math.random() - 0.5) * 60, y0: y - 240 - Math.random() * 80, y, t: -i * 0.18, duree: 1.8, dore, couleur: this.theme.couleurUnites(equipe) });
+    for (let i = 0; i < n; i++) this.paras.push({ equipe, x: x + (Math.random() - 0.5) * 60, y0: y - 240 - Math.random() * 80, y, t: -i * 0.18, duree: 1.8, dore, couleur: this.theme.couleurSoldats(equipe) });
   }
 
   avionTransport(equipe, n, dore, pilote) {
     const [x, y] = this.ecran(equipe);
     const dir = Math.random() < 0.5 ? 1 : -1;
-    this.avions.push({ sorte: 'transport', x0: x - dir * 700, y0: y - 230, x1: x + dir * 700, y1: y - 250, t: 0, duree: 3.2, equipe, n, dore, largue: false, pilote, couleur: this.theme.couleurUnites(equipe) });
+    this.avions.push({ sorte: 'transport', x0: x - dir * 700, y0: y - 230, x1: x + dir * 700, y1: y - 250, t: 0, duree: 3.2, equipe, n, dore, largue: false, pilote, couleur: this.theme.couleurVehicules(equipe) });
   }
 
   attaque(e) {
@@ -315,7 +344,7 @@ export class Rendu {
       const [x0, y0] = this.ecran(de);
       const [x1, y1] = this.ecran(cibles[0]);
       if (e.sorte === 'tomate') this.missiles.push({ x0, y0, x1, y1, t: 0, duree: 1.4, haut: 160, tomate: true });
-      else this.avions.push({ sorte: 'chasseur', x0, y0, x1, y1, t: 0, duree: 1.4, pilote: e.joueur, couleur: this.theme.couleurUnites(de) });
+      else this.avions.push({ sorte: 'chasseur', x0, y0, x1, y1, t: 0, duree: 1.4, pilote: e.joueur, couleur: this.theme.couleurVehicules(de) });
       this.viser(cibles[0], 1.4, 2);
     } else if (e.sorte === 'missiles') {
       const [x0, y0] = this.ecran(de);
@@ -323,12 +352,74 @@ export class Rendu {
       for (let i = 0; i < 6; i++) this.missiles.push({ x0: x0 + (i - 2.5) * 6, y0, x1: x1 + (i - 2.5) * 10, y1: y1 + (i % 2) * 8, t: -i * 0.08, duree: 1.6, haut: 220 + i * 18 });
       this.viser(cibles[0], 1.5, 2.6);
     } else if (e.sorte === 'helicos') {
-      this.helicos.push({ de, vers: cibles[0], t: 0, pilote: e.joueur, couleur: this.theme.couleurUnites(de), tir: 0 });
+      this.helicos.push({ de, vers: cibles[0], t: 0, pilote: e.joueur, couleur: this.theme.couleurVehicules(de), tir: 0 });
       this.viser(cibles[0], 1.6, 2.6);
     } else if (e.sorte === 'nucleaire') {
-      for (const c of cibles) this.bombes.push({ equipe: c, t: 0, duree: 2.6 });
+      // un bombardier stratégique traverse la carte et largue une bombe sur chaque cible ;
+      // les cibles sont marquées (☢ et compte à rebours) jusqu'à l'impact, 2,6 s après l'envoi
+      this.bombardier(cibles, true, de);
       this.secousse = Math.max(this.secousse, 0.2);
+    } else if (e.sorte === 'porteavions') {
+      const cible = this.parCode.get(cibles[0]);
+      const [mx, my] = cible.overseas ? [100, 600] : cible.center;
+      const mer = MERS.reduce((a, b) => (Math.hypot(b[0] - mx, b[1] - my) < Math.hypot(a[0] - mx, a[1] - my) ? b : a));
+      this.porteAvions.push({ mx: mer[0], my: mer[1], cap: mer[2], de, vers: cibles[0], t: 0, duree: 4 + REGLES_PA.vagues * 1.5 + 3, couleur: this.theme.couleurVehicules(de), pilote: e.joueur });
     }
+  }
+
+  /** Bombardier : nucléaire (une grosse bombe par cible) ou surprise (3 petites bombes sur le leader). */
+  bombardier(cibles, nucleaire, de = null) {
+    const liste = Array.isArray(cibles) ? cibles : [cibles];
+    const pts = liste.map((c) => this.ecran(c));
+    const y = Math.max(ZONE.haut + 36, Math.min(...pts.map((p) => p[1])) - (nucleaire ? 190 : 150));
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const x0 = dir > 0 ? -220 : LARGEUR + 220;
+    const x1 = dir > 0 ? LARGEUR + 220 : -220;
+    const duree = nucleaire ? 2.2 : 2.6;
+    this.bombardiers.push({ x0, x1, y, t: 0, duree, couleur: de ? this.theme.couleurVehicules(de) : '#59626e', taille: nucleaire ? 1.5 : 1.1 });
+    for (const [i, c] of liste.entries()) {
+      const [cx] = pts[i];
+      // la bombe quitte la soute quand le bombardier passe au-dessus de sa cible
+      const largage = lim((cx - x0) / (x1 - x0)) * duree;
+      // la bombe tombe d'au moins 130 px (au besoin depuis derrière les fenêtres du haut)
+      const y0 = Math.min(y + 20, pts[i][1] - 130);
+      if (nucleaire) this.bombes.push({ equipe: c, t: 0, largage: Math.min(largage, 1.4), duree: 2.6, nucleaire: true, y0 });
+      else for (let k = 0; k < 3; k++) this.bombes.push({ equipe: c, t: 0, largage: largage + k * 0.12, duree: largage + 1.0 + k * 0.12, y0, dx: (k - 1) * 22 });
+    }
+  }
+
+  ravitaillement(equipe) {
+    const [x, y] = this.ecran(equipe);
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const yv = Math.max(ZONE.haut + 30, y - 190);
+    // l'avion cargo passe au-dessus du département à ~0,6 s ; la caisse se pose à ~2,4 s (comme le moteur)
+    this.avions.push({ sorte: 'cargo', x0: x - dir * 520, y0: yv, x1: x + dir * 900, y1: yv - 20, t: 0, duree: 2.2, couleur: this.theme.couleurVehicules(equipe) });
+    this.caisses.push({ equipe, x, y0: Math.min(yv + 18, y - 120), y, t: -0.6, duree: 1.8 });
+  }
+
+  /** Avions qui passent : patrouille (événement « survol ») ou décor aléatoire. */
+  survol(patrouille = false) {
+    const equipes = [...this.partie.equipes.keys()];
+    const couleur = equipes.length && Math.random() < 0.7 ? this.theme.couleurVehicules(equipes[Math.floor(Math.random() * equipes.length)]) : '#8a94a0';
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const y = ZONE.haut + 40 + Math.random() * (ZONE.bas - ZONE.haut - 120);
+    const pente = (Math.random() - 0.5) * 260;
+    const x0 = dir > 0 ? -160 : LARGEUR + 160;
+    const x1 = dir > 0 ? LARGEUR + 160 : -160;
+    const r = Math.random();
+    if (patrouille || r < 0.5) {
+      const n = patrouille ? 3 : 2;
+      for (let i = 0; i < n; i++) this.avions.push({ sorte: 'survol', x0: x0 - dir * i * 46, y0: y + i * 28, x1: x1 - dir * i * 46, y1: y + pente + i * 28, t: -i * 0.05, duree: 3.2, couleur, trainee: true });
+    } else if (r < 0.8) this.avions.push({ sorte: 'cargo', x0, y0: y, x1, y1: y + pente * 0.4, t: 0, duree: 6.5, couleur });
+    else this.avions.push({ sorte: 'helico', x0, y0: y, x1, y1: y + pente * 0.3, t: 0, duree: 8, couleur });
+  }
+
+  /** Vague d'avions du porte-avions : 3 chasseurs décollent vers la cible. */
+  decollage(e) {
+    const pa = this.porteAvions.find((p) => p.de === e.de && p.vers === e.vers);
+    const [x1, y1] = this.ecran(e.vers);
+    const [x0, y0] = pa ? this.versEcran(pa.mx, pa.my) : [x1 - 300, y1];
+    for (let i = 0; i < 3; i++) this.avions.push({ sorte: 'chasseur', x0: x0 + (i - 1) * 14, y0: y0 - 6, x1: x1 + (i - 1) * 26, y1: y1 + (i % 2) * 10, t: -i * 0.18, duree: 1.3, couleur: pa?.couleur || '#9aa3ad', pilote: i === 0 ? pa?.pilote : null });
   }
 
   salve(e) {
@@ -369,6 +460,7 @@ export class Rendu {
     });
     this.avions = this.avions.filter((a) => {
       a.t += dt;
+      if (a.t < 0) return true;
       if (a.sorte === 'transport' && !a.largue && a.t / a.duree > 0.42) {
         a.largue = true;
         this.parachuter(a.equipe, a.n, a.dore);
@@ -386,21 +478,53 @@ export class Rendu {
     });
     this.bombes = this.bombes.filter((b) => {
       b.t += dt;
-      if (b.t >= b.duree) {
-        const [x, y] = this.ecran(b.equipe);
-        this.champignons.push({ x, y, t: 0, duree: 3.2 });
-        this.anneaux.push({ x, y, r: 10, max: 300, couleur: '#ffffff', t: 0, duree: 1 });
-        this.anneaux.push({ x, y, r: 10, max: 220, couleur: '#ffb347', t: 0, duree: 1.3 });
-        this.eclat(null, '#ff8a3d', 40, 420, x, y);
-        for (let i = 0; i < 40 && this.particules.length < PARTICULES_MAX; i++) {
-          this.particules.push({ x: x + (Math.random() - 0.5) * 120, y: y - Math.random() * 160, vx: (Math.random() - 0.5) * 20, vy: 10 + Math.random() * 20, t: 0, duree: 2.5 + Math.random() * 1.5, couleur: 'rgba(170,170,170,0.7)', taille: 2 + Math.random() * 2, g: 4 });
-        }
-        this.secousse = 0.9;
-        this.flash = 0.5;
+      if (b.t < b.duree) return true;
+      const [cx, cy] = this.ecran(b.equipe);
+      const x = cx + (b.dx || 0);
+      const y = cy + (b.dx ? (Math.random() - 0.5) * 16 : 0);
+      if (!b.nucleaire) {
+        this.explosionEn(x, y, 1.1);
         return false;
       }
-      return true;
+      // explosion nucléaire : éclair, onde de choc, boule de feu, champignon, cratère, retombées
+      this.champignons.push({ x, y, t: 0, duree: 4.6 });
+      this.anneaux.push({ x, y, r: 10, max: 420, couleur: '#ffffff', t: 0, duree: 1.1 });
+      this.anneaux.push({ x, y, r: 10, max: 300, couleur: '#ffb347', t: 0, duree: 1.4 });
+      this.anneaux.push({ x, y, r: 10, max: 190, couleur: '#ff5c38', t: 0, duree: 1.7 });
+      this.eclat(null, '#ffe08a', 50, 520, x, y);
+      this.eclat(null, '#ff6a2b', 40, 380, x, y);
+      for (let i = 0; i < 46 && this.particules.length < PARTICULES_MAX; i++) {
+        this.particules.push({ x: x + (Math.random() - 0.5) * 140, y: y - Math.random() * 190, vx: (Math.random() - 0.5) * 24, vy: 10 + Math.random() * 22, t: 0, duree: 2.8 + Math.random() * 1.6, couleur: 'rgba(170,170,170,0.7)', taille: 2 + Math.random() * 2, g: 4 });
+      }
+      this.crateres.push({ equipe: b.equipe, t: 0, duree: 9 });
+      this.secousse = 1.1;
+      this.flash = 0.75;
+      return false;
     });
+    this.bombardiers = this.bombardiers.filter((a) => (a.t += dt) < a.duree);
+    this.caisses = this.caisses.filter((c) => {
+      c.t += dt;
+      if (c.t < c.duree) return true;
+      const [x, y] = this.ecran(c.equipe);
+      this.eclat(null, '#c8a165', 14, 120, x, y);
+      return false;
+    });
+    this.porteAvions = this.porteAvions.filter((p) => {
+      p.t += dt;
+      if (Math.random() < dt * 14 && this.particules.length < PARTICULES_MAX) {
+        const [x, y] = this.versEcran(p.mx, p.my);
+        const [cx, cy] = [Math.cos(p.cap), Math.sin(p.cap)];
+        const l = 80 * Math.sqrt(this.cam.s);
+        this.particules.push({ x: x - cx * l, y: y - cy * l, vx: -cx * (30 + Math.random() * 30), vy: -cy * (30 + Math.random() * 30), t: 0, duree: 1.4, couleur: 'rgba(220,240,255,0.55)', taille: 3 + Math.random() * 3, g: 0 });
+      }
+      return p.t < p.duree;
+    });
+    this.crateres = this.crateres.filter((c) => (c.t += dt) < c.duree);
+    // avions qui passent au hasard pendant la partie (décor)
+    if (this.partie.phase === 'partie' && this.temps >= this.prochainSurvol) {
+      this.prochainSurvol = this.temps + 12 + Math.random() * 14;
+      this.survol(false);
+    }
     for (const h of this.helicos) {
       h.t += dt;
       h.tir = Math.max(0, h.tir - dt);
@@ -422,12 +546,25 @@ export class Rendu {
     ctx.beginPath();
     ctx.rect(0, ZONE.haut, LARGEUR, ZONE.bas - ZONE.haut);
     ctx.clip();
-    if (this.secousse > 0) ctx.translate((Math.random() - 0.5) * this.secousse * 18, (Math.random() - 0.5) * this.secousse * 18);
+    const sx = (Math.random() - 0.5) * this.secousse * 18;
+    const sy = (Math.random() - 0.5) * this.secousse * 18;
+    if (this.secousse > 0) ctx.translate(sx, sy);
+    // couche du sol : carte, cratères, navires, troupes
     this.#carte();
+    this.#crateres();
     this.#cases();
     this.#tsunamis();
-    this.#unites();
+    for (const pa of this.porteAvions) this.#porteAvion(pa);
+    this.#sol();
     this.#etiquettes(); // les numéros et le top 3 restent lisibles par-dessus les unités
+    ctx.restore();
+    // couche du ciel : les avions et les bombes arrivent d'au-dessus de la carte (derrière les fenêtres du haut)
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 232, LARGEUR, ZONE.bas - 232);
+    ctx.clip();
+    if (this.secousse > 0) ctx.translate(sx, sy);
+    this.#air();
     this.#effets();
     ctx.restore();
     this.#logo(1060, 604, 'droite');
@@ -700,88 +837,228 @@ export class Rendu {
     if (pilote) this.#photo(pilote, x - s * 0.05, y - s * 0.95, s * 0.42, couleur);
   }
 
+  /** Avions : chasseur (attaque), transport (parachutistes), cargo (ravitaillement), survol (décor), hélicoptère de passage. */
   #avion(a) {
-    const { ctx } = this;
-    const k = a.t / a.duree;
-    const x = a.x0 + (a.x1 - a.x0) * (a.sorte === 'chasseur' ? sortieDouce(k) : k);
-    const y = a.y0 + (a.y1 - a.y0) * (a.sorte === 'chasseur' ? sortieDouce(k) : k) - (a.sorte === 'chasseur' ? Math.sin(k * Math.PI) * 120 : 0);
-    const angle = Math.atan2(a.y1 - a.y0, a.x1 - a.x0);
-    const s = a.sorte === 'chasseur' ? 18 : 26;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(a.sorte === 'chasseur' ? angle : a.x1 > a.x0 ? 0 : Math.PI);
-    ctx.fillStyle = a.sorte === 'chasseur' ? '#9aa3ad' : '#6c7a5a';
-    ctx.beginPath();
-    ctx.moveTo(s * 1.4, 0);
-    ctx.lineTo(-s, -s * 0.22);
-    ctx.lineTo(-s, s * 0.22);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = a.couleur;
-    ctx.beginPath();
-    ctx.moveTo(s * 0.2, 0);
-    ctx.lineTo(-s * 0.4, -s * (a.sorte === 'chasseur' ? 0.9 : 1.2));
-    ctx.lineTo(-s * 0.7, -s * (a.sorte === 'chasseur' ? 0.9 : 1.2));
-    ctx.lineTo(-s * 0.4, 0);
-    ctx.lineTo(-s * 0.7, s * (a.sorte === 'chasseur' ? 0.9 : 1.2));
-    ctx.lineTo(-s * 0.4, s * (a.sorte === 'chasseur' ? 0.9 : 1.2));
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-    if (a.sorte === 'chasseur' && this.particules.length < PARTICULES_MAX) this.particules.push({ x, y, vx: 0, vy: 0, t: 0, duree: 0.5, couleur: 'rgba(220,220,230,0.5)', taille: 5, g: 0 });
-    if (a.pilote) this.#photo(a.pilote, x, y - s * 1.2, 12, a.couleur);
-    if (a.sorte === 'chasseur' && k > 0.85 && !a.tire) {
+    const k = lim(a.t / a.duree);
+    const chasseur = a.sorte === 'chasseur';
+    const kk = chasseur ? sortieDouce(k) : k;
+    const x = a.x0 + (a.x1 - a.x0) * kk;
+    const y = a.y0 + (a.y1 - a.y0) * kk - (chasseur ? Math.sin(k * Math.PI) * 120 : 0);
+    const dir = a.x1 >= a.x0 ? 1 : -1;
+    if (a.sorte === 'helico') {
+      this.#helico(x, y, dir, a.couleur, 1.1, null);
+      return;
+    }
+    if (chasseur || a.sorte === 'survol') {
+      const angle = chasseur ? Math.atan2(a.y1 - a.y0, a.x1 - a.x0) : Math.atan2(a.y1 - a.y0, a.x1 - a.x0);
+      this.#jet(x, y, angle, chasseur ? 22 : 18, a.couleur);
+      if (this.particules.length < PARTICULES_MAX) this.particules.push({ x: x - Math.cos(angle) * 18, y: y - Math.sin(angle) * 18, vx: 0, vy: 0, t: 0, duree: a.trainee ? 1.1 : 0.5, couleur: 'rgba(225,228,235,0.45)', taille: a.trainee ? 4 : 5, g: 0 });
+    } else this.#transport(x, y, dir, a.sorte === 'cargo' ? 34 : 30, a.couleur);
+    if (a.pilote) this.#photo(a.pilote, x, y - 30, 12, a.couleur);
+    if (chasseur && k > 0.85 && !a.tire) {
       a.tire = true;
       this.missiles.push({ x0: x, y0: y, x1: a.x1, y1: a.y1, t: 0, duree: 0.25, haut: 0 });
     }
   }
 
-  #helico(h, i, n) {
+  /** Avion de chasse vu de dessus (ailes delta, dérive, verrière), orienté selon l'angle. */
+  #jet(x, y, angle, s, couleur) {
     const { ctx } = this;
-    const [cx, cy] = this.ecran(h.vers);
-    const a = h.t * 0.6 + (i / n) * Math.PI * 2;
-    const x = cx + Math.cos(a) * 62;
-    const y = cy - 70 + Math.sin(a * 2) * 12;
-    const s = 14;
     ctx.save();
     ctx.translate(x, y);
-    ctx.fillStyle = h.couleur;
+    ctx.rotate(angle);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
     ctx.beginPath();
-    ctx.ellipse(0, 0, s, s * 0.55, 0, 0, Math.PI * 2);
+    ctx.ellipse(-s * 0.2, s * 2.2, s * 1.2, s * 0.35, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillRect(-s * 2, -s * 0.12, s * 1.2, s * 0.24);
-    ctx.fillStyle = 'rgba(180,220,255,0.8)';
+    ctx.fillStyle = couleur;
     ctx.beginPath();
-    ctx.ellipse(s * 0.45, -s * 0.1, s * 0.35, s * 0.28, 0, 0, Math.PI * 2);
+    ctx.moveTo(s * 0.5, 0);
+    ctx.lineTo(-s * 0.55, -s * 1.05);
+    ctx.lineTo(-s * 0.85, -s * 1.05);
+    ctx.lineTo(-s * 0.6, 0);
+    ctx.lineTo(-s * 0.85, s * 1.05);
+    ctx.lineTo(-s * 0.55, s * 1.05);
+    ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = 'rgba(30,30,30,0.85)';
+    ctx.fillStyle = '#9aa3ad';
+    ctx.beginPath();
+    ctx.moveTo(s * 1.5, 0);
+    ctx.lineTo(s * 0.6, -s * 0.2);
+    ctx.lineTo(-s * 1.1, -s * 0.16);
+    ctx.lineTo(-s * 1.1, s * 0.16);
+    ctx.lineTo(s * 0.6, s * 0.2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.8, 0);
+    ctx.lineTo(-s * 1.2, -s * 0.42);
+    ctx.lineTo(-s * 1.2, s * 0.42);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(160,215,255,0.9)';
+    ctx.beginPath();
+    ctx.ellipse(s * 0.75, 0, s * 0.28, s * 0.1, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,170,80,0.85)';
+    ctx.beginPath();
+    ctx.arc(-s * 1.18, 0, s * 0.12 + Math.random() * s * 0.06, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  /** Avion de transport ou cargo (ailes droites, quatre hélices). */
+  #transport(x, y, dir, s, couleur) {
+    const { ctx } = this;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(dir, 1);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, s * 2, s * 1.4, s * 0.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#6c7a5a';
+    ctx.fillRect(-s * 0.35, -s * 1.35, s * 0.42, s * 2.7);
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.roundRect(-s * 1.3, -s * 0.24, s * 2.7, s * 0.48, s * 0.24);
+    ctx.fill();
+    ctx.fillStyle = '#6c7a5a';
+    ctx.beginPath();
+    ctx.moveTo(-s * 1.1, 0);
+    ctx.lineTo(-s * 1.4, -s * 0.55);
+    ctx.lineTo(-s * 1.55, -s * 0.55);
+    ctx.lineTo(-s * 1.4, 0);
+    ctx.lineTo(-s * 1.55, s * 0.55);
+    ctx.lineTo(-s * 1.4, s * 0.55);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(30,30,30,0.6)';
+    ctx.lineWidth = 2;
+    const r = this.temps * 50;
+    for (const e of [-1, -0.5, 0.5, 1]) {
+      const hx = s * 0.12;
+      const hy = e * s * 1.05;
+      ctx.beginPath();
+      ctx.moveTo(hx + Math.cos(r) * 2, hy - s * 0.2);
+      ctx.lineTo(hx - Math.cos(r) * 2, hy + s * 0.2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(170,220,255,0.85)';
+    ctx.fillRect(s * 1.1, -s * 0.12, s * 0.2, s * 0.24);
+    ctx.restore();
+  }
+
+  /** Hélicoptère de combat (vu de profil) : fuselage, rotor, rotor de queue, patins, paniers de roquettes. */
+  #helico(x, y, dir, couleur, taille, cible) {
+    const { ctx } = this;
+    const s = 15 * taille;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(dir, 1);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, s * 2.6, s * 1.3, s * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // poutre de queue et dérive
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.6, -s * 0.18);
+    ctx.lineTo(-s * 2.3, -s * 0.1);
+    ctx.lineTo(-s * 2.3, s * 0.12);
+    ctx.lineTo(-s * 0.6, s * 0.22);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-s * 2.1, -s * 0.05);
+    ctx.lineTo(-s * 2.45, -s * 0.75);
+    ctx.lineTo(-s * 2.3, s * 0.1);
+    ctx.fill();
+    // rotor de queue
+    ctx.strokeStyle = 'rgba(30,30,30,0.8)';
+    ctx.lineWidth = 2;
+    const rq = this.temps * 60;
+    ctx.beginPath();
+    ctx.moveTo(-s * 2.35 + Math.cos(rq) * s * 0.4, -s * 0.35 + Math.sin(rq) * s * 0.4);
+    ctx.lineTo(-s * 2.35 - Math.cos(rq) * s * 0.4, -s * 0.35 - Math.sin(rq) * s * 0.4);
+    ctx.stroke();
+    // fuselage effilé
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.moveTo(s * 1.3, s * 0.15);
+    ctx.quadraticCurveTo(s * 1.1, -s * 0.55, 0, -s * 0.55);
+    ctx.lineTo(-s * 0.8, -s * 0.3);
+    ctx.lineTo(-s * 0.8, s * 0.35);
+    ctx.lineTo(s * 0.8, s * 0.45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = alpha('#000000', 0.25);
+    ctx.fillRect(-s * 0.8, s * 0.12, s * 1.9, s * 0.1);
+    // verrière en tandem
+    ctx.fillStyle = 'rgba(160,215,255,0.9)';
+    ctx.beginPath();
+    ctx.moveTo(s * 1.15, s * 0.02);
+    ctx.quadraticCurveTo(s * 0.9, -s * 0.48, s * 0.2, -s * 0.45);
+    ctx.lineTo(s * 0.2, -s * 0.05);
+    ctx.closePath();
+    ctx.fill();
+    // ailette et paniers de roquettes
+    ctx.fillStyle = '#3a3f46';
+    ctx.fillRect(-s * 0.3, s * 0.3, s * 0.9, s * 0.12);
+    ctx.fillRect(-s * 0.2, s * 0.42, s * 0.75, s * 0.2);
+    // canon sous le nez
+    ctx.fillRect(s * 0.9, s * 0.4, s * 0.5, s * 0.07);
+    // patins
+    ctx.strokeStyle = '#2b2f35';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.7, s * 0.95);
+    ctx.lineTo(s * 0.95, s * 0.95);
+    ctx.moveTo(-s * 0.35, s * 0.45);
+    ctx.lineTo(-s * 0.45, s * 0.95);
+    ctx.moveTo(s * 0.5, s * 0.45);
+    ctx.lineTo(s * 0.6, s * 0.95);
+    ctx.stroke();
+    // rotor principal : disque flou + deux pales
+    ctx.fillStyle = 'rgba(200,200,210,0.16)';
+    ctx.beginPath();
+    ctx.ellipse(0, -s * 0.72, s * 2.1, s * 0.22, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(25,25,25,0.85)';
     ctx.lineWidth = 2.5;
     const r = this.temps * 40;
     ctx.beginPath();
-    ctx.moveTo(Math.cos(r) * s * 1.6, -s * 0.7 + Math.sin(r) * 2);
-    ctx.lineTo(-Math.cos(r) * s * 1.6, -s * 0.7 - Math.sin(r) * 2);
+    ctx.moveTo(Math.cos(r) * s * 2.1, -s * 0.72 + Math.sin(r) * s * 0.2);
+    ctx.lineTo(-Math.cos(r) * s * 2.1, -s * 0.72 - Math.sin(r) * s * 0.2);
     ctx.stroke();
+    ctx.fillStyle = '#2b2f35';
+    ctx.fillRect(-s * 0.08, -s * 0.72, s * 0.16, s * 0.2);
     ctx.restore();
-    if (h.tir > 0) {
+    if (cible) {
+      // tir : roquettes et canon vers la cible
+      const [cx, cy] = cible;
+      const tx = cx + (Math.random() - 0.5) * 30;
+      const ty = cy + (Math.random() - 0.5) * 20;
       ctx.strokeStyle = 'rgba(255,220,120,0.9)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(x, y + 6);
-      ctx.lineTo(cx + (Math.random() - 0.5) * 30, cy + (Math.random() - 0.5) * 20);
+      ctx.moveTo(x + dir * s * 1.3, y + s * 0.44);
+      ctx.lineTo(tx, ty);
       ctx.stroke();
-      if (Math.random() < 0.3) this.explosionEn(cx + (Math.random() - 0.5) * 30, cy + (Math.random() - 0.5) * 20, 0.3);
+      if (Math.random() < 0.15) this.missiles.push({ x0: x, y0: y + s * 0.5, x1: tx, y1: ty, t: 0, duree: 0.35, haut: 0 });
+      if (Math.random() < 0.3) this.explosionEn(tx, ty, 0.3);
     }
-    if (i === 0 && h.pilote) this.#photo(h.pilote, x, y - 26, 11, h.couleur);
   }
 
-  #unites() {
+  /** Troupes au sol : soldats qui marchent et tanks, puis hélicoptères de combat en vol stationnaire. */
+  #sol() {
     const P = this.partie;
-    // soldats qui marchent sur chaque département actif
     for (const e of P.equipes.values()) {
       const d = this.parCode.get(e.code);
       const [cx, cy] = this.ecran(e.code);
       const n = Math.max(1, Math.min(6, 1 + Math.floor(Math.log10(e.soldats + 1) * 1.4)));
-      const couleur = this.theme.couleurUnites(e.code);
+      const couleur = this.theme.couleurSoldats(e.code);
+      const couleurV = this.theme.couleurVehicules(e.code);
       const ech = d.overseas ? 0.6 : Math.sqrt(this.cam.s);
       for (let i = 0; i < n; i++) {
         const a = (i / n) * Math.PI * 2;
@@ -790,30 +1067,50 @@ export class Rendu {
         this.#soldat(cx + Math.cos(a) * rayon + decal * 0.5, cy + 16 * ech + Math.sin(a) * rayon * 0.4, couleur, ech, i);
       }
       const pilotes = this.pilotes.get(e.code) || [];
-      for (let i = 0; i < Math.min(e.tanks, 3); i++) this.#tank(cx + (i % 2 ? -1 : 1) * (46 + 14 * Math.floor(i / 2)) * ech, cy + (6 + 10 * i) * ech, couleur, pilotes[i], d.overseas ? 0.5 : 0.8 * ech);
+      for (let i = 0; i < Math.min(e.tanks, 3); i++) this.#tank(cx + (i % 2 ? -1 : 1) * (46 + 14 * Math.floor(i / 2)) * ech, cy + (6 + 10 * i) * ech, couleurV, pilotes[i], d.overseas ? 0.5 : 0.8 * ech);
     }
+    for (const h of this.helicos) {
+      const [cx, cy] = this.ecran(h.vers);
+      for (let i = 0; i < 4; i++) {
+        const a = h.t * 0.6 + (i / 4) * Math.PI * 2;
+        const x = cx + Math.cos(a) * 62;
+        const y = cy - 70 + Math.sin(a * 2) * 12;
+        const dir = -Math.sin(a) >= 0 ? 1 : -1; // nez dans le sens de la rotation
+        this.#helico(x, y, dir, h.couleur, 1.2, h.tir > 0 ? [cx, cy] : null);
+        if (i === 0 && h.pilote) this.#photo(h.pilote, x, y - 30, 11, h.couleur);
+      }
+    }
+  }
+
+  /** Ciel : parachutistes, caisses, missiles, avions, bombardiers et bombes. */
+  #air() {
+    const { ctx } = this;
     for (const p of this.paras) {
       if (p.t < 0) continue;
       const k = lim(p.t / p.duree);
       const y = p.y0 + (p.y - p.y0) * k;
       const x = p.x + Math.sin(p.t * 3) * 8;
-      const { ctx } = this;
-      ctx.fillStyle = p.dore ? '#ffd23d' : '#f0f0f0';
-      ctx.beginPath();
-      ctx.arc(x, y - 22, 14, Math.PI, 0);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x - 14, y - 22);
-      ctx.lineTo(x, y - 6);
-      ctx.lineTo(x + 14, y - 22);
-      ctx.stroke();
+      this.#parachute(x, y - 22, 14, p.dore ? '#ffd23d' : '#f0f0f0');
       this.#soldat(x, y, p.couleur, 0.9, p.t * 3, p.dore);
     }
-    for (const a of this.avions) this.#avion(a);
-    for (const h of this.helicos) for (let i = 0; i < 4; i++) this.#helico(h, i, 4);
-    const { ctx } = this;
+    for (const c of this.caisses) {
+      if (c.t < 0) continue;
+      const k = lim(c.t / c.duree);
+      const x = c.x + Math.sin(c.t * 2.6) * 10;
+      const y = c.y0 + (c.y - c.y0) * k;
+      this.#parachute(x, y - 30, 22, '#e9e2cf');
+      ctx.fillStyle = '#9a6b34';
+      ctx.fillRect(x - 13, y - 16, 26, 22);
+      ctx.strokeStyle = '#5b3d1b';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(x - 13, y - 16, 26, 22);
+      ctx.beginPath();
+      ctx.moveTo(x - 13, y - 16);
+      ctx.lineTo(x + 13, y + 6);
+      ctx.moveTo(x + 13, y - 16);
+      ctx.lineTo(x - 13, y + 6);
+      ctx.stroke();
+    }
     for (const m of this.missiles) {
       if (m.t < 0) continue;
       const k = lim(m.t / m.duree);
@@ -829,21 +1126,225 @@ export class Rendu {
       ctx.fill();
       if (this.particules.length < PARTICULES_MAX) this.particules.push({ x, y, vx: 0, vy: 0, t: 0, duree: 0.6, couleur: 'rgba(255,170,90,0.6)', taille: 5, g: 0 });
     }
+    for (const a of this.avions) if (a.t >= 0) this.#avion(a);
+    for (const b of this.bombardiers) {
+      const k = b.t / b.duree;
+      this.#bombardierDessin(b.x0 + (b.x1 - b.x0) * k, b.y, b.x1 > b.x0 ? 1 : -1, b.couleur, b.taille);
+    }
     for (const b of this.bombes) {
-      const [x, y] = this.ecran(b.equipe);
-      const k = lim(b.t / b.duree);
-      const by = y - 520 + 520 * k * k;
-      ctx.fillStyle = '#3b3f2f';
+      const [cx, cy] = this.ecran(b.equipe);
+      const x = cx + (b.dx || 0);
+      if (b.nucleaire) {
+        // cible marquée : cercle rouge, ☢ et compte à rebours jusqu'à l'impact
+        const reste = Math.max(0, b.duree - b.t);
+        const r = 64 - 30 * lim(b.t / b.duree);
+        ctx.strokeStyle = `rgba(255,50,40,${0.55 + 0.45 * Math.sin(this.temps * 18)})`;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx - r - 14, cy);
+        ctx.lineTo(cx - r + 10, cy);
+        ctx.moveTo(cx + r - 10, cy);
+        ctx.lineTo(cx + r + 14, cy);
+        ctx.moveTo(cx, cy - r - 14);
+        ctx.lineTo(cx, cy - r + 10);
+        ctx.moveTo(cx, cy + r - 10);
+        ctx.lineTo(cx, cy + r + 14);
+        ctx.stroke();
+        this.#texte(`☢ ${Math.ceil(reste)}`, cx, cy - r - 22, { taille: 30, poids: 900, align: 'center', couleur: '#ffd23d', contour: 'rgba(0,0,0,0.85)', epaisseur: 6 });
+      }
+      if (b.t < b.largage) continue;
+      const k = lim((b.t - b.largage) / Math.max(0.01, b.duree - b.largage));
+      const y = b.y0 + (cy - b.y0) * k * k;
+      const s = b.nucleaire ? 1.5 : 0.8;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = b.nucleaire ? '#4a5038' : '#2f3236';
       ctx.beginPath();
-      ctx.ellipse(x, by, 9, 18, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 0, 8 * s, 17 * s, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#ffcc00';
-      ctx.fillRect(x - 9, by - 22, 18, 5);
-      ctx.strokeStyle = `rgba(255,60,40,${0.5 + 0.5 * Math.sin(this.temps * 20)})`;
-      ctx.lineWidth = 4;
+      ctx.fillStyle = b.nucleaire ? '#ffcc00' : '#7a7f86';
+      ctx.fillRect(-8 * s, -21 * s, 16 * s, 5 * s);
       ctx.beginPath();
-      ctx.arc(x, y, 50 - 26 * k, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.moveTo(-8 * s, -17 * s);
+      ctx.lineTo(-13 * s, -27 * s);
+      ctx.lineTo(13 * s, -27 * s);
+      ctx.lineTo(8 * s, -17 * s);
+      ctx.fill();
+      if (b.nucleaire) this.#texte('☢', 0, 4 * s, { taille: 13 * s, poids: 900, align: 'center', couleur: '#ffcc00' });
+      ctx.restore();
+      if (this.particules.length < PARTICULES_MAX) this.particules.push({ x, y: y - 20 * s, vx: 0, vy: 0, t: 0, duree: 0.5, couleur: 'rgba(230,230,230,0.45)', taille: 4 * s, g: 0 });
+    }
+  }
+
+  #parachute(x, y, r, couleur) {
+    const { ctx } = this;
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.arc(x, y, r, Math.PI, 0);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x - r, y);
+    ctx.lineTo(x, y + r + 2);
+    ctx.lineTo(x + r, y);
+    ctx.stroke();
+  }
+
+  /** Bombardier stratégique (ailes en flèche, quatre réacteurs, fuselage aux couleurs du département). */
+  #bombardierDessin(x, y, dir, couleur, taille) {
+    const { ctx } = this;
+    const s = 34 * taille;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(dir, 1);
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(0, s * 2.2, s * 1.6, s * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#4b5360';
+    ctx.beginPath();
+    ctx.moveTo(s * 0.3, 0);
+    ctx.lineTo(-s * 0.9, -s * 1.5);
+    ctx.lineTo(-s * 1.25, -s * 1.5);
+    ctx.lineTo(-s * 0.5, 0);
+    ctx.lineTo(-s * 1.25, s * 1.5);
+    ctx.lineTo(-s * 0.9, s * 1.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.moveTo(s * 1.8, 0);
+    ctx.quadraticCurveTo(s * 1.3, -s * 0.28, 0, -s * 0.26);
+    ctx.lineTo(-s * 1.7, -s * 0.18);
+    ctx.lineTo(-s * 1.7, s * 0.18);
+    ctx.lineTo(0, s * 0.26);
+    ctx.quadraticCurveTo(s * 1.3, s * 0.28, s * 1.8, 0);
+    ctx.fill();
+    ctx.fillStyle = '#4b5360';
+    ctx.beginPath();
+    ctx.moveTo(-s * 1.3, 0);
+    ctx.lineTo(-s * 1.75, -s * 0.6);
+    ctx.lineTo(-s * 1.9, -s * 0.6);
+    ctx.lineTo(-s * 1.7, 0);
+    ctx.lineTo(-s * 1.9, s * 0.6);
+    ctx.lineTo(-s * 1.75, s * 0.6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#2b3038';
+    for (const e of [-1.0, -0.6, 0.6, 1.0]) ctx.fillRect(-s * 0.55 - Math.abs(e) * s * 0.3, e * s - s * 0.07, s * 0.42, s * 0.14);
+    ctx.fillStyle = 'rgba(170,220,255,0.85)';
+    ctx.beginPath();
+    ctx.ellipse(s * 1.35, 0, s * 0.2, s * 0.09, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    if (this.particules.length < PARTICULES_MAX - 4) for (const e of [-1, 1]) this.particules.push({ x: x - dir * s * 0.9, y: y + e * s * 0.8, vx: 0, vy: 0, t: 0, duree: 0.9, couleur: 'rgba(235,235,240,0.35)', taille: 6, g: 0 });
+  }
+
+  /** Porte-avions au large : il arrive, lance ses vagues d'avions, puis repart. */
+  #porteAvion(p) {
+    const { ctx } = this;
+    const entree = sortieDouce(lim(p.t / 2.5));
+    const sortie = lim((p.t - (p.duree - 2)) / 2);
+    const d = -120 * (1 - entree) + 120 * sortie; // arrive puis repart dans l'axe de son cap
+    const [bx, by] = this.versEcran(p.mx + Math.cos(p.cap) * d, p.my + Math.sin(p.cap) * d);
+    const s = 1.15 * Math.sqrt(this.cam.s);
+    ctx.save();
+    ctx.globalAlpha = 1 - sortie;
+    ctx.translate(bx, by);
+    ctx.rotate(p.cap);
+    ctx.scale(s, s);
+    // sillage
+    ctx.fillStyle = 'rgba(210,235,255,0.25)';
+    ctx.beginPath();
+    ctx.moveTo(-70, -10);
+    ctx.lineTo(-170, -26);
+    ctx.lineTo(-170, 26);
+    ctx.lineTo(-70, 10);
+    ctx.fill();
+    // coque
+    ctx.fillStyle = '#5a6270';
+    ctx.beginPath();
+    ctx.moveTo(84, 0);
+    ctx.lineTo(60, -20);
+    ctx.lineTo(-74, -20);
+    ctx.lineTo(-80, 0);
+    ctx.lineTo(-74, 20);
+    ctx.lineTo(60, 20);
+    ctx.closePath();
+    ctx.fill();
+    // pont d'envol avec piste oblique
+    ctx.fillStyle = '#2f343c';
+    ctx.beginPath();
+    ctx.moveTo(78, -2);
+    ctx.lineTo(56, -17);
+    ctx.lineTo(-70, -17);
+    ctx.lineTo(-70, 15);
+    ctx.lineTo(40, 15);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([7, 6]);
+    ctx.beginPath();
+    ctx.moveTo(-64, 8);
+    ctx.lineTo(58, -10);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // bande aux couleurs du département
+    ctx.fillStyle = p.couleur;
+    ctx.fillRect(-74, 15, 134, 5);
+    ctx.fillRect(-74, -20, 134, 3);
+    // îlot
+    ctx.fillStyle = '#727b88';
+    ctx.fillRect(10, 10, 22, 9);
+    ctx.fillStyle = '#9aa3ad';
+    ctx.fillRect(18, 4, 7, 7);
+    // avions sur le pont
+    ctx.fillStyle = '#b8c0ca';
+    for (const [x, y] of [[-50, -8], [-34, -8], [-18, -8], [-56, 4]]) {
+      ctx.beginPath();
+      ctx.moveTo(x + 8, y);
+      ctx.lineTo(x - 5, y - 6);
+      ctx.lineTo(x - 5, y + 6);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+    if (p.pilote && p.t < p.duree - 2) this.#photo(p.pilote, bx, by - 40 * s, 14, p.couleur);
+  }
+
+  /** Département brûlé après une bombe nucléaire : sol calciné et braises, qui s'estompent. */
+  #crateres() {
+    if (!this.crateres.length) return;
+    const { ctx } = this;
+    const [ox, oy] = this.versEcran(0, 0);
+    const sc = this.cam.s * ECHELLE;
+    for (const c of this.crateres) {
+      const d = this.parCode.get(c.equipe);
+      const a = c.t < 0.3 ? c.t / 0.3 : 1 - lim((c.t - c.duree + 3) / 3);
+      if (d.overseas) {
+        const [x, y] = this.ecran(c.equipe);
+        ctx.fillStyle = `rgba(30,12,4,${0.7 * a})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 26, 0, Math.PI * 2);
+        ctx.fill();
+        continue;
+      }
+      ctx.save();
+      ctx.translate(ox, oy);
+      ctx.scale(sc, sc);
+      ctx.fillStyle = `rgba(28,12,6,${0.78 * a})`;
+      ctx.fill(d.chemin);
+      ctx.lineWidth = 3 / sc;
+      ctx.strokeStyle = `rgba(255,${90 + 60 * Math.sin(this.temps * 6)},30,${0.8 * a})`;
+      ctx.stroke(d.chemin);
+      ctx.restore();
+      const [x, y] = this.ecran(c.equipe);
+      if (Math.random() < 0.5 * a && this.particules.length < PARTICULES_MAX) this.particules.push({ x: x + (Math.random() - 0.5) * 50, y: y + (Math.random() - 0.5) * 30, vx: (Math.random() - 0.5) * 10, vy: -20 - Math.random() * 20, t: 0, duree: 1 + Math.random(), couleur: Math.random() < 0.5 ? '#ff8a3d' : 'rgba(80,80,80,0.6)', taille: 3 + Math.random() * 3, g: 0, fumee: Math.random() < 0.4 });
     }
   }
 
@@ -983,6 +1484,6 @@ export class Rendu {
 
   /** Logo Empira (A doré en chevron + « EMPIRA AGENCY ») ; image fournie si présente. */
   #logo(x, y, ancrage) {
-    dessinerLogo(this.ctx, x, y, ancrage, this.photos.logo);
+    dessinerLogo(this.ctx, x, y, ancrage);
   }
 }

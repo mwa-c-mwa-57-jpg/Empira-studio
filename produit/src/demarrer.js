@@ -1,7 +1,7 @@
 // Fenêtre de pilotage : licence, connexion directe au live TikTok, vérifications, couleurs, voix, régie, adresse pour LIVE Studio.
 
 import { PALETTE } from './config.js';
-import { dessinerLogo } from './logo.js';
+import { LOGO_COMPACT, poserIcone } from './logo.js';
 
 /* global VENTE */
 const VERSION_VENDUE = typeof VENTE !== 'undefined' && VENTE;
@@ -171,6 +171,9 @@ function majAdresse() {
   }
   if (couleurs === 'perso') p.set('palette', $('palette').value.split(',').map((c) => c.trim().replace('#', '')).filter(Boolean).join(','));
   p.set('unites', valeur('unites'));
+  if (valeur('unites') === 'perso') p.set('unitesperso', $('unitesPerso').value.replace('#', ''));
+  p.set('vehicules', valeur('vehicules'));
+  if (valeur('vehicules') === 'perso') p.set('vehiculesperso', $('vehiculesPerso').value.replace('#', ''));
   p.set('contours', valeur('contours'));
   p.set('voix', valeur('voix'));
   if ($('nomVoix').value) p.set('nomvoix', $('nomVoix').value);
@@ -184,7 +187,7 @@ function majAdresse() {
     i.style.background = c;
     return i;
   }));
-  Object.assign(memoire, { couleurs, palette: $('palette').value, unites: valeur('unites'), contours: valeur('contours'), voix: valeur('voix'), nomVoix: $('nomVoix').value });
+  Object.assign(memoire, { couleurs, palette: $('palette').value, unites: valeur('unites'), unitesPerso: $('unitesPerso').value, vehicules: valeur('vehicules'), vehiculesPerso: $('vehiculesPerso').value, contours: valeur('contours'), voix: valeur('voix'), nomVoix: $('nomVoix').value });
   memoriser();
 }
 
@@ -209,9 +212,8 @@ async function copier() {
 }
 
 function init() {
-  const g = $('logo').getContext('2d');
-  g.scale(2, 2);
-  dessinerLogo(g, 0, 0, 'gauche');
+  $('logo').src = LOGO_COMPACT;
+  poserIcone();
   fetch('/reglages', { cache: 'no-store' }).then((r) => r.json()).then((r) => {
     if (r.pseudo && !$('pseudo').value) $('pseudo').value = r.pseudo;
     if (r.source) $('source').value = r.source;
@@ -221,9 +223,19 @@ function init() {
   $('palette').value = memoire.palette || '';
   cocher('couleurs', memoire.couleurs);
   cocher('unites', memoire.unites);
+  cocher('vehicules', memoire.vehicules);
+  if (memoire.unitesPerso) $('unitesPerso').value = memoire.unitesPerso;
+  if (memoire.vehiculesPerso) $('vehiculesPerso').value = memoire.vehiculesPerso;
   cocher('contours', memoire.contours);
   cocher('voix', memoire.voix);
   for (const el of document.querySelectorAll('input')) el.addEventListener('input', majAdresse);
+  // choisir une couleur personnalisée sélectionne « Ma couleur »
+  for (const nom of ['unites', 'vehicules']) {
+    $(`${nom}Perso`).addEventListener('input', () => {
+      cocher(nom, 'perso');
+      majAdresse();
+    });
+  }
   for (const el of document.querySelectorAll('input[name="voix"]')) el.addEventListener('change', remplirVoix);
   $('nomVoix').addEventListener('change', majAdresse);
   $('activer').addEventListener('click', activer);

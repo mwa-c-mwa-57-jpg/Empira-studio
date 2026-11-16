@@ -1,11 +1,32 @@
-// Logo Empira : « A » doré en chevron et « EMPIRA AGENCY », ou l'image images/logo-empira.png si elle est fournie.
-// Il est toujours affiché (en haut de la colonne de droite, à côté de la carte, et sous le podium) et ne peut pas être masqué.
+// Logo Empira (images fournies par Empira, intégrées au jeu à l'assemblage) : version compacte sur la carte,
+// version complète sur le podium, la fenêtre de pilotage et l'écran de licence. Toujours affiché, non remplaçable.
+
+import LOGO_COMPACT from '../images/logo-empira.png';
+import LOGO_COMPLET from '../images/logo-empira-complet.png';
+import ICONE from '../images/icone-empira.png';
+
+export { LOGO_COMPACT, LOGO_COMPLET, ICONE };
+
+let imageCompacte = null;
+if (typeof Image !== 'undefined') {
+  const i = new Image();
+  i.onload = () => (imageCompacte = i);
+  i.src = LOGO_COMPACT;
+}
+
+/** Ajoute l'icône Empira à l'onglet du navigateur. */
+export function poserIcone(doc = document) {
+  const l = doc.createElement('link');
+  l.rel = 'icon';
+  l.href = ICONE;
+  doc.head.appendChild(l);
+}
 
 const POLICE = "'Segoe UI', system-ui, -apple-system, Roboto, sans-serif";
 
-export function dessinerLogo(ctx, x, y, ancrage = 'droite', image = null) {
-  const l = 150;
-  const h = 56;
+export function dessinerLogo(ctx, x, y, ancrage = 'droite', image = imageCompacte) {
+  const l = image ? 200 : 150;
+  const h = image ? 58 : 56;
   const x0 = ancrage === 'droite' ? x - l : ancrage === 'centre' ? x - l / 2 : x;
   if (image) {
     const k = Math.min(l / image.width, h / image.height);
@@ -18,7 +39,7 @@ export function dessinerLogo(ctx, x, y, ancrage = 'droite', image = null) {
   ctx.save();
   ctx.fillStyle = or;
   ctx.beginPath();
-  // « A » en chevron
+  // repli dessiné, le temps que l'image se charge : « A » en chevron
   ctx.moveTo(x0 + 22, y + 4);
   ctx.lineTo(x0 + 42, y + 48);
   ctx.lineTo(x0 + 33, y + 48);

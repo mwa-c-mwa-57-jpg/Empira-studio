@@ -30,7 +30,15 @@ export const REGLES = {
   heliSalves: 25, // valeur de la Galaxie répartie en 25 salves
   heliIntervalleSec: 20,
   tsunamiPartCible: 0.6, // 15 000 sur 25 000 chez la cible, le reste sur les départements traversés
-  nucleaireVoisins: 0.1,
+  nucleaireVoisins: 0.15, // souffle : les voisins des cibles perdent 15 %
+  // porte-avions : 4 vagues d'avions sur la cible ; chaque vague touche aussi son plus gros voisin (25 % de la vague)
+  porteAvionsVagues: 4,
+  porteAvionsVoisin: 0.25,
+  // ambiance : toutes les 30 à 55 s, un ravitaillement (+30 sur un département au hasard),
+  // un bombardement surprise sur le 1er (−5 %, bouclier respecté) ou un simple survol
+  ambianceSec: [30, 55],
+  ravitaillementSoldats: 30,
+  bombardementPart: 0.05,
   annonceArriveeSec: 8,
 };
 
@@ -73,8 +81,8 @@ export const CADEAUX = [
   { id: 'pistolet', noms: ['Pistolet à argent', 'Money Gun'], coins: 500, onglet: 'attaques', icone: '💸', effetTexte: '6 missiles', effet: { type: 'missiles', plafond: 0.6 } },
   { id: 'galaxie', noms: ['Galaxie', 'Galaxy'], coins: 1000, onglet: 'attaques', icone: '🌌', effetTexte: '4 hélicoptères', effet: { type: 'helicos', plafond: 0.1 } },
   { id: 'baleines', noms: ['Plongée avec les baleines', 'Whale Diving'], coins: 2150, onglet: 'attaques', icone: '🐋', effetTexte: 'tsunami', effet: { type: 'tsunami', plafond: 0.5 } },
-  { id: 'leon', noms: ['Léon le chaton', 'Leon the Kitten'], coins: 4888, onglet: 'attaques', icone: '🦁', effetTexte: '3 bombes nucléaires', effet: { type: 'nucleaire', plafond: 0.5 } },
-  { id: 'voiture', noms: ['Voiture de sport', 'Sports Car'], coins: 7000, onglet: null, icone: '🏎️', effetTexte: '3 bombes nucléaires', effet: { type: 'nucleaire', plafond: 0.5 } },
+  { id: 'leon', noms: ['Léon le chaton', 'Leon the Kitten'], coins: 4888, onglet: 'attaques', icone: '🦁', effetTexte: '3 bombes nucléaires', effet: { type: 'nucleaire', plafond: 0.8 } },
+  { id: 'voiture', noms: ['Voiture de sport', 'Sports Car'], coins: 7000, onglet: 'attaques', icone: '🚢', nomCarte: 'Voiture de sport', effetTexte: 'porte-avions', effet: { type: 'porteavions', plafond: 0.35 } },
   // Cachés mais reconnus
   { id: 'tomate', noms: ['Tom la tomate', 'Tom the Tomato'], coins: 1, onglet: null, icone: '🍅', effetTexte: 'petite attaque sur le 1er', effet: { type: 'tomate', plafond: 0.5 } },
   { id: 'gants', noms: ['Gants de boxe', 'Boxing Gloves'], coins: 299, onglet: null, icone: '🥊', effetTexte: 'avion de chasse', effet: { type: 'chasseur', plafond: 0.5 } },
@@ -82,7 +90,7 @@ export const CADEAUX = [
   { id: 'coeur', noms: ['Envoie-moi un cœur', 'Send Me a Heart'], coins: 1, onglet: null, icone: '💌', effetTexte: '+20 soldats', effet: { type: 'fixe', soldats: 20 } },
 ];
 
-export const ATTAQUES = new Set(['chasseur', 'missiles', 'helicos', 'tsunami', 'nucleaire', 'tomate']);
+export const ATTAQUES = new Set(['chasseur', 'missiles', 'helicos', 'tsunami', 'nucleaire', 'porteavions', 'tomate']);
 
 // 32 couleurs vives et bien distinctes, mélangées à chaque lancement
 export const PALETTE = [
@@ -93,7 +101,8 @@ export const PALETTE = [
 ];
 
 export const CONTOURS = { or: '#d9a84e', bleu: '#3b82f6', vert: '#22c55e', rouge: '#ef4444', violet: '#a855f7' };
-export const UNITES = { bleu: '#2f6fe4', vert: '#1f9d4c', rouge: '#d63b3b' };
+// couleurs proposées pour les soldats et pour les véhicules (tanks, avions, hélicoptères, navires)
+export const UNITES = { bleu: '#2f6fe4', vert: '#1f9d4c', rouge: '#d63b3b', or: '#e8b931', violet: '#8b5cf6', noir: '#2b2b2e', blanc: '#ececec', camouflage: '#5b6b3a' };
 
 // Mots interdits dans les pseudos (voix et affichage). Liste volontairement courte, à compléter.
 export const MOTS_INTERDITS = ['connard', 'connasse', 'salope', 'pute', 'encule', 'enculé', 'nique', 'fdp', 'batard', 'bâtard', 'nazi', 'hitler', 'negro', 'pédé', 'pd', 'tapette', 'bougnoule', 'youpin', 'chienne', 'merde'];

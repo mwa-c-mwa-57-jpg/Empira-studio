@@ -277,6 +277,7 @@ test('mission par région : objectif de messages, prime de 60 par département p
 
 test('fin au bout de 15 minutes, rappels à 10, 5 et 1 minute, podium de 14 s avec le roi', () => {
   const { p, run } = partie();
+  p.ambianceActive = false; // les ravitaillements au hasard changeraient le classement
   p.traiter(com('a', '17'));
   p.traiter(gift('a', 'Rose', 1, 50));
   p.traiter(com('b', '63'));
@@ -324,4 +325,72 @@ test('tsunami : la cible et les départements traversés à sa hauteur', () => {
   const avant = soldats(p, '67');
   run(6);
   assert.ok(soldats(p, '67') < avant);
+});
+
+test('porte-avions (Voiture de sport) : 4 vagues d’avions sur le département devant, et son plus gros voisin', () => {
+  const { p, run } = partie();
+  p.ambianceActive = false;
+  for (const [u, d, k] of [['a', '17', 3000], ['b', '16', 900], ['c', '79', 400], ['e', '59', 10]]) {
+    p.traiter(com(u, d));
+    p.traiter(gift(u, 'Rose', 1, k));
+  }
+  p.drain();
+  p.traiter(gift('b', 'Voiture de sport', 7000)); // le 16 attaque le département juste devant : le 17
+  const att = p.drain().find((e) => e.type === 'attaque');
+  assert.deepEqual([att.sorte, att.vers[0]], ['porteavions', '17']);
+  const avant17 = soldats(p, '17');
+  const avant79 = soldats(p, '79'); // les Deux-Sèvres, voisines du 17
+  run(10);
+  const evs = p.drain();
+  assert.equal(evs.filter((e) => e.type === 'vagueAerienne').length, 4);
+  assert.ok(soldats(p, '17') < avant17 * 0.3, 'jusqu’à ~82 % détruits en 4 vagues');
+  assert.ok(soldats(p, '17') > 0, 'jamais rasé d’un coup');
+  assert.ok(soldats(p, '79') < avant79, 'le plus gros voisin est touché aussi');
+});
+
+test('bombe nucléaire : jusqu’à 80 % de chaque cible, souffle −15 % sur les voisins', () => {
+  const { p, run } = partie();
+  p.ambianceActive = false;
+  for (const [u, d, k] of [['a', '17', 2000], ['b', '63', 1500], ['c', '21', 1200], ['d', '16', 600]]) {
+    p.traiter(com(u, d));
+    p.traiter(gift(u, 'Rose', 1, k));
+  }
+  p.traiter(com('e', '59'));
+  const avant = { 17: soldats(p, '17'), 16: soldats(p, '16') };
+  p.traiter(gift('e', 'Léon le chaton', 4888));
+  run(3);
+  approx(soldats(p, '17'), avant[17] * 0.2, 1);
+  assert.ok(soldats(p, '16') <= avant[16] * 0.85 + 1);
+});
+
+test('ambiance : ravitaillements, bombardements surprises sur le 1er, survols ; désactivable (!ambiance)', () => {
+  let r = 0.1;
+  const { p, run } = partie({ random: () => r });
+  p.traiter(com('a', '17'));
+  p.traiter(gift('a', 'Rose', 1, 50));
+  p.traiter(com('b', '63'));
+  p.drain();
+  // 0.1 → délai de 32,5 s puis ravitaillement
+  const avant = soldats(p, '17') + soldats(p, '63');
+  run(36);
+  let evs = p.drain();
+  assert.ok(evs.some((e) => e.type === 'ambiance' && e.sorte === 'ravitaillement'));
+  assert.ok(evs.some((e) => e.type === 'ravitaille' && e.soldats === 30));
+  approx(soldats(p, '17') + soldats(p, '63'), avant + 30, 0.01);
+  // bombardement surprise : le 1er perd 5 %
+  r = 0.7;
+  const premier = soldats(p, '17');
+  run(55);
+  evs = p.drain();
+  assert.ok(evs.some((e) => e.type === 'ambiance' && e.sorte === 'bombardement' && e.equipe === '17'));
+  assert.ok(evs.some((e) => e.type === 'impact' && e.sorte === 'bombardement' && e.equipe === '17'));
+  assert.ok(soldats(p, '17') < premier);
+  // désactivée : plus rien
+  assert.equal(p.commande('ambiance'), true);
+  run(120);
+  assert.ok(!p.drain().some((e) => e.type === 'ambiance'));
+  // la régie peut en lancer une à la main
+  assert.equal(p.commande('ravitaillement', '63'), true);
+  assert.equal(p.drain().find((e) => e.type === 'ambiance').equipe, '63');
+  assert.equal(p.commande('bombardement'), true);
 });
