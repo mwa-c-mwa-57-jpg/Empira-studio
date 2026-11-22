@@ -181,7 +181,9 @@ let voiceOn=true,speaking=false;
 let voicePref=(()=>{try{return localStorage.getItem('mm_voice')||'';}catch(e){return '';}})();
 function frVoice(local){let fr=voices.filter(v=>/^fr/i.test(v.lang));if(local)fr=fr.filter(v=>!/online|natural|neural/i.test(v.name));if(voicePref&&!local){const v=fr.find(v=>v.name===voicePref);if(v)return v;}
  for(const r of [/denise.*natural/i,/henri.*natural/i,/vivienne.*natural/i,/remy.*natural/i,/eloise.*natural/i,/natural|online|neural/i,/hortense/i,/paul/i,/julie/i,/microsoft/i,/google/i]){const v=fr.find(v=>r.test(v.name));if(v)return v;}return fr[0]||null;}
-function speak(text,opt){opt=opt||{};
+function noEmoji(t){try{t=String(t).normalize('NFKC');}catch(e){t=String(t);}
+ return t.replace(/[\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Regional_Indicator}\u200d\ufe0f\ufe0e\u20e3\u2605\u2606\u2022\u00b7\u2192\u2190\u2191\u2193]/gu,' ').replace(/[_~*#|<>\[\]{}^`]+/g,' ').replace(/\s+([,.!?])/g,'$1').replace(/\s{2,}/g,' ').trim();}
+function speak(text,opt){opt=opt||{};text=noEmoji(text);if(!text)return Promise.resolve();
  if(DISPLAY){if(opt.low&&speaking)return Promise.resolve();bus({t:'speak',text,opt});speaking=true;const ms=Math.min(12000,700+text.length*65);return new Promise(r=>setTimeout(()=>{speaking=false;r();},ms));}
  if(COMPANION)return Promise.resolve();return speakReal(text,opt);}
 const PIPER={w:null,ready:false,fail:false,q:new Map(),id:0};
