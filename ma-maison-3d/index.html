@@ -182,15 +182,29 @@ function speakReal(text,opt){return new Promise(res=>{if(!voiceOn||!('speechSynt
  let done=false;const fin=()=>{if(!done){done=true;speaking=false;res();}};u.onend=fin;u.onerror=e=>{if(!done&&!opt._local&&v&&/online|natural/i.test(v.name)&&e&&e.error!=='interrupted'&&e.error!=='canceled'){done=true;speaking=false;speakReal(text,Object.assign({},opt,{_local:1,low:false})).then(res);}else fin();};setTimeout(fin,14000);
  try{if(!opt.low)speechSynthesis.cancel();speaking=true;speechSynthesis.speak(u);}catch(e){fin();}});}
 const VL={
- join:["Bienvenue {p}, voici ton terrain !","{p} reçoit son terrain, à toi de construire !","Un nouveau voisin : {p} !","{p} s'installe dans la rue !","Salut {p}, ta maison t'attend !"],
+ join:["Bienvenue {p}, voici ton terrain !","{p} reçoit son terrain, à toi de construire !","Un nouveau voisin : {p} !","{p} s'installe dans la rue !","Salut {p}, ta maison t'attend !",
+  "Bienvenue au village, {p} !","Oh, {p} arrive ! Bienvenue parmi nous !","Hello {p} ! Installe-toi, fais comme chez toi !","Tiens, voilà {p} ! Content de te voir !","Bienvenue {p}, le village s'agrandit !",
+  "{p} vient d'emménager, souhaitez-lui la bienvenue !","Coucou {p} ! Ton terrain est prêt !","Bienvenue {p}, la meilleure maison peut être la tienne !","Entrée remarquée de {p} ! Bienvenue !","{p}, bienvenue chez toi !",
+  "Un grand bonjour à {p} !","Bienvenue {p}, on t'a gardé une belle place !","{p} rejoint la rue, ça va construire !","Bienvenue {p}, prends ta pelle et ton marteau !","Bonsoir {p}, bienvenue dans Ma Maison !",
+  "Le village accueille {p} !","Ravi de te voir, {p} ! Bienvenue !","Bienvenue {p}, ta tente t'attend, à toi d'en faire une villa !","{p} est dans la place ! Bienvenue !","Allez {p}, bienvenue et bonne construction !"],
  gift:["{p} offre {g} : plus {n} étapes pour sa maison !","Merci {p} ! {g}, c'est plus {n} étapes !","{g} de {p} : la maison avance de {n} étapes !"],
  chapter:["{p} passe au chapitre {c} !","Bravo {p}, chapitre {c} débloqué !","{p} entre dans le chapitre {c} !"],
- hype:["Cent taps, c'est une étape pour ta maison !","Écris plombier, électricien, maçon ou jardinier pour rejoindre une société !","Un cœur dans les mains fait avancer toutes les maisons !","Restez prêts, une intempérie peut arriver à tout moment !","La barre commune fait avancer tout le village !","Qui aura la plus belle maison à la fin de la partie ?","Les nouveaux reçoivent deux étapes de bienvenue !"],
+ hype:["Cent taps, c'est une étape pour ta maison !","Chaque petit cadeau fait grandir ta maison, même une rose !","Regardez cette rue, elle devient magnifique !","Qui va construire la première villa ce soir ?","Le podium se joue à la fin de la partie, tout est encore possible !","Bienvenue à tous ceux qui nous rejoignent, écrivez dans le chat pour avoir votre terrain !","Écris plombier, électricien, maçon ou jardinier pour rejoindre une société !","Un cœur dans les mains fait avancer toutes les maisons !","Restez prêts, une intempérie peut arriver à tout moment !","La barre commune fait avancer tout le village !","Qui aura la plus belle maison à la fin de la partie ?","Les nouveaux reçoivent deux étapes de bienvenue !"],
  evGo:["Allez, on tape tous ensemble !","Il faut tenir, tapez l'écran !","Tout le monde tape, on peut le faire !"],
  evLeft:["Encore {x} taps, on est {n}, on peut le faire !","Plus que {x} taps pour sauver le village !","Il manque {x} taps, tout le monde tape !"],
  common:["La barre commune est pleine : livraison pour tout le village !","Livraison générale : toutes les maisons avancent !"],
- top:["{p} devient le meilleur donateur !","{p} prend la tête des donateurs !"]
+ top:["{p} devient le meilleur donateur !","{p} prend la tête des donateurs !"],
+ tapThx:["Merci {p} pour tous ces taps, ta maison décolle !","{p}, quelle énergie ! Merci pour les taps !","Bravo {p}, tes taps font grandir ta maison !","{p} tape comme un champion, merci !","Merci {p}, continue comme ça, ta maison adore !","Énorme {p}, déjà {x} taps ! Merci !","{p}, tes doigts sont en feu ! Merci !","Gros merci à {p}, quelle constance !"],
+ tapRoom:["Merci à tous pour les taps, le village est en feu, dans le bon sens !","Quelle ambiance ! Merci pour tous ces taps !","Vous êtes incroyables, merci pour les taps !","Ça tape fort ce soir, merci à tous !","Le village vous dit merci pour tous ces taps !","Wouah, quelle équipe ! Merci pour cette énergie !"],
+ motiv:["Allez, on tape l'écran, chaque tap fait grandir ta maison !","Qui va passer la prochaine étape ? Tapez l'écran !","Cent taps et ta maison prend une étape, on y va !","Le village attend vos taps, on se réveille !","Tapez l'écran pour faire monter votre maison !","On remplit la barre commune ? Tout le monde tape !","Un petit effort, et ta maison passe au niveau suivant !","Celui qui tape le plus aura la plus belle maison !"]
 };
+/* voix : merci pour les taps + motivation (jamais « tapotage », jamais d'appel à s'abonner) */
+const TAPLOG=[];let lastRoomThx=0,lastMotiv=Date.now();const TAP_MS=[300,1000,2500,5000,10000,20000];
+function tapVoice(p,before,n){TAPLOG.push([Date.now(),n]);const after=before+n;for(const m of TAP_MS)if(before<m&&after>=m){vline('tapThx',{p:p.name,x:m>=1000?(m/1000)+' mille':String(m)});break;}}
+setInterval(()=>{const now=Date.now();while(TAPLOG.length&&now-TAPLOG[0][0]>30000)TAPLOG.shift();if(G.phase!=='play'||COMPANION)return;
+ let t20=0,t30=0;for(const [t,n] of TAPLOG){t30+=n;if(now-t<20000)t20+=n;}const pr=present();
+ if(t20>Math.max(400,80*pr)&&now-lastRoomThx>60000){lastRoomThx=now;vline('tapRoom');}
+ else if(pr>=1&&t30<30&&now-lastMotiv>45000&&!speaking&&!ATT.length){lastMotiv=now;vline('motiv');}},1000);
 const VLused={};
 function vline(cat,vars,urgent){const pool=VL[cat];const used=VLused[cat]||(VLused[cat]=[]);if(used.length>=pool.length)used.length=0;const free=pool.map((_,i)=>i).filter(i=>!used.includes(i));const i=free[Math.floor(Math.random()*free.length)];used.push(i);
  let t=pool[i];for(const k in (vars||{}))t=t.split('{'+k+'}').join(vars[k]);return speak(t,urgent?{}:{low:true});}
@@ -640,7 +654,7 @@ function drawAttacksOnTile(i,x,y){const id=slots[i];if(!id)return;for(const a of
 
 /* =================== POINTS =================== */
 let lastGiftV=0;
-function onTaps(p,n){if(G.phase!=='play'){p.taps+=n;return;}
+function onTaps(p,n){try{tapVoice(p,p.taps||0,n);}catch(e){}if(G.phase!=='play'){p.taps+=n;return;}
  let mult=1;if(EV&&EV.k==='fete')mult*=2;if(compagnons().includes(p.id))mult*=2;
  p.taps+=n;p.acc+=n*mult;p.rc=(p.rc||0)+n*0.03;
  while(p.acc>=TAPS_STEP){p.acc-=TAPS_STEP;addSteps(p,1,'tap');}
