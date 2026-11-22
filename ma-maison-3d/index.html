@@ -177,7 +177,18 @@ function frVoice(local){let fr=voices.filter(v=>/^fr/i.test(v.lang));if(local)fr
 function speak(text,opt){opt=opt||{};
  if(DISPLAY){if(opt.low&&speaking)return Promise.resolve();bus({t:'speak',text,opt});speaking=true;const ms=Math.min(12000,700+text.length*65);return new Promise(r=>setTimeout(()=>{speaking=false;r();},ms));}
  if(COMPANION)return Promise.resolve();return speakReal(text,opt);}
-function speakReal(text,opt){return new Promise(res=>{if(!voiceOn||!('speechSynthesis' in window))return res();opt=opt||{};if(opt.low&&speaking)return res();
+const PIPER={w:null,ready:false,fail:false,q:new Map(),id:0};
+function piperInit(){if(!HOSTED||PIPER.w||!window.Worker)return;try{const base=new URL('voix/',location.href).href;PIPER.w=new Worker(base+'tts-worker.js');
+ PIPER.w.onmessage=e=>{const m=e.data;if(m.t==='ready')PIPER.ready=true;else if(m.t==='err'){PIPER.fail=true;console.warn('voix',m.m);}else if(m.t==='pcm'){const cb=PIPER.q.get(m.id);PIPER.q.delete(m.id);if(cb)cb(m.pcm?m:null);}};
+ PIPER.w.onerror=()=>{PIPER.fail=true;};PIPER.w.postMessage({t:'init',base});}catch(e){PIPER.fail=true;}}
+function piperSpeak(text,opt){if(!voiceOn)return Promise.resolve();if(opt.low&&speaking)return Promise.resolve();speaking=true;
+ return new Promise(res=>{const id=++PIPER.id;const fin=()=>{speaking=false;try{if(music.g)music.g.gain.setTargetAtTime(music.on?.55:0,AC.currentTime,.4);}catch(e){}res();};
+  const to=setTimeout(()=>{if(PIPER.q.has(id)){PIPER.q.delete(id);fin();}},PIPER.ready?12000:45000);
+  PIPER.q.set(id,m=>{clearTimeout(to);const c=ac();if(!m||!c){fin();return;}try{const b=c.createBuffer(1,m.pcm.length,m.sr);b.copyToChannel(m.pcm,0);const s=c.createBufferSource();s.buffer=b;
+    s.playbackRate.value=opt.pitch&&opt.pitch>1.2?1.12:1;const g=c.createGain();g.gain.value=1.5;s.connect(g);g.connect(MS||c.destination);
+    if(music.g)music.g.gain.setTargetAtTime(music.on?.2:0,c.currentTime,.15);s.onended=fin;s.start();}catch(e){fin();}});
+  PIPER.w.postMessage({t:'say',id,text,rate:opt.rate||1.05});});}
+function speakReal(text,opt){if(HOSTED&&PIPER.w&&!PIPER.fail)return piperSpeak(text,opt||{});return new Promise(res=>{if(!voiceOn||!('speechSynthesis' in window))return res();opt=opt||{};if(opt.low&&speaking)return res();
  const u=new SpeechSynthesisUtterance(text);const v=frVoice(opt._local);if(v){u.voice=v;u.lang=v.lang;}else u.lang='fr-FR';u.pitch=opt.pitch||1;u.rate=opt.rate||(v&&/natural|online/i.test(v.name)?1.08:1.02);
  let done=false;const fin=()=>{if(!done){done=true;speaking=false;res();}};u.onend=fin;u.onerror=e=>{if(!done&&!opt._local&&v&&/online|natural/i.test(v.name)&&e&&e.error!=='interrupted'&&e.error!=='canceled'){done=true;speaking=false;speakReal(text,Object.assign({},opt,{_local:1,low:false})).then(res);}else fin();};setTimeout(fin,14000);
  try{if(!opt.low)speechSynthesis.cancel();speaking=true;speechSynthesis.speak(u);}catch(e){fin();}});}
@@ -985,7 +996,7 @@ addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P'){const Pn=document.ge
 function startGame(){document.getElementById('start').style.display='none';const c=ac();if(c&&c.state==='suspended')c.resume();try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}catch(e){}music.start();}
 document.getElementById('start').addEventListener('click',startGame);
 if(SERVED&&!DISPLAY){const ping=()=>fetch('/ping',{cache:'no-store'}).catch(()=>{});ping();setInterval(ping,3000);}
-fit();if(STEPMODE)window.STEP=()=>frame(performance.now());else{schedule();setInterval(()=>{if(performance.now()-LASTRAF>400){frame(performance.now());}},40);}licOk().then(ok=>{if(ok)connect();else licBad();});
+fit();if(STEPMODE)window.STEP=()=>frame(performance.now());else{schedule();setInterval(()=>{if(performance.now()-LASTRAF>400){frame(performance.now());}},40);}licOk().then(ok=>{if(ok){connect();piperInit();}else licBad();});
 addEventListener('error',e=>jlog({ev:'erreur_js',m:String(e.message)+' @'+e.lineno}));addEventListener('unhandledrejection',e=>jlog({ev:'promesse',m:String(e.reason).slice(0,300)}));
 (()=>{let rend='?';try{if(GL){const g=GL.ren.getContext();const x=g.getExtension('WEBGL_debug_renderer_info');rend=x?g.getParameter(x.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER);}}catch(e){}
  jlog({ev:'demarrage',mode:DISPLAY?'lien':'fenetre',gl:!!GL,carte:rend,taille:innerWidth+'x'+innerHeight,zoom:devicePixelRatio,q:Q3,nav:navigator.userAgent.slice(-60)});
