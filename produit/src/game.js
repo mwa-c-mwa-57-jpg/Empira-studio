@@ -156,6 +156,7 @@ export class Partie {
     this.rappels = new Set();
     this.leader = null;
     this.derniereArriveeAnnoncee = -Infinity;
+    this.derniereActivite = this.t;
   }
 
   demarrer() {
@@ -207,6 +208,7 @@ export class Partie {
     this.#vagues();
     this.#evenements();
     this.#ambiance();
+    this.#calme();
     this.#suivi();
     if (this.ecoule >= this.duree) this.terminer('temps');
   }
@@ -322,6 +324,7 @@ export class Partie {
       return { accepte: true, ignore: 'podium' };
     }
     if (this.phase === 'attente') this.demarrer(); // la partie démarre à la première action
+    this.derniereActivite = this.t;
 
     switch (ev.type) {
       case 'comment': {
@@ -667,6 +670,17 @@ export class Partie {
         this.emit({ type: 'rappel', minutes: m });
       }
     }
+  }
+
+  // ------------------------------------------------------------------ calme : personne ne joue
+
+  /** 3 minutes sans aucune action des spectateurs : un département au hasard de la carte reçoit 2 soldats. */
+  #calme() {
+    if (this.t - this.derniereActivite < REGLES.calmeSec) return;
+    this.derniereActivite = this.t;
+    const e = this.equipe(this.choisir(DEPARTEMENTS).code);
+    const n = this.ajouter(e, REGLES.calmeSoldats, null, 'calme', { brut: true });
+    this.emit({ type: 'calme', equipe: e.code, soldats: n });
   }
 
   // ------------------------------------------------------------------ ambiance : ravitaillements, bombardements, survols

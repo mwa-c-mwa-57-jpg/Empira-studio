@@ -91,10 +91,12 @@ export class Rendu {
    * mise à l'échelle de Windows), au lieu d'une image fixe de 1080 × 1920 agrandie (floue à 125 % ou 150 %).
    */
   adapter(q) {
-    const nq = Math.max(0.5, Math.min(2, Math.round(q * 100) / 100));
-    if (nq === this.q && this.canvas.width === Math.round(LARGEUR * nq)) return;
+    // q n'est plus arrondi : un canevas de 605 px affiché sur 607 px était ré-étiré par le navigateur, donc flou
+    const l = Math.max(Math.round(LARGEUR * 0.25), Math.min(LARGEUR * 3, Math.round(LARGEUR * q)));
+    const nq = l / LARGEUR;
+    if (nq === this.q && this.canvas.width === l) return;
     this.q = nq;
-    this.canvas.width = Math.round(LARGEUR * nq);
+    this.canvas.width = l;
     this.canvas.height = Math.round(HAUTEUR * nq);
     // la carte peut être zoomée ×2 : son cache doit suivre la résolution
     const ck = Math.min(4, Math.max(2, Math.ceil(nq * 1.4)));
@@ -201,6 +203,11 @@ export class Rendu {
         case 'attente':
           this.vider();
           this.cleCache = '';
+          break;
+        case 'calme':
+          this.parachuter(e.equipe, 1, false);
+          this.anneau(e.equipe, this.theme.couleur(e.equipe), 90, 0.9);
+          this.viser(e.equipe, 1.5, 2.2);
           break;
         case 'arrivee':
           this.bulle(e.joueur, e.equipe, 3, '');

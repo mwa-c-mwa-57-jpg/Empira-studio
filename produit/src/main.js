@@ -31,9 +31,21 @@ function ecrire(cle, valeur) {
   }
 }
 
+/**
+ * Netteté : la scène 1080 × 1920 est réduite à une largeur entière de pixels réels et posée sur un pixel entier.
+ * Avant, le centrage la plaçait souvent sur un demi-pixel : tout l'écran était lissé, donc flou.
+ */
 function adapterEchelle() {
-  const k = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
-  document.documentElement.style.setProperty('--k', String(k));
+  const dpr = window.devicePixelRatio || 1;
+  const largeur = Math.max(1, Math.floor(Math.min(window.innerWidth * dpr, (window.innerHeight * dpr * 1080) / 1920)));
+  const hauteur = Math.round((largeur * 1920) / 1080);
+  const k = largeur / dpr / 1080;
+  const racine = document.documentElement.style;
+  racine.setProperty('--k', String(k));
+  // marge de quelques pixels seulement (cas normal) : on colle en haut à gauche, sans aucun décalage fractionnaire
+  const centrer = (reste) => (reste < 6 ? 0 : Math.round(reste / 2) / dpr);
+  racine.setProperty('--x', `${centrer(window.innerWidth * dpr - largeur)}px`);
+  racine.setProperty('--y', `${centrer(window.innerHeight * dpr - hauteur)}px`);
   return k;
 }
 

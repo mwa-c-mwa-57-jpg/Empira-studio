@@ -9,7 +9,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: #07080d; overflow: hidden; }
 body { font-family: var(--police); color: #f2efe8; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
-#scene { position: absolute; left: 50%; top: 50%; width: 1080px; height: 1920px; transform: translate(-50%, -50%) scale(var(--k)); }
+#scene { position: absolute; left: var(--x, 0px); top: var(--y, 0px); width: 1080px; height: 1920px; transform-origin: 0 0; transform: scale(var(--k)); }
 #carte { position: absolute; inset: 0; width: 1080px; height: 1920px; }
 #interface { position: absolute; inset: 0; pointer-events: none; }
 #interface > * { position: absolute; }

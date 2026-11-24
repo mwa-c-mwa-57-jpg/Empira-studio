@@ -206,7 +206,9 @@ test('vagues : annoncées 15 s avant, likes et commentaires multipliés, cadeaux
   p.traiter(com('a', '17'));
   p.traiter(gift('a', 'Rose', 1, 100));
   p.traiter(com('b', '63'));
-  run(3 * 60 - 15);
+  run(90);
+  p.traiter(com('b', 'allez')); // une action à mi-chemin : pas de bonus de calme pendant ce test
+  run(3 * 60 - 15 - 90);
   assert.ok(p.drain().some((e) => e.type === 'vagueAnnonce' && e.vague.id === 'doublon'));
   run(15.5);
   assert.equal(p.vagueActive()?.id, 'doublon');
@@ -393,4 +395,25 @@ test('ambiance : ravitaillements, bombardements surprises sur le 1er, survols ; 
   assert.equal(p.commande('ravitaillement', '63'), true);
   assert.equal(p.drain().find((e) => e.type === 'ambiance').equipe, '63');
   assert.equal(p.commande('bombardement'), true);
+});
+
+test('calme : 3 minutes sans action, un département au hasard reçoit 2 soldats (puis toutes les 3 min)', () => {
+  const { p, run } = partie();
+  p.ambianceActive = false;
+  p.traiter(com('a', '17'));
+  p.drain();
+  run(179);
+  assert.equal(p.drain().filter((e) => e.type === 'calme').length, 0);
+  run(2);
+  const calmes = p.drain().filter((e) => e.type === 'calme');
+  assert.equal(calmes.length, 1);
+  assert.equal(calmes[0].soldats, 2);
+  assert.ok(p.equipes.has(calmes[0].equipe));
+  // une action des spectateurs relance le compte à rebours
+  run(120);
+  p.traiter(like('a', 5));
+  run(150);
+  assert.equal(p.drain().filter((e) => e.type === 'calme').length, 0);
+  run(31);
+  assert.equal(p.drain().filter((e) => e.type === 'calme').length, 1);
 });

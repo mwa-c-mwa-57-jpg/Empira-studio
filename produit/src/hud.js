@@ -211,6 +211,9 @@ export class Interface {
             this.#general(`Bombardement surprise sur le ${e.equipe} ! Un bouclier le protégerait…`, 5, 2);
           }
           break;
+        case 'calme':
+          this.#filAjouter(`🪂 Ça dort ici ! 3 minutes sans action : le ${e.equipe} reçoit ${fmt(e.soldats)} soldats`, c);
+          break;
         case 'ravitaille':
           this.#filAjouter(`📦 Le ${e.equipe} reçoit ${fmt(e.soldats)} soldats de ravitaillement`, c);
           break;

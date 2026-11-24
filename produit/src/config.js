@@ -40,6 +40,9 @@ export const REGLES = {
   ravitaillementSoldats: 30,
   bombardementPart: 0.05,
   annonceArriveeSec: 8,
+  // calme : si personne ne fait rien pendant 3 minutes, un département au hasard reçoit 2 soldats (puis toutes les 3 min)
+  calmeSec: 180,
+  calmeSoldats: 2,
 };
 
 export const VAGUES = [
