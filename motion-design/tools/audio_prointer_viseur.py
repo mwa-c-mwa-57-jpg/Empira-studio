@@ -171,11 +171,12 @@ LOCKS = [(2, .5, 0), (4.5, .42, 0), (6.5, .42, 0), (8, .45, 1), (11, .3, 0), (13
 for k, (b, d, big) in enumerate(LOCKS):
     tl = bt(b); pan = -0.35 if k % 2 else 0.35
     if b == 56: pass
-    elif d >= .35: place(sb, whoosh(d + .12, 350, 5200, 0.075, -pan, pan), tl - d * .9)
-    elif d > 0: place(sb, whoosh(d + .08, 1500, 9000, 0.035, -pan * .5, pan * .5), tl - d * .9)
+    # le pic du whoosh (milieu du son) tombe sur la vitesse maximale du viseur (milieu du trajet)
+    elif d >= .35: place(sb, whoosh(d + .12, 350, 5200, 0.075, -pan, pan), tl - d - .06)
+    elif d > 0: place(sb, whoosh(d + .08, 1500, 9000, 0.035, -pan * .5, pan * .5), tl - d - .04)
     place(sb, lock_snd(bool(big)), tl, 0.32 if big else 0.22, pan * .3)
 # mots qui claquent
-for b in (1.5, 2.5, 4.2, 6.2, 9.6, 9.95, 10.4, 41.3, 50.95, 51.3, 51.9, 52.6):
+for b in (1.5, 2.5, 4.2, 6.2, 9.6, 9.95, 10.4, 40.95, 41.3, 50.95, 51.3, 51.9, 52.6):
     place(sb, thud(0.16), bt(b))
 for k in range(3): place(sb, thud(0.12), bt(47.5) + k * .08)
 # réactions : pastilles, tuiles, coches, épingles
@@ -203,7 +204,8 @@ place(sb, tick(1800, .06), TL + .14)
 for i in range(5): place(sb, blip(1300 + 140 * i, .035), TL + .2 + i * .05, pan=.3)
 for i in range(3): place(sb, thud(.1), TL + .25 + i * .12)
 place(sb, blip(700, .08), bt(61)); place(sb, tick(2200, .07), bt(61))
-for k in range(2): place(sb, glass(note("E6"), .012), bt(62) + k * 4 * B + 0.9)
+for k in range(2): place(sb, glass(note("E6"), .012), bt(62) + k * 4 * B + 0.32)                         # le reflet passe au milieu du bouton
+place(sb, whoosh(.45, 2500, 9000, .03, -.3, .3), bt(59) - .05)                                                   # « AGENCE D'EMPLOI » s'écrit
 sfx = reverb(sb, 1.0, 0.14)
 
 fade = np.ones(N); fN = int(SR * 0.6); fade[-fN:] = np.linspace(1, 0, fN) ** 1.5

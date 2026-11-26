@@ -40,13 +40,13 @@ Si la prononciation accroche, remplacez :
 | 00:26,25 → 00:31,9 | Le logo dans la lunette, puis le bouton « POSTULEZ SUR PROINTER.LU » | « PRO-INTER, votre agence d'emploi. Postulez sur prointer point lu. » |
 
 ## Calage final (voix « Benjamin », `assets/voix/prointer-viseur-benjamin-v3.flac`)
-La voix assemblée (prise v2 + les phrases des secteurs) dure 35,1 s. `python3 tools/voiceover.py viseur` la découpe aux silences et cale chaque phrase (et, dans les secteurs, chaque nom de secteur) sur son tir (tableau `VISEUR`) ; `--sans-musique` donne la version voix + bruitages.
+La voix assemblée (prise v2 + les phrases des secteurs) dure 35,1 s. `python3 tools/voiceover.py viseur` la découpe aux silences et cale chaque phrase (et, pour les contrats et les secteurs, chaque mot) sur son tir (tableau `VISEUR`), 2 images après l'image qui le montre ; `--sans-musique` donne la version voix + bruitages.
 
 | Parole | Image |
 |---|---|
 | 0,4 s « Vous cherchez un job ? » | « UN JOB ? » claque, le viseur se pose sur sa puce |
 | 3,55 s « Chez PRO-INTER, on vise juste. » | le drop sur « PRO-INTER » |
-| 6,0 s « Intérim. CDD. CDI. » | un tir sur chaque contrat |
+| 6,1 s « Intérim. CDD. CDI. » | un tir sur chaque contrat, chaque mot sur son tir (6,1 / 7,05 / 8,0 s) |
 | 8,7 s « Bâtiment. » | tir sur BÂTIMENT, ÉLECTRICIEN et SERRURIER s'affichent avec lui |
 | 10,1 s « Industrie. » | tir sur INDUSTRIE, SOUDEUR et TECHNICIEN DE MAINTENANCE s'affichent avec lui |
 | 11,5 s « Tertiaire. » | tir sur TERTIAIRE, GESTIONNAIRE DE PAIE et ASSISTANT ADMINISTRATIF s'affichent avec lui |
@@ -56,5 +56,5 @@ La voix assemblée (prise v2 + les phrases des secteurs) dure 35,1 s. `python3 t
 | 22,0 s « Plus de vingt ans d'expérience. » | « +20 » tombe sur « vingt » (22,3 s) |
 | 23,9 s « Votre prochain job ? » | la cible géante et le titre, mot à mot |
 | 25,5 s « En plein dans le mille ! » | « mille » sur l'impact au centre (26,25 s) |
-| 26,8 s « PRO-INTER, votre agence d'emploi. » | le logo se forme |
+| 26,8 s « PRO-INTER, votre agence d'emploi. » | le logo se forme, puis « AGENCE D'EMPLOI » s'écrit sous le logo sur « agence d'emploi » (27,7 s) |
 | 28,8 s « Postulez sur prointer point lu. » | le bouton « POSTULEZ SUR PROINTER.LU » |

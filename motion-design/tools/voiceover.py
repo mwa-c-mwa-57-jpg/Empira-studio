@@ -99,7 +99,10 @@ VISEUR = [                                             # voix assemblée : prise
     ("Un vrai.",                                           (0.94, 1.49),         (1.89, 2.41),         None,         2.00),
     ("Près de chez vous.",                                 (1.89, 2.41),         (2.87, 3.54),         None,         2.74),
     ("Chez PRO-INTER, on vise juste.",                     (2.87, 3.54),         (5.35, 5.81),         None,         3.55),
-    ("Intérim. CDD. CDI.",                                 (5.35, 5.81),         (8.15, 8.95),         None,         6.00),
+    # contrats : un morceau par mot, chacun 2 images après son tir (pulsations 13, 15, 17)
+    ("Intérim.",                                           (5.35, 5.81),         (6.30, 6.70),         None,         6.12),
+    ("CDD.",                                               (6.30, 6.70),         (7.23, 7.65),         None,         7.06),
+    ("CDI.",                                               (7.23, 7.65),         (8.15, 8.95),         None,         8.00),
     # secteurs : seulement leur nom (les métiers s'affichent à l'écran, sans être lus)
     ("Bâtiment.",                                          (8.15, 8.95),         (9.55, 9.95),         None,         8.70),
     ("Industrie.",                                         (11.70, 12.30),       (12.96, 13.30),       None,         10.10),
@@ -108,7 +111,7 @@ VISEUR = [                                             # voix assemblée : prise
     ("On vous écoute, on trouve la bonne mission…",        (21.36, 21.80),       (24.70, 25.08),       None,         15.975),
     ("Trois agences au Luxembourg.",                       (24.70, 25.08),       (26.27, 26.63),       None,         19.235),
     ("Plus de vingt ans d'expérience.",                    (26.27, 26.63),       (28.11, 28.50),       None,         21.975),
-    ("Votre prochain job ?",                               (28.11, 28.50),       (29.39, 29.65),       None,         23.875),
+    ("Votre prochain job ?",                               (28.11, 28.50),       (29.39, 29.65),       None,         23.91),
     ("En plein dans le mille !",                           (29.39, 29.65),       (30.75, 31.02),       None,         25.54),
     ("PRO-INTER, votre agence d'emploi.",                  (30.75, 31.02),       (32.79, 33.08),       None,         26.775),
     ("Postulez sur prointer point lu.",                    (32.79, 33.08),       None,                 None,         28.775),

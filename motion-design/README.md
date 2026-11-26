@@ -168,6 +168,8 @@ python3 tools/voiceover.py viseur && python3 tools/voiceover.py viseur --sans-mu
 ```
 `--mb 6` : flou de mouvement (6 sous-images par image, obturateur à 180°), utile pour les coups de fouet de caméra.
 
+Calage à l'image près (les 4 réglages de la méthode Troiscoups) : chaque mot apparaît 2 images avant d'être entendu, chaque impact tombe sur l'image où l'objet se pose, et le pic de chaque whoosh sur la vitesse maximale du viseur (milieu du trajet). Aucun mouvement linéaire, sauf la traînée qui suit le viseur.
+
 ---
 
 # Maquettes sans logo (« CIBLO »)

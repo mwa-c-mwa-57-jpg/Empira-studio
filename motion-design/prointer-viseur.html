@@ -130,6 +130,7 @@ const ST = [-90, -15, 60, 135, 210, 285, 360, 400, 520].map((a, i) => { const th
 const ZR = .115, CYR = -1739;                          // cadre du grand dézoom
 const ZF = .8, CYF = 150;                              // cadre final
 const T_R0 = bt(48.25), T_RV = bt(50.75), T_R1 = bt(53), T_LAND = bt(56);  // dézoom (puis la cible reste à l'écran), plongée, impact au centre
+const T_TAG = bt(59);                                  // « agence d'emploi » dans la voix : le slogan du logo s'écrit à ce moment
 const LOCKS = [], ANIMS = [], STATIONS = [];
 function lock(t, x, y, o = {}) { LOCKS.push({ t, x, y, d: o.d ?? .42, kind: o.kind ?? (o.arc ? "arc" : "line"), big: !!o.big, cam: o.cam || null }); }
 let START, LOGO, CUR, TRAIL, FX = [], END = {};
@@ -178,7 +179,7 @@ function build() {
     const tmp = word(g, "JUSTE", 0, 0, { size: J.size }), wNoDot = tmp.w; tmp.g.remove();
     const px = J.x - J.w / 2 + wNoDot + (J.w - wNoDot) * .42, py = J.y + J.size * .29;
     const rings = [0, 1, 2].map(() => el("circle", { cx: px, cy: py, r: 1, fill: "none", stroke: C.cyan, "stroke-width": 8, opacity: 0 }, g));
-    ANIMS.push(t => { show(k[0], t, bt(7.7)); show(k[1], t, bt(8), "slam", { from: 2.4 }); show(l1[0], t, bt(9.6), "slam"); show(l1[1], t, bt(9.95), "slam"); show(J, t, bt(10.4), "slam"); hit(J, t, bt(11));
+    ANIMS.push(t => { show(k[0], t, bt(7.7) - .12); show(k[1], t, bt(8), "slam", { from: 2.4 }); show(l1[0], t, bt(9.6), "slam"); show(l1[1], t, bt(9.95), "slam"); show(J, t, bt(10.4), "slam"); hit(J, t, bt(11));
       rings.forEach((c, i) => { const u = prog(t, bt(11) + i * .07, bt(11) + i * .07 + .55); set(c, { r: 10 + E.outExpo(u) * (70 + i * 55), opacity: u > 0 && u < 1 ? (1 - u) : 0, "stroke-width": 9 - 6 * u }); }); });
     dot(g, bx, k[1].y, bt(8)); lock(bt(8), bx, k[1].y, { cam: [ax, ay - 60, .95], arc: true, big: true, d: .45 });
     lock(bt(11), px, py, { cam: [ax + 50, ay + 80, 1.08], d: .3 }); }
@@ -264,7 +265,7 @@ function build() {
       set(capG, { opacity: E.out(prog(t, bt(40.7), bt(40.7) + .3)) });
       show(k1[0], t, bt(40.95), "slam", { from: 2.6 }); show(k1[1], t, bt(41.3), "slam"); k2.forEach((w, i) => show(w, t, bt(41.6) + i * .05));
       PINS.forEach(p => { const v = prog(t, p.tl, p.tl + .5), q = ((t - p.tl) % .9) / .9; set(p.pg, { opacity: v > 0 ? 1 : 0, transform: `translate(${p.x},${p.y}) scale(${Math.max(.001, E.outElastic(v))})` });
-        set(p.pulse, { r: 18 + q * 46, opacity: (1 - q) * .8 }); const lu = E.outExpo(prog(t, p.tl + .06, p.tl + .4)); set(p.lg, { opacity: lu, transform: `translate(0,${(1 - lu) * 26})` }); }); });
+        set(p.pulse, { r: 18 + E.out(q) * 46, opacity: (1 - q) * .8 }); const lu = E.outExpo(prog(t, p.tl + .06, p.tl + .4)); set(p.lg, { opacity: lu, transform: `translate(0,${(1 - lu) * 26})` }); }); });
     PINS.forEach((p, i) => lock(p.tl, p.x, p.y, [{ cam: [ax, ay - 120, .8], arc: true }, { cam: [ax + 12, ay + 180, .88], d: .3 }, { d: .3 }][i])); }
 
   /* 9 — plus de 20 ans */
@@ -387,7 +388,7 @@ function animLogo(t, t0) {
   P.bar.forEach(o => { const u = E.outExpo(prog(t, t0 + .14, t0 + .5)); set(o.e, { opacity: u > 0 ? 1 : 0, transform: `scale(1,${Math.max(.001, u)})`, "transform-origin": `${(o.box[0] + o.box[2]) / 2} ${(o.box[1] + o.box[3]) / 2}` }); });
   const base = Math.max(...P.Inter.map(o => o.box[3]));
   P.Inter.forEach((o, i) => { const u = E.outBack(prog(t, t0 + .2 + i * .05, t0 + .55 + i * .05)), cx = (o.box[0] + o.box[2]) / 2; set(o.e, { opacity: clamp(u * 3), transform: `translate(${cx},${base}) scale(${Math.max(.001, u)}) translate(${-cx},${-base})` }); });
-  const tg = prog(t, t0 + .5, t0 + .9), tx0 = Math.min(...P.tagline.map(o => o.box[0])), tx1 = Math.max(...P.tagline.map(o => o.box[2]));
+  const tg = E.inOut(prog(t, T_TAG, T_TAG + .45)), tx0 = Math.min(...P.tagline.map(o => o.box[0])), tx1 = Math.max(...P.tagline.map(o => o.box[2]));
   P.tagline.forEach(o => { const edge = tx0 + (tx1 - tx0 + 40) * tg; set(o.e, { opacity: o.box[0] < edge ? E.out(clamp((edge - o.box[0]) / 40)) : 0 }); });
 }
 function seek(t) {
@@ -434,11 +435,11 @@ function seek(t) {
   animLogo(t, T_LAND);
   END.top.forEach((w, i) => show(w, t, T_LAND + .25 + i * .12, "slam"));
   END.slogan.forEach((w, i) => show(w, t, bt(57.5) + i * .07));
-  END.contrats.forEach((w, i) => show(w, t, bt(58.5) + i * .05));
-  END.villes.forEach((w, i) => show(w, t, bt(59) + i * .04));
+  END.contrats.forEach((w, i) => show(w, t, bt(59.5) + i * .05));
+  END.villes.forEach((w, i) => show(w, t, bt(60) + i * .04));
   { const u = prog(t, bt(61), bt(61) + .5), pu = t >= bt(61) ? 1 + .035 * Math.exp(-((t - bt(61)) % (2 * B)) / .1) : 1;
     set(END.cta, { opacity: clamp(u * 4), transform: `translate(0,690) scale(${(Math.max(.001, E.outBack(u)) * pu).toFixed(4)})` });
-    const sw = ((t - bt(62)) % (4 * B)) / (4 * B); set(END.shine, { x: t > bt(62) ? -460 + sw * 1100 : -900 }); }
+    const sw = E.inOut(clamp(((t - bt(62)) % (4 * B)) / (1.5 * B))); set(END.shine, { x: t > bt(62) ? -460 + sw * 1100 : -900 }); }
   $("flash").style.opacity = (t >= T_LAND ? .32 * Math.exp(-(t - T_LAND) / .09) : t >= bt(8) ? .12 * Math.exp(-(t - bt(8)) / .07) : 0).toFixed(3);
 }
 window.seek = seek; window.DUR = DUR;
