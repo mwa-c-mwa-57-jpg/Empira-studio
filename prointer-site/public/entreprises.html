@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vous recrutez&nbsp;? Intérim, CDD, CDI | PRO-INTER</title>
+<meta name="description" content="PRO-INTER recrute pour vous en intérim, CDD et CDI au Luxembourg : bâtiment, industrie, tertiaire. Décrivez votre besoin en ligne.">
+<meta name="theme-color" content="#0E1215">
+<link rel="canonical" href="https://www.prointer.lu/entreprises">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Vous recrutez ? Intérim, CDD, CDI | PRO-INTER">
+<meta property="og:description" content="PRO-INTER recrute pour vous en intérim, CDD et CDI au Luxembourg : bâtiment, industrie, tertiaire. Décrivez votre besoin en ligne.">
+<meta property="og:image" content="/assets/video/viseur-poster.jpg">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css">
+<script src="/assets/js/main.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="/"><img src="/assets/img/logo-clair.svg" alt="PRO-INTER, agence d'emploi : accueil" width="158" height="42"></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" data-nav-toggle><span class="sr-only">Menu</span><span class="burger" aria-hidden="true"></span></button>
+    <nav id="nav" class="nav" data-nav aria-label="Navigation principale">
+      <a href="/#secteurs">Métiers</a>
+      <a href="/#methode">Notre méthode</a>
+      <a href="/#agences">Nos agences</a>
+      <a href="/entreprises" aria-current="page">Entreprises</a>
+      <a class="btn btn--sm" href="/candidature">Déposer mon CV</a>
+    </nav>
+  </div>
+</header>
+<main id="contenu">
+<section class="page-hero dark dots">
+  <div class="target-bg" aria-hidden="true"><div class="ticks"><i></i><i></i><i></i><i></i></div></div>
+  <div class="container">
+    <p class="kicker"><span class="puce" aria-hidden="true"></span>Entreprises</p>
+    <h1>Vous recrutez&nbsp;?</h1>
+    <p>Des talents pour vos projets, en intérim, en CDD ou en CDI. Décrivez votre besoin&nbsp;: l'agence la plus proche vous rappelle.</p>
+    <ul class="badges">
+      <li><span class="puce" aria-hidden="true"></span>Plus de 20 ans d'expérience</li>
+      <li><span class="puce" aria-hidden="true"></span>3 agences au Luxembourg</li>
+      <li><span class="puce" aria-hidden="true"></span>Bâtiment, industrie, tertiaire</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section--alt">
+  <div class="container form-layout">
+    <div>
+      <form class="form" action="/api/entreprise" method="post" enctype="multipart/form-data" data-form>
+        <fieldset class="fieldset">
+          <legend><span class="num">1</span>Votre entreprise</legend>
+          <div class="grid-2">
+          <div class="field" data-field="entreprise">
+            <label for="entreprise">Nom de l'entreprise <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="entreprise" name="entreprise" type="text" required autocomplete="organization" aria-describedby="err-entreprise">
+            <span class="error" id="err-entreprise" role="alert"></span>
+          </div>
+          <div class="field" data-field="contact">
+            <label for="contact">Personne de contact <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="contact" name="contact" type="text" required autocomplete="name" aria-describedby="err-contact">
+            <span class="error" id="err-contact" role="alert"></span>
+          </div>
+          <div class="field" data-field="fonction">
+            <label for="fonction">Fonction <span class="opt">(facultatif)</span></label>
+            <input class="input" id="fonction" name="fonction" type="text" autocomplete="organization-title" aria-describedby="err-fonction">
+            <span class="error" id="err-fonction" role="alert"></span>
+          </div>
+          <div class="field" data-field="telephone">
+            <label for="telephone">Téléphone <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="telephone" name="telephone" type="tel" required autocomplete="tel" aria-describedby="err-telephone">
+            <span class="error" id="err-telephone" role="alert"></span>
+          </div>
+          <div class="field full" data-field="email">
+            <label for="email">E-mail <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="email" name="email" type="email" required autocomplete="email" aria-describedby="err-email">
+            <span class="error" id="err-email" role="alert"></span>
+          </div>
+          </div>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend><span class="num">2</span>Votre besoin</legend>
+          <div class="grid-2">
+          <div class="field full" data-field="besoin">
+            <label for="besoin">Profil ou compétence recherché <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="besoin" name="besoin" type="text" required placeholder="Ex. : 2 électriciens pour un chantier" aria-describedby="err-besoin" maxlength="200">
+            <span class="error" id="err-besoin" role="alert"></span>
+          </div>
+          <div class="field" data-field="contrat">
+            <label for="contrat">Type de contrat <span class="opt">(facultatif)</span></label>
+            <select class="select" id="contrat" name="contrat" aria-describedby="err-contrat"><option value="">Choisir…</option><option value="Intérim">Intérim</option><option value="CDD">CDD</option><option value="CDI">CDI</option><option value="À définir">À définir</option></select>
+            <span class="error" id="err-contrat" role="alert"></span>
+          </div>
+          <div class="field" data-field="agence">
+            <label for="agence">Agence la plus proche <span class="opt">(facultatif)</span></label>
+            <select class="select" id="agence" name="agence" aria-describedby="err-agence"><option value="">Choisir…</option><option value="Esch-sur-Alzette">Esch-sur-Alzette</option><option value="Dudelange">Dudelange</option><option value="Mondorf-les-Bains">Mondorf-les-Bains</option><option value="Peu importe">Peu importe</option></select>
+            <span class="error" id="err-agence" role="alert"></span>
+          </div>
+          <div class="field full" data-field="message">
+            <label for="message">Message <span class="opt">(facultatif)</span></label>
+            <textarea class="textarea" id="message" name="message" aria-describedby="err-message" maxlength="2000" placeholder="Date de début, durée, lieu de la mission…"></textarea>
+            <span class="error" id="err-message" role="alert"></span>
+          </div>
+          </div>
+        </fieldset>
+          <div class="consent" data-field="consentement">
+            <input type="checkbox" id="consentement" name="consentement" value="oui" required aria-describedby="err-consentement">
+            <label for="consentement">J'accepte que PRO-INTER utilise ces informations pour répondre à ma demande et me recontacter. <a href="/confidentialite">En savoir plus</a> <span class="req" aria-hidden="true">*</span></label>
+            <span class="error" id="err-consentement" role="alert"></span>
+          </div>
+        <div class="hp" aria-hidden="true"><label for="site_web">Ne pas remplir</label><input type="text" id="site_web" name="site_web" tabindex="-1" autocomplete="off"></div>
+        <div class="submit-row">
+          <button class="btn" type="submit" data-label="Envoyer ma demande" data-sending="Envoi en cours…">Envoyer ma demande <svg aria-hidden="true"><use href="/assets/img/icons.svg#arrow"/></svg></button>
+          <div class="progress" aria-hidden="true"><span data-progress></span></div>
+        </div>
+        <p class="form-status" data-status role="alert"></p>
+      </form>
+      <div class="success" data-success tabindex="-1">
+        <div class="big-target" aria-hidden="true"></div>
+        <h2>Demande envoyée&nbsp;!</h2>
+        <p>Merci <span data-success-name></span>. Votre demande est bien arrivée chez PRO-INTER&nbsp;: l'agence la plus proche vous recontacte.</p>
+        <p><a class="btn btn--ghost" href="/">Retour à l'accueil</a></p>
+      </div>
+    </div>
+    <aside class="form-aside" aria-label="Nos engagements">
+      <div class="aside-card">
+        <h2>Nos engagements</h2>
+        <ol>
+          <li><span class="puce" aria-hidden="true"></span><div><strong>Compréhension de vos besoins</strong>Le poste, les compétences et le contexte.</div></li>
+          <li><span class="puce" aria-hidden="true"></span><div><strong>Une sélection rigoureuse</strong>Seuls les profils qui correspondent vous sont présentés.</div></li>
+          <li><span class="puce" aria-hidden="true"></span><div><strong>Un suivi personnalisé</strong>Un interlocuteur de proximité pendant toute la mission.</div></li>
+        </ol>
+      </div>
+      <p class="aside-note">Besoin urgent&nbsp;? Appelez directement&nbsp;: Esch-sur-Alzette <a href="tel:+3522654581">26 54 58 1</a>, Dudelange <a href="tel:+3522651791">26 51 79 1</a>, Mondorf-les-Bains <a href="tel:+3522813451">28 13 45 1</a>.</p>
+    </aside>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <img src="/assets/img/logo-clair.svg" alt="PRO-INTER, agence d'emploi" width="150" height="40" loading="lazy">
+      <p>Des talents pour vos projets. Des opportunités pour votre avenir.</p>
+      <ul class="footer-links">
+        <li><a href="/candidature">Déposer mon CV</a></li>
+        <li><a href="/entreprises">Entreprises</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Esch-sur-Alzette</h3>
+      <address>17 rue de la Libération<br>L-4210 Esch-sur-Alzette</address>
+      <a href="tel:+3522654581">26 54 58 1</a><br><a href="mailto:esch@prointer.lu">esch@prointer.lu</a>
+    </div>
+    <div>
+      <h3>Dudelange</h3>
+      <address>16 rue du Commerce<br>Dudelange</address>
+      <a href="tel:+3522651791">26 51 79 1</a><br><a href="mailto:dudelange@prointer.lu">dudelange@prointer.lu</a>
+    </div>
+    <div>
+      <h3>Mondorf-les-Bains</h3>
+      <address>3 avenue Lou Hemmer<br>Mondorf-les-Bains</address>
+      <a href="tel:+3522813451">28 13 45 1</a><br><a href="mailto:mondorf@prointer.lu">mondorf@prointer.lu</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 PRO-INTER · Intérim, CDD, CDI au Luxembourg depuis plus de 20 ans</span>
+    <ul class="footer-links">
+      <li><a href="/mentions-legales">Mentions légales</a></li>
+      <li><a href="/confidentialite">Protection des données</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

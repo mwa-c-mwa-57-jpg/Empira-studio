@@ -1,0 +1,22 @@
+/* PRO-INTER : espace agence (liste des candidatures et des demandes) */
+.admin { background: var(--paper-2); }
+.admin-head { display: flex; align-items: center; gap: 16px; padding: 16px 24px; background: var(--ink); color: var(--on-dark-2); font-weight: 700; }
+.admin-head img { width: 140px; height: auto; }
+.admin-main { max-width: 1400px; margin: 0 auto; padding: 32px 24px 60px; display: grid; gap: 40px; }
+.admin-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.admin-title h1 { margin: 0; font-size: 26px; font-weight: 900; }
+.admin-title h1 span { display: inline-grid; place-items: center; min-width: 34px; height: 34px; margin-left: 8px; padding: 0 8px; border-radius: 99px; background: var(--cyan); color: var(--ink); font-size: 15px; vertical-align: middle; }
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.admin-tabs a { padding: 8px 16px; border-radius: 99px; border: 1.5px solid var(--line); background: var(--paper); color: var(--text); font-weight: 700; font-size: 14px; text-decoration: none; }
+.admin-tabs a[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: var(--on-dark); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th { position: sticky; top: 0; background: var(--paper); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+tbody tr:hover { background: #F8FBFC; }
+td a { font-weight: 600; word-break: break-all; }
+details summary { cursor: pointer; color: var(--cyan-ink); font-weight: 700; }
+details p { max-width: 36em; white-space: pre-wrap; margin: 8px 0 0; }
+.link-danger { border: 0; background: none; padding: 0; color: var(--danger); font: 700 13px "Montserrat", sans-serif; cursor: pointer; text-decoration: underline; }
+.empty { padding: 30px; border: 1px dashed var(--line); border-radius: var(--radius); background: var(--paper); color: var(--muted); }
+.admin-note { margin: 0; color: var(--muted); font-size: 14px; }

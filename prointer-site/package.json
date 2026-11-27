@@ -1,0 +1,12 @@
+{
+  "name": "prointer-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site de l'agence d'emploi PRO-INTER : pages, inscription des candidats avec CV, demandes des entreprises, espace agence.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

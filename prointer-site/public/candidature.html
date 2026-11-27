@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Déposer mon CV&nbsp;: inscription candidat | PRO-INTER</title>
+<meta name="description" content="Inscrivez-vous en ligne et déposez votre CV : intérim, CDD et CDI au Luxembourg avec PRO-INTER.">
+<meta name="theme-color" content="#0E1215">
+<link rel="canonical" href="https://www.prointer.lu/candidature">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Déposer mon CV : inscription candidat | PRO-INTER">
+<meta property="og:description" content="Inscrivez-vous en ligne et déposez votre CV : intérim, CDD et CDI au Luxembourg avec PRO-INTER.">
+<meta property="og:image" content="/assets/video/viseur-poster.jpg">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css">
+<script src="/assets/js/main.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="/"><img src="/assets/img/logo-clair.svg" alt="PRO-INTER, agence d'emploi : accueil" width="158" height="42"></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" data-nav-toggle><span class="sr-only">Menu</span><span class="burger" aria-hidden="true"></span></button>
+    <nav id="nav" class="nav" data-nav aria-label="Navigation principale">
+      <a href="/#secteurs">Métiers</a>
+      <a href="/#methode">Notre méthode</a>
+      <a href="/#agences">Nos agences</a>
+      <a href="/entreprises">Entreprises</a>
+      <a class="btn btn--sm" href="/candidature" aria-current="page">Déposer mon CV</a>
+    </nav>
+  </div>
+</header>
+<main id="contenu">
+<section class="page-hero dark dots">
+  <div class="target-bg" aria-hidden="true"><div class="ticks"><i></i><i></i><i></i><i></i></div></div>
+  <div class="container">
+    <p class="kicker"><span class="puce" aria-hidden="true"></span>Candidats</p>
+    <h1>Déposez votre CV</h1>
+    <p>Inscrivez-vous en 2 minutes. Un conseiller étudie votre profil et vous contacte dès qu'une mission vous correspond.</p>
+    <ul class="badges">
+      <li><span class="puce" aria-hidden="true"></span>Gratuit et sans engagement</li>
+      <li><span class="puce" aria-hidden="true"></span>Intérim, CDD ou CDI</li>
+      <li><span class="puce" aria-hidden="true"></span>Données protégées (RGPD)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section--alt">
+  <div class="container form-layout">
+    <div>
+      <form class="form" action="/api/candidature" method="post" enctype="multipart/form-data" data-form>
+        <fieldset class="fieldset">
+          <legend><span class="num">1</span>Vous</legend>
+          <div class="grid-2">
+          <div class="field" data-field="prenom">
+            <label for="prenom">Prénom <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="prenom" name="prenom" type="text" required autocomplete="given-name" aria-describedby="err-prenom">
+            <span class="error" id="err-prenom" role="alert"></span>
+          </div>
+          <div class="field" data-field="nom">
+            <label for="nom">Nom <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="nom" name="nom" type="text" required autocomplete="family-name" aria-describedby="err-nom">
+            <span class="error" id="err-nom" role="alert"></span>
+          </div>
+          <div class="field" data-field="email">
+            <label for="email">E-mail <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="email" name="email" type="email" required autocomplete="email" placeholder="vous@exemple.com" aria-describedby="err-email">
+            <span class="error" id="err-email" role="alert"></span>
+          </div>
+          <div class="field" data-field="telephone">
+            <label for="telephone">Téléphone <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="telephone" name="telephone" type="tel" required autocomplete="tel" placeholder="+352 …" aria-describedby="err-telephone">
+            <span class="error" id="err-telephone" role="alert"></span>
+          </div>
+          <div class="field" data-field="ville">
+            <label for="ville">Ville de résidence <span class="opt">(facultatif)</span></label>
+            <input class="input" id="ville" name="ville" type="text" autocomplete="address-level2" aria-describedby="err-ville">
+            <span class="error" id="err-ville" role="alert"></span>
+          </div>
+          <div class="field" data-field="pays">
+            <label for="pays">Pays de résidence <span class="opt">(facultatif)</span></label>
+            <select class="select" id="pays" name="pays" aria-describedby="err-pays"><option value="">Choisir…</option><option value="Luxembourg">Luxembourg</option><option value="France">France</option><option value="Belgique">Belgique</option><option value="Allemagne">Allemagne</option><option value="Autre">Autre</option></select>
+            <span class="error" id="err-pays" role="alert"></span>
+          </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend><span class="num">2</span>Votre recherche</legend>
+          <div class="grid-2">
+          <div class="field" data-field="metier">
+            <label for="metier">Métier recherché <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="metier" name="metier" type="text" required autocomplete="organization-title" placeholder="Ex. : électricien, soudeur…" aria-describedby="err-metier" list="metiers" maxlength="120">
+            <span class="error" id="err-metier" role="alert"></span>
+          </div>
+          <div class="field" data-field="secteur">
+            <label for="secteur">Secteur <span class="opt">(facultatif)</span></label>
+            <select class="select" id="secteur" name="secteur" aria-describedby="err-secteur"><option value="">Choisir…</option><option value="Bâtiment">Bâtiment</option><option value="Industrie">Industrie</option><option value="Tertiaire">Tertiaire</option><option value="Autre">Autre</option></select>
+            <span class="error" id="err-secteur" role="alert"></span>
+          </div>
+          <fieldset class="choice-group full" data-field="contrats">
+            <legend>Contrat souhaité <span class="opt">(facultatif)</span></legend>
+            <div class="chips"><label class="chip"><input type="checkbox" name="contrats" value="Intérim"><span>Intérim</span></label><label class="chip"><input type="checkbox" name="contrats" value="CDD"><span>CDD</span></label><label class="chip"><input type="checkbox" name="contrats" value="CDI"><span>CDI</span></label></div>
+            <span class="error" id="err-contrats" role="alert"></span>
+          </fieldset>
+          <fieldset class="choice-group full" data-field="agence">
+            <legend>Agence préférée <span class="opt">(facultatif)</span></legend>
+            <div class="chips cards"><label class="chip"><input type="radio" name="agence" value="Esch-sur-Alzette"><span>Esch-sur-Alzette</span></label><label class="chip"><input type="radio" name="agence" value="Dudelange"><span>Dudelange</span></label><label class="chip"><input type="radio" name="agence" value="Mondorf-les-Bains"><span>Mondorf-les-Bains</span></label><label class="chip"><input type="radio" name="agence" value="Peu importe"><span>Peu importe</span></label></div>
+            <span class="error" id="err-agence" role="alert"></span>
+          </fieldset>
+          <div class="field" data-field="disponibilite">
+            <label for="disponibilite">Disponibilité <span class="opt">(facultatif)</span></label>
+            <select class="select" id="disponibilite" name="disponibilite" aria-describedby="err-disponibilite"><option value="">Choisir…</option><option value="Immédiate">Immédiate</option><option value="Sous 1 mois">Sous 1 mois</option><option value="Plus tard">Plus tard</option></select>
+            <span class="error" id="err-disponibilite" role="alert"></span>
+          </div>
+          <div class="field" data-field="permis">
+            <label for="permis">Permis B <span class="opt">(facultatif)</span></label>
+            <select class="select" id="permis" name="permis" aria-describedby="err-permis"><option value="">Choisir…</option><option value="Oui">Oui</option><option value="Non">Non</option></select>
+            <span class="error" id="err-permis" role="alert"></span>
+          </div>
+          <fieldset class="choice-group full" data-field="langues">
+            <legend>Langues parlées <span class="opt">(facultatif)</span></legend>
+            <div class="chips"><label class="chip"><input type="checkbox" name="langues" value="Français"><span>Français</span></label><label class="chip"><input type="checkbox" name="langues" value="Luxembourgeois"><span>Luxembourgeois</span></label><label class="chip"><input type="checkbox" name="langues" value="Allemand"><span>Allemand</span></label><label class="chip"><input type="checkbox" name="langues" value="Anglais"><span>Anglais</span></label><label class="chip"><input type="checkbox" name="langues" value="Portugais"><span>Portugais</span></label></div>
+            <span class="error" id="err-langues" role="alert"></span>
+          </fieldset>
+          </div>
+          <datalist id="metiers"><option value="Électricien"><option value="Serrurier"><option value="Chauffagiste"><option value="Menuisier"><option value="Métallier"><option value="Maçon"><option value="Soudeur"><option value="Technicien de maintenance"><option value="Tuyauteur"><option value="Électromécanicien"><option value="Frigoriste"><option value="Gestionnaire de paie"><option value="Assistant administratif"></datalist>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend><span class="num">3</span>Votre CV</legend>
+          <div class="grid-2">
+          <div class="field full" data-field="cv">
+            <span class="label" id="lbl-cv">CV <span class="req" aria-hidden="true">*</span></span>
+            <label class="drop" data-drop>
+              <input type="file" name="cv" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required aria-labelledby="lbl-cv" aria-describedby="err-cv hint-cv">
+              <svg aria-hidden="true"><use href="/assets/img/icons.svg#upload"/></svg>
+              <strong data-drop-text>Glissez votre fichier ici ou <u>parcourez</u></strong>
+              <span class="hint" id="hint-cv">PDF, DOC ou DOCX · 5 Mo maximum</span>
+            </label>
+            <span class="error" id="err-cv" role="alert"></span>
+          </div>
+          <div class="field full" data-field="lettre">
+            <span class="label" id="lbl-lettre">Lettre de motivation <span class="opt">(facultatif)</span></span>
+            <label class="drop" data-drop>
+              <input type="file" name="lettre" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-labelledby="lbl-lettre" aria-describedby="err-lettre hint-lettre">
+              <svg aria-hidden="true"><use href="/assets/img/icons.svg#upload"/></svg>
+              <strong data-drop-text>Glissez votre fichier ici ou <u>parcourez</u></strong>
+              <span class="hint" id="hint-lettre">PDF, DOC ou DOCX · 5 Mo maximum</span>
+            </label>
+            <span class="error" id="err-lettre" role="alert"></span>
+          </div>
+          <div class="field full" data-field="message">
+            <label for="message">Un mot pour votre conseiller <span class="opt">(facultatif)</span></label>
+            <textarea class="textarea" id="message" name="message" aria-describedby="err-message" maxlength="2000" placeholder="Vos disponibilités, vos contraintes, le poste idéal…"></textarea>
+            <span class="error" id="err-message" role="alert"></span>
+          </div>
+          </div>
+        </fieldset>
+
+          <div class="consent" data-field="consentement">
+            <input type="checkbox" id="consentement" name="consentement" value="oui" required aria-describedby="err-consentement">
+            <label for="consentement">J'accepte que PRO-INTER traite mes données et mon CV pour me proposer des offres d'emploi, et les transmette à une entreprise uniquement avec mon accord. Données conservées 2 ans maximum. <a href="/confidentialite">En savoir plus</a> <span class="req" aria-hidden="true">*</span></label>
+            <span class="error" id="err-consentement" role="alert"></span>
+          </div>
+        <div class="hp" aria-hidden="true"><label for="site_web">Ne pas remplir</label><input type="text" id="site_web" name="site_web" tabindex="-1" autocomplete="off"></div>
+        <div class="submit-row">
+          <button class="btn" type="submit" data-label="Envoyer ma candidature" data-sending="Envoi en cours…">Envoyer ma candidature <svg aria-hidden="true"><use href="/assets/img/icons.svg#arrow"/></svg></button>
+          <div class="progress" aria-hidden="true"><span data-progress></span></div>
+        </div>
+        <p class="form-status" data-status role="alert"></p>
+      </form>
+
+      <div class="success" data-success tabindex="-1">
+        <div class="big-target" aria-hidden="true"></div>
+        <h2>Candidature reçue&nbsp;!</h2>
+        <p>Merci <span data-success-name></span>. Votre CV est bien arrivé chez PRO-INTER&nbsp;: un conseiller étudie votre profil et vous contacte dès qu'une mission vous correspond.</p>
+        <p><a class="btn btn--ghost" href="/">Retour à l'accueil</a></p>
+      </div>
+    </div>
+
+    <aside class="form-aside" aria-label="Comment ça marche">
+      <div class="aside-card">
+        <h2>Comment ça marche</h2>
+        <ol>
+          <li><span class="puce" aria-hidden="true"></span><div><strong>Vous déposez votre CV</strong>2 minutes, depuis votre téléphone ou votre ordinateur.</div></li>
+          <li><span class="puce" aria-hidden="true"></span><div><strong>On étudie votre profil</strong>Un conseiller de l'agence de votre choix lit votre candidature.</div></li>
+          <li><span class="puce" aria-hidden="true"></span><div><strong>On vous propose une mission</strong>En intérim, en CDD ou en CDI, selon vos envies.</div></li>
+        </ol>
+      </div>
+      <p class="aside-note">Une question&nbsp;? Appelez l'agence la plus proche&nbsp;: Esch-sur-Alzette <a href="tel:+3522654581">26 54 58 1</a>, Dudelange <a href="tel:+3522651791">26 51 79 1</a>, Mondorf-les-Bains <a href="tel:+3522813451">28 13 45 1</a>.</p>
+    </aside>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <img src="/assets/img/logo-clair.svg" alt="PRO-INTER, agence d'emploi" width="150" height="40" loading="lazy">
+      <p>Des talents pour vos projets. Des opportunités pour votre avenir.</p>
+      <ul class="footer-links">
+        <li><a href="/candidature">Déposer mon CV</a></li>
+        <li><a href="/entreprises">Entreprises</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Esch-sur-Alzette</h3>
+      <address>17 rue de la Libération<br>L-4210 Esch-sur-Alzette</address>
+      <a href="tel:+3522654581">26 54 58 1</a><br><a href="mailto:esch@prointer.lu">esch@prointer.lu</a>
+    </div>
+    <div>
+      <h3>Dudelange</h3>
+      <address>16 rue du Commerce<br>Dudelange</address>
+      <a href="tel:+3522651791">26 51 79 1</a><br><a href="mailto:dudelange@prointer.lu">dudelange@prointer.lu</a>
+    </div>
+    <div>
+      <h3>Mondorf-les-Bains</h3>
+      <address>3 avenue Lou Hemmer<br>Mondorf-les-Bains</address>
+      <a href="tel:+3522813451">28 13 45 1</a><br><a href="mailto:mondorf@prointer.lu">mondorf@prointer.lu</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 PRO-INTER · Intérim, CDD, CDI au Luxembourg depuis plus de 20 ans</span>
+    <ul class="footer-links">
+      <li><a href="/mentions-legales">Mentions légales</a></li>
+      <li><a href="/confidentialite">Protection des données</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
