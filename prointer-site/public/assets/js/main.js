@@ -1,6 +1,7 @@
 // PRO-INTER : menu, apparitions, vidéo, carte des agences, formulaires (envoi avec barre de progression)
 document.documentElement.classList.add("js");
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const DEMO = !!document.querySelector('meta[name="pro-inter-apercu"]');    // maquette partagée : formulaires sans envoi
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 // en-tête : ombre au défilement, menu mobile
@@ -29,7 +30,8 @@ if (video && sound) sound.addEventListener("click", () => {
   video.muted = !video.muted;
   if (!video.muted) { video.currentTime = 0; video.play().catch(() => {}); }
   sound.setAttribute("aria-pressed", String(!video.muted));
-  $("use", sound).setAttribute("href", `/assets/img/icons.svg#${video.muted ? "sound-off" : "sound-on"}`);
+  const use = $("use", sound);
+  use.setAttribute("href", use.getAttribute("href").replace(/#.*$/, video.muted ? "#sound-off" : "#sound-on"));
   $("span", sound).textContent = video.muted ? "Activer le son" : "Couper le son";
 });
 
@@ -98,20 +100,29 @@ $$("[data-form]").forEach(form => {
     const errors = check(form), names = Object.keys(errors);
     if (names.length) { names.forEach(k => setError(k, errors[k])); focusField(form, names[0]); return; }
 
+    const done = () => { form.classList.remove("is-sending"); label(btn.dataset.label); bar.style.width = "0"; };
+    const showSuccess = () => {
+      const name = (form.elements.prenom || form.elements.contact)?.value || "";
+      $("[data-success-name]", success).textContent = name.trim();
+      form.hidden = true; success.classList.add("is-visible"); success.focus({ preventScroll: true });
+      success.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    };
+    if (DEMO) {                                                // maquette partagée : rien n'est envoyé, on montre le parcours
+      form.classList.add("is-sending"); label(btn.dataset.sending);
+      let pct = 0;
+      const tick = setInterval(() => { pct = Math.min(100, pct + 10); bar.style.width = `${pct}%`; if (pct === 100) { clearInterval(tick); done(); showSuccess(); } }, 80);
+      return;
+    }
+
     const xhr = new XMLHttpRequest();
     xhr.open("POST", form.action);
     xhr.setRequestHeader("Accept", "application/json");
     xhr.upload.addEventListener("progress", ev => { if (ev.lengthComputable) bar.style.width = `${Math.round(ev.loaded / ev.total * 100)}%`; });
-    const done = () => { form.classList.remove("is-sending"); label(btn.dataset.label); bar.style.width = "0"; };
     xhr.addEventListener("load", () => {
       done();
       let res = {}; try { res = JSON.parse(xhr.responseText); } catch { /* réponse non JSON */ }
-      if (xhr.status >= 200 && xhr.status < 300 && res.ok) {
-        const name = (form.elements.prenom || form.elements.contact)?.value || "";
-        $("[data-success-name]", success).textContent = name.trim();
-        form.hidden = true; success.classList.add("is-visible"); success.focus({ preventScroll: true });
-        success.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
-      } else if (res.errors) {
+      if (xhr.status >= 200 && xhr.status < 300 && res.ok) showSuccess();
+      else if (res.errors) {
         Object.entries(res.errors).forEach(([k, m]) => setError(k, m));
         status.textContent = res.message || "Merci de corriger les champs signalés.";
         focusField(form, Object.keys(res.errors)[0]);
