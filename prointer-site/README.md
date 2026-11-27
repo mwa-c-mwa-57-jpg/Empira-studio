@@ -12,7 +12,20 @@ Aperçus : [`docs/apercu/`](docs/apercu/).
 
 ![Accueil](docs/apercu/accueil.jpg)
 
-## Lancer le site
+Vidéo de démonstration sur téléphone : [`docs/apercu/apercu-mobile.mp4`](docs/apercu/apercu-mobile.mp4).
+
+## Voir le site sur votre PC et sur votre téléphone
+
+1. Installez **Node.js** (version « LTS ») depuis [nodejs.org](https://nodejs.org/fr), une seule fois.
+2. Dans le dossier `prointer-site`, double-cliquez sur **`Lancer-le-site.bat`**. Le site s'ouvre dans votre navigateur sur `http://localhost:8080`. Gardez la fenêtre noire ouverte : la fermer arrête le site.
+3. **Sur votre téléphone** : connectez-le au **même Wi-Fi** que le PC, puis tapez dans son navigateur l'adresse affichée dans la fenêtre noire, à la ligne « Sur un téléphone connecté au même Wi-Fi » (par exemple `http://192.168.1.23:8080`).
+   - Au premier lancement, Windows demande s'il faut autoriser Node.js sur le réseau : cochez **Réseaux privés** et cliquez sur **Autoriser l'accès**.
+   - Si le téléphone n'arrive pas à ouvrir la page, le Wi-Fi du PC est sans doute réglé en réseau « Public » : Paramètres > Réseau et Internet > Wi-Fi > votre réseau > **Réseau privé**.
+4. **Espace agence** : `http://localhost:8080/admin`, identifiant `agence`, mot de passe `demo` (défini dans le lanceur, à changer avant toute mise en ligne).
+
+Cette adresse ne marche que chez vous, tant que le PC est allumé et le lanceur ouvert. Pour une adresse accessible partout (à montrer à PRO-INTER, par exemple), il faut mettre le site en ligne : voir plus bas.
+
+## Lancer le site en ligne de commande
 
 Il faut Node.js 20 ou plus. Le site n'a aucune dépendance : pas de `npm install`.
 
@@ -70,6 +83,7 @@ Suite possible : une page « Offres d'emploi » alimentée depuis l'espace agenc
 
 | Fichier | Rôle |
 |---|---|
+| `Lancer-le-site.bat` | lanceur Windows à double-cliquer (vérifie Node.js, démarre le site, ouvre le navigateur) |
 | `server.mjs` | serveur : pages, formulaires, CV, espace agence, purge RGPD |
 | `public/*.html` | pages du site |
 | `public/assets/css/style.css` | styles (couleurs PRO-INTER, Montserrat, motif cible) |

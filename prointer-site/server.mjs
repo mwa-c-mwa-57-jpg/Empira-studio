@@ -3,6 +3,7 @@
 // Node 20 ou plus, aucune dépendance. Lancement : ADMIN_PASSWORD="…" node server.mjs
 import http from "node:http";
 import crypto from "node:crypto";
+import os from "node:os";
 import path from "node:path";
 import { createReadStream } from "node:fs";
 import { mkdir, readFile, readdir, rm, stat, writeFile, appendFile } from "node:fs/promises";
@@ -345,8 +346,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   await mkdir(CAND, { recursive: true });
   await purge();
   setInterval(() => purge().catch(e => console.error("purge :", e)), 864e5).unref();
-  createServer().listen(+(env.PORT || 8080), () => {
-    console.log(`Site PRO-INTER : http://localhost:${env.PORT || 8080}`);
-    if (!ADMIN_PASSWORD) console.log("Espace agence désactivé : définissez ADMIN_PASSWORD pour l'activer.");
-  });
+  const port = +(env.PORT || 8080);
+  createServer()
+    .on("error", e => { console.error(e.code === "EADDRINUSE" ? `Le port ${port} est déjà utilisé : le site tourne peut-être déjà dans une autre fenêtre.` : e.message); process.exit(1); })
+    .listen(port, () => {
+      console.log(`Site PRO-INTER : http://localhost:${port}`);
+      // adresses du PC sur le réseau local, à ouvrir depuis un téléphone connecté au même Wi-Fi
+      const lan = Object.values(os.networkInterfaces()).flat().filter(i => i && i.family === "IPv4" && !i.internal).map(i => `http://${i.address}:${port}`);
+      if (lan.length) console.log(`Sur un téléphone connecté au même Wi-Fi : ${lan.join("  ou  ")}`);
+      console.log(ADMIN_PASSWORD ? `Espace agence : http://localhost:${port}/admin (identifiant « ${ADMIN_USER} »)` : "Espace agence désactivé : définissez ADMIN_PASSWORD pour l'activer.");
+    });
 }
