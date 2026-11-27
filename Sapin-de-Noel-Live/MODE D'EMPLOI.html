@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Sapin de Noël – Mode d'emploi</title>
+<style>body{font:17px/1.55 "Segoe UI",system-ui,sans-serif;max-width:760px;margin:30px auto;padding:0 18px;color:#222;background:#fbf8f3}
+h1{color:#b3122a}h2{color:#0f5a46;margin-top:28px}code{background:#eee;padding:2px 6px;border-radius:5px}
+.box{background:#fff;border-left:5px solid #b3122a;padding:10px 16px;border-radius:8px;margin:12px 0}</style></head><body>
+<h1>🎄 Sapin de Noël – Mode d'emploi</h1>
+<p>Un sapin sur fond vert. Quand quelqu'un envoie un cadeau, une boule de Noël avec <b>sa photo de profil</b> tombe et s'accroche au sapin. Plus la personne envoie de diamants, plus sa boule grossit. À partir de 1000 diamants : <b>boule dorée</b> + pluie d'or + étoile qui s'illumine.</p>
+
+<h2>1. Essayer tout de suite</h2>
+<p>Double-clic sur <code>1 - Tester en mode demo.bat</code> : de faux viewers envoient des cadeaux (rien n'est sauvegardé).</p>
+
+<h2>2. Pendant le live (TikTok LIVE Studio)</h2>
+<ol>
+<li>Ouvre <b>TikFinity</b> et connecte-le à ton live.</li>
+<li>Double-clic sur <code>3 - Serveur pour TikTok Live Studio.bat</code> et <b>laisse la fenêtre ouverte</b>.</li>
+<li>Dans TikTok LIVE Studio : <b>Ajouter une source → Lien / Navigateur</b>, colle <code>http://localhost:8765/sapin-de-noel.html</code>, taille <b>1080 × 1920</b>.</li>
+<li>Ajoute un filtre <b>Incrustation (chroma key) vert</b> sur cette source.</li>
+</ol>
+<div class="box">Si le sapin devient transparent avec l'incrustation : baisse un peu la « similarité » du filtre. Sinon, ouvre le fichier HTML avec le Bloc-notes et mets <code>styleSapin: 'neige'</code> (sapin blanc argenté).</div>
+<div class="box">Une photo de profil qui contient beaucoup de vert peut être un peu « trouée » par l'incrustation : c'est normal avec un fond vert.</div>
+
+<h2>3. Commandes dans le chat (toi et tes modos)</h2>
+<ul><li><code>!sapin vider</code> : enlève toutes les boules</li><li><code>!sapin test</code> : fait tomber une boule test</li></ul>
+<p>Touche <b>A</b> sur la page : petit panneau (état de TikFinity, nombre de boules, boutons de test).</p>
+
+<h2>4. Bon à savoir</h2>
+<ul>
+<li>Les boules restent d'un live à l'autre. Pour repartir de zéro : <code>!sapin vider</code>.</li>
+<li>Le sapin peut accueillir environ 30 à 45 boules ; ensuite la plus petite et la plus ancienne laisse sa place.</li>
+<li>Aucune boule n'est perdue : si plein de cadeaux arrivent d'un coup, elles tombent l'une après l'autre.</li>
+<li>Rien ne s'affiche en permanence pour réclamer des cadeaux, pas de voix, pas de remerciement automatique (mode prudence TikTok). Le pseudo apparaît juste 5 secondes à l'arrivée.</li>
+<li>Si je modifie le fichier, la page se recharge toute seule (pas besoin d'« Actualiser »).</li>
+</ul>
+</body></html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sapin de Noël Live</title>
+<style>
+  :root { --fond: #00ff00; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--fond); }
+  #stage { position: absolute; width: 1080px; height: 1920px; left: 50%; top: 50%;
+           transform-origin: center center; font-family: "Segoe UI", system-ui, sans-serif; }
+  #stage canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+  #balls { position: absolute; inset: 0; }
+  .shake { animation: shake .45s linear; }
+  @keyframes shake { 0%,100%{translate:0 0} 20%{translate:-9px 4px} 40%{translate:8px -5px} 60%{translate:-6px 3px} 80%{translate:4px -2px} }
+
+  /* ---------- Boule ---------- */
+  .ball { position: absolute; left: 0; top: 0; width: 0; height: 0;
+          transition: transform 1.1s cubic-bezier(.3,1.4,.5,1); }
+  .ball .drop { position: absolute; left: 0; top: 0; }
+  .ball .swing { position: absolute; left: 0; top: 0;
+          transform-origin: 0 calc(-1 * (var(--d) / 2 + 34px));
+          animation: swing var(--sd, 3s) ease-in-out infinite alternate; animation-delay: var(--sdel, 0s); }
+  @keyframes swing { from { rotate: -5deg; } to { rotate: 5deg; } }
+  .ball .string { position: absolute; left: -1.5px; width: 3px; height: 34px;
+          top: calc(-1 * (var(--d) / 2 + 34px)); background: linear-gradient(#fff3c0, #c9962f); }
+  .ball .cap { position: absolute; width: calc(var(--d) * .26); height: calc(var(--d) * .15);
+          left: calc(var(--d) * -.13); top: calc(var(--d) * -.5 - var(--d) * .11);
+          background: linear-gradient(90deg, #7a5a16, #ffe9a0 30%, #b8892b 55%, #fff1b8 75%, #7a5a16);
+          border-radius: 5px 5px 2px 2px; box-shadow: 0 2px 3px rgba(0,0,0,.35); }
+  .ball .orb { position: absolute; width: var(--d); height: var(--d);
+          left: calc(var(--d) / -2); top: calc(var(--d) / -2); border-radius: 50%;
+          background: radial-gradient(circle at 35% 30%, var(--c2) 0%, var(--c) 45%, var(--c3) 100%);
+          box-shadow: inset -6px -8px 16px rgba(0,0,0,.45), 0 8px 16px rgba(0,0,0,.35);
+          transition: width .6s cubic-bezier(.3,1.5,.5,1), height .6s cubic-bezier(.3,1.5,.5,1),
+                      left .6s cubic-bezier(.3,1.5,.5,1), top .6s cubic-bezier(.3,1.5,.5,1); }
+  .ball .orb.gold { box-shadow: inset -6px -8px 16px rgba(0,0,0,.45), 0 0 26px 8px rgba(255,214,100,.85); }
+  .ball .pic, .ball .ini { position: absolute; left: 10%; top: 10%; width: 80%; height: 80%;
+          border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px rgba(255,240,190,.9), inset 0 0 8px rgba(0,0,0,.5); }
+  .ball .ini { display: flex; align-items: center; justify-content: center; color: #fff;
+          font-weight: 900; font-size: calc(var(--d) * .36); background: rgba(0,0,0,.25);
+          text-shadow: 0 2px 4px rgba(0,0,0,.5); }
+  .ball .gloss { position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+          background: radial-gradient(circle at 31% 25%, rgba(255,255,255,.9) 0 5%, rgba(255,255,255,.3) 12%, transparent 28%),
+                      radial-gradient(circle at 50% 50%, transparent 62%, rgba(0,0,0,.28) 100%); }
+  .ball .label { position: absolute; top: calc(var(--d) / 2 + 14px); left: 0; transform: translate(-50%, 8px) scale(.6);
+          white-space: nowrap; font-weight: 800; font-size: 32px; color: #fff; padding: 6px 18px; border-radius: 22px;
+          background: linear-gradient(#c8202f, #8e0f1c); border: 3px solid #ffd76a; box-shadow: 0 4px 10px rgba(0,0,0,.4);
+          opacity: 0; transition: opacity .35s, transform .45s cubic-bezier(.3,1.6,.5,1); z-index: 5; }
+  .ball.show { z-index: 50; }
+  .ball.show .label { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  .ball.named .label { opacity: 1; transform: translate(-50%, 0) scale(.62); }
+
+  /* ---------- Panneau admin (touche A) ---------- */
+  #admin { position: fixed; right: 12px; top: 12px; z-index: 99; background: rgba(20,20,30,.92); color: #fff;
+           font: 14px system-ui, sans-serif; padding: 12px 14px; border-radius: 12px; display: none; min-width: 230px; }
+  #admin.on { display: block; }
+  #admin button { display: block; width: 100%; margin-top: 6px; padding: 7px; border: 0; border-radius: 8px;
+           background: #c8202f; color: #fff; font-weight: 700; cursor: pointer; }
+  #admin .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #e33; margin-right: 6px; }
+  #admin .dot.ok { background: #3d3; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cTree" width="1080" height="1920"></canvas>
+  <canvas id="cLive" width="1080" height="1920"></canvas>
+  <div id="balls"></div>
+  <canvas id="cFx" width="1080" height="1920"></canvas>
+</div>
+<div id="admin">
+  <div><span class="dot" id="wsDot"></span><b>Sapin de Noël</b> <span id="buildTxt"></span></div>
+  <div id="adminInfo" style="margin-top:6px;opacity:.8"></div>
+  <button id="bTest">Boule test</button>
+  <button id="bGold">Boule dorée test</button>
+  <button id="bClear">Vider le sapin</button>
+  <div style="margin-top:8px;opacity:.6;font-size:12px">Touche A : afficher / cacher</div>
+</div>
+<script>
+// =====================================================================
+//  RÉGLAGES  (tu peux changer les valeurs ci-dessous)
+// =====================================================================
+const CONFIG = {
+  couleurFond: '#00ff00',          // fond vert à incruster (chroma key)
+  tikfinity: 'ws://127.0.0.1:21213/', // adresse de TikFinity (ne pas toucher)
+  hote: 'liveldzfovx',             // ton pseudo : peut taper les commandes !sapin
+  prudence: true,                  // true = aucun remerciement auto, aucune annonce des cadeaux
+
+  // Couleurs du sapin : volontairement vert FONCÉ / bleuté pour ne pas
+  // disparaître avec le fond vert. Si ton incrustation mange le sapin,
+  // baisse la "similarité" du filtre chroma ou mets styleSapin: 'neige'.
+  styleSapin: 'foret',             // 'foret' (vert sombre) ou 'neige' (sapin blanc argenté)
+
+  // Taille de la boule selon le total de diamants envoyés par la personne
+  tailles: [
+    { min: 1,    d: 92  },
+    { min: 10,   d: 108 },
+    { min: 100,  d: 128 },
+    { min: 500,  d: 150 },
+    { min: 1000, d: 176 },
+  ],
+  seuilDore: 1000,                 // à partir de ce total : boule dorée + pluie d'or
+  dureeNom: 5,                     // secondes pendant lesquelles le pseudo s'affiche à l'arrivée
+  nomPermanent: false,             // true = petit pseudo toujours visible sous chaque boule
+  maxBoules: 45,                   // au-delà, la plus ancienne petite boule laisse sa place
+  son: true,                       // petit son de clochette à l'arrivée d'une boule
+  volume: 0.35,
+  garderEntreLives: true,          // les boules restent après un rechargement de la page
+  // Zone en bas à gauche cachée par les commentaires TikTok : pas de boule dedans
+  zoneCommentaires: { xMax: 640, yMin: 1270 },
+};
+const BUILD = '2026-11-27a';
+// =====================================================================
+
+const params = new URLSearchParams(location.search);
+const DEMO = params.has('demo');
+const W = 1080, H = 1920;
+document.documentElement.style.setProperty('--fond', CONFIG.couleurFond);
+
+const stage = document.getElementById('stage');
+function fit() {
+  const s = Math.min(innerWidth / W, innerHeight / H);
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+// ---------- Géométrie du sapin ----------
+const APEX = { x: 540, y: 350 }, BASE_Y = 1530, HALF_BASE = 470;
+const halfW = y => Math.max(0, (y - APEX.y) / (BASE_Y - APEX.y) * HALF_BASE);
+const PAL = CONFIG.styleSapin === 'neige'
+  ? { haut: '#e9f2f7', bas: '#9fb6c6', clair: 'rgba(255,255,255,.7)', sombre: 'rgba(80,100,120,.45)' }
+  : { haut: '#1f6e5a', bas: '#0b3a31', clair: 'rgba(90,170,140,.45)', sombre: 'rgba(3,25,22,.55)' };
+
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+function drawTree() {
+  const c = document.getElementById('cTree').getContext('2d');
+  // sol enneigé
+  let g = c.createRadialGradient(540, 1615, 20, 540, 1615, 520);
+  g.addColorStop(0, '#ffffff'); g.addColorStop(.7, '#e3eef7'); g.addColorStop(1, 'rgba(220,235,245,0)');
+  c.fillStyle = g; c.beginPath(); c.ellipse(540, 1615, 520, 85, 0, 0, Math.PI * 2); c.fill();
+  // tronc
+  g = c.createLinearGradient(482, 0, 598, 0);
+  g.addColorStop(0, '#3b2112'); g.addColorStop(.45, '#7a4a2a'); g.addColorStop(1, '#2e180c');
+  c.fillStyle = g; c.fillRect(482, 1480, 116, 140);
+  // étages
+  const n = 7;
+  for (let i = 0; i < n; i++) {
+    const top = APEX.y + (BASE_Y - APEX.y) * (i / n) * 0.93 - (i ? 40 : 0);
+    const bot = APEX.y + (BASE_Y - APEX.y) * ((i + 1) / n);
+    const bh = halfW(bot) * 1.07 + 10, th = i ? halfW(top) * 0.3 : 0;
+    const path = new Path2D();
+    path.moveTo(540 - th, top);
+    path.quadraticCurveTo(540 - bh * 0.55, top + (bot - top) * 0.6, 540 - bh, bot);
+    const k = Math.max(3, Math.round(bh * 2 / 75)), sw = bh * 2 / k;
+    for (let j = 0; j < k; j++) {
+      const x0 = 540 - bh + j * sw;
+      path.quadraticCurveTo(x0 + sw / 2, bot + 30, x0 + sw, bot);
+    }
+    path.quadraticCurveTo(540 + bh * 0.55, top + (bot - top) * 0.6, 540 + th, top);
+    path.closePath();
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 18; c.shadowOffsetY = 10;
+    g = c.createLinearGradient(0, top, 0, bot + 30);
+    g.addColorStop(0, PAL.haut); g.addColorStop(1, PAL.bas);
+    c.fillStyle = g; c.fill(path); c.restore();
+    c.save(); c.clip(path);
+    g = c.createLinearGradient(540 - bh, 0, 540 + bh, 0);
+    g.addColorStop(0, 'rgba(0,0,0,.28)'); g.addColorStop(.4, 'rgba(255,255,255,.06)'); g.addColorStop(1, 'rgba(0,0,0,.38)');
+    c.fillStyle = g; c.fillRect(0, top, W, bot - top + 40);
+    // aiguilles
+    c.lineCap = 'round';
+    for (let q = 0; q < 90 + i * 22; q++) {     // petites branches en éventail
+      const y = top + rnd() * (bot - top + 25), hw = halfW(y) * 1.05;
+      const x = 540 + (rnd() * 2 - 1) * hw, side = x < 540 ? -1 : 1, L = 14 + rnd() * 14;
+      const base = Math.PI / 2 - side * (0.5 + rnd() * 0.5);
+      c.strokeStyle = rnd() < .55 ? PAL.clair : PAL.sombre;
+      for (let f = -2; f <= 2; f++) {
+        const a = base + f * 0.28, l = L * (1 - Math.abs(f) * .18);
+        c.lineWidth = 2.2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); c.stroke();
+      }
+    }
+    c.restore();
+    // neige sur les pointes
+    c.fillStyle = 'rgba(255,255,255,.92)';
+    for (let j = 0; j < k; j++) {
+      const x0 = 540 - bh + j * sw;
+      c.beginPath(); c.ellipse(x0 + sw / 2, bot + 12, sw * .32, 9, 0, 0, Math.PI * 2); c.fill();
+    }
+  }
+  // guirlandes dorées (perles)
+  for (const s of GARLANDS) {
+    for (let t = 0; t <= 1; t += 0.008) {
+      const p = bez(s, t);
+      c.fillStyle = t * 125 % 2 < 1 ? '#ffd76a' : '#c9962f';
+      c.beginPath(); c.arc(p.x, p.y, 4.5, 0, Math.PI * 2); c.fill();
+    }
+  }
+}
+function bez(s, t) {
+  const u = 1 - t;
+  return { x: u * u * s.x0 + 2 * u * t * s.cx + t * t * s.x1, y: u * u * s.y0 + 2 * u * t * s.cy + t * t * s.y1 };
+}
+const GARLANDS = [];
+[0.2, 0.38, 0.56, 0.74, 0.9].forEach((f, i) => {
+  const y0 = APEX.y + (BASE_Y - APEX.y) * f, y1 = y0 + 120, dir = i % 2 ? -1 : 1;
+  const xa = 540 - dir * halfW(y0) * .95, xb = 540 + dir * halfW(y1) * .95;
+  GARLANDS.push({ x0: xa, y0, x1: xb, y1, cx: 540, cy: (y0 + y1) / 2 + 80 });
+});
+const LIGHTS = [];
+const LCOLS = ['#ff4d4d', '#ffd24d', '#4db8ff', '#ff7ad9', '#ffffff', '#ff9a3d'];
+GARLANDS.forEach((s, gi) => {
+  const nb = 8 + gi * 2;
+  for (let i = 0; i < nb; i++) { const p = bez(s, (i + .5) / nb); LIGHTS.push({ x: p.x, y: p.y + 6, c: LCOLS[(i + gi) % LCOLS.length], ph: Math.random() * 6.28, sp: 1.5 + Math.random() * 2 }); }
+});
+
+// ---------- Couche animée : étoile, lumières, neige ----------
+const live = document.getElementById('cLive').getContext('2d');
+const SNOW = Array.from({ length: 130 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 2 + Math.random() * 4.5, v: 40 + Math.random() * 70, ph: Math.random() * 6.28 }));
+let starBoost = 0;
+function starPath(c, x, y, R, r, rot) {
+  c.beginPath();
+  for (let i = 0; i < 10; i++) { const a = rot + i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? r : R; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  c.closePath();
+}
+function drawLive(t, dt) {
+  live.clearRect(0, 0, W, H);
+  // lumières
+  for (const l of LIGHTS) {
+    const a = .55 + .45 * Math.sin(t * l.sp + l.ph);
+    const g = live.createRadialGradient(l.x, l.y, 0, l.x, l.y, 26);
+    g.addColorStop(0, l.c); g.addColorStop(.25, l.c + 'aa'); g.addColorStop(1, l.c + '00');
+    live.globalAlpha = a; live.fillStyle = g; live.beginPath(); live.arc(l.x, l.y, 26, 0, 6.29); live.fill();
+    live.globalAlpha = 1; live.fillStyle = '#fff'; live.beginPath(); live.arc(l.x, l.y, 4.5, 0, 6.29); live.fill();
+  }
+  // étoile
+  starBoost = Math.max(0, starBoost - dt * .5);
+  const sx = APEX.x, sy = APEX.y - 18, pulse = 1 + .05 * Math.sin(t * 2.2) + starBoost * .35;
+  live.save(); live.translate(sx, sy);
+  live.rotate(t * .25);
+  live.globalAlpha = .35 + starBoost * .5;
+  for (let i = 0; i < 12; i++) {
+    live.rotate(Math.PI / 6);
+    const g = live.createLinearGradient(0, 0, 0, -170 * pulse);
+    g.addColorStop(0, 'rgba(255,230,140,.9)'); g.addColorStop(1, 'rgba(255,230,140,0)');
+    live.fillStyle = g; live.beginPath(); live.moveTo(-7, 0); live.lineTo(0, -170 * pulse); live.lineTo(7, 0); live.fill();
+  }
+  live.restore(); live.globalAlpha = 1;
+  live.save(); live.shadowColor = 'rgba(255,215,90,.95)'; live.shadowBlur = 30 + starBoost * 40;
+  const g = live.createLinearGradient(sx - 60, sy - 60, sx + 60, sy + 60);
+  g.addColorStop(0, '#fff6c8'); g.addColorStop(.5, '#ffcf3d'); g.addColorStop(1, '#c98a12');
+  live.fillStyle = g; starPath(live, sx, sy, 72 * pulse, 30 * pulse, Math.sin(t * .8) * .06); live.fill();
+  live.restore();
+  live.strokeStyle = '#fff2b0'; live.lineWidth = 3; starPath(live, sx, sy, 72 * pulse, 30 * pulse, Math.sin(t * .8) * .06); live.stroke();
+  // neige
+  live.fillStyle = '#ffffff';
+  for (const f of SNOW) {
+    f.y += f.v * dt; f.x += Math.sin(t + f.ph) * 18 * dt;
+    if (f.y > H + 10) { f.y = -10; f.x = Math.random() * W; }
+    live.globalAlpha = .55 + f.r / 12; live.beginPath(); live.arc(f.x, f.y, f.r, 0, 6.29); live.fill();
+  }
+  live.globalAlpha = 1;
+}
+
+// ---------- Effets (étincelles) ----------
+const fx = document.getElementById('cFx').getContext('2d');
+const PARTS = [];
+function burst(x, y, n, cols, power = 1) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * 6.28, v = (150 + Math.random() * 420) * power;
+    PARTS.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 120, life: .7 + Math.random() * .8, age: 0, s: 6 + Math.random() * 10, c: cols[i % cols.length], rot: Math.random() * 6 });
+  }
+}
+function goldRain() {
+  for (let i = 0; i < 140; i++) PARTS.push({ x: Math.random() * W, y: -40 - Math.random() * 500, vx: (Math.random() - .5) * 60, vy: 250 + Math.random() * 300, life: 3.2, age: 0, s: 8 + Math.random() * 12, c: i % 3 ? '#ffd76a' : '#fff6c8', rot: Math.random() * 6 });
+}
+function drawFx(dt) {
+  fx.clearRect(0, 0, W, H);
+  for (let i = PARTS.length - 1; i >= 0; i--) {
+    const p = PARTS[i];
+    p.age += dt; if (p.age > p.life) { PARTS.splice(i, 1); continue; }
+    p.vy += 420 * dt; p.vx *= (1 - 1.5 * dt); p.x += p.vx * dt; p.y += p.vy * dt; p.rot += dt * 4;
+    const k = 1 - p.age / p.life, s = p.s * (0.4 + k);
+    fx.globalAlpha = Math.min(1, k * 1.6); fx.fillStyle = p.c;
+    fx.save(); fx.translate(p.x, p.y); fx.rotate(p.rot);
+    fx.beginPath(); fx.moveTo(0, -s); fx.quadraticCurveTo(0, 0, s, 0); fx.quadraticCurveTo(0, 0, 0, s); fx.quadraticCurveTo(0, 0, -s, 0); fx.quadraticCurveTo(0, 0, 0, -s); fx.fill();
+    fx.restore();
+  }
+  fx.globalAlpha = 1;
+}
+
+// ---------- Son (clochette) ----------
+let AC = null;
+function audio() { if (!AC) try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} if (AC && AC.state === 'suspended') AC.resume(); return AC; }
+addEventListener('pointerdown', audio); addEventListener('keydown', audio);
+function bell(f, when = 0, vol = 1) {
+  if (!CONFIG.son) return; const ac = audio(); if (!ac) return;
+  const t0 = ac.currentTime + when, out = ac.createGain();
+  out.gain.value = CONFIG.volume * vol; out.connect(ac.destination);
+  [[1, 1, 1.6], [2.76, .35, .9], [5.4, .18, .5], [8.9, .08, .3]].forEach(([m, a, d]) => {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine'; o.frequency.value = f * m;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(a, t0 + .008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+    o.connect(g); g.connect(out); o.start(t0); o.stop(t0 + d + .05);
+  });
+}
+
+// ---------- Textes : pas d'emoji, pas de gros mots ----------
+const MOTS_DANS = ['pute', 'salope', 'encul', 'nique', 'connard', 'connass', 'batard', 'bâtard', 'nazi', 'hitler', 'porn', 'sexe', 'negro', 'bougnoul'];
+const MOTS_EXACTS = ['cul', 'bite', 'con', 'pd', 'fdp', 'zob', 'tg', 'ntm', 'teub'];
+const sansEmoji = s => String(s || '').replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}️‍⃣]/gu, '').replace(/\s+/g, ' ').trim();
+function nomPropre(nick, uid) {
+  let n = sansEmoji(nick) || sansEmoji(uid) || 'Viewer';
+  const low = n.toLowerCase();
+  const mots = low.split(/[^a-zà-ÿ0-9]+/);
+  if (MOTS_DANS.some(m => low.includes(m)) || mots.some(m => MOTS_EXACTS.includes(m))) n = n[0] + '…';
+  return n.length > 18 ? n.slice(0, 17) + '…' : n;
+}
+
+// ---------- Boules ----------
+const BALL_COLS = [['#d4202f', '#ff8a8a', '#6d0712'], ['#1f5fd1', '#9cc4ff', '#0b2a66'], ['#8c2bd1', '#d9a6ff', '#3f0f63'],
+                   ['#c7c9d1', '#ffffff', '#6c707c'], ['#e0731a', '#ffc58a', '#7a3505'], ['#d12b8c', '#ff9fd6', '#640a3e']];
+const GOLD_COL = ['#d9a521', '#fff2b0', '#7a5508'];
+const ballsEl = document.getElementById('balls');
+const balls = new Map();   // uid -> boule
+const queue = [];
+let lastDrop = 0;
+
+const diam = tot => { let d = CONFIG.tailles[0].d; for (const t of CONFIG.tailles) if (tot >= t.min) d = t.d; return d; };
+
+function allowed(x, y, r) {
+  if (y - r < APEX.y + 110 || y + r > BASE_Y + 10) return false;
+  if (Math.abs(x - 540) + r * 0.55 > halfW(y) * 1.04) return false;
+  const z = CONFIG.zoneCommentaires;
+  if (x - r < z.xMax && y + r > z.yMin) return false;
+  return true;
+}
+function clearance(x, y, r, skip) {
+  let m = Infinity;
+  for (const b of balls.values()) {
+    if (b === skip) continue;
+    m = Math.min(m, Math.hypot(b.x - x, b.y - y) - b.d / 2 - r);
+  }
+  return m;
+}
+function findSpot(d, skip) {
+  const r = d / 2 + 3; let best = null, bestC = -Infinity;
+  for (let i = 0; i < 500; i++) {
+    const y = APEX.y + 110 + Math.random() * (BASE_Y - APEX.y - 110), x = 540 + (Math.random() * 2 - 1) * halfW(y);
+    if (!allowed(x, y, r)) continue;
+    const c = clearance(x, y, r, skip);
+    if (c >= 0) { const score = Math.min(c, 60) + Math.random() * 25; if (score > bestC) { bestC = score; best = { x, y }; } }
+  }
+  return best;
+}
+function evict() {
+  let victim = null;
+  for (const b of balls.values()) if (!victim || b.tot < victim.tot || (b.tot === victim.tot && b.t < victim.t)) victim = b;
+  if (victim) removeBall(victim);
+}
+function removeBall(b) {
+  balls.delete(b.uid);
+  b.el.animate([{ opacity: 1, scale: 1 }, { opacity: 0, scale: .3 }], { duration: 500, easing: 'ease-in' }).onfinish = () => b.el.remove();
+  save();
+}
+
+function initials(n) { return (n.replace(/[^\p{L}\p{N}]/gu, '').slice(0, 2) || '★').toUpperCase(); }
+function setPic(b) {
+  b.picEl.innerHTML = '';
+  const ini = () => { b.picEl.innerHTML = `<div class="ini">${initials(b.name)}</div>`; };
+  if (!b.pic) return ini();
+  const img = new Image(); img.className = 'pic'; img.referrerPolicy = 'no-referrer'; img.alt = '';
+  img.onerror = ini; img.src = b.pic; b.picEl.appendChild(img);
+}
+function paint(b) {
+  const col = b.tot >= CONFIG.seuilDore ? GOLD_COL : BALL_COLS[b.ci];
+  b.el.style.setProperty('--c', col[0]); b.el.style.setProperty('--c2', col[1]); b.el.style.setProperty('--c3', col[2]);
+  b.el.style.setProperty('--d', b.d + 'px');
+  b.orb.classList.toggle('gold', b.tot >= CONFIG.seuilDore);
+  b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+}
+function makeEl(b) {
+  const el = document.createElement('div'); el.className = 'ball' + (CONFIG.nomPermanent ? ' named' : '');
+  el.style.setProperty('--sd', (2.4 + Math.random() * 1.6).toFixed(2) + 's');
+  el.style.setProperty('--sdel', (-Math.random() * 3).toFixed(2) + 's');
+  el.innerHTML = `<div class="drop"><div class="swing"><div class="string"></div><div class="cap"></div><div class="orb"><div class="picw"></div><div class="gloss"></div></div></div><div class="label"></div></div>`;
+  b.el = el; b.orb = el.querySelector('.orb'); b.picEl = el.querySelector('.picw'); b.drop = el.querySelector('.drop');
+  el.querySelector('.label').textContent = b.name;
+  ballsEl.appendChild(el); setPic(b); paint(b);
+}
+function showName(b) {
+  b.el.classList.add('show'); clearTimeout(b.nt);
+  b.nt = setTimeout(() => b.el.classList.remove('show'), CONFIG.dureeNom * 1000);
+}
+
+function spawn(item) {
+  const d = diam(item.tot);
+  let spot = findSpot(d);
+  let guard = 0;
+  while ((!spot || balls.size >= CONFIG.maxBoules) && balls.size && guard++ < 60) { evict(); spot = findSpot(d); }
+  if (!spot) spot = { x: 540 + (Math.random() - .5) * 300, y: 900 };
+  const b = { uid: item.uid, name: item.name, pic: item.pic, tot: item.tot, d, x: spot.x, y: spot.y, ci: Math.floor(Math.random() * BALL_COLS.length), t: Date.now() };
+  balls.set(b.uid, b); makeEl(b);
+  const gold = b.tot >= CONFIG.seuilDore;
+  b.drop.animate([
+    { transform: `translateY(${-(b.y + 260)}px)` },
+    { transform: 'translateY(18px)', offset: .72 },
+    { transform: 'translateY(-8px)', offset: .86 },
+    { transform: 'translateY(0)' },
+  ], { duration: 1100, easing: 'cubic-bezier(.45,0,.6,1)' }).onfinish = () => {
+    burst(b.x, b.y, gold ? 60 : 26, gold ? ['#ffd76a', '#fff6c8', '#ffb627'] : ['#ffffff', '#ffe58a', BALL_COLS[b.ci][1]], gold ? 1.4 : 1);
+    b.orb.animate([{ scale: 1 }, { scale: 1.18 }, { scale: .95 }, { scale: 1 }], { duration: 500, easing: 'ease-out' });
+    bell(gold ? 1046 : [784, 880, 988, 1175][Math.floor(Math.random() * 4)]);
+    if (gold) bigMoment();
+  };
+  showName(b); save();
+}
+function grow(b, add, newPic) {
+  const wasGold = b.tot >= CONFIG.seuilDore;
+  b.tot += add; b.t = Date.now();
+  if (newPic && newPic !== b.pic) { b.pic = newPic; setPic(b); }
+  const nd = diam(b.tot);
+  if (nd !== b.d) {
+    b.d = nd;
+    if (!allowed(b.x, b.y, nd / 2) || clearance(b.x, b.y, nd / 2 + 2, b) < -8) {
+      const s = findSpot(nd, b); if (s) { b.x = s.x; b.y = s.y; }
+    }
+  }
+  paint(b);
+  b.orb.animate([{ scale: 1 }, { scale: 1.25 }, { scale: .92 }, { scale: 1 }], { duration: 600, easing: 'ease-out' });
+  burst(b.x, b.y, 18, ['#ffffff', '#ffe58a']);
+  bell(1318, 0, .7);
+  if (!wasGold && b.tot >= CONFIG.seuilDore) bigMoment();
+  showName(b); save();
+}
+function bigMoment() {
+  starBoost = 1; goldRain();
+  stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+  [1046, 1318, 1568, 2093].forEach((f, i) => bell(f, i * .12, .8));
+}
+
+// Réception d'un cadeau (après calcul des séries)
+function addGift(uid, nick, pic, diamonds) {
+  uid = String(uid || nick || 'anon');
+  const b = balls.get(uid);
+  if (b) return grow(b, diamonds, pic);
+  const q = queue.find(i => i.uid === uid);
+  if (q) { q.tot += diamonds; if (pic) q.pic = pic; return; }
+  queue.push({ uid, name: nomPropre(nick, uid), pic: pic || '', tot: diamonds });
+}
+setInterval(() => {       // file d'attente : aucune boule perdue, une à la fois
+  if (queue.length && performance.now() - lastDrop > 450) { lastDrop = performance.now(); spawn(queue.shift()); }
+}, 80);
+
+// ---------- Sauvegarde (pas en démo) ----------
+const KEY = 'sapinNoelEmpira_v1';
+let saveT = 0;
+function save() {
+  if (DEMO || !CONFIG.garderEntreLives) return;
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    try { localStorage.setItem(KEY, JSON.stringify([...balls.values()].map(b => ({ uid: b.uid, name: b.name, pic: b.pic, tot: b.tot, d: b.d, x: b.x, y: b.y, ci: b.ci, t: b.t })))); } catch (e) {}
+  }, 300);
+}
+function load() {
+  if (DEMO || !CONFIG.garderEntreLives) return;
+  let arr = []; try { arr = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+  for (const o of arr) { const b = { ...o, d: diam(o.tot) }; balls.set(b.uid, b); makeEl(b); }
+}
+function clearAll() { for (const b of [...balls.values()]) removeBall(b); queue.length = 0; save(); }
+
+// ---------- TikFinity ----------
+const streaks = new Map();
+let wsOk = false;
+function onGift(d) {
+  const uid = d.userId || d.uniqueId || d.nickname;
+  const rc = Math.max(1, +d.repeatCount || 1);
+  let delta = rc;
+  if (+d.giftType === 1) {         // cadeau en série : on ne compte que la différence
+    const key = uid + '|' + d.giftId + '|' + (d.groupId || '');
+    const prev = streaks.get(key);
+    delta = prev ? Math.max(0, rc - prev.n) : rc;
+    if (d.repeatEnd) streaks.delete(key); else streaks.set(key, { n: rc, t: Date.now() });
+  }
+  if (delta <= 0) return;
+  addGift(uid, d.nickname || d.uniqueId, d.profilePictureUrl, Math.max(1, +d.diamondCount || 1) * delta);
+}
+setInterval(() => { const now = Date.now(); for (const [k, v] of streaks) if (now - v.t > 12000) streaks.delete(k); }, 3000);
+function onChat(d) {
+  const txt = String(d.comment || '').trim().toLowerCase();
+  if (!txt.startsWith('!sapin')) return;
+  const chef = String(d.uniqueId || '').toLowerCase() === CONFIG.hote.toLowerCase() || d.isModerator;
+  if (!chef) return;
+  if (txt.includes('vider')) clearAll();
+  else if (txt.includes('test')) addGift('test-' + Date.now(), 'Test', '', 1);
+}
+function connect() {
+  let ws;
+  try { ws = new WebSocket(CONFIG.tikfinity); } catch (e) { return setTimeout(connect, 3000); }
+  ws.onopen = () => { wsOk = true; };
+  ws.onmessage = e => {
+    let m; try { m = JSON.parse(e.data); } catch (_) { return; }
+    if (!m || !m.data) return;
+    if (m.event === 'gift') onGift(m.data);
+    else if (m.event === 'chat') onChat(m.data);
+  };
+  ws.onclose = () => { wsOk = false; setTimeout(connect, 3000); };
+  ws.onerror = () => {};
+}
+
+// ---------- Mode démo (faux viewers, rien n'est sauvé) ----------
+const FAUX = ['Lina', 'Mehdi_93', 'Jules', 'Sarah.k', 'Noah', 'Inès', 'Yanis', 'Camille', 'Adam', 'Léa', 'Rayan', 'Chloé', 'Nolan', 'Emma', 'Sofiane', 'Manon', 'Ilyes', 'Jade', 'Hugo', 'Maëlys', 'Bilal', 'Zoé', 'Enzo', 'Lou', 'Kenza', 'Tom', 'Anaïs', 'Moussa', 'Clara', 'Ethan'];
+function fakeAvatar(name, i) {
+  const h = [0, 20, 40, 200, 230, 260, 290, 320, 340][i % 9]; // pas de vert (sinon effacé par l'incrustation)
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},70%,62%)"/><stop offset="1" stop-color="hsl(${(h + 50) % 360},70%,38%)"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><circle cx="50" cy="40" r="18" fill="#ffe0c8"/><path d="M18 100c4-24 18-34 32-34s28 10 32 34z" fill="#ffe0c8"/><circle cx="43" cy="39" r="2.5" fill="#333"/><circle cx="57" cy="39" r="2.5" fill="#333"/><path d="M43 47q7 6 14 0" stroke="#333" stroke-width="2.5" fill="none"/></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function demo() {
+  const tirage = [1, 1, 1, 1, 1, 5, 5, 10, 30, 99, 199];
+  let n = 0;
+  const tick = () => {
+    const i = Math.floor(Math.random() * FAUX.length), name = FAUX[i];
+    let dia = tirage[Math.floor(Math.random() * tirage.length)];
+    if (++n % 17 === 0) dia = 1000;
+    if (Math.random() < .3) {   // série de roses
+      const g = 'g' + n, max = 2 + Math.floor(Math.random() * 6);
+      for (let k = 1; k <= max; k++) setTimeout(() => onGift({ userId: 'u' + i, nickname: name, profilePictureUrl: fakeAvatar(name, i), giftId: 5655, groupId: g, giftType: 1, diamondCount: 1, repeatCount: k, repeatEnd: k === max }), k * 220);
+    } else onGift({ userId: 'u' + i, nickname: name, profilePictureUrl: fakeAvatar(name, i), giftId: 1, giftType: 2, diamondCount: dia, repeatCount: 1, repeatEnd: true });
+    setTimeout(tick, 900 + Math.random() * 1600);
+  };
+  tick();
+}
+
+// ---------- Panneau admin ----------
+const admin = document.getElementById('admin');
+document.getElementById('buildTxt').textContent = BUILD;
+if (params.has('admin')) admin.classList.add('on');
+addEventListener('keydown', e => { if (e.key === 'a' || e.key === 'A') admin.classList.toggle('on'); });
+document.getElementById('bTest').onclick = () => addGift('test-' + Date.now(), 'Test', '', 1);
+document.getElementById('bGold').onclick = () => addGift('test-' + Date.now(), 'Grand Test', '', 1000);
+document.getElementById('bClear').onclick = () => { if (confirm('Vider le sapin ?')) clearAll(); };
+setInterval(() => {
+  document.getElementById('wsDot').classList.toggle('ok', wsOk || DEMO);
+  document.getElementById('adminInfo').textContent = (DEMO ? 'Mode démo · ' : wsOk ? 'TikFinity connecté · ' : 'TikFinity non connecté · ') + balls.size + ' boules';
+}, 500);
+
+// ---------- Rechargement automatique quand le fichier change ----------
+if (location.protocol.startsWith('http')) {
+  setInterval(async () => {
+    try {
+      const r = await fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' });
+      const m = (await r.text()).match(/const BUILD = '([^']+)'/);
+      if (m && m[1] !== BUILD && !queue.length && performance.now() - lastDrop > 3000) { save(); setTimeout(() => location.reload(), 400); }
+    } catch (e) {}
+  }, 15000);
+}
+
+// ---------- Boucle ----------
+drawTree(); load();
+let last = performance.now(); window.__fps = 0; let frames = 0, fpsT = last;
+function loop(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  drawLive(now / 1000, dt); drawFx(dt);
+  frames++; if (now - fpsT > 1000) { window.__fps = frames * 1000 / (now - fpsT); frames = 0; fpsT = now; }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+if (DEMO) demo(); else connect();
+</script>
+</body>
+</html>
